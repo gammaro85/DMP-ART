@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const errorMessage = document.getElementById('error-message');
     const errorText = document.getElementById('error-text');
     const downloadLink = document.getElementById('download-link');
+    const reviewLink = document.getElementById('review-link');
     const newUploadBtn = document.getElementById('new-upload-btn');
     const tryAgainBtn = document.getElementById('try-again-btn');
     
@@ -155,13 +156,28 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(data => {
             loading.classList.add('hidden');
-            result.classList.remove('hidden');
             
             if (data.success) {
+                // Check if we should redirect to review page
+                if (data.redirect) {
+                    window.location.href = data.redirect;
+                    return;
+                }
+                
+                // Otherwise show success message with download link
+                result.classList.remove('hidden');
                 successMessage.classList.remove('hidden');
                 errorMessage.classList.add('hidden');
-                downloadLink.href = `/download/${encodeURIComponent(data.filename)}`;
+                
+                if (downloadLink) {
+                    downloadLink.href = `/download/${encodeURIComponent(data.filename)}`;
+                }
+                
+                if (reviewLink) {
+                    reviewLink.href = `/review/${encodeURIComponent(data.filename)}`;
+                }
             } else {
+                result.classList.remove('hidden');
                 successMessage.classList.add('hidden');
                 errorMessage.classList.remove('hidden');
                 errorText.textContent = data.message || 'An error occurred during processing.';
