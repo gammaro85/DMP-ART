@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DMP Extractor</title>
+    <title>DMP Review Tool</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Data Management Plan Extractor</h1>
-            <p>Upload PDF files to extract and format DMP sections</p>
+            <h1>Data Management Plan Review Tool</h1>
+            <p>Upload PDF files to extract, review, and provide feedback on DMPs</p>
+            <div class="nav-links">
+                <a href="/template_editor" class="nav-link">Customize Templates</a>
+            </div>
         </header>
         
         <main>
@@ -23,7 +26,7 @@
                     </form>
                     <div id="file-info" class="hidden">
                         <p id="file-name"></p>
-                        <button id="upload-btn">Extract DMP</button>
+                        <button id="upload-btn">Extract & Review DMP</button>
                         <button id="clear-btn">Clear</button>
                     </div>
                 </div>
@@ -37,8 +40,11 @@
             <div id="result" class="hidden">
                 <div id="success-message" class="hidden">
                     <h2>Extraction Successful!</h2>
-                    <p>Your DMP has been extracted and formatted.</p>
-                    <a id="download-link" href="#" class="download-btn">Download Word Document</a>
+                    <p>Your DMP has been extracted and is ready for review.</p>
+                    <div class="button-group">
+                        <a id="review-link" href="#" class="primary-btn">Review DMP</a>
+                        <a id="download-link" href="#" class="download-btn">Download Word Document</a>
+                    </div>
                     <button id="new-upload-btn" class="secondary-btn">Process Another PDF</button>
                 </div>
                 
@@ -51,7 +57,7 @@
         </main>
         
         <footer>
-            <p>PDF DMP Extractor &copy; 2025</p>
+            <p>DMP Review Tool &copy; 2025</p>
         </footer>
     </div>
     
