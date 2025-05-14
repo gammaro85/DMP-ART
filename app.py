@@ -189,5 +189,31 @@ def save_templates():
 def results():
     return render_template('results.html')
 
+@app.route('/template_editor')
+def template_editor():
+    # Organize templates by section for better display
+    templates_by_section = {
+        "1. Data description and collection or re-use of existing data": {
+            k: v for k, v in DMP_TEMPLATES.items() if k.startswith("1.")
+        },
+        "2. Documentation and data quality": {
+            k: v for k, v in DMP_TEMPLATES.items() if k.startswith("2.")
+        },
+        "3. Storage and backup during the research process": {
+            k: v for k, v in DMP_TEMPLATES.items() if k.startswith("3.")
+        },
+        "4. Legal requirements, codes of conduct": {
+            k: v for k, v in DMP_TEMPLATES.items() if k.startswith("4.")
+        },
+        "5. Data sharing and long-term preservation": {
+            k: v for k, v in DMP_TEMPLATES.items() if k.startswith("5.")
+        },
+        "6. Data management responsibilities and resources": {
+            k: v for k, v in DMP_TEMPLATES.items() if k.startswith("6.")
+        }
+    }
+    
+    return render_template('template_editor.html', templates_by_section=templates_by_section)
+
 if __name__ == '__main__':
     app.run(debug=True)

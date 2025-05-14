@@ -1,3 +1,4 @@
+// static/js/script.js
 document.addEventListener('DOMContentLoaded', function() {
     const dropArea = document.getElementById('drop-area');
     const fileInput = document.getElementById('file-input');
@@ -47,6 +48,8 @@ document.addEventListener('DOMContentLoaded', function() {
     dropArea.addEventListener('drop', handleDrop, false);
     
     function handleDrop(e) {
+        const dt =
+        // static/js/script.js (continued)
         const dt = e.dataTransfer;
         const files = dt.files;
         

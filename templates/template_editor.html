@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DMP Template Editor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>DMP Template Editor</h1>
+            <p>Customize feedback templates for each DMP section</p>
+        </header>
+        
+        <main class="template-editor">
+            <div class="section-header">
+                <h2>Edit Feedback Templates</h2>
+                <p>These templates will be available when reviewing DMPs</p>
+            </div>
+            
+            <div id="templates-container">
+                {% for section, questions in templates_by_section.items() %}
+                <div class="template-group">
+                    <h2>{{ section }}</h2>
+                    
+                    {% for id, item in questions.items() %}
+                    <div class="template-item" data-id="{{ id }}">
+                        <h3>{{ item.question }}</h3>
+                        <textarea class="template-input" id="template-{{ id }}">{{ item.template }}</textarea>
+                        <button class="save-template-btn" data-id="{{ id }}">Save Template</button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+            
+            <button id="save-all-templates" class="save-all-templates-btn">Save All Templates</button>
+            
+            <div class="navigation-links">
+                <a href="/" class="secondary-btn">Return to Home</a>
+            </div>
+        </main>
+        
+        <div id="success-toast" class="success-toast">Templates saved successfully!</div>
+        
+        <footer>
+            <p>DMP Review Tool &copy; 2025</p>
+        </footer>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const saveButtons = document.querySelectorAll('.save-template-btn');
+            const saveAllButton = document.getElementById('save-all-templates');
+            const successToast = document.getElementById('success-toast');
+            
+            // Handle individual save buttons
+            saveButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const templateText = document.getElementById(`template-${id}`).value;
+                    
+                    saveTemplate(id, templateText);
+                });
+            });
+            
+            // Handle save all button
+            saveAllButton.addEventListener('click', function() {
+                const templates = {};
+                
+                document.querySelectorAll('.template-item').forEach(item => {
+                    const id = item.getAttribute('data-id');
+                    const templateText = document.getElementById(`template-${id}`).value;
+                    
+                    templates[id] = templateText;
+                });
+                
+                saveAllTemplates(templates);
+            });
+            
+            // Function to save a single template
+            function saveTemplate(id, text) {
+                const data = {};
+                data[id] = text;
+                
+                fetch('/save_templates', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast();
+                    } else {
+                        alert(`Error: ${data.message}`);
+                    }
+                })
+                .catch(error => {
+                    alert(`Error: ${error.message}`);
+                });
+            }
+            
+            // Function to save all templates
+            function saveAllTemplates(templates) {
+                fetch('/save_templates', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(templates)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast();
+                    } else {
+                        alert(`Error: ${data.message}`);
+                    }
+                })
+                .catch(error => {
+                    alert(`Error: ${error.message}`);
+                });
+            }
+            
+            // Function to show success toast
+            function showToast() {
+                successToast.classList.add('show');
+                
+                setTimeout(() => {
+                    successToast.classList.remove('show');
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
