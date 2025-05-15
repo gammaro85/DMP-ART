@@ -1,5 +1,6 @@
 // static/js/script.js
 document.addEventListener('DOMContentLoaded', function() {
+    // UPLOAD PAGE FUNCTIONALITY
     var dropArea = document.getElementById('drop-area');
     var fileInput = document.getElementById('file-input');
     var selectFileBtn = document.getElementById('select-file-btn');
@@ -281,90 +282,233 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Review page script
-    var copyButtons = document.querySelectorAll('.copy-btn');
-    var emailButtons = document.querySelectorAll('.email-btn');
-    var saveTemplatesBtn = document.getElementById('save-templates');
-    var successToast = document.getElementById('success-toast');
+    // REVIEW PAGE FUNCTIONALITY
+    
+    // Get all interactive elements
+    const commentButtons = document.querySelectorAll('.comment-btn');
+    const tagButtons = document.querySelectorAll('.tag-btn');
+    const copyButtons = document.querySelectorAll('.copy-btn');
+    const resetButtons = document.querySelectorAll('.reset-btn');
+    const compileButton = document.getElementById('compile-btn');
+    const compiledContainer = document.getElementById('compiled-feedback-container');
+    const compiledTextarea = document.getElementById('compiled-feedback');
+    const copyCompiledButton = document.getElementById('copy-compiled-btn');
+    const downloadFeedbackButton = document.getElementById('download-feedback-btn');
+    const closeCompiledButton = document.getElementById('close-compiled-btn');
+    const saveFeedbackButton = document.getElementById('save-feedback-btn');
+    const successToast = document.getElementById('success-toast');
+    
+    // Original template text for reset functionality
+    const originalTemplates = {};
+    
+    // Initialize original templates
+    document.querySelectorAll('.feedback-text').forEach(textarea => {
+        const id = textarea.id.replace('feedback-', '');
+        originalTemplates[id] = textarea.value;
+    });
+    
+    // Handle comment button clicks
+    if (commentButtons) {
+        commentButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                const comment = this.getAttribute('data-comment');
+                insertComment(id, comment);
+            });
+        });
+    }
+    
+    // Handle tag button clicks
+    if (tagButtons) {
+        tagButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.closest('.question-card').getAttribute('data-id');
+                const comment = this.getAttribute('data-comment');
+                insertComment(id, comment);
+            });
+        });
+    }
+    
+    // Insert comment into feedback textarea
+    function insertComment(id, comment) {
+        const textarea = document.getElementById(`feedback-${id}`);
+        if (!textarea) return;
+        
+        // Get current cursor position
+        const startPos = textarea.selectionStart;
+        const endPos = textarea.selectionEnd;
+        
+        // Insert comment at cursor position or at the end
+        if (startPos !== undefined && endPos !== undefined) {
+            // Add a newline if not at the beginning of the textarea
+            const prefix = startPos > 0 && textarea.value.charAt(startPos - 1) !== '\n' ? '\n' : '';
+            
+            // Add the comment
+            textarea.value = 
+                textarea.value.substring(0, startPos) + 
+                prefix + comment + '\n' + 
+                textarea.value.substring(endPos);
+            
+            // Set cursor position after inserted comment
+            const newPos = startPos + prefix.length + comment.length + 1;
+            textarea.selectionStart = newPos;
+            textarea.selectionEnd = newPos;
+        } else {
+            // If no cursor position, append to the end
+            const prefix = textarea.value.length > 0 && textarea.value.charAt(textarea.value.length - 1) !== '\n' ? '\n' : '';
+            textarea.value += prefix + comment + '\n';
+        }
+        
+        // Focus the textarea
+        textarea.focus();
+    }
     
     // Handle copy button clicks
     if (copyButtons) {
-        copyButtons.forEach(function(button) {
+        copyButtons.forEach(button => {
             button.addEventListener('click', function() {
-                var id = this.getAttribute('data-id');
-                var textarea = document.getElementById('template-' + id);
+                const id = this.getAttribute('data-id');
+                const textarea = document.getElementById(`feedback-${id}`);
                 if (textarea) {
                     copyToClipboard(textarea.value);
-                    alert('Text copied to clipboard!');
+                    showToast('Feedback copied to clipboard!');
                 }
             });
         });
     }
     
-    // Handle email button clicks
-    if (emailButtons) {
-        emailButtons.forEach(function(button) {
+    // Handle reset button clicks
+    if (resetButtons) {
+        resetButtons.forEach(button => {
             button.addEventListener('click', function() {
-                var id = this.getAttribute('data-id');
-                var textarea = document.getElementById('template-' + id);
-                var questionEl = document.querySelector('.question-card[data-id="' + id + '"] .question-title');
+                const id = this.getAttribute('data-id');
+                const textarea = document.getElementById(`feedback-${id}`);
                 
-                if (textarea && questionEl) {
-                    // Create email with subject and body
-                    var subject = encodeURIComponent('DMP Feedback: ' + questionEl.textContent);
-                    var body = encodeURIComponent(textarea.value);
-                    window.location.href = 'mailto:?subject=' + subject + '&body=' + body;
+                if (textarea && originalTemplates[id]) {
+                    textarea.value = originalTemplates[id];
                 }
             });
         });
     }
     
-    // Handle save all templates
-    if (saveTemplatesBtn) {
-        saveTemplatesBtn.addEventListener('click', function() {
-            var templates = {};
-            
-            document.querySelectorAll('.question-card').forEach(function(card) {
-                var id = card.getAttribute('data-id');
-                var textarea = document.getElementById('template-' + id);
-                if (textarea) {
-                    templates[id] = textarea.value;
-                }
-            });
-            
-            // Send templates to server using XMLHttpRequest
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', '/save_templates', true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            
-            xhr.onload = function() {
-                if (xhr.status === 200) {
-                    try {
-                        var data = JSON.parse(xhr.responseText);
-                        if (data.success) {
-                            showToast();
-                        } else {
-                            alert('Error: ' + data.message);
-                        }
-                    } catch (e) {
-                        alert('Error parsing server response.');
-                    }
-                } else {
-                    alert('Server error: ' + xhr.status);
-                }
-            };
-            
-            xhr.onerror = function() {
-                alert('Network error. Please try again.');
-            };
-            
-            xhr.send(JSON.stringify(templates));
+    // Handle compile button click
+    if (compileButton) {
+        compileButton.addEventListener('click', function() {
+            compileAllFeedback();
         });
     }
     
-    // Function to copy text to clipboard
+    // Handle copy compiled button click
+    if (copyCompiledButton) {
+        copyCompiledButton.addEventListener('click', function() {
+            if (compiledTextarea) {
+                copyToClipboard(compiledTextarea.value);
+                showToast('All feedback copied to clipboard!');
+            }
+        });
+    }
+    
+    // Handle download feedback button click
+    if (downloadFeedbackButton) {
+        downloadFeedbackButton.addEventListener('click', function() {
+            if (compiledTextarea && compiledTextarea.value) {
+                downloadFeedback(compiledTextarea.value);
+            }
+        });
+    }
+    
+    // Handle close compiled button click
+    if (closeCompiledButton) {
+        closeCompiledButton.addEventListener('click', function() {
+            if (compiledContainer) {
+                compiledContainer.classList.add('hidden');
+            }
+        });
+    }
+    
+    // Handle save feedback button click
+    if (saveFeedbackButton) {
+        saveFeedbackButton.addEventListener('click', function() {
+            const feedbackText = compileAllFeedback(false);
+            saveFeedbackToServer(feedbackText);
+        });
+    }
+    
+    // Compile all feedback
+    function compileAllFeedback(showCompiled = true) {
+        let allFeedback = '';
+        
+        document.querySelectorAll('.question-card').forEach(card => {
+            const id = card.getAttribute('data-id');
+            const titleElement = card.querySelector('.question-title');
+            const title = titleElement ? titleElement.textContent : `Section ${id}`;
+            const textarea = document.getElementById(`feedback-${id}`);
+            
+            if (textarea && textarea.value.trim()) {
+                allFeedback += `## ${title} ##\n\n${textarea.value.trim()}\n\n`;
+            }
+        });
+        
+        if (compiledTextarea) {
+            compiledTextarea.value = allFeedback;
+        }
+        
+        if (showCompiled && compiledContainer) {
+            compiledContainer.classList.remove('hidden');
+        }
+        
+        return allFeedback;
+    }
+    
+    // Save feedback to server
+    function saveFeedbackToServer(feedbackText) {
+        if (!feedbackText || !dmpFilename) {
+            showToast('No feedback to save!', 'error');
+            return;
+        }
+        
+        const data = {
+            filename: dmpFilename,
+            feedback: feedbackText
+        };
+        
+        fetch('/save_feedback', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast('Feedback saved successfully!');
+            } else {
+                showToast(`Error: ${data.message}`, 'error');
+            }
+        })
+        .catch(error => {
+            showToast(`Error: ${error.message}`, 'error');
+        });
+    }
+    
+    // Download feedback as text file
+    function downloadFeedback(text) {
+        const blob = new Blob([text], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `DMP_Feedback_${new Date().toISOString().slice(0,10)}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+    }
+    
+    // Copy text to clipboard
     function copyToClipboard(text) {
-        var textarea = document.createElement('textarea');
+        const textarea = document.createElement('textarea');
         textarea.value = text;
         document.body.appendChild(textarea);
         textarea.select();
@@ -372,27 +516,40 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.removeChild(textarea);
     }
     
-    // Function to show success toast
-    function showToast() {
-        if (successToast) {
-            successToast.classList.add('show');
-            
-            setTimeout(function() {
-                successToast.classList.remove('show');
-            }, 3000);
+    // Show toast message
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('success-toast');
+        if (!toast) return;
+        
+        // Set message and type
+        toast.textContent = message;
+        toast.className = 'success-toast';
+        
+        if (type === 'error') {
+            toast.classList.add('error');
         }
+        
+        // Show the toast
+        toast.classList.add('show');
+        
+        // Hide after 3 seconds
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
     }
     
-    // Template editor script
-    var saveTemplateButtons = document.querySelectorAll('.save-template-btn');
-    var saveAllTemplatesButton = document.getElementById('save-all-templates');
+    // TEMPLATE EDITOR FUNCTIONALITY
+    
+    // Get template editor elements
+    const saveTemplateButtons = document.querySelectorAll('.save-template-btn');
+    const saveAllTemplatesButton = document.getElementById('save-all-templates');
     
     // Handle individual save buttons
     if (saveTemplateButtons) {
-        saveTemplateButtons.forEach(function(button) {
+        saveTemplateButtons.forEach(button => {
             button.addEventListener('click', function() {
-                var id = this.getAttribute('data-id');
-                var templateInput = document.getElementById('template-' + id);
+                const id = this.getAttribute('data-id');
+                const templateInput = document.getElementById(`template-${id}`);
                 
                 if (templateInput) {
                     saveTemplate(id, templateInput.value);
@@ -404,11 +561,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle save all button
     if (saveAllTemplatesButton) {
         saveAllTemplatesButton.addEventListener('click', function() {
-            var templates = {};
+            const templates = {};
             
-            document.querySelectorAll('.template-item').forEach(function(item) {
-                var id = item.getAttribute('data-id');
-                var templateInput = document.getElementById('template-' + id);
+            document.querySelectorAll('.template-item').forEach(item => {
+                const id = item.getAttribute('data-id');
+                const templateInput = document.getElementById(`template-${id}`);
                 
                 if (templateInput) {
                     templates[id] = templateInput.value;
@@ -421,64 +578,48 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Function to save a single template
     function saveTemplate(id, text) {
-        var data = {};
+        const data = {};
         data[id] = text;
         
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', '/save_templates', true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                try {
-                    var response = JSON.parse(xhr.responseText);
-                    if (response.success) {
-                        showToast();
-                    } else {
-                        alert('Error: ' + response.message);
-                    }
-                } catch (e) {
-                    alert('Error parsing server response.');
-                }
+        fetch('/save_templates', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast('Template saved successfully!');
             } else {
-                alert('Server error: ' + xhr.status);
+                showToast(`Error: ${data.message}`, 'error');
             }
-        };
-        
-        xhr.onerror = function() {
-            alert('Network error. Please try again.');
-        };
-        
-        xhr.send(JSON.stringify(data));
+        })
+        .catch(error => {
+            showToast(`Error: ${error.message}`, 'error');
+        });
     }
     
     // Function to save all templates
     function saveAllTemplates(templates) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', '/save_templates', true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                try {
-                    var response = JSON.parse(xhr.responseText);
-                    if (response.success) {
-                        showToast();
-                    } else {
-                        alert('Error: ' + response.message);
-                    }
-                } catch (e) {
-                    alert('Error parsing server response.');
-                }
+        fetch('/save_templates', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(templates)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast('All templates saved successfully!');
             } else {
-                alert('Server error: ' + xhr.status);
+                showToast(`Error: ${data.message}`, 'error');
             }
-        };
-        
-        xhr.onerror = function() {
-            alert('Network error. Please try again.');
-        };
-        
-        xhr.send(JSON.stringify(templates));
+        })
+        .catch(error => {
+            showToast(`Error: ${error.message}`, 'error');
+        });
     }
 });

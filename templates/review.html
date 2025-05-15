@@ -16,23 +16,76 @@
         <main class="review-container">
             <div class="control-panel">
                 <h2>Review DMP</h2>
-                <div>
+                <div class="action-btns">
                     <a href="{{ url_for('download_file', filename=filename) }}" class="download-btn">Download Original</a>
-                    <button id="save-templates" class="save-all-btn">Save All Templates</button>
+                    <button id="save-feedback-btn" class="save-all-btn">Save Feedback</button>
+                    <button id="compile-btn" class="compile-btn">Compile All Feedback</button>
                 </div>
             </div>
             
             <div id="questions-container">
-                {% for id, item in templates.items() %}
-                <div class="question-card" data-id="{{ id }}">
-                    <div class="question-title">{{ item.question }}</div>
-                    <textarea class="template-text" id="template-{{ id }}">{{ item.template }}</textarea>
-                    <div class="action-row">
-                        <button class="copy-btn" data-id="{{ id }}">Copy to Clipboard</button>
-                        <button class="email-btn" data-id="{{ id }}">Email Feedback</button>
+                {% for section_id, content in extracted_content.items() %}
+                <div class="question-card" data-id="{{ section_id }}">
+                    <div class="question-header">
+                        <div class="question-title">{{ content.question }}</div>
+                        <div class="section-label">{{ content.section }}</div>
+                    </div>
+                    
+                    <!-- Extracted DMP content -->
+                    <div class="extracted-content">
+                        <h3>Extracted Content:</h3>
+                        {% if content.paragraphs|length > 0 %}
+                            {% for paragraph in content.paragraphs %}
+                            <div class="dmp-paragraph">
+                                <p>{{ paragraph }}</p>
+                                
+                                <!-- Tag buttons for this paragraph if available -->
+                                {% if content.tagged_paragraphs and loop.index0 < content.tagged_paragraphs|length %}
+                                    {% if content.tagged_paragraphs[loop.index0].tags|length > 0 %}
+                                    <div class="paragraph-tags">
+                                        {% for tag in content.tagged_paragraphs[loop.index0].tags %}
+                                        <button class="tag-btn" data-comment="{{ comments[tag] }}">{{ tag }}</button>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="no-content">No content found for this section.</p>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Common comment buttons -->
+                    <div class="comment-buttons">
+                        <h3>Common Comments:</h3>
+                        {% for tag, comment in comments.items() %}
+                        <button class="comment-btn" data-id="{{ section_id }}" data-comment="{{ comment }}">{{ tag }}</button>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Feedback textarea -->
+                    <div class="feedback-section">
+                        <h3>Your Feedback:</h3>
+                        <textarea class="feedback-text" id="feedback-{{ section_id }}">{{ templates[section_id].template if section_id in templates else "" }}</textarea>
+                        <div class="action-row">
+                            <button class="copy-btn" data-id="{{ section_id }}">Copy to Clipboard</button>
+                            <button class="reset-btn" data-id="{{ section_id }}">Reset to Template</button>
+                        </div>
                     </div>
                 </div>
                 {% endfor %}
+            </div>
+            
+            <!-- Compiled feedback section -->
+            <div id="compiled-feedback-container" class="compiled-feedback-container hidden">
+                <h2>Compiled Feedback</h2>
+                <textarea id="compiled-feedback" readonly></textarea>
+                <div class="compiled-actions">
+                    <button id="copy-compiled-btn">Copy All</button>
+                    <button id="download-feedback-btn">Download as Text</button>
+                    <button id="close-compiled-btn">Close</button>
+                </div>
             </div>
             
             <div class="action-buttons">
@@ -48,82 +101,10 @@
     </div>
     
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Handle copy button clicks
-            document.querySelectorAll('.copy-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const id = this.getAttribute('data-id');
-                    const textarea = document.getElementById(`template-${id}`);
-                    copyToClipboard(textarea.value);
-                    alert('Text copied to clipboard!');
-                });
-            });
-            
-            // Handle email button clicks
-            document.querySelectorAll('.email-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const id = this.getAttribute('data-id');
-                    const textarea = document.getElementById(`template-${id}`);
-                    const question = document.querySelector(`.question-card[data-id="${id}"] .question-title`).textContent;
-                    
-                    // Create email with subject and body
-                    const subject = encodeURIComponent(`DMP Feedback: ${question}`);
-                    const body = encodeURIComponent(textarea.value);
-                    window.location.href = `mailto:?subject=${subject}&body=${body}`;
-                });
-            });
-            
-            // Handle save all templates
-            document.getElementById('save-templates').addEventListener('click', function() {
-                const templates = {};
-                
-                document.querySelectorAll('.question-card').forEach(card => {
-                    const id = card.getAttribute('data-id');
-                    const textarea = document.getElementById(`template-${id}`);
-                    templates[id] = textarea.value;
-                });
-                
-                // Send templates to server
-                fetch('/save_templates', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(templates)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        showToast();
-                    } else {
-                        alert(`Error: ${data.message}`);
-                    }
-                })
-                .catch(error => {
-                    alert(`Error: ${error.message}`);
-                });
-            });
-            
-            // Function to copy text to clipboard
-            function copyToClipboard(text) {
-                const textarea = document.createElement('textarea');
-                textarea.value = text;
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-            }
-            
-            // Function to show success toast
-            function showToast() {
-                const toast = document.getElementById('success-toast');
-                toast.classList.add('show');
-                
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 3000);
-            }
-        });
+        // Store the filename and cache_id for use in JavaScript
+        const dmpFilename = "{{ filename }}";
+        const cacheId = "{{ cache_id }}";
     </script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>

@@ -1,5 +1,6 @@
 # app.py
 import os
+import json
 import time
 import threading
 from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for
@@ -76,6 +77,26 @@ DMP_TEMPLATES = {
     }
 }
 
+# Common feedback comments that can be inserted
+COMMON_COMMENTS = {
+    "methodology": "The methodology needs more detail on how data will be collected.",
+    "data_format": "Please specify all data formats (CSV, JSON, etc.) with examples.",
+    "data_volume": "Estimate the total volume of data expected (in GB/TB).",
+    "metadata": "Consider using established metadata standards in your field.",
+    "quality": "Implement validation procedures to ensure data quality.",
+    "storage": "Specify the exact storage solutions you'll be using.",
+    "backup": "Your backup strategy should include off-site copies.",
+    "security": "Detail encryption methods and access controls for sensitive data.",
+    "personal_data": "Clarify compliance with GDPR and data minimization strategies.",
+    "license": "Specify the exact licensing arrangements for your data.",
+    "sharing": "Provide specific milestones for data publication.",
+    "preservation": "Detail your long-term preservation strategy and repository selection.",
+    "tools": "List all required software tools with specific versions.",
+    "identifier": "Explain how and when DOIs will be assigned to datasets.",
+    "responsibility": "Designate specific roles and responsibilities for data management.",
+    "resources": "Budget for dedicated staff time for data management."
+}
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
@@ -117,10 +138,11 @@ def upload_file():
                 print(f"Warning: Could not remove uploaded file: {str(e)}")
             
             if result['success']:
-                # Redirect to the review page instead of just showing download
+                # Redirect to the review page with cache ID
+                cache_id = result.get('cache_id', '')
                 return jsonify({
                     'success': True,
-                    'redirect': url_for('review_dmp', filename=result['filename'])
+                    'redirect': url_for('review_dmp', filename=result['filename'], cache_id=cache_id)
                 })
             else:
                 return jsonify(result)
@@ -159,10 +181,27 @@ def review_dmp(filename):
     if not os.path.exists(file_path):
         return "File not found", 404
     
-    # Pass the templates and filename to the template
+    # Get cache_id from request
+    cache_id = request.args.get('cache_id', '')
+    
+    # Load extracted content if available
+    extracted_content = {}
+    if cache_id:
+        cache_path = os.path.join(app.config['OUTPUT_FOLDER'], f"cache_{cache_id}.json")
+        if os.path.exists(cache_path):
+            try:
+                with open(cache_path, 'r', encoding='utf-8') as f:
+                    extracted_content = json.load(f)
+            except Exception as e:
+                print(f"Error loading extracted content: {str(e)}")
+    
+    # Pass the templates, common comments, and extracted content to the template
     return render_template('review.html', 
-                           filename=filename, 
-                           templates=DMP_TEMPLATES)
+                           filename=filename,
+                           templates=DMP_TEMPLATES,
+                           comments=COMMON_COMMENTS,
+                           extracted_content=extracted_content,
+                           cache_id=cache_id)
 
 @app.route('/save_templates', methods=['POST'])
 def save_templates():
@@ -214,6 +253,40 @@ def template_editor():
     }
     
     return render_template('template_editor.html', templates_by_section=templates_by_section)
+
+@app.route('/save_feedback', methods=['POST'])
+def save_feedback():
+    try:
+        data = request.json
+        
+        # Get filename and feedback text
+        filename = data.get('filename', '')
+        feedback = data.get('feedback', '')
+        
+        if not filename or not feedback:
+            return jsonify({
+                'success': False,
+                'message': 'Missing filename or feedback text'
+            })
+        
+        # Save feedback to a file
+        feedback_filename = f"feedback_{os.path.splitext(filename)[0]}.txt"
+        feedback_path = os.path.join(app.config['OUTPUT_FOLDER'], feedback_filename)
+        
+        with open(feedback_path, 'w', encoding='utf-8') as f:
+            f.write(feedback)
+        
+        return jsonify({
+            'success': True,
+            'filename': feedback_filename,
+            'path': feedback_path,
+            'message': 'Feedback saved successfully'
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error saving feedback: {str(e)}'
+        })
 
 if __name__ == '__main__':
     app.run(debug=True)
