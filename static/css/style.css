@@ -1,15 +1,15 @@
 /* static/css/style.css */
 :root {
-    --primary-color: #2c3e50;
-    --secondary-color: #3498db;
-    --accent-color: #1abc9c;
-    --light-color: #ecf0f1;
-    --dark-color: #34495e;
-    --error-color: #e74c3c;
-    --success-color: #2ecc71;
+    --primary-color: #051946;
+    --secondary-color: #91bdda;
+    --accent-color: #bc1a1a;
+    --light-color: #89a2c7;
+    --dark-color: #0a1927;
+    --error-color: #ff0000;
+    --success-color: #008cff;
     --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --border-color: #e0e0e0;
-    --tag-color: #f39c12;
+    --border-color: #961919;
+    --tag-color: #2d4166;
 }
 
 * {
