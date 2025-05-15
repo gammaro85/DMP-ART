@@ -1,6 +1,8 @@
 # utils/extractor.py
 import os
 import re
+import json
+import uuid
 from docx import Document
 from datetime import datetime
 import PyPDF2
@@ -46,6 +48,44 @@ class DMPExtractor:
                 "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)?"
             ]
         }
+        
+        # Map section numbers to IDs for the review interface
+        self.section_ids = {
+            "1.1": "How will new data be collected or produced and/or how will existing data be re-used?",
+            "1.2": "What data (for example the types, formats, and volumes) will be collected or produced?",
+            "2.1": "What metadata and documentation (for example methodology or data collection and way of organising data) will accompany data?",
+            "2.2": "What data quality control measures will be used?",
+            "3.1": "How will data and metadata be stored and backed up during the research process?",
+            "3.2": "How will data security and protection of sensitive data be taken care of during the research?",
+            "4.1": "If personal data are processed, how will compliance with legislation on personal data and on data security be ensured?",
+            "4.2": "How will other legal issues, such as intelectual property rights and ownership, be managed? What legislation is applicable?",
+            "5.1": "How and when will data be shared? Are there possible restrictions to data sharing or embargo reasons?",
+            "5.2": "How will data for preservation be selected, and where will data be preserved long-term (for example a data repository or archive)?",
+            "5.3": "What methods or software tools will be needed to access and use the data?",
+            "5.4": "How will the application of a unique and persistent identifier (such us a Digital Object Identifier (DOI)) to each data set be ensured?",
+            "6.1": "Who (for example role, position, and institution) will be responsible for data mangement (i.e the data steward)?",
+            "6.2": "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)?"
+        }
+        
+        # Define key phrases to identify and tag in paragraphs
+        self.key_phrases = {
+            "methodology": ["methodology", "approach", "procedure", "process", "technique"],
+            "data_format": ["format", "file type", "structure", "schema", "encoding"],
+            "data_volume": ["volume", "size", "amount", "quantity", "gigabyte", "terabyte"],
+            "metadata": ["metadata", "documentation", "description", "annotation"],
+            "quality": ["quality", "validation", "verification", "accuracy", "precision"],
+            "storage": ["storage", "repository", "database", "server", "cloud"],
+            "backup": ["backup", "copy", "replicate", "redundancy"],
+            "security": ["security", "protection", "encryption", "access control"],
+            "personal_data": ["personal data", "privacy", "consent", "gdpr", "anonymization"],
+            "license": ["license", "copyright", "intellectual property", "ownership", "rights"],
+            "sharing": ["sharing", "distribution", "dissemination", "access", "availability"],
+            "preservation": ["preservation", "archiving", "long-term", "curation"],
+            "tools": ["software", "tools", "application", "program", "code"],
+            "identifier": ["identifier", "doi", "persistent", "uuid", "orcid"],
+            "responsibility": ["responsible", "manager", "steward", "oversight", "supervision"],
+            "resources": ["resources", "budget", "funding", "cost", "allocation"]
+        }
     
     def should_skip_text(self, text):
         """Determine if text should be skipped (headers, footers, etc.)"""
@@ -77,6 +117,60 @@ class DMPExtractor:
                 return match.group(1).strip()
         
         return None
+    
+    def identify_key_phrases(self, text):
+        """Identify key phrases in a paragraph and return relevant tags"""
+        text_lower = text.lower()
+        found_tags = []
+        
+        for tag, phrases in self.key_phrases.items():
+            for phrase in phrases:
+                if phrase in text_lower:
+                    found_tags.append(tag)
+                    break
+        
+        return found_tags
+    
+    def process_paragraph(self, paragraph):
+        """Process a paragraph to extract key information"""
+        tags = self.identify_key_phrases(paragraph)
+        
+        # Find lead sentence (first sentence or sentence with most key phrases)
+        sentences = re.split(r'(?<=[.!?])\s+', paragraph)
+        
+        if not sentences:
+            return {
+                "text": paragraph,
+                "tags": tags,
+                "title": None
+            }
+        
+        # Use first sentence as title if it's reasonably short
+        title = sentences[0] if len(sentences[0]) < 100 else None
+        
+        return {
+            "text": paragraph,
+            "tags": tags,
+            "title": title
+        }
+    
+    def map_section_to_id(self, section, subsection):
+        """Map a section and subsection to a section ID"""
+        # Try to find the matching ID
+        for section_id, question in self.section_ids.items():
+            if question == subsection:
+                return section_id
+        
+        # Fallback: try to infer from section number
+        section_num = re.match(r'(\d+)\.', section)
+        if section_num:
+            num = section_num.group(1)
+            for section_id in self.section_ids.keys():
+                if section_id.startswith(f"{num}."):
+                    return section_id
+        
+        # If no match found, return a generated ID
+        return f"section_{hash(section + subsection) % 10000}"
     
     def process_pdf(self, pdf_path, output_dir):
         """Process a PDF and extract DMP content"""
@@ -148,10 +242,14 @@ class DMPExtractor:
                 
                 # Process the content by section
                 section_content = {}
+                tagged_content = {}
+                
                 for section in self.dmp_structure:
                     section_content[section] = {}
+                    tagged_content[section] = {}
                     for subsection in self.dmp_structure[section]:
                         section_content[section][subsection] = []
+                        tagged_content[section][subsection] = []
                 
                 # Split the content into lines for processing
                 lines = dmp_text.split("\n")
@@ -189,12 +287,16 @@ class DMPExtractor:
                         # Add content to appropriate subsection
                         if current_subsection and len(line) > 10:  # Avoid short lines
                             section_content[current_section][current_subsection].append(line)
+                            
+                            # Process and tag paragraph
+                            processed = self.process_paragraph(line)
+                            tagged_content[current_section][current_subsection].append(processed)
                 
                 # Add content to document
                 for section in self.dmp_structure:
                     doc.add_heading(section, level=1)
                     
-                    for subsection in self.dmp_structure[section]:
+                    for subsection in self.dmp_structure[current_section]:
                         doc.add_heading(subsection, level=2)
                         
                         content = section_content[section][subsection]
@@ -204,6 +306,27 @@ class DMPExtractor:
                         else:
                             # Add blank paragraph for empty content
                             doc.add_paragraph("")
+                
+                # Create a structured representation for the review interface
+                review_structure = {}
+                
+                for section in self.dmp_structure:
+                    for subsection in self.dmp_structure[section]:
+                        section_id = self.map_section_to_id(section, subsection)
+                        
+                        # Get raw paragraphs
+                        paragraphs = section_content[section][subsection]
+                        
+                        # Get tagged paragraphs
+                        tagged_paragraphs = tagged_content[section][subsection]
+                        
+                        # Add to review structure
+                        review_structure[section_id] = {
+                            "section": section,
+                            "question": subsection,
+                            "paragraphs": paragraphs,
+                            "tagged_paragraphs": tagged_paragraphs
+                        }
                 
                 # Generate output filename
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -223,10 +346,20 @@ class DMPExtractor:
                 output_path = os.path.join(output_dir, output_filename)
                 doc.save(output_path)
                 
+                # Save review structure as JSON for the review interface
+                cache_id = str(uuid.uuid4())
+                cache_filename = f"cache_{cache_id}.json"
+                cache_path = os.path.join(output_dir, cache_filename)
+                
+                with open(cache_path, 'w', encoding='utf-8') as f:
+                    json.dump(review_structure, f, ensure_ascii=False, indent=2)
+                
                 return {
                     "success": True,
                     "filename": output_filename,
                     "path": output_path,
+                    "cache_id": cache_id,
+                    "cache_file": cache_filename,
                     "message": "DMP successfully extracted"
                 }
                 
@@ -239,3 +372,11 @@ class DMPExtractor:
                 "success": False,
                 "message": f"Error processing PDF: {str(e)}"
             }
+    
+    def get_section_ids(self):
+        """Return mapping of section IDs to questions"""
+        return self.section_ids
+    
+    def get_key_phrases(self):
+        """Return key phrases used for tagging"""
+        return self.key_phrases

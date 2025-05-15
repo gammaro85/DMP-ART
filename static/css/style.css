@@ -8,6 +8,8 @@
     --error-color: #e74c3c;
     --success-color: #2ecc71;
     --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --border-color: #e0e0e0;
+    --tag-color: #f39c12;
 }
 
 * {
@@ -214,6 +216,7 @@ main {
     padding: 0.75rem 1.5rem;
     border-radius: 5px;
     transition: background-color 0.3s ease;
+    font-size: 0.9rem;
 }
 
 .download-btn:hover {
@@ -257,8 +260,9 @@ footer {
     box-shadow: var(--shadow);
 }
 
+/* REVIEW PAGE STYLES */
 .review-container {
-    max-width: 900px;
+    max-width: 1000px;
     margin: 0 auto;
     background-color: white;
     border-radius: 10px;
@@ -266,11 +270,53 @@ footer {
     box-shadow: var(--shadow);
 }
 
-.question-card {
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
+.control-panel {
+    position: sticky;
+    top: 0;
+    background-color: white;
     padding: 15px;
+    border-bottom: 1px solid var(--border-color);
     margin-bottom: 20px;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 8px 8px 0 0;
+}
+
+.action-btns {
+    display: flex;
+    gap: 10px;
+}
+
+.save-all-btn, .compile-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+}
+
+.save-all-btn:hover {
+    background-color: #1a2530;
+}
+
+.compile-btn {
+    background-color: var(--secondary-color);
+}
+
+.compile-btn:hover {
+    background-color: #2980b9;
+}
+
+.question-card {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 25px;
     background-color: #f9f9f9;
     transition: all 0.3s ease;
 }
@@ -279,26 +325,131 @@ footer {
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-.question-title {
-    font-weight: bold;
-    margin-bottom: 10px;
-    color: var(--primary-color);
-    font-size: 1.1rem;
+.question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
 }
 
-.template-text {
-    width: 100%;
-    min-height: 100px;
-    padding: 10px;
+.question-title {
+    font-weight: bold;
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    flex: 1;
+}
+
+.section-label {
+    font-size: 0.9rem;
+    color: #777;
+    margin-left: 10px;
+}
+
+.extracted-content {
+    background-color: #f5f5f5;
+    border-left: 3px solid var(--accent-color);
+    padding: 15px;
+    margin-bottom: 20px;
+    max-height: 250px;
+    overflow-y: auto;
+    border-radius: 4px;
+}
+
+.extracted-content h3 {
     margin-bottom: 10px;
+    color: var(--dark-color);
+    font-size: 1rem;
+}
+
+.dmp-paragraph {
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.dmp-paragraph p {
+    margin-bottom: 5px;
+}
+
+.paragraph-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.no-content {
+    font-style: italic;
+    color: #777;
+}
+
+.tag-btn {
+    background-color: var(--tag-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.tag-btn:hover {
+    background-color: #e67e22;
+}
+
+.comment-buttons {
+    margin-bottom: 20px;
+}
+
+.comment-buttons h3 {
+    margin-bottom: 10px;
+    color: var(--dark-color);
+    font-size: 1rem;
+}
+
+.comment-btn {
+    background-color: #e8f4fc;
+    border: 1px solid var(--secondary-color);
+    border-radius: 4px;
+    padding: 5px 10px;
+    margin: 0 5px 5px 0;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.comment-btn:hover {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.feedback-section {
+    background-color: white;
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+}
+
+.feedback-section h3 {
+    margin-bottom: 10px;
+    color: var(--dark-color);
+    font-size: 1rem;
+}
+
+.feedback-text {
+    width: 100%;
+    min-height: 150px;
+    padding: 12px;
+    margin-bottom: 15px;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-family: inherit;
+    font-size: 0.95rem;
     resize: vertical;
     transition: border-color 0.3s ease;
 }
 
-.template-text:focus {
+.feedback-text:focus {
     outline: none;
     border-color: var(--secondary-color);
 }
@@ -306,21 +457,88 @@ footer {
 .action-row {
     display: flex;
     justify-content: space-between;
-    margin-top: 10px;
 }
 
-.control-panel {
-    position: sticky;
-    top: 0;
+.copy-btn, .reset-btn {
+    background-color: var(--light-color);
+    border: 1px solid #ccc;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.copy-btn:hover {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.reset-btn:hover {
+    background-color: #95a5a6;
+    color: white;
+    border-color: #95a5a6;
+}
+
+.compiled-feedback-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     background-color: white;
-    padding: 15px;
-    border-bottom: 1px solid #e0e0e0;
-    margin-bottom: 20px;
-    z-index: 100;
+    width: 80%;
+    max-width: 800px;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+.compiled-feedback-container h2 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+}
+
+#compiled-feedback {
+    width: 100%;
+    height: 300px;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    resize: vertical;
+}
+
+.compiled-actions {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-radius: 8px 8px 0 0;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+#copy-compiled-btn, #download-feedback-btn, #close-compiled-btn {
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+}
+
+#copy-compiled-btn:hover, #download-feedback-btn:hover {
+    background-color: #2980b9;
+}
+
+#close-compiled-btn {
+    background-color: #95a5a6;
+}
+
+#close-compiled-btn:hover {
+    background-color: #7f8c8d;
 }
 
 .action-buttons {
@@ -348,6 +566,110 @@ footer {
     opacity: 1;
 }
 
+.success-toast.error {
+    background-color: var(--error-color);
+}
+
+/* TEMPLATE EDITOR STYLES */
+.template-editor {
+    background-color: white;
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: var(--shadow);
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.template-group {
+    margin-bottom: 2rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    background-color: #f9f9f9;
+}
+
+.template-group h2 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.template-item {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.template-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.template-item h3 {
+    color: var(--dark-color);
+    margin-bottom: 0.8rem;
+    font-size: 1rem;
+}
+
+.template-input {
+    width: 100%;
+    min-height: 120px;
+    padding: 12px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    resize: vertical;
+}
+
+.template-input:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+}
+
+.save-template-btn {
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+}
+
+.save-template-btn:hover {
+    background-color: #2980b9;
+}
+
+.save-all-templates-btn {
+    display: block;
+    margin: 2rem auto;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.save-all-templates-btn:hover {
+    background-color: #1a2530;
+}
+
+.navigation-links {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+/* Mobile responsiveness */
 @media (max-width: 768px) {
     .container {
         padding: 1rem;
@@ -367,7 +689,26 @@ footer {
         gap: 10px;
     }
     
+    .action-btns {
+        flex-direction: column;
+        width: 100%;
+    }
+    
     .review-container {
         padding: 1rem;
+    }
+    
+    .question-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .compiled-feedback-container {
+        width: 95%;
+        padding: 15px;
+    }
+    
+    .compiled-actions {
+        flex-direction: column;
     }
 }
