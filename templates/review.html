@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DMP Review Tool</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>DMP Review Tool</h1>
+            <p>Review and provide feedback on the Data Management Plan</p>
+        </header>
+        
+        <main class="review-container">
+            <div class="control-panel">
+                <h2>Review DMP</h2>
+                <div>
+                    <a href="{{ url_for('download_file', filename=filename) }}" class="download-btn">Download Original</a>
+                    <button id="save-templates" class="save-all-btn">Save All Templates</button>
+                </div>
+            </div>
+            
+            <div id="questions-container">
+                {% for id, item in templates.items() %}
+                <div class="question-card" data-id="{{ id }}">
+                    <div class="question-title">{{ item.question }}</div>
+                    <textarea class="template-text" id="template-{{ id }}">{{ item.template }}</textarea>
+                    <div class="action-row">
+                        <button class="copy-btn" data-id="{{ id }}">Copy to Clipboard</button>
+                        <button class="email-btn" data-id="{{ id }}">Email Feedback</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="action-buttons">
+                <a href="/" class="secondary-btn">Process Another PDF</a>
+            </div>
+        </main>
+        
+        <div id="success-toast" class="success-toast">Templates saved successfully!</div>
+        
+        <footer>
+            <p>DMP Review Tool &copy; 2025</p>
+        </footer>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle copy button clicks
+            document.querySelectorAll('.copy-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const textarea = document.getElementById(`template-${id}`);
+                    copyToClipboard(textarea.value);
+                    alert('Text copied to clipboard!');
+                });
+            });
+            
+            // Handle email button clicks
+            document.querySelectorAll('.email-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const textarea = document.getElementById(`template-${id}`);
+                    const question = document.querySelector(`.question-card[data-id="${id}"] .question-title`).textContent;
+                    
+                    // Create email with subject and body
+                    const subject = encodeURIComponent(`DMP Feedback: ${question}`);
+                    const body = encodeURIComponent(textarea.value);
+                    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+                });
+            });
+            
+            // Handle save all templates
+            document.getElementById('save-templates').addEventListener('click', function() {
+                const templates = {};
+                
+                document.querySelectorAll('.question-card').forEach(card => {
+                    const id = card.getAttribute('data-id');
+                    const textarea = document.getElementById(`template-${id}`);
+                    templates[id] = textarea.value;
+                });
+                
+                // Send templates to server
+                fetch('/save_templates', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(templates)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast();
+                    } else {
+                        alert(`Error: ${data.message}`);
+                    }
+                })
+                .catch(error => {
+                    alert(`Error: ${error.message}`);
+                });
+            });
+            
+            // Function to copy text to clipboard
+            function copyToClipboard(text) {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+            }
+            
+            // Function to show success toast
+            function showToast() {
+                const toast = document.getElementById('success-toast');
+                toast.classList.add('show');
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>

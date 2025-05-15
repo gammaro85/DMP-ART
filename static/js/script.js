@@ -1,24 +1,27 @@
+// static/js/script.js
 document.addEventListener('DOMContentLoaded', function() {
-    const dropArea = document.getElementById('drop-area');
-    const fileInput = document.getElementById('file-input');
-    const selectFileBtn = document.getElementById('select-file-btn');
-    const fileInfo = document.getElementById('file-info');
-    const fileName = document.getElementById('file-name');
-    const uploadBtn = document.getElementById('upload-btn');
-    const clearBtn = document.getElementById('clear-btn');
-    const loading = document.getElementById('loading');
-    const result = document.getElementById('result');
-    const successMessage = document.getElementById('success-message');
-    const errorMessage = document.getElementById('error-message');
-    const errorText = document.getElementById('error-text');
-    const downloadLink = document.getElementById('download-link');
-    const reviewLink = document.getElementById('review-link');
-    const newUploadBtn = document.getElementById('new-upload-btn');
-    const tryAgainBtn = document.getElementById('try-again-btn');
+    var dropArea = document.getElementById('drop-area');
+    var fileInput = document.getElementById('file-input');
+    var selectFileBtn = document.getElementById('select-file-btn');
+    var fileInfo = document.getElementById('file-info');
+    var fileName = document.getElementById('file-name');
+    var uploadBtn = document.getElementById('upload-btn');
+    var clearBtn = document.getElementById('clear-btn');
+    var loading = document.getElementById('loading');
+    var result = document.getElementById('result');
+    var successMessage = document.getElementById('success-message');
+    var errorMessage = document.getElementById('error-message');
+    var errorText = document.getElementById('error-text');
+    var downloadLink = document.getElementById('download-link');
+    var reviewLink = document.getElementById('review-link');
+    var newUploadBtn = document.getElementById('new-upload-btn');
+    var tryAgainBtn = document.getElementById('try-again-btn');
     
     // Prevent default drag behaviors
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        dropArea.addEventListener(eventName, preventDefaults, false);
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(function(eventName) {
+        if (dropArea) {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        }
     });
     
     function preventDefaults(e) {
@@ -27,28 +30,38 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Highlight drop area when dragging file over it
-    ['dragenter', 'dragover'].forEach(eventName => {
-        dropArea.addEventListener(eventName, highlight, false);
+    ['dragenter', 'dragover'].forEach(function(eventName) {
+        if (dropArea) {
+            dropArea.addEventListener(eventName, highlight, false);
+        }
     });
     
-    ['dragleave', 'drop'].forEach(eventName => {
-        dropArea.addEventListener(eventName, unhighlight, false);
+    ['dragleave', 'drop'].forEach(function(eventName) {
+        if (dropArea) {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        }
     });
     
     function highlight() {
-        dropArea.classList.add('highlight');
+        if (dropArea) {
+            dropArea.classList.add('highlight');
+        }
     }
     
     function unhighlight() {
-        dropArea.classList.remove('highlight');
+        if (dropArea) {
+            dropArea.classList.remove('highlight');
+        }
     }
     
     // Handle dropped files
-    dropArea.addEventListener('drop', handleDrop, false);
+    if (dropArea) {
+        dropArea.addEventListener('drop', handleDrop, false);
+    }
     
     function handleDrop(e) {
-        const dt = e.dataTransfer;
-        const files = dt.files;
+        var dt = e.dataTransfer;
+        var files = dt.files;
         
         if (files.length > 0) {
             handleFiles(files);
@@ -56,18 +69,24 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Handle selected files
-    selectFileBtn.addEventListener('click', () => {
-        fileInput.click();
-    });
+    if (selectFileBtn) {
+        selectFileBtn.addEventListener('click', function() {
+            if (fileInput) {
+                fileInput.click();
+            }
+        });
+    }
     
-    fileInput.addEventListener('change', () => {
-        if (fileInput.files.length > 0) {
-            handleFiles(fileInput.files);
-        }
-    });
+    if (fileInput) {
+        fileInput.addEventListener('change', function() {
+            if (fileInput.files.length > 0) {
+                handleFiles(fileInput.files);
+            }
+        });
+    }
     
     function handleFiles(files) {
-        const file = files[0];
+        var file = files[0];
         
         // Validate file type
         if (!file.type || file.type !== 'application/pdf') {
@@ -82,122 +101,384 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Display file info
-        fileName.textContent = file.name;
-        fileInfo.classList.remove('hidden');
+        if (fileName) {
+            fileName.textContent = file.name;
+        }
+        if (fileInfo) {
+            fileInfo.classList.remove('hidden');
+        }
     }
     
     // Handle upload button
-    uploadBtn.addEventListener('click', () => {
-        if (fileInput.files.length === 0) {
-            showError('Please select a file first.');
-            return;
-        }
-        
-        const file = fileInput.files[0];
-        
-        // Validate file again before upload
-        if (file.type !== 'application/pdf') {
-            showError('Please select a PDF file.');
-            return;
-        }
-        
-        uploadFile(file);
-    });
+    if (uploadBtn) {
+        uploadBtn.addEventListener('click', function() {
+            if (!fileInput || fileInput.files.length === 0) {
+                showError('Please select a file first.');
+                return;
+            }
+            
+            var file = fileInput.files[0];
+            
+            // Validate file again before upload
+            if (file.type !== 'application/pdf') {
+                showError('Please select a PDF file.');
+                return;
+            }
+            
+            uploadFile(file);
+        });
+    }
     
     // Handle clear button
-    clearBtn.addEventListener('click', () => {
-        resetForm();
-    });
+    if (clearBtn) {
+        clearBtn.addEventListener('click', function() {
+            resetForm();
+        });
+    }
     
     // Handle new upload button
-    newUploadBtn.addEventListener('click', () => {
-        resetForm();
-        result.classList.add('hidden');
-        fileInfo.classList.add('hidden');
-    });
+    if (newUploadBtn) {
+        newUploadBtn.addEventListener('click', function() {
+            resetForm();
+            if (result) {
+                result.classList.add('hidden');
+            }
+            if (fileInfo) {
+                fileInfo.classList.add('hidden');
+            }
+        });
+    }
     
     // Handle try again button
-    tryAgainBtn.addEventListener('click', () => {
-        resetForm();
-        result.classList.add('hidden');
-    });
+    if (tryAgainBtn) {
+        tryAgainBtn.addEventListener('click', function() {
+            resetForm();
+            if (result) {
+                result.classList.add('hidden');
+            }
+        });
+    }
     
     function resetForm() {
-        fileInput.value = '';
-        fileName.textContent = '';
-        fileInfo.classList.add('hidden');
+        if (fileInput) {
+            fileInput.value = '';
+        }
+        if (fileName) {
+            fileName.textContent = '';
+        }
+        if (fileInfo) {
+            fileInfo.classList.add('hidden');
+        }
     }
     
     function uploadFile(file) {
-        const formData = new FormData();
+        var formData = new FormData();
         formData.append('file', file);
         
         // Show loading spinner
-        fileInfo.classList.add('hidden');
-        loading.classList.remove('hidden');
+        if (fileInfo) {
+            fileInfo.classList.add('hidden');
+        }
+        if (loading) {
+            loading.classList.remove('hidden');
+        }
         
         // Set up upload timeout
-        const uploadTimeout = setTimeout(() => {
-            loading.classList.add('hidden');
+        var uploadTimeout = setTimeout(function() {
+            if (loading) {
+                loading.classList.add('hidden');
+            }
             showError('Upload timed out. Please try again.');
         }, 60000); // 60 seconds timeout
         
         // Send the file to the server
-        fetch('/upload', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/upload', true);
+        
+        xhr.onload = function() {
             clearTimeout(uploadTimeout);
-            if (!response.ok) {
-                throw new Error(`Server error: ${response.status} ${response.statusText}`);
+            if (loading) {
+                loading.classList.add('hidden');
             }
-            return response.json();
-        })
-        .then(data => {
-            loading.classList.add('hidden');
             
-            if (data.success) {
-                // Check if we should redirect to review page
-                if (data.redirect) {
-                    window.location.href = data.redirect;
-                    return;
-                }
-                
-                // Otherwise show success message with download link
-                result.classList.remove('hidden');
-                successMessage.classList.remove('hidden');
-                errorMessage.classList.add('hidden');
-                
-                if (downloadLink) {
-                    downloadLink.href = `/download/${encodeURIComponent(data.filename)}`;
-                }
-                
-                if (reviewLink) {
-                    reviewLink.href = `/review/${encodeURIComponent(data.filename)}`;
+            if (xhr.status === 200) {
+                try {
+                    var data = JSON.parse(xhr.responseText);
+                    
+                    if (data.success) {
+                        // Check if we should redirect to review page
+                        if (data.redirect) {
+                            window.location.href = data.redirect;
+                            return;
+                        }
+                        
+                        // Otherwise show success message with download link
+                        if (result) {
+                            result.classList.remove('hidden');
+                        }
+                        if (successMessage) {
+                            successMessage.classList.remove('hidden');
+                        }
+                        if (errorMessage) {
+                            errorMessage.classList.add('hidden');
+                        }
+                        
+                        if (downloadLink) {
+                            downloadLink.href = '/download/' + encodeURIComponent(data.filename);
+                        }
+                        
+                        if (reviewLink) {
+                            reviewLink.href = '/review/' + encodeURIComponent(data.filename);
+                        }
+                    } else {
+                        if (result) {
+                            result.classList.remove('hidden');
+                        }
+                        if (successMessage) {
+                            successMessage.classList.add('hidden');
+                        }
+                        if (errorMessage) {
+                            errorMessage.classList.remove('hidden');
+                        }
+                        if (errorText) {
+                            errorText.textContent = data.message || 'An error occurred during processing.';
+                        }
+                    }
+                } catch (e) {
+                    showError('Error parsing server response.');
+                    console.error('Error parsing response:', e);
                 }
             } else {
-                result.classList.remove('hidden');
-                successMessage.classList.add('hidden');
-                errorMessage.classList.remove('hidden');
-                errorText.textContent = data.message || 'An error occurred during processing.';
+                showError('Server error: ' + xhr.status);
+                console.error('Server error:', xhr.status);
             }
-        })
-        .catch(error => {
+        };
+        
+        xhr.onerror = function() {
             clearTimeout(uploadTimeout);
-            loading.classList.add('hidden');
-            result.classList.remove('hidden');
-            successMessage.classList.add('hidden');
-            errorMessage.classList.remove('hidden');
-            errorText.textContent = 'An error occurred during upload. Please try again.';
-            console.error('Error:', error);
-        });
+            if (loading) {
+                loading.classList.add('hidden');
+            }
+            showError('Network error. Please try again.');
+            console.error('Network error');
+        };
+        
+        xhr.send(formData);
     }
     
     function showError(message) {
-        result.classList.remove('hidden');
-        successMessage.classList.add('hidden');
-        errorMessage.classList.remove('hidden');
-        errorText.textContent = message;
+        if (result) {
+            result.classList.remove('hidden');
+        }
+        if (successMessage) {
+            successMessage.classList.add('hidden');
+        }
+        if (errorMessage) {
+            errorMessage.classList.remove('hidden');
+        }
+        if (errorText) {
+            errorText.textContent = message;
+        }
+    }
+    
+    // Review page script
+    var copyButtons = document.querySelectorAll('.copy-btn');
+    var emailButtons = document.querySelectorAll('.email-btn');
+    var saveTemplatesBtn = document.getElementById('save-templates');
+    var successToast = document.getElementById('success-toast');
+    
+    // Handle copy button clicks
+    if (copyButtons) {
+        copyButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                var id = this.getAttribute('data-id');
+                var textarea = document.getElementById('template-' + id);
+                if (textarea) {
+                    copyToClipboard(textarea.value);
+                    alert('Text copied to clipboard!');
+                }
+            });
+        });
+    }
+    
+    // Handle email button clicks
+    if (emailButtons) {
+        emailButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                var id = this.getAttribute('data-id');
+                var textarea = document.getElementById('template-' + id);
+                var questionEl = document.querySelector('.question-card[data-id="' + id + '"] .question-title');
+                
+                if (textarea && questionEl) {
+                    // Create email with subject and body
+                    var subject = encodeURIComponent('DMP Feedback: ' + questionEl.textContent);
+                    var body = encodeURIComponent(textarea.value);
+                    window.location.href = 'mailto:?subject=' + subject + '&body=' + body;
+                }
+            });
+        });
+    }
+    
+    // Handle save all templates
+    if (saveTemplatesBtn) {
+        saveTemplatesBtn.addEventListener('click', function() {
+            var templates = {};
+            
+            document.querySelectorAll('.question-card').forEach(function(card) {
+                var id = card.getAttribute('data-id');
+                var textarea = document.getElementById('template-' + id);
+                if (textarea) {
+                    templates[id] = textarea.value;
+                }
+            });
+            
+            // Send templates to server using XMLHttpRequest
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/save_templates', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    try {
+                        var data = JSON.parse(xhr.responseText);
+                        if (data.success) {
+                            showToast();
+                        } else {
+                            alert('Error: ' + data.message);
+                        }
+                    } catch (e) {
+                        alert('Error parsing server response.');
+                    }
+                } else {
+                    alert('Server error: ' + xhr.status);
+                }
+            };
+            
+            xhr.onerror = function() {
+                alert('Network error. Please try again.');
+            };
+            
+            xhr.send(JSON.stringify(templates));
+        });
+    }
+    
+    // Function to copy text to clipboard
+    function copyToClipboard(text) {
+        var textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+    }
+    
+    // Function to show success toast
+    function showToast() {
+        if (successToast) {
+            successToast.classList.add('show');
+            
+            setTimeout(function() {
+                successToast.classList.remove('show');
+            }, 3000);
+        }
+    }
+    
+    // Template editor script
+    var saveTemplateButtons = document.querySelectorAll('.save-template-btn');
+    var saveAllTemplatesButton = document.getElementById('save-all-templates');
+    
+    // Handle individual save buttons
+    if (saveTemplateButtons) {
+        saveTemplateButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                var id = this.getAttribute('data-id');
+                var templateInput = document.getElementById('template-' + id);
+                
+                if (templateInput) {
+                    saveTemplate(id, templateInput.value);
+                }
+            });
+        });
+    }
+    
+    // Handle save all button
+    if (saveAllTemplatesButton) {
+        saveAllTemplatesButton.addEventListener('click', function() {
+            var templates = {};
+            
+            document.querySelectorAll('.template-item').forEach(function(item) {
+                var id = item.getAttribute('data-id');
+                var templateInput = document.getElementById('template-' + id);
+                
+                if (templateInput) {
+                    templates[id] = templateInput.value;
+                }
+            });
+            
+            saveAllTemplates(templates);
+        });
+    }
+    
+    // Function to save a single template
+    function saveTemplate(id, text) {
+        var data = {};
+        data[id] = text;
+        
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/save_templates', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                try {
+                    var response = JSON.parse(xhr.responseText);
+                    if (response.success) {
+                        showToast();
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                } catch (e) {
+                    alert('Error parsing server response.');
+                }
+            } else {
+                alert('Server error: ' + xhr.status);
+            }
+        };
+        
+        xhr.onerror = function() {
+            alert('Network error. Please try again.');
+        };
+        
+        xhr.send(JSON.stringify(data));
+    }
+    
+    // Function to save all templates
+    function saveAllTemplates(templates) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/save_templates', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                try {
+                    var response = JSON.parse(xhr.responseText);
+                    if (response.success) {
+                        showToast();
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                } catch (e) {
+                    alert('Error parsing server response.');
+                }
+            } else {
+                alert('Server error: ' + xhr.status);
+            }
+        };
+        
+        xhr.onerror = function() {
+            alert('Network error. Please try again.');
+        };
+        
+        xhr.send(JSON.stringify(templates));
     }
 });
