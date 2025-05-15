@@ -44,7 +44,7 @@ class DMPExtractor:
                 "How will the application of a unique and persistent identifier (such us a Digital Object Identifier (DOI)) to each data set be ensured?"
             ],
             "6. Data management responsibilities and resources": [
-                "Who (for example role, position, and institution) will be responsible for data mangement (i.e the data steward)?",
+                "Who (for example role, position, and institution) will be responsible for data management (i.e the data steward)?",
                 "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)?"
             ]
         }
@@ -63,7 +63,7 @@ class DMPExtractor:
             "5.2": "How will data for preservation be selected, and where will data be preserved long-term (for example a data repository or archive)?",
             "5.3": "What methods or software tools will be needed to access and use the data?",
             "5.4": "How will the application of a unique and persistent identifier (such us a Digital Object Identifier (DOI)) to each data set be ensured?",
-            "6.1": "Who (for example role, position, and institution) will be responsible for data mangement (i.e the data steward)?",
+            "6.1": "Who (for example role, position, and institution) will be responsible for data management (i.e the data steward)?",
             "6.2": "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)?"
         }
         
@@ -276,30 +276,57 @@ class DMPExtractor:
                         
                     # If we have a current section, check for subsection
                     if current_section:
+                        best_match = None
+                        max_words = 0
+                        
                         for subsection in self.dmp_structure[current_section]:
-                            # Check for key words from subsection
-                            key_words = subsection.split()[:3]
-                            if any(word in line for word in key_words):
-                                current_subsection = subsection
-                                print(f"Found subsection: {current_subsection[:20]}...")
-                                break
+                            # Get important words from subsection and line
+                            subsection_words = set(word.lower() for word in subsection.split() if len(word) > 3)
+                            line_words = set(word.lower() for word in line.split() if len(word) > 3)
+                            
+                            # Count matching words
+                            matching_words = len(subsection_words.intersection(line_words))
+                            
+                            # If we have a good match (at least 2 matching words or 30% of subsection words)
+                            if matching_words >= 2 or (subsection_words and matching_words / len(subsection_words) >= 0.3):
+                                if matching_words > max_words:
+                                    max_words = matching_words
+                                    best_match = subsection
+                        
+                        if best_match:
+                            current_subsection = best_match
+                            print(f"Found subsection: {current_subsection[:20]}...")
                         
                         # Add content to appropriate subsection
                         if current_subsection and len(line) > 10:  # Avoid short lines
-                            section_content[current_section][current_subsection].append(line)
-                            
-                            # Process and tag paragraph
-                            processed = self.process_paragraph(line)
-                            tagged_content[current_section][current_subsection].append(processed)
+                            try:
+                                section_content[current_section][current_subsection].append(line)
+                                
+                                # Process and tag paragraph
+                                processed = self.process_paragraph(line)
+                                tagged_content[current_section][current_subsection].append(processed)
+                            except KeyError as e:
+                                print(f"Warning: KeyError when adding content to {current_section} - {current_subsection}: {str(e)}")
+                                # Create missing subsection if needed
+                                if current_subsection not in section_content[current_section]:
+                                    section_content[current_section][current_subsection] = [line]
+                                    tagged_content[current_section][current_subsection] = [self.process_paragraph(line)]
+                                    print(f"Created missing subsection: {current_subsection}")
                 
                 # Add content to document
                 for section in self.dmp_structure:
                     doc.add_heading(section, level=1)
                     
-                    for subsection in self.dmp_structure[current_section]:
+                    for subsection in self.dmp_structure[section]:
                         doc.add_heading(subsection, level=2)
                         
-                        content = section_content[section][subsection]
+                        # Safely get content from the section/subsection
+                        content = []
+                        try:
+                            content = section_content[section][subsection]
+                        except KeyError:
+                            print(f"Warning: Missing content for {section} - {subsection}")
+                        
                         if content:
                             for text in content:
                                 doc.add_paragraph(text)
@@ -314,11 +341,19 @@ class DMPExtractor:
                     for subsection in self.dmp_structure[section]:
                         section_id = self.map_section_to_id(section, subsection)
                         
-                        # Get raw paragraphs
-                        paragraphs = section_content[section][subsection]
+                        # Safely get paragraphs and tagged paragraphs
+                        paragraphs = []
+                        tagged_paragraphs = []
                         
-                        # Get tagged paragraphs
-                        tagged_paragraphs = tagged_content[section][subsection]
+                        try:
+                            paragraphs = section_content[section][subsection]
+                        except KeyError:
+                            print(f"Warning: Missing paragraphs for {section} - {subsection}")
+                        
+                        try:
+                            tagged_paragraphs = tagged_content[section][subsection]
+                        except KeyError:
+                            print(f"Warning: Missing tagged paragraphs for {section} - {subsection}")
                         
                         # Add to review structure
                         review_structure[section_id] = {
