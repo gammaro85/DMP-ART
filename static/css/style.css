@@ -1,15 +1,15 @@
-/* static/css/style.css */
+/* static/css/style.css - Complete version with template editor styles */
 :root {
-    --primary-color: #051946;
-    --secondary-color: #91bdda;
-    --accent-color: #bc1a1a;
-    --light-color: #89a2c7;
-    --dark-color: #0a1927;
-    --error-color: #ff0000;
-    --success-color: #008cff;
+    --primary-color: #001220;
+    --secondary-color: #002e54;
+    --accent-color: #e31b23;
+    --light-color: #ffffff;
+    --dark-color: #001220;
+    --error-color: #b0141b;
+    --success-color: rgba(41, 97, 68, 0.86);
     --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --border-color: #961919;
-    --tag-color: #2d4166;
+    --border-color: #cccccc;
+    --tag-color: rgba(89, 101, 55, 0.67);
 }
 
 * {
@@ -669,6 +669,257 @@ footer {
     margin-top: 2rem;
 }
 
+/* Tab navigation */
+.tab-container {
+    width: 100%;
+    margin-bottom: 2rem;
+}
+
+.tab-buttons {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
+}
+
+.tab-btn {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #777;
+    transition: all 0.3s ease;
+}
+
+.tab-btn:hover {
+    color: var(--secondary-color);
+}
+
+.tab-btn.active {
+    color: var(--primary-color);
+    border-bottom: 3px solid var(--primary-color);
+}
+
+.tab-panel {
+    display: none;
+}
+
+.tab-panel.active {
+    display: block;
+}
+
+/* Edit items */
+.edit-item {
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background-color: #f5f5f5;
+}
+
+.edit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+}
+
+.key-input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.content-input {
+    width: 100%;
+    min-height: 100px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.95rem;
+}
+
+.delete-btn {
+    background-color: var(--error-color);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-left: 10px;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+}
+
+/* Phrases container */
+.phrases-container {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    background-color: white;
+}
+
+.phrase-item {
+    display: flex;
+    margin-bottom: 8px;
+    align-items: center;
+}
+
+.phrase-input {
+    flex: 1;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.remove-phrase-btn {
+    background-color: #95a5a6;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    margin-left: 8px;
+}
+
+.remove-phrase-btn:hover {
+    background-color: #7f8c8d;
+}
+
+.add-phrase-btn {
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-top: 8px;
+}
+
+.add-phrase-btn:hover {
+    background-color: #2980b9;
+}
+
+/* Section structure */
+.section-item {
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    background-color: #f5f5f5;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.section-input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.questions-container {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    background-color: white;
+}
+
+.question-item {
+    display: flex;
+    margin-bottom: 8px;
+    align-items: center;
+}
+
+.question-input {
+    flex: 1;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.remove-question-btn {
+    background-color: #95a5a6;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    margin-left: 8px;
+}
+
+.remove-question-btn:hover {
+    background-color: #7f8c8d;
+}
+
+.add-question-btn {
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-top: 8px;
+}
+
+.add-question-btn:hover {
+    background-color: #2980b9;
+}
+
+/* Add button */
+.add-btn {
+    background-color: var(--success-color);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+}
+
+.add-btn:hover {
+    background-color: #27ae60;
+}
+
+/* Save button */
+.save-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-top: 1.5rem;
+    display: block;
+    width: 100%;
+}
+
+.save-btn:hover {
+    background-color: #1a2530;
+}
+
 /* Mobile responsiveness */
 @media (max-width: 768px) {
     .container {
@@ -710,5 +961,35 @@ footer {
     
     .compiled-actions {
         flex-direction: column;
+    }
+    
+    .tab-buttons {
+        flex-direction: column;
+    }
+    
+    .tab-btn {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .edit-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .delete-btn {
+        width: 100%;
+        margin-left: 0;
+    }
+    
+    .phrase-item, .question-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 5px;
+    }
+    
+    .remove-phrase-btn, .remove-question-btn {
+        width: 100%;
+        margin-left: 0;
     }
 }

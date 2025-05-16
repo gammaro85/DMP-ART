@@ -10,131 +10,129 @@
     <div class="container">
         <header>
             <h1>DMP Template Editor</h1>
-            <p>Customize feedback templates for each DMP section</p>
+            <p>Customize all aspects of the DMP review system</p>
         </header>
         
         <main class="template-editor">
-            <div class="section-header">
-                <h2>Edit Feedback Templates</h2>
-                <p>These templates will be available when reviewing DMPs</p>
-            </div>
-            
-            <div id="templates-container">
-                {% for section, questions in templates_by_section.items() %}
-                <div class="template-group">
-                    <h2>{{ section }}</h2>
-                    
-                    {% for id, item in questions.items() %}
-                    <div class="template-item" data-id="{{ id }}">
-                        <h3>{{ item.question }}</h3>
-                        <textarea class="template-input" id="template-{{ id }}">{{ item.template }}</textarea>
-                        <button class="save-template-btn" data-id="{{ id }}">Save Template</button>
-                    </div>
-                    {% endfor %}
+            <div class="tab-container">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" data-tab="templates">Feedback Templates</button>
+                    <button class="tab-btn" data-tab="comments">Common Comments</button>
+                    <button class="tab-btn" data-tab="keywords">Keywords</button>
+                    <button class="tab-btn" data-tab="structure">DMP Structure</button>
                 </div>
-                {% endfor %}
+                
+                <div class="tab-content">
+                    <!-- Templates Tab -->
+                    <div class="tab-panel active" id="templates-panel">
+                        <div class="section-header">
+                            <h2>Edit Feedback Templates</h2>
+                            <p>These templates will be available when reviewing DMPs</p>
+                        </div>
+                        
+                        <div id="templates-container">
+                            {% for section, questions in templates_by_section.items() %}
+                            <div class="template-group">
+                                <h2>{{ section }}</h2>
+                                
+                                {% for id, item in questions.items() %}
+                                <div class="template-item" data-id="{{ id }}">
+                                    <h3>{{ item.question }}</h3>
+                                    <textarea class="template-input" id="template-{{ id }}">{{ item.template }}</textarea>
+                                    <button class="save-template-btn" data-id="{{ id }}">Save Template</button>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <button id="save-all-templates" class="save-all-templates-btn">Save All Templates</button>
+                    </div>
+                    
+                    <!-- Comments Tab -->
+                    <div class="tab-panel" id="comments-panel">
+                        <h2>Edit Common Comments</h2>
+                        <button id="add-comment-btn" class="add-btn">Add New Comment</button>
+                        <div id="comments-container">
+                            {% for key, comment in comments.items() %}
+                            <div class="edit-item" data-id="{{ key }}">
+                                <div class="edit-header">
+                                    <input type="text" class="key-input" value="{{ key }}" placeholder="Comment key">
+                                    <button class="delete-btn" data-type="comment" data-id="{{ key }}">Delete</button>
+                                </div>
+                                <textarea class="content-input">{{ comment }}</textarea>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button id="save-comments-btn" class="save-btn">Save All Comments</button>
+                    </div>
+                    
+                    <!-- Keywords Tab -->
+                    <div class="tab-panel" id="keywords-panel">
+                        <h2>Edit Keywords for Tagging</h2>
+                        <button id="add-keyword-group-btn" class="add-btn">Add New Keyword Group</button>
+                        <div id="keywords-container">
+                            {% for category, phrases in key_phrases.items() %}
+                            <div class="edit-item" data-id="{{ category }}">
+                                <div class="edit-header">
+                                    <input type="text" class="key-input" value="{{ category }}" placeholder="Category name">
+                                    <button class="delete-btn" data-type="keyword" data-id="{{ category }}">Delete</button>
+                                </div>
+                                <div class="phrases-container">
+                                    {% for phrase in phrases %}
+                                    <div class="phrase-item">
+                                        <input type="text" class="phrase-input" value="{{ phrase }}">
+                                        <button class="remove-phrase-btn">Remove</button>
+                                    </div>
+                                    {% endfor %}
+                                    <button class="add-phrase-btn">Add Phrase</button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button id="save-keywords-btn" class="save-btn">Save All Keywords</button>
+                    </div>
+                    
+                    <!-- Structure Tab -->
+                    <div class="tab-panel" id="structure-panel">
+                        <h2>Edit DMP Structure</h2>
+                        <button id="add-section-btn" class="add-btn">Add New Section</button>
+                        <div id="structure-container">
+                            {% for section, questions in dmp_structure.items() %}
+                            <div class="section-item" data-section="{{ section }}">
+                                <div class="section-header">
+                                    <input type="text" class="section-input" value="{{ section }}" placeholder="Section title">
+                                    <button class="delete-btn" data-type="section" data-id="{{ section }}">Delete Section</button>
+                                </div>
+                                <div class="questions-container">
+                                    {% for question in questions %}
+                                    <div class="question-item">
+                                        <input type="text" class="question-input" value="{{ question }}">
+                                        <button class="remove-question-btn">Remove</button>
+                                    </div>
+                                    {% endfor %}
+                                    <button class="add-question-btn">Add Question</button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button id="save-structure-btn" class="save-btn">Save Structure</button>
+                    </div>
+                </div>
             </div>
-            
-            <button id="save-all-templates" class="save-all-templates-btn">Save All Templates</button>
             
             <div class="navigation-links">
                 <a href="/" class="secondary-btn">Return to Home</a>
             </div>
         </main>
         
-        <div id="success-toast" class="success-toast">Templates saved successfully!</div>
+        <div id="success-toast" class="success-toast">Changes saved successfully!</div>
         
         <footer>
             <p>DMP Review Tool &copy; 2025</p>
         </footer>
     </div>
     
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const saveButtons = document.querySelectorAll('.save-template-btn');
-            const saveAllButton = document.getElementById('save-all-templates');
-            const successToast = document.getElementById('success-toast');
-            
-            // Handle individual save buttons
-            saveButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const id = this.getAttribute('data-id');
-                    const templateText = document.getElementById(`template-${id}`).value;
-                    
-                    saveTemplate(id, templateText);
-                });
-            });
-            
-            // Handle save all button
-            saveAllButton.addEventListener('click', function() {
-                const templates = {};
-                
-                document.querySelectorAll('.template-item').forEach(item => {
-                    const id = item.getAttribute('data-id');
-                    const templateText = document.getElementById(`template-${id}`).value;
-                    
-                    templates[id] = templateText;
-                });
-                
-                saveAllTemplates(templates);
-            });
-            
-            // Function to save a single template
-            function saveTemplate(id, text) {
-                const data = {};
-                data[id] = text;
-                
-                fetch('/save_templates', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        showToast();
-                    } else {
-                        alert(`Error: ${data.message}`);
-                    }
-                })
-                .catch(error => {
-                    alert(`Error: ${error.message}`);
-                });
-            }
-            
-            // Function to save all templates
-            function saveAllTemplates(templates) {
-                fetch('/save_templates', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(templates)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        showToast();
-                    } else {
-                        alert(`Error: ${data.message}`);
-                    }
-                })
-                .catch(error => {
-                    alert(`Error: ${error.message}`);
-                });
-            }
-            
-            // Function to show success toast
-            function showToast() {
-                successToast.classList.add('show');
-                
-                setTimeout(() => {
-                    successToast.classList.remove('show');
-                }, 3000);
-            }
-        });
-    </script>
+    <script src="{{ url_for('static', filename='js/template_editor.js') }}"></script>
 </body>
 </html>

@@ -9,18 +9,13 @@ import PyPDF2
 
 class DMPExtractor:
     def __init__(self):
-        # Define start and end markers for extraction
-        self.start_marks = [
-            "DATA MANAGEMENT PLAN [in English]",
-            "PLAN ZARZĄDZANIA DANYMI"
-        ]
-        self.end_marks = [
-            "ADMINISTRATIVE DECLARATIONS",
-            "OŚWIADCZENIA ADMINISTRACYJNE"
-        ]
+        # Define paths to configuration files
+        config_dir = 'config'
+        key_phrases_file = os.path.join(config_dir, 'key_phrases.json')
+        dmp_structure_file = os.path.join(config_dir, 'dmp_structure.json')
         
-        # Define the structure of DMP sections and questions
-        self.dmp_structure = {
+        # Define default configurations
+        default_dmp_structure = {
             "1. Data description and collection or re-use of existing data": [
                 "How will new data be collected or produced and/or how will existing data be re-used?",
                 "What data (for example the types, formats, and volumes) will be collected or produced?"
@@ -49,26 +44,7 @@ class DMPExtractor:
             ]
         }
         
-        # Map section numbers to IDs for the review interface
-        self.section_ids = {
-            "1.1": "How will new data be collected or produced and/or how will existing data be re-used?",
-            "1.2": "What data (for example the types, formats, and volumes) will be collected or produced?",
-            "2.1": "What metadata and documentation (for example methodology or data collection and way of organising data) will accompany data?",
-            "2.2": "What data quality control measures will be used?",
-            "3.1": "How will data and metadata be stored and backed up during the research process?",
-            "3.2": "How will data security and protection of sensitive data be taken care of during the research?",
-            "4.1": "If personal data are processed, how will compliance with legislation on personal data and on data security be ensured?",
-            "4.2": "How will other legal issues, such as intelectual property rights and ownership, be managed? What legislation is applicable?",
-            "5.1": "How and when will data be shared? Are there possible restrictions to data sharing or embargo reasons?",
-            "5.2": "How will data for preservation be selected, and where will data be preserved long-term (for example a data repository or archive)?",
-            "5.3": "What methods or software tools will be needed to access and use the data?",
-            "5.4": "How will the application of a unique and persistent identifier (such us a Digital Object Identifier (DOI)) to each data set be ensured?",
-            "6.1": "Who (for example role, position, and institution) will be responsible for data management (i.e the data steward)?",
-            "6.2": "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)?"
-        }
-        
-        # Define key phrases to identify and tag in paragraphs
-        self.key_phrases = {
+        default_key_phrases = {
             "methodology": ["methodology", "approach", "procedure", "process", "technique"],
             "data_format": ["format", "file type", "structure", "schema", "encoding"],
             "data_volume": ["volume", "size", "amount", "quantity", "gigabyte", "terabyte"],
@@ -86,6 +62,56 @@ class DMPExtractor:
             "responsibility": ["responsible", "manager", "steward", "oversight", "supervision"],
             "resources": ["resources", "budget", "funding", "cost", "allocation"]
         }
+        
+        # Load or use default configurations
+        self.dmp_structure = self._load_config(dmp_structure_file, default_dmp_structure)
+        self.key_phrases = self._load_config(key_phrases_file, default_key_phrases)
+        
+        # Generate section_ids mapping
+        self.section_ids = self._generate_section_ids()
+        
+        # Define start and end markers for extraction
+        self.start_marks = [
+            "DATA MANAGEMENT PLAN [in English]",
+            "PLAN ZARZĄDZANIA DANYMI"
+        ]
+        self.end_marks = [
+            "ADMINISTRATIVE DECLARATIONS",
+            "OŚWIADCZENIA ADMINISTRACYJNE"
+        ]
+    
+    def _load_config(self, file_path, default_value):
+        """Load configuration from file or use default if file doesn't exist"""
+        if os.path.exists(file_path):
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+            except Exception as e:
+                print(f"Error loading {file_path}: {str(e)}")
+                return default_value
+        else:
+            # Ensure the directory exists
+            os.makedirs(os.path.dirname(file_path), exist_ok=True)
+            
+            # Save default value to file
+            with open(file_path, 'w', encoding='utf-8') as f:
+                json.dump(default_value, f, ensure_ascii=False, indent=2)
+            
+            return default_value
+    
+    def _generate_section_ids(self):
+        """Generate section_ids mapping from dmp_structure"""
+        section_ids = {}
+        section_num = 1
+        
+        for section, questions in self.dmp_structure.items():
+            for i, question in enumerate(questions, 1):
+                section_id = f"{section_num}.{i}"
+                section_ids[section_id] = question
+            
+            section_num += 1
+        
+        return section_ids
     
     def should_skip_text(self, text):
         """Determine if text should be skipped (headers, footers, etc.)"""
