@@ -87,28 +87,29 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function handleFiles(files) {
-        var file = files[0];
-        
-        // Validate file type
-        if (!file.type || file.type !== 'application/pdf') {
-            showError('Please select a PDF file.');
-            return;
-        }
-        
-        // Validate file size (max 16MB)
-        if (file.size > 16 * 1024 * 1024) {
-            showError('File is too large. Maximum size is 16MB.');
-            return;
-        }
-        
-        // Display file info
-        if (fileName) {
-            fileName.textContent = file.name;
-        }
-        if (fileInfo) {
-            fileInfo.classList.remove('hidden');
-        }
+    var file = files[0];
+    
+    // Validate file type
+    if (!file.type || (file.type !== 'application/pdf' && 
+                      file.type !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')) {
+        showError('Please select a PDF or DOCX file.');
+        return;
     }
+    
+    // Validate file size (max 16MB)
+    if (file.size > 16 * 1024 * 1024) {
+        showError('File is too large. Maximum size is 16MB.');
+        return;
+    }
+    
+    // Display file info
+    if (fileName) {
+        fileName.textContent = file.name;
+    }
+    if (fileInfo) {
+        fileInfo.classList.remove('hidden');
+    }
+}
     
     // Handle upload button
     if (uploadBtn) {

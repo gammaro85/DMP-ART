@@ -10,7 +10,7 @@
     <div class="container">
         <header>
             <h1>DMP ART: Data Management Plan Assessment and Response Tool</h1>
-            <p>Upload PDF files to extract, review, and provide feedback on DMPs</p>
+            <p>Upload PDF or DOCX files to extract, review, and provide feedback on DMPs</p>
             <div class="nav-links">
                 <a href="/template_editor" class="nav-link">Customize Templates</a>
             </div>
@@ -21,7 +21,7 @@
                 <div id="drop-area">
                     <form id="upload-form" enctype="multipart/form-data">
                         <p>Upload PDF or DOCX files by dragging and dropping or clicking below</p>
-                        <input type="file" id="file-input" name="file" accept=".pdf,.docx" hidden>                        
+                        <input type="file" id="file-input" name="file" accept=".pdf,.docx" hidden>
                         <button type="button" id="select-file-btn">Select File</button>
                     </form>
                     <div id="file-info" class="hidden">
@@ -34,7 +34,7 @@
             
             <div id="loading" class="hidden">
                 <div class="spinner"></div>
-                <p>Processing PDF...</p>
+                <p>Processing file...</p>
             </div>
             
             <div id="result" class="hidden">
@@ -45,7 +45,7 @@
                         <a id="review-link" href="#" class="primary-btn">Review DMP</a>
                         <a id="download-link" href="#" class="download-btn">Download Word Document</a>
                     </div>
-                    <button id="new-upload-btn" class="secondary-btn">Process Another PDF</button>
+                    <button id="new-upload-btn" class="secondary-btn">Process Another File</button>
                 </div>
                 
                 <div id="error-message" class="hidden">
