@@ -1,648 +1,292 @@
-# utils/extractor.py
+# app.py
 import os
-import re
 import json
-import uuid
-from docx import Document
-from datetime import datetime
-import PyPDF2
+import time
+import threading
+from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for
+from werkzeug.utils import secure_filename
+from utils.extractor import DMPExtractor
 
-class DMPExtractor:
-    def __init__(self):
-        # Define start and end markers for extraction
-        self.start_marks = [
-            "DATA MANAGEMENT PLAN [in English]",
-            "PLAN ZARZĄDZANIA DANYMI"
-        ]
-        self.end_marks = [
-            "ADMINISTRATIVE DECLARATIONS",
-            "OŚWIADCZENIA ADMINISTRACYJNE"
-        ]
-        
-        # Define the structure of DMP sections and questions
-        self.dmp_structure = {
-            "1. Data description and collection or re-use of existing data": [
-                "How will new data be collected or produced and/or how will existing data be re-used?",
-                "What data (for example the types, formats, and volumes) will be collected or produced?"
-            ],
-            "2. Documentation and data quality": [
-                "What metadata and documentation (for example methodology or data collection and way of organising data) will accompany data?",
-                "What data quality control measures will be used?"
-            ],
-            "3. Storage and backup during the research process": [
-                "How will data and metadata be stored and backed up during the research process?",
-                "How will data security and protection of sensitive data be taken care of during the research?"
-            ],
-            "4. Legal requirements, codes of conduct": [
-                "If personal data are processed, how will compliance with legislation on personal data and on data security be ensured?",
-                "How will other legal issues, such as intelectual property rights and ownership, be managed? What legislation is applicable?"
-            ],
-            "5. Data sharing and long-term preservation": [
-                "How and when will data be shared? Are there possible restrictions to data sharing or embargo reasons?",
-                "How will data for preservation be selected, and where will data be preserved long-term (for example a data repository or archive)?",
-                "What methods or software tools will be needed to access and use the data?",
-                "How will the application of a unique and persistent identifier (such us a Digital Object Identifier (DOI)) to each data set be ensured?"
-            ],
-            "6. Data management responsibilities and resources": [
-                "Who (for example role, position, and institution) will be responsible for data management (i.e the data steward)?",
-                "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)?"
-            ]
-        }
-        
-        # Map section numbers to IDs for the review interface
-        self.section_ids = {
-            "1.1": "How will new data be collected or produced and/or how will existing data be re-used?",
-            "1.2": "What data (for example the types, formats, and volumes) will be collected or produced?",
-            "2.1": "What metadata and documentation (for example methodology or data collection and way of organising data) will accompany data?",
-            "2.2": "What data quality control measures will be used?",
-            "3.1": "How will data and metadata be stored and backed up during the research process?",
-            "3.2": "How will data security and protection of sensitive data be taken care of during the research?",
-            "4.1": "If personal data are processed, how will compliance with legislation on personal data and on data security be ensured?",
-            "4.2": "How will other legal issues, such as intelectual property rights and ownership, be managed? What legislation is applicable?",
-            "5.1": "How and when will data be shared? Are there possible restrictions to data sharing or embargo reasons?",
-            "5.2": "How will data for preservation be selected, and where will data be preserved long-term (for example a data repository or archive)?",
-            "5.3": "What methods or software tools will be needed to access and use the data?",
-            "5.4": "How will the application of a unique and persistent identifier (such us a Digital Object Identifier (DOI)) to each data set be ensured?",
-            "6.1": "Who (for example role, position, and institution) will be responsible for data management (i.e the data steward)?",
-            "6.2": "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)?"
-        }
-        
-        # Define key phrases to identify and tag in paragraphs
-        self.key_phrases = {
-            "methodology": ["methodology", "approach", "procedure", "process", "technique"],
-            "data_format": ["format", "file type", "structure", "schema", "encoding"],
-            "data_volume": ["volume", "size", "amount", "quantity", "gigabyte", "terabyte"],
-            "metadata": ["metadata", "documentation", "description", "annotation"],
-            "quality": ["quality", "validation", "verification", "accuracy", "precision"],
-            "storage": ["storage", "repository", "database", "server", "cloud"],
-            "backup": ["backup", "copy", "replicate", "redundancy"],
-            "security": ["security", "protection", "encryption", "access control"],
-            "personal_data": ["personal data", "privacy", "consent", "gdpr", "anonymization"],
-            "license": ["license", "copyright", "intellectual property", "ownership", "rights"],
-            "sharing": ["sharing", "distribution", "dissemination", "access", "availability"],
-            "preservation": ["preservation", "archiving", "long-term", "curation"],
-            "tools": ["software", "tools", "application", "program", "code"],
-            "identifier": ["identifier", "doi", "persistent", "uuid", "orcid"],
-            "responsibility": ["responsible", "manager", "steward", "oversight", "supervision"],
-            "resources": ["resources", "budget", "funding", "cost", "allocation"]
-        }
+app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = 'uploads'
+app.config['OUTPUT_FOLDER'] = 'outputs'
+app.config['ALLOWED_EXTENSIONS'] = {'pdf', 'docx'}  # Added 'docx'
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB max upload
+
+# Create necessary directories
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+os.makedirs(app.config['OUTPUT_FOLDER'], exist_ok=True)
+
+# DMP question templates with default text
+DMP_TEMPLATES = {
+    "1.1": {
+        "question": "How will new data be collected or produced and/or how will existing data be re-used?",
+        "template": "The data collection methodology needs more detail. Please specify the exact sources and collection methods."
+    },
+    "1.2": {
+        "question": "What data (for example the types, formats, and volumes) will be collected or produced?",
+        "template": "Please provide more specific information about data formats and expected volumes."
+    },
+    "2.1": {
+        "question": "What metadata and documentation will accompany data?",
+        "template": "The metadata standards should be clearly specified. Consider using established standards in your field."
+    },
+    "2.2": {
+        "question": "What data quality control measures will be used?",
+        "template": "More rigorous quality control measures should be implemented. Consider validation procedures."
+    },
+    "3.1": {
+        "question": "How will data and metadata be stored and backed up during the research process?",
+        "template": "Your backup strategy needs improvement. Consider redundant storage solutions."
+    },
+    "3.2": {
+        "question": "How will data security and protection of sensitive data be taken care of during the research?",
+        "template": "The security measures seem inadequate. Please detail encryption methods and access controls."
+    },
+    "4.1": {
+        "question": "If personal data are processed, how will compliance with legislation be ensured?",
+        "template": "Your GDPR compliance plan needs more detail. Specify consent procedures and data minimization strategies."
+    },
+    "4.2": {
+        "question": "How will other legal issues, such as intellectual property rights and ownership, be managed?",
+        "template": "Intellectual property considerations are unclear. Please specify licensing arrangements."
+    },
+    "5.1": {
+        "question": "How and when will data be shared? Are there possible restrictions?",
+        "template": "Data sharing timeline is vague. Please provide specific milestones for data publication."
+    },
+    "5.2": {
+        "question": "How will data for preservation be selected, and where will data be preserved long-term?",
+        "template": "Long-term preservation strategy needs more detail. Specify repository selection criteria."
+    },
+    "5.3": {
+        "question": "What methods or software tools will be needed to access and use the data?",
+        "template": "Software documentation is insufficient. Please list all required tools and versions."
+    },
+    "5.4": {
+        "question": "How will the application of a unique and persistent identifier to each data set be ensured?",
+        "template": "Your DOI implementation plan lacks detail. Specify exactly how and when identifiers will be assigned."
+    },
+    "6.1": {
+        "question": "Who will be responsible for data management?",
+        "template": "Data stewardship responsibilities are unclear. Please designate specific roles and responsibilities."
+    },
+    "6.2": {
+        "question": "What resources will be dedicated to data management and ensuring the data will be FAIR?",
+        "template": "Resource allocation for data management seems insufficient. Consider budgeting for dedicated staff time."
+    }
+}
+
+# Common feedback comments that can be inserted
+COMMON_COMMENTS = {
+    "methodology": "The methodology needs more detail on how data will be collected.",
+    "data_format": "Please specify all data formats (CSV, JSON, etc.) with examples.",
+    "data_volume": "Estimate the total volume of data expected (in GB/TB).",
+    "metadata": "Consider using established metadata standards in your field.",
+    "quality": "Implement validation procedures to ensure data quality.",
+    "storage": "Specify the exact storage solutions you'll be using.",
+    "backup": "Your backup strategy should include off-site copies.",
+    "security": "Detail encryption methods and access controls for sensitive data.",
+    "personal_data": "Clarify compliance with GDPR and data minimization strategies.",
+    "license": "Specify the exact licensing arrangements for your data.",
+    "sharing": "Provide specific milestones for data publication.",
+    "preservation": "Detail your long-term preservation strategy and repository selection.",
+    "tools": "List all required software tools with specific versions.",
+    "identifier": "Explain how and when DOIs will be assigned to datasets.",
+    "responsibility": "Designate specific roles and responsibilities for data management.",
+    "resources": "Budget for dedicated staff time for data management."
+}
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return jsonify({
+            'success': False,
+            'message': 'No file part'
+        })
     
-    def process_file(self, file_path, output_dir):
-        """Process a file and extract DMP content based on file type"""
-        file_extension = os.path.splitext(file_path)[1].lower()
-        
-        if file_extension == '.pdf':
-            return self.process_pdf(file_path, output_dir)
-        elif file_extension == '.docx':
-            return self.process_docx(file_path, output_dir)
-        else:
-            return {
-                "success": False,
-                "message": f"Unsupported file type: {file_extension}"
-            }
+    file = request.files['file']
     
-    def should_skip_text(self, text):
-        """Determine if text should be skipped (headers, footers, etc.)"""
-        skip_patterns = [
-            r"Strona \d+",        # Polish page numbers
-            r"Page \d+",          # English page numbers
-            r"ID: \d+",           # Document ID
-            r"\[wydruk roboczy\]", # Draft print marker
-            r"WZÓR",              # Template marker
-            r"W Z Ó R",           # Template marker with spaces
-            r"OSF,",              # Document footer
-            r"^\d+$"              # Just page numbers
-        ]
-        
-        return any(re.search(pattern, text, re.IGNORECASE) is not None for pattern in skip_patterns)
+    if file.filename == '':
+        return jsonify({
+            'success': False,
+            'message': 'No selected file'
+        })
     
-    def extract_author_name(self, text):
-        """Extract author name from the document text"""
-        # Common patterns for author name in grant applications
-        patterns = [
-            r"dr\s+(?:inż\.|hab\.)?\s+([\w\s-]+)",  # Polish academic titles
-            r"Principal\s+Investigator[:\s]+([\w\s-]+)",  # English PI designation
-            r"Kierownik\s+projektu[:\s]+([\w\s-]+)"  # Polish PI designation
-        ]
-        
-        for pattern in patterns:
-            match = re.search(pattern, text)
-            if match:
-                return match.group(1).strip()
-        
-        return None
-    
-    def identify_key_phrases(self, text):
-        """Identify key phrases in a paragraph and return relevant tags"""
-        text_lower = text.lower()
-        found_tags = []
-        
-        for tag, phrases in self.key_phrases.items():
-            for phrase in phrases:
-                if phrase in text_lower:
-                    found_tags.append(tag)
-                    break
-        
-        return found_tags
-    
-    def process_paragraph(self, paragraph):
-        """Process a paragraph to extract key information"""
-        tags = self.identify_key_phrases(paragraph)
-        
-        # Find lead sentence (first sentence or sentence with most key phrases)
-        sentences = re.split(r'(?<=[.!?])\s+', paragraph)
-        
-        if not sentences:
-            return {
-                "text": paragraph,
-                "tags": tags,
-                "title": None
-            }
-        
-        # Use first sentence as title if it's reasonably short
-        title = sentences[0] if len(sentences[0]) < 100 else None
-        
-        return {
-            "text": paragraph,
-            "tags": tags,
-            "title": title
-        }
-    
-    def map_section_to_id(self, section, subsection):
-        """Map a section and subsection to a section ID"""
-        # Try to find the matching ID
-        for section_id, question in self.section_ids.items():
-            if question == subsection:
-                return section_id
-        
-        # Fallback: try to infer from section number
-        section_num = re.match(r'(\d+)\.', section)
-        if section_num:
-            num = section_num.group(1)
-            for section_id in self.section_ids.keys():
-                if section_id.startswith(f"{num}."):
-                    return section_id
-        
-        # If no match found, return a generated ID
-        return f"section_{hash(section + subsection) % 10000}"
-    
-    def process_docx(self, docx_path, output_dir):
-        """Process a DOCX file and extract DMP content"""
+    if file and allowed_file(file.filename):
         try:
-            print(f"Processing DOCX: {docx_path}")
-            # Create a new Word document for output
-            output_doc = Document()
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
             
-            # Load the input document
-            doc = Document(docx_path)
+            # Process the file
+            extractor = DMPExtractor()
+            result = extractor.process_file(file_path, app.config['OUTPUT_FOLDER'])
             
-            # Extract text from the document
-            all_text = ""
-            for paragraph in doc.paragraphs:
-                all_text += paragraph.text + "\n"
+            # Clean up the uploaded file
+            try:
+                os.remove(file_path)
+            except Exception as e:
+                print(f"Warning: Could not remove uploaded file: {str(e)}")
             
-            # Extract first few pages text for author detection
-            author_name = self.extract_author_name(all_text)
-            print(f"Author detected: {author_name}")
-            
-            # Find start and end positions
-            start_pos = -1
-            end_pos = len(all_text)
-            
-            for mark in self.start_marks:
-                pos = all_text.find(mark)
-                if pos != -1:
-                    start_pos = pos + len(mark)
-                    print(f"Found start mark at position {pos}")
-                    break
-            
-            if start_pos == -1:
-                return {
-                    "success": False,
-                    "message": "Could not find the start marker in the document."
-                }
-            
-            for mark in self.end_marks:
-                pos = all_text.find(mark, start_pos)
-                if pos != -1 and pos < end_pos:
-                    end_pos = pos
-                    print(f"Found end mark at position {pos}")
-            
-            # Extract DMP content
-            dmp_text = all_text[start_pos:end_pos]
-            print(f"Extracted {len(dmp_text)} characters of DMP content")
-            
-            # Create document
-            output_doc.add_heading("DATA MANAGEMENT PLAN", level=0)
-            
-            # Process the content by section
-            section_content = {}
-            tagged_content = {}
-            
-            for section in self.dmp_structure:
-                section_content[section] = {}
-                tagged_content[section] = {}
-                for subsection in self.dmp_structure[section]:
-                    section_content[section][subsection] = []
-                    tagged_content[section][subsection] = []
-            
-            # Split the content into lines for processing
-            lines = dmp_text.split("\n")
-            current_section = None
-            current_subsection = None
-            
-            # Process lines (same logic as in process_pdf)
-            for line in lines:
-                line = line.strip()
-                if not line or self.should_skip_text(line):
-                    continue
-                
-                # Check if line contains a section number (e.g. "1.")
-                section_match = re.match(r'^\s*(\d+)\.', line)
-                if section_match:
-                    section_num = section_match.group(1)
-                    for section in self.dmp_structure:
-                        if section.startswith(f"{section_num}."):
-                            current_section = section
-                            current_subsection = None
-                            print(f"Found section: {current_section}")
-                            break
-                    continue
-                    
-                # If we have a current section, check for subsection
-                if current_section:
-                    best_match = None
-                    max_words = 0
-                    
-                    for subsection in self.dmp_structure[current_section]:
-                        # Get important words from subsection and line
-                        subsection_words = set(word.lower() for word in subsection.split() if len(word) > 3)
-                        line_words = set(word.lower() for word in line.split() if len(word) > 3)
-                        
-                        # Count matching words
-                        matching_words = len(subsection_words.intersection(line_words))
-                        
-                        # If we have a good match
-                        if matching_words >= 2 or (subsection_words and matching_words / len(subsection_words) >= 0.3):
-                            if matching_words > max_words:
-                                max_words = matching_words
-                                best_match = subsection
-                    
-                    if best_match:
-                        current_subsection = best_match
-                        print(f"Found subsection: {current_subsection[:20]}...")
-                    
-                    # Add content to appropriate subsection
-                    if current_subsection and len(line) > 10:  # Avoid short lines
-                        try:
-                            section_content[current_section][current_subsection].append(line)
-                            
-                            # Process and tag paragraph
-                            processed = self.process_paragraph(line)
-                            tagged_content[current_section][current_subsection].append(processed)
-                        except KeyError as e:
-                            print(f"Warning: KeyError when adding content to {current_section} - {current_subsection}: {str(e)}")
-                            # Create missing subsection if needed
-                            if current_subsection not in section_content[current_section]:
-                                section_content[current_section][current_subsection] = [line]
-                                tagged_content[current_section][current_subsection] = [self.process_paragraph(line)]
-                                print(f"Created missing subsection: {current_subsection}")
-            
-            # Add content to document (same as in process_pdf)
-            for section in self.dmp_structure:
-                output_doc.add_heading(section, level=1)
-                
-                for subsection in self.dmp_structure[section]:
-                    output_doc.add_heading(subsection, level=2)
-                    
-                    # Safely get content
-                    content = []
-                    try:
-                        content = section_content[section][subsection]
-                    except KeyError:
-                        print(f"Warning: Missing content for {section} - {subsection}")
-                    
-                    if content:
-                        for text in content:
-                            output_doc.add_paragraph(text)
-                    else:
-                        # Add blank paragraph for empty content
-                        output_doc.add_paragraph("")
-            
-            # Create review structure (same as in process_pdf)
-            review_structure = {}
-            
-            for section in self.dmp_structure:
-                for subsection in self.dmp_structure[section]:
-                    section_id = self.map_section_to_id(section, subsection)
-                    
-                    # Safely get paragraphs and tagged paragraphs
-                    paragraphs = []
-                    tagged_paragraphs = []
-                    
-                    try:
-                        paragraphs = section_content[section][subsection]
-                    except KeyError:
-                        print(f"Warning: Missing paragraphs for {section} - {subsection}")
-                    
-                    try:
-                        tagged_paragraphs = tagged_content[section][subsection]
-                    except KeyError:
-                        print(f"Warning: Missing tagged paragraphs for {section} - {subsection}")
-                    
-                    # Add to review structure
-                    review_structure[section_id] = {
-                        "section": section,
-                        "question": subsection,
-                        "paragraphs": paragraphs,
-                        "tagged_paragraphs": tagged_paragraphs
-                    }
-            
-            # Generate output filename (same as in process_pdf)
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            base_name = os.path.splitext(os.path.basename(docx_path))[0]
-            
-            if author_name:
-                # Clean author name to use in filename
-                clean_author = re.sub(r'[^a-zA-Z0-9]', '_', author_name.strip())
-                output_filename = f"DMP_{clean_author}_{timestamp}.docx"
+            if result['success']:
+                # Redirect to the review page with cache ID
+                cache_id = result.get('cache_id', '')
+                return jsonify({
+                    'success': True,
+                    'redirect': url_for('review_dmp', filename=result['filename'], cache_id=cache_id)
+                })
             else:
-                output_filename = f"DMP_{base_name}_{timestamp}.docx"
-            
-            # Create safe filename
-            output_filename = re.sub(r'[\\/*?:"<>|]', "_", output_filename)
-            
-            # Save the document
-            output_path = os.path.join(output_dir, output_filename)
-            output_doc.save(output_path)
-            
-            # Save review structure as JSON
-            cache_id = str(uuid.uuid4())
-            cache_filename = f"cache_{cache_id}.json"
-            cache_path = os.path.join(output_dir, cache_filename)
-            
-            with open(cache_path, 'w', encoding='utf-8') as f:
-                json.dump(review_structure, f, ensure_ascii=False, indent=2)
-            
-            return {
-                "success": True,
-                "filename": output_filename,
-                "path": output_path,
-                "cache_id": cache_id,
-                "cache_file": cache_filename,
-                "message": "DMP successfully extracted"
-            }
-            
+                return jsonify(result)
         except Exception as e:
             import traceback
             traceback_str = traceback.format_exc()
-            print(f"Error processing DOCX: {str(e)}")
+            print(f"Error processing file: {str(e)}")
             print(traceback_str)
-            return {
-                "success": False,
-                "message": f"Error processing DOCX: {str(e)}"
-            }
+            return jsonify({
+                'success': False,
+                'message': f'Error processing file: {str(e)}'
+            })
     
-    def process_pdf(self, pdf_path, output_dir):
-        """Process a PDF and extract DMP content"""
-        try:
-            print(f"Processing PDF: {pdf_path}")
-            # Create a new Word document
-            doc = Document()
-            
-            # Read the PDF
-            with open(pdf_path, 'rb') as file:
-                reader = PyPDF2.PdfReader(file)
-                
-                # Extract first few pages text for author detection
-                first_pages_text = ""
-                for i in range(min(3, len(reader.pages))):
-                    first_pages_text += reader.pages[i].extract_text() + "\n"
-                
-                author_name = self.extract_author_name(first_pages_text)
-                print(f"Author detected: {author_name}")
-                
-                # Find the DMP section
-                all_text = ""
-                all_pages_text = []
-                
-                # Extract text from all pages
-                for i, page in enumerate(reader.pages):
-                    page_text = page.extract_text()
-                    all_pages_text.append(page_text)
-                    all_text += page_text + "\n\n"
-                    
-                    # Print info about start/end marks found
-                    for mark in self.start_marks:
-                        if mark in page_text:
-                            print(f"Found start mark '{mark}' on page {i+1}")
-                    
-                    for mark in self.end_marks:
-                        if mark in page_text:
-                            print(f"Found end mark '{mark}' on page {i+1}")
-                
-                # Find start and end positions
-                start_pos = -1
-                end_pos = len(all_text)
-                
-                for mark in self.start_marks:
-                    pos = all_text.find(mark)
-                    if pos != -1:
-                        start_pos = pos + len(mark)
-                        print(f"Found start mark at position {pos}")
-                        break
-                
-                if start_pos == -1:
-                    return {
-                        "success": False,
-                        "message": "Could not find the start marker in the document."
-                    }
-                
-                for mark in self.end_marks:
-                    pos = all_text.find(mark, start_pos)
-                    if pos != -1 and pos < end_pos:
-                        end_pos = pos
-                        print(f"Found end mark at position {pos}")
-                
-                # Extract DMP content
-                dmp_text = all_text[start_pos:end_pos]
-                print(f"Extracted {len(dmp_text)} characters of DMP content")
-                
-                # Create document
-                doc.add_heading("DATA MANAGEMENT PLAN", level=0)
-                
-                # Process the content by section
-                section_content = {}
-                tagged_content = {}
-                
-                for section in self.dmp_structure:
-                    section_content[section] = {}
-                    tagged_content[section] = {}
-                    for subsection in self.dmp_structure[section]:
-                        section_content[section][subsection] = []
-                        tagged_content[section][subsection] = []
-                
-                # Split the content into lines for processing
-                lines = dmp_text.split("\n")
-                current_section = None
-                current_subsection = None
-                
-                # Simple processing to find sections and subsections
-                for line in lines:
-                    line = line.strip()
-                    if not line or self.should_skip_text(line):
-                        continue
-                    
-                    # Check if line contains a section number (e.g. "1.")
-                    section_match = re.match(r'^\s*(\d+)\.', line)
-                    if section_match:
-                        section_num = section_match.group(1)
-                        for section in self.dmp_structure:
-                            if section.startswith(f"{section_num}."):
-                                current_section = section
-                                current_subsection = None
-                                print(f"Found section: {current_section}")
-                                break
-                        continue
-                        
-                    # If we have a current section, check for subsection
-                    if current_section:
-                        best_match = None
-                        max_words = 0
-                        
-                        for subsection in self.dmp_structure[current_section]:
-                            # Get important words from subsection and line
-                            subsection_words = set(word.lower() for word in subsection.split() if len(word) > 3)
-                            line_words = set(word.lower() for word in line.split() if len(word) > 3)
-                            
-                            # Count matching words
-                            matching_words = len(subsection_words.intersection(line_words))
-                            
-                            # If we have a good match (at least 2 matching words or 30% of subsection words)
-                            if matching_words >= 2 or (subsection_words and matching_words / len(subsection_words) >= 0.3):
-                                if matching_words > max_words:
-                                    max_words = matching_words
-                                    best_match = subsection
-                        
-                        if best_match:
-                            current_subsection = best_match
-                            print(f"Found subsection: {current_subsection[:20]}...")
-                        
-                        # Add content to appropriate subsection
-                        if current_subsection and len(line) > 10:  # Avoid short lines
-                            try:
-                                section_content[current_section][current_subsection].append(line)
-                                
-                                # Process and tag paragraph
-                                processed = self.process_paragraph(line)
-                                tagged_content[current_section][current_subsection].append(processed)
-                            except KeyError as e:
-                                print(f"Warning: KeyError when adding content to {current_section} - {current_subsection}: {str(e)}")
-                                # Create missing subsection if needed
-                                if current_subsection not in section_content[current_section]:
-                                    section_content[current_section][current_subsection] = [line]
-                                    tagged_content[current_section][current_subsection] = [self.process_paragraph(line)]
-                                    print(f"Created missing subsection: {current_subsection}")
-                
-                # Add content to document
-                for section in self.dmp_structure:
-                    doc.add_heading(section, level=1)
-                    
-                    for subsection in self.dmp_structure[section]:
-                        doc.add_heading(subsection, level=2)
-                        
-                        # Safely get content from the section/subsection
-                        content = []
-                        try:
-                            content = section_content[section][subsection]
-                        except KeyError:
-                            print(f"Warning: Missing content for {section} - {subsection}")
-                        
-                        if content:
-                            for text in content:
-                                doc.add_paragraph(text)
-                        else:
-                            # Add blank paragraph for empty content
-                            doc.add_paragraph("")
-                
-                # Create a structured representation for the review interface
-                review_structure = {}
-                
-                for section in self.dmp_structure:
-                    for subsection in self.dmp_structure[section]:
-                        section_id = self.map_section_to_id(section, subsection)
-                        
-                        # Safely get paragraphs and tagged paragraphs
-                        paragraphs = []
-                        tagged_paragraphs = []
-                        
-                        try:
-                            paragraphs = section_content[section][subsection]
-                        except KeyError:
-                            print(f"Warning: Missing paragraphs for {section} - {subsection}")
-                        
-                        try:
-                            tagged_paragraphs = tagged_content[section][subsection]
-                        except KeyError:
-                            print(f"Warning: Missing tagged paragraphs for {section} - {subsection}")
-                        
-                        # Add to review structure
-                        review_structure[section_id] = {
-                            "section": section,
-                            "question": subsection,
-                            "paragraphs": paragraphs,
-                            "tagged_paragraphs": tagged_paragraphs
-                        }
-                
-                # Generate output filename
-                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                base_name = os.path.splitext(os.path.basename(pdf_path))[0]
-                
-                if author_name:
-                    # Clean author name to use in filename
-                    clean_author = re.sub(r'[^a-zA-Z0-9]', '_', author_name.strip())
-                    output_filename = f"DMP_{clean_author}_{timestamp}.docx"
-                else:
-                    output_filename = f"DMP_{base_name}_{timestamp}.docx"
-                
-                # Create safe filename
-                output_filename = re.sub(r'[\\/*?:"<>|]', "_", output_filename)
-                
-                # Save the document
-                output_path = os.path.join(output_dir, output_filename)
-                doc.save(output_path)
-                
-                # Save review structure as JSON for the review interface
-                cache_id = str(uuid.uuid4())
-                cache_filename = f"cache_{cache_id}.json"
-                cache_path = os.path.join(output_dir, cache_filename)
-                
-                with open(cache_path, 'w', encoding='utf-8') as f:
-                    json.dump(review_structure, f, ensure_ascii=False, indent=2)
-                
-                return {
-                    "success": True,
-                    "filename": output_filename,
-                    "path": output_path,
-                    "cache_id": cache_id,
-                    "cache_file": cache_filename,
-                    "message": "DMP successfully extracted"
-                }
-                
-        except Exception as e:
-            import traceback
-            traceback_str = traceback.format_exc()
-            print(f"Error processing PDF: {str(e)}")
-            print(traceback_str)
-            return {
-                "success": False,
-                "message": f"Error processing PDF: {str(e)}"
-            }
+    return jsonify({
+        'success': False,
+        'message': 'Invalid file format. Only PDF and DOCX files are allowed.'
+    })
+
+@app.route('/download/<filename>')
+def download_file(filename):
+    try:
+        file_path = os.path.join(app.config['OUTPUT_FOLDER'], filename)
+        if not os.path.exists(file_path):
+            return "File not found", 404
+        
+        return send_file(
+            file_path,
+            as_attachment=True
+        )
+    except Exception as e:
+        return f"Error downloading file: {str(e)}", 500
+
+@app.route('/review/<filename>')
+def review_dmp(filename):
+    file_path = os.path.join(app.config['OUTPUT_FOLDER'], filename)
+    if not os.path.exists(file_path):
+        return "File not found", 404
     
-    def get_section_ids(self):
-        """Return mapping of section IDs to questions"""
-        return self.section_ids
+    # Get cache_id from request
+    cache_id = request.args.get('cache_id', '')
     
-    def get_key_phrases(self):
-        """Return key phrases used for tagging"""
-        return self.key_phrases
+    # Load extracted content if available
+    extracted_content = {}
+    if cache_id:
+        cache_path = os.path.join(app.config['OUTPUT_FOLDER'], f"cache_{cache_id}.json")
+        if os.path.exists(cache_path):
+            try:
+                with open(cache_path, 'r', encoding='utf-8') as f:
+                    extracted_content = json.load(f)
+            except Exception as e:
+                print(f"Error loading extracted content: {str(e)}")
+    
+    # Pass the templates, common comments, and extracted content to the template
+    return render_template('review.html', 
+                           filename=filename,
+                           templates=DMP_TEMPLATES,
+                           comments=COMMON_COMMENTS,
+                           extracted_content=extracted_content,
+                           cache_id=cache_id)
+
+@app.route('/save_templates', methods=['POST'])
+def save_templates():
+    try:
+        data = request.json
+        global DMP_TEMPLATES
+        
+        # Update the templates with the new data
+        for key, value in data.items():
+            if key in DMP_TEMPLATES:
+                DMP_TEMPLATES[key]['template'] = value
+        
+        return jsonify({
+            'success': True,
+            'message': 'Templates saved successfully'
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error saving templates: {str(e)}'
+        })
+
+@app.route('/results')
+def results():
+    return render_template('results.html')
+
+@app.route('/template_editor')
+def template_editor():
+    # Organize templates by section for better display
+    templates_by_section = {
+        "1. Data description and collection or re-use of existing data": {
+            k: v for k, v in DMP_TEMPLATES.items() if k.startswith("1.")
+        },
+        "2. Documentation and data quality": {
+            k: v for k, v in DMP_TEMPLATES.items() if k.startswith("2.")
+        },
+        "3. Storage and backup during the research process": {
+            k: v for k, v in DMP_TEMPLATES.items() if k.startswith("3.")
+        },
+        "4. Legal requirements, codes of conduct": {
+            k: v for k, v in DMP_TEMPLATES.items() if k.startswith("4.")
+        },
+        "5. Data sharing and long-term preservation": {
+            k: v for k, v in DMP_TEMPLATES.items() if k.startswith("5.")
+        },
+        "6. Data management responsibilities and resources": {
+            k: v for k, v in DMP_TEMPLATES.items() if k.startswith("6.")
+        }
+    }
+    
+    return render_template('template_editor.html', templates_by_section=templates_by_section)
+
+@app.route('/save_feedback', methods=['POST'])
+def save_feedback():
+    try:
+        data = request.json
+        
+        # Get filename and feedback text
+        filename = data.get('filename', '')
+        feedback = data.get('feedback', '')
+        
+        if not filename or not feedback:
+            return jsonify({
+                'success': False,
+                'message': 'Missing filename or feedback text'
+            })
+        
+        # Save feedback to a file
+        feedback_filename = f"feedback_{os.path.splitext(filename)[0]}.txt"
+        feedback_path = os.path.join(app.config['OUTPUT_FOLDER'], feedback_filename)
+        
+        with open(feedback_path, 'w', encoding='utf-8') as f:
+            f.write(feedback)
+        
+        return jsonify({
+            'success': True,
+            'filename': feedback_filename,
+            'path': feedback_path,
+            'message': 'Feedback saved successfully'
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error saving feedback: {str(e)}'
+        })
+
+if __name__ == '__main__':
+    app.run(debug=True)
