@@ -3,31 +3,328 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DMP ART</title>
+    <title>DMP ART - Review DMP</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* Enhanced styles for table-extracted content */
+        .table-extracted-content {
+            background-color: #f0f8ff;
+            border-left: 3px solid #4a90e2;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+
+        .table-extracted-content h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .formatting-indicator {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            margin-left: 5px;
+        }
+
+        .formatting-bold {
+            background-color: #ffd700;
+            color: #333;
+        }
+
+        .formatting-underlined {
+            background-color: #87ceeb;
+            color: #333;
+        }
+
+        .formatting-both {
+            background-color: #dda0dd;
+            color: #333;
+        }
+
+        .extraction-info {
+            background-color: #e8f5e8;
+            border: 1px solid #4caf50;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        .extraction-info h3 {
+            color: #2e7d32;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .extraction-stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 5px 10px;
+            background-color: white;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+        }
+
+        .stat-number {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .content-type-indicator {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .content-table {
+            background-color: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .content-paragraph {
+            background-color: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .enhanced-paragraph {
+            position: relative;
+            margin-bottom: 12px;
+            padding: 8px;
+            border-radius: 4px;
+            background-color: #fafafa;
+        }
+
+        .enhanced-paragraph.has-tags {
+            border-left: 3px solid #4caf50;
+        }
+
+        .paragraph-metadata {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .word-count {
+            background-color: #e0e0e0;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        .no-content-warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .enhanced-feedback-section {
+            background-color: white;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .feedback-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .feedback-toolbar h3 {
+            margin: 0;
+            color: var(--dark-color);
+            font-size: 1rem;
+        }
+
+        .char-counter {
+            font-size: 0.8rem;
+            color: #666;
+            padding: 2px 6px;
+            background-color: #f5f5f5;
+            border-radius: 10px;
+        }
+
+        .progress-indicator {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            min-width: 200px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: #4caf50;
+            transition: width 0.3s ease;
+        }
+
+        .section-navigation {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            background-color: white;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .nav-btn.completed {
+            background-color: #4caf50;
+            color: white;
+            border-color: #4caf50;
+        }
+
+        @media (max-width: 768px) {
+            .extraction-stats {
+                justify-content: center;
+            }
+            
+            .progress-indicator {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-bottom: 20px;
+            }
+            
+            .feedback-toolbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>DMP ART</h1>
-            <p>Review and provide feedback on the Data Management Plan</p>
+            <h1>DMP ART - Review DMP</h1>
+            <p>Review and provide feedback on the extracted Data Management Plan</p>
         </header>
         
         <main class="review-container">
             <div class="control-panel">
-                <h2>Review DMP</h2>
+                <h2>Review DMP: {{ filename }}</h2>
                 <div class="action-btns">
                     <a href="{{ url_for('download_file', filename=filename) }}" class="download-btn">Download Original</a>
                     <button id="save-feedback-btn" class="save-all-btn">Save Feedback</button>
                     <button id="compile-btn" class="compile-btn">Compile All Feedback</button>
                 </div>
             </div>
+
+            <!-- Extraction Information -->
+            {% if extraction_info %}
+            <div class="extraction-info">
+                <h3>Extraction Results</h3>
+                <div class="extraction-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">{{ extraction_info.total_sections }}</span>
+                        <span class="stat-label">Total Sections</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">{{ extraction_info.sections_with_content }}</span>
+                        <span class="stat-label">With Content</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">{{ ((extraction_info.sections_with_content / extraction_info.total_sections) * 100) | round | int }}%</span>
+                        <span class="stat-label">Extraction Rate</span>
+                    </div>
+                </div>
+                <p style="margin-top: 10px; font-size: 0.9rem; color: #666;">
+                    Method: {{ extraction_info.extraction_method }}
+                </p>
+            </div>
+            {% endif %}
+
+            <!-- Section Navigation -->
+            <div class="section-navigation">
+                <h4>Quick Navigation</h4>
+                <div class="nav-buttons" id="section-nav">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Progress Indicator -->
+            <div class="progress-indicator" id="progress-indicator">
+                <h4>Review Progress</h4>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                </div>
+                <div id="progress-text">0 / {{ extracted_content|length }} sections completed</div>
+            </div>
             
             <div id="questions-container">
                 {% for section_id, content in extracted_content.items() %}
                 <div class="question-card" data-id="{{ section_id }}">
                     <div class="question-header">
-                        <div class="question-title">{{ content.question }}</div>
+                        <div class="question-title">
+                            {{ content.question }}
+                            {% if content.paragraphs|length > 0 %}
+                                <span class="content-type-indicator content-table">Table Content</span>
+                            {% else %}
+                                <span class="content-type-indicator content-paragraph">Text Content</span>
+                            {% endif %}
+                        </div>
                         <div class="section-label">{{ content.section }}</div>
                     </div>
                     
@@ -36,15 +333,20 @@
                         <h3>Extracted Content:</h3>
                         {% if content.paragraphs|length > 0 %}
                             {% for paragraph in content.paragraphs %}
-                            <div class="dmp-paragraph">
+                            <div class="enhanced-paragraph {% if content.tagged_paragraphs and loop.index0 < content.tagged_paragraphs|length and content.tagged_paragraphs[loop.index0].tags|length > 0 %}has-tags{% endif %}">
+                                <div class="paragraph-metadata">
+                                    <span>Paragraph {{ loop.index }}</span>
+                                    <span class="word-count">{{ paragraph.split()|length }} words</span>
+                                </div>
+                                
                                 <p>{{ paragraph }}</p>
                                 
-                                <!-- Tag buttons for this paragraph if available -->
+                                <!-- Enhanced tag display -->
                                 {% if content.tagged_paragraphs and loop.index0 < content.tagged_paragraphs|length %}
                                     {% if content.tagged_paragraphs[loop.index0].tags|length > 0 %}
                                     <div class="paragraph-tags">
                                         {% for tag in content.tagged_paragraphs[loop.index0].tags %}
-                                        <button class="tag-btn" data-comment="{{ comments[tag] }}">{{ tag }}</button>
+                                        <button class="tag-btn" data-comment="{{ comments[tag] if tag in comments else 'No comment available for this tag.' }}" title="Click to add comment">{{ tag }}</button>
                                         {% endfor %}
                                     </div>
                                     {% endif %}
@@ -52,51 +354,67 @@
                             </div>
                             {% endfor %}
                         {% else %}
-                            <p class="no-content">No content found for this section.</p>
+                            <div class="no-content-warning">
+                                <strong>⚠️ No content found for this section.</strong>
+                                <p>This may indicate that the extraction process couldn't identify content for this specific subsection, or the content may be in a format that wasn't recognized.</p>
+                            </div>
                         {% endif %}
                     </div>
                     
-                    <!-- Common comment buttons -->
+                    <!-- Enhanced comment buttons -->
                     <div class="comment-buttons">
-                        <h3>Common Comments:</h3>
-                        {% for tag, comment in comments.items() %}
-                        <button class="comment-btn" data-id="{{ section_id }}" data-comment="{{ comment }}">{{ tag }}</button>
-                        {% endfor %}
+                        <h3>Quick Comments:</h3>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            {% for tag, comment in comments.items() %}
+                            <button class="comment-btn" data-id="{{ section_id }}" data-comment="{{ comment }}" title="{{ comment[:50] }}...">{{ tag }}</button>
+                            {% endfor %}
+                        </div>
                     </div>
                     
-                    <!-- Feedback textarea -->
-                    <div class="feedback-section">
-                        <h3>Your Feedback:</h3>
-                        <textarea class="feedback-text" id="feedback-{{ section_id }}">{{ templates[section_id].template if section_id in templates else "" }}</textarea>
+                    <!-- Enhanced feedback section -->
+                    <div class="enhanced-feedback-section">
+                        <div class="feedback-toolbar">
+                            <h3>Your Feedback:</h3>
+                            <span class="char-counter" id="char-counter-{{ section_id }}">0 characters</span>
+                        </div>
+                        <textarea class="feedback-text" id="feedback-{{ section_id }}" placeholder="Enter your feedback for this section...">{{ templates[section_id].template if section_id in templates else "" }}</textarea>
                         <div class="action-row">
-                            <button class="copy-btn" data-id="{{ section_id }}">Copy to Clipboard</button>
-                            <button class="reset-btn" data-id="{{ section_id }}">Reset to Template</button>
+                            <button class="copy-btn" data-id="{{ section_id }}" title="Copy feedback to clipboard">📋 Copy</button>
+                            <button class="reset-btn" data-id="{{ section_id }}" title="Reset to original template">🔄 Reset</button>
+                            <button class="clear-btn" data-id="{{ section_id }}" title="Clear all text">🗑️ Clear</button>
                         </div>
                     </div>
                 </div>
                 {% endfor %}
             </div>
             
-            <!-- Compiled feedback section -->
+            <!-- Enhanced compiled feedback section -->
             <div id="compiled-feedback-container" class="compiled-feedback-container hidden">
-                <h2>Compiled Feedback</h2>
-                <textarea id="compiled-feedback" readonly></textarea>
+                <h2>📄 Compiled Feedback Report</h2>
+                <div style="margin-bottom: 15px;">
+                    <strong>Document:</strong> {{ filename }}<br>
+                    <strong>Generated:</strong> <span id="generation-time"></span><br>
+                    <strong>Sections Reviewed:</strong> <span id="sections-reviewed"></span>
+                </div>
+                <textarea id="compiled-feedback" readonly placeholder="Your compiled feedback will appear here..."></textarea>
                 <div class="compiled-actions">
-                    <button id="copy-compiled-btn">Copy All</button>
-                    <button id="download-feedback-btn">Download as Text</button>
-                    <button id="close-compiled-btn">Close</button>
+                    <button id="copy-compiled-btn" title="Copy all feedback to clipboard">📋 Copy All</button>
+                    <button id="download-feedback-btn" title="Download feedback as text file">💾 Download as Text</button>
+                    <button id="export-feedback-btn" title="Export as formatted document">📄 Export as Doc</button>
+                    <button id="close-compiled-btn" title="Close this dialog">❌ Close</button>
                 </div>
             </div>
             
             <div class="action-buttons">
                 <a href="/" class="secondary-btn">Process Another PDF</a>
+                <a href="/template_editor" class="secondary-btn">Customize Templates</a>
             </div>
         </main>
         
-        <div id="success-toast" class="success-toast">Templates saved successfully!</div>
+        <div id="success-toast" class="success-toast">Operation completed successfully!</div>
         
         <footer>
-            <p>DMP ART &copy; 2025</p>
+            <p>DMP ART &copy; 2025 - Enhanced DOCX Processing</p>
         </footer>
     </div>
     
@@ -104,6 +422,491 @@
         // Store the filename and cache_id for use in JavaScript
         const dmpFilename = "{{ filename }}";
         const cacheId = "{{ cache_id }}";
+        
+        // Enhanced JavaScript functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeReviewInterface();
+            setupProgressTracking();
+            setupSectionNavigation();
+            setupCharacterCounters();
+            setupEnhancedFeedbackFeatures();
+        });
+
+        function initializeReviewInterface() {
+            // Get all interactive elements
+            const commentButtons = document.querySelectorAll('.comment-btn');
+            const tagButtons = document.querySelectorAll('.tag-btn');
+            const copyButtons = document.querySelectorAll('.copy-btn');
+            const resetButtons = document.querySelectorAll('.reset-btn');
+            const clearButtons = document.querySelectorAll('.clear-btn');
+            const compileButton = document.getElementById('compile-btn');
+            const compiledContainer = document.getElementById('compiled-feedback-container');
+            const compiledTextarea = document.getElementById('compiled-feedback');
+            const copyCompiledButton = document.getElementById('copy-compiled-btn');
+            const downloadFeedbackButton = document.getElementById('download-feedback-btn');
+            const exportFeedbackButton = document.getElementById('export-feedback-btn');
+            const closeCompiledButton = document.getElementById('close-compiled-btn');
+            const saveFeedbackButton = document.getElementById('save-feedback-btn');
+            
+            // Original template text for reset functionality
+            const originalTemplates = {};
+            
+            // Initialize original templates
+            document.querySelectorAll('.feedback-text').forEach(textarea => {
+                const id = textarea.id.replace('feedback-', '');
+                originalTemplates[id] = textarea.value;
+            });
+
+            // Handle comment button clicks
+            if (commentButtons) {
+                commentButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const id = this.getAttribute('data-id');
+                        const comment = this.getAttribute('data-comment');
+                        insertComment(id, comment);
+                        updateProgress();
+                    });
+                });
+            }
+
+            // Handle tag button clicks
+            if (tagButtons) {
+                tagButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const id = this.closest('.question-card').getAttribute('data-id');
+                        const comment = this.getAttribute('data-comment');
+                        insertComment(id, comment);
+                        updateProgress();
+                    });
+                });
+            }
+
+            // Handle copy button clicks
+            if (copyButtons) {
+                copyButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const id = this.getAttribute('data-id');
+                        const textarea = document.getElementById(`feedback-${id}`);
+                        if (textarea) {
+                            copyToClipboard(textarea.value);
+                            showToast('Feedback copied to clipboard! 📋');
+                        }
+                    });
+                });
+            }
+
+            // Handle reset button clicks
+            if (resetButtons) {
+                resetButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const id = this.getAttribute('data-id');
+                        const textarea = document.getElementById(`feedback-${id}`);
+                        
+                        if (textarea && originalTemplates[id]) {
+                            textarea.value = originalTemplates[id];
+                            updateCharacterCounter(id);
+                            updateProgress();
+                        }
+                    });
+                });
+            }
+
+            // Handle clear button clicks
+            if (clearButtons) {
+                clearButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const id = this.getAttribute('data-id');
+                        const textarea = document.getElementById(`feedback-${id}`);
+                        
+                        if (textarea) {
+                            textarea.value = '';
+                            updateCharacterCounter(id);
+                            updateProgress();
+                        }
+                    });
+                });
+            }
+
+            // Handle compile button click
+            if (compileButton) {
+                compileButton.addEventListener('click', function() {
+                    compileAllFeedback();
+                });
+            }
+
+            // Handle compiled feedback actions
+            if (copyCompiledButton) {
+                copyCompiledButton.addEventListener('click', function() {
+                    if (compiledTextarea) {
+                        copyToClipboard(compiledTextarea.value);
+                        showToast('All feedback copied to clipboard! 📋');
+                    }
+                });
+            }
+
+            if (downloadFeedbackButton) {
+                downloadFeedbackButton.addEventListener('click', function() {
+                    if (compiledTextarea && compiledTextarea.value) {
+                        downloadFeedback(compiledTextarea.value, 'txt');
+                    }
+                });
+            }
+
+            if (exportFeedbackButton) {
+                exportFeedbackButton.addEventListener('click', function() {
+                    if (compiledTextarea && compiledTextarea.value) {
+                        downloadFeedback(compiledTextarea.value, 'doc');
+                    }
+                });
+            }
+
+            if (closeCompiledButton) {
+                closeCompiledButton.addEventListener('click', function() {
+                    if (compiledContainer) {
+                        compiledContainer.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Handle save feedback button click
+            if (saveFeedbackButton) {
+                saveFeedbackButton.addEventListener('click', function() {
+                    const feedbackText = compileAllFeedback(false);
+                    saveFeedbackToServer(feedbackText);
+                });
+            }
+        }
+
+        function setupCharacterCounters() {
+            document.querySelectorAll('.feedback-text').forEach(textarea => {
+                const id = textarea.id.replace('feedback-', '');
+                
+                // Update counter on input
+                textarea.addEventListener('input', function() {
+                    updateCharacterCounter(id);
+                    updateProgress();
+                });
+                
+                // Initialize counter
+                updateCharacterCounter(id);
+            });
+        }
+
+        function updateCharacterCounter(id) {
+            const textarea = document.getElementById(`feedback-${id}`);
+            const counter = document.getElementById(`char-counter-${id}`);
+            
+            if (textarea && counter) {
+                const charCount = textarea.value.length;
+                const wordCount = textarea.value.trim().split(/\s+/).filter(word => word.length > 0).length;
+                counter.textContent = `${charCount} chars, ${wordCount} words`;
+            }
+        }
+
+        function setupProgressTracking() {
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const totalSections = document.querySelectorAll('.question-card').length;
+            const completedSections = Array.from(document.querySelectorAll('.feedback-text')).filter(
+                textarea => textarea.value.trim().length > 0
+            ).length;
+            
+            const progressPercentage = totalSections > 0 ? (completedSections / totalSections) * 100 : 0;
+            
+            const progressFill = document.getElementById('progress-fill');
+            const progressText = document.getElementById('progress-text');
+            
+            if (progressFill) {
+                progressFill.style.width = `${progressPercentage}%`;
+            }
+            
+            if (progressText) {
+                progressText.textContent = `${completedSections} / ${totalSections} sections completed`;
+            }
+            
+            // Update navigation buttons
+            updateSectionNavigation();
+        }
+
+        function setupSectionNavigation() {
+            const navContainer = document.getElementById('section-nav');
+            const questionCards = document.querySelectorAll('.question-card');
+            
+            if (navContainer && questionCards.length > 0) {
+                questionCards.forEach((card, index) => {
+                    const sectionId = card.getAttribute('data-id');
+                    const sectionTitle = card.querySelector('.question-title').textContent.trim();
+                    const shortTitle = `${sectionId}`;
+                    
+                    const navBtn = document.createElement('button');
+                    navBtn.className = 'nav-btn';
+                    navBtn.textContent = shortTitle;
+                    navBtn.title = sectionTitle;
+                    navBtn.onclick = () => scrollToSection(sectionId);
+                    
+                    navContainer.appendChild(navBtn);
+                });
+            }
+        }
+
+        function updateSectionNavigation() {
+            const navButtons = document.querySelectorAll('.nav-btn');
+            const questionCards = document.querySelectorAll('.question-card');
+            
+            navButtons.forEach((btn, index) => {
+                if (index < questionCards.length) {
+                    const card = questionCards[index];
+                    const sectionId = card.getAttribute('data-id');
+                    const textarea = document.getElementById(`feedback-${sectionId}`);
+                    
+                    if (textarea && textarea.value.trim().length > 0) {
+                        btn.classList.add('completed');
+                    } else {
+                        btn.classList.remove('completed');
+                    }
+                }
+            });
+        }
+
+        function scrollToSection(sectionId) {
+            const card = document.querySelector(`[data-id="${sectionId}"]`);
+            if (card) {
+                card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                
+                // Highlight the card briefly
+                card.style.boxShadow = '0 0 10px rgba(74, 144, 226, 0.5)';
+                setTimeout(() => {
+                    card.style.boxShadow = '';
+                }, 2000);
+            }
+        }
+
+        function setupEnhancedFeedbackFeatures() {
+            // Auto-save functionality
+            let autoSaveTimeout;
+            document.querySelectorAll('.feedback-text').forEach(textarea => {
+                textarea.addEventListener('input', function() {
+                    clearTimeout(autoSaveTimeout);
+                    autoSaveTimeout = setTimeout(() => {
+                        console.log('Auto-saving feedback...');
+                        // Could implement auto-save here
+                    }, 5000);
+                });
+            });
+        }
+
+        // Insert comment into feedback textarea
+        function insertComment(id, comment) {
+            const textarea = document.getElementById(`feedback-${id}`);
+            if (!textarea) return;
+            
+            // Get current cursor position
+            const startPos = textarea.selectionStart;
+            const endPos = textarea.selectionEnd;
+            
+            // Insert comment at cursor position or at the end
+            if (startPos !== undefined && endPos !== undefined) {
+                // Add a newline if not at the beginning of the textarea
+                const prefix = startPos > 0 && textarea.value.charAt(startPos - 1) !== '\n' ? '\n' : '';
+                
+                // Add the comment
+                textarea.value = 
+                    textarea.value.substring(0, startPos) + 
+                    prefix + comment + '\n' + 
+                    textarea.value.substring(endPos);
+                
+                // Set cursor position after inserted comment
+                const newPos = startPos + prefix.length + comment.length + 1;
+                textarea.selectionStart = newPos;
+                textarea.selectionEnd = newPos;
+            } else {
+                // If no cursor position, append to the end
+                const prefix = textarea.value.length > 0 && textarea.value.charAt(textarea.value.length - 1) !== '\n' ? '\n' : '';
+                textarea.value += prefix + comment + '\n';
+            }
+            
+            // Focus the textarea
+            textarea.focus();
+            
+            // Update character counter
+            const sectionId = textarea.id.replace('feedback-', '');
+            updateCharacterCounter(sectionId);
+        }
+
+        // Compile all feedback
+        function compileAllFeedback(showCompiled = true) {
+            let allFeedback = `# DMP Feedback Report\n\n`;
+            allFeedback += `**Document:** ${dmpFilename}\n`;
+            allFeedback += `**Generated:** ${new Date().toLocaleString()}\n\n`;
+            allFeedback += `---\n\n`;
+            
+            let sectionsWithFeedback = 0;
+            
+            document.querySelectorAll('.question-card').forEach(card => {
+                const id = card.getAttribute('data-id');
+                const titleElement = card.querySelector('.question-title');
+                const sectionElement = card.querySelector('.section-label');
+                const title = titleElement ? titleElement.textContent.trim() : `Section ${id}`;
+                const section = sectionElement ? sectionElement.textContent.trim() : '';
+                const textarea = document.getElementById(`feedback-${id}`);
+                
+                if (textarea && textarea.value.trim()) {
+                    sectionsWithFeedback++;
+                    allFeedback += `## ${section}\n\n`;
+                    allFeedback += `### ${title}\n\n`;
+                    allFeedback += `${textarea.value.trim()}\n\n`;
+                    allFeedback += `---\n\n`;
+                }
+            });
+            
+            if (sectionsWithFeedback === 0) {
+                allFeedback += `*No feedback has been provided for any sections.*\n`;
+            }
+            
+            const compiledTextarea = document.getElementById('compiled-feedback');
+            if (compiledTextarea) {
+                compiledTextarea.value = allFeedback;
+            }
+            
+            // Update generation info
+            const generationTime = document.getElementById('generation-time');
+            const sectionsReviewed = document.getElementById('sections-reviewed');
+            
+            if (generationTime) {
+                generationTime.textContent = new Date().toLocaleString();
+            }
+            
+            if (sectionsReviewed) {
+                sectionsReviewed.textContent = `${sectionsWithFeedback} of ${document.querySelectorAll('.question-card').length}`;
+            }
+            
+            if (showCompiled) {
+                const compiledContainer = document.getElementById('compiled-feedback-container');
+                if (compiledContainer) {
+                    compiledContainer.classList.remove('hidden');
+                }
+            }
+            
+            return allFeedback;
+        }
+
+        // Save feedback to server
+        function saveFeedbackToServer(feedbackText) {
+            if (!feedbackText || !dmpFilename) {
+                showToast('No feedback to save! ⚠️', 'error');
+                return;
+            }
+            
+            const data = {
+                filename: dmpFilename,
+                feedback: feedbackText
+            };
+            
+            fetch('/save_feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Feedback saved successfully! 💾');
+                } else {
+                    showToast(`Error: ${data.message}`, 'error');
+                }
+            })
+            .catch(error => {
+                showToast(`Error: ${error.message}`, 'error');
+            });
+        }
+
+        // Download feedback as file
+        function downloadFeedback(text, format = 'txt') {
+            const timestamp = new Date().toISOString().slice(0,19).replace(/:/g, '-');
+            let filename, mimeType, content;
+            
+            if (format === 'doc') {
+                // Simple HTML format that can be opened by Word
+                filename = `DMP_Feedback_${timestamp}.html`;
+                mimeType = 'text/html';
+                content = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>DMP Feedback Report</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 40px; }
+                        h1, h2, h3 { color: #333; }
+                        hr { border: 1px solid #ccc; margin: 20px 0; }
+                        pre { white-space: pre-wrap; }
+                    </style>
+                </head>
+                <body>
+                    <pre>${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
+                </body>
+                </html>
+                `;
+            } else {
+                filename = `DMP_Feedback_${timestamp}.txt`;
+                mimeType = 'text/plain';
+                content = text;
+            }
+            
+            const blob = new Blob([content], { type: mimeType });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            
+            showToast(`Feedback downloaded as ${format.toUpperCase()}! 📄`);
+        }
+
+        // Copy text to clipboard
+        function copyToClipboard(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                return navigator.clipboard.writeText(text);
+            } else {
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+            }
+        }
+
+        // Show toast message
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('success-toast');
+            if (!toast) return;
+            
+            // Set message and type
+            toast.textContent = message;
+            toast.className = 'success-toast';
+            
+            if (type === 'error') {
+                toast.classList.add('error');
+            }
+            
+            // Show the toast
+            toast.classList.add('show');
+            
+            // Hide after 4 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
     </script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
