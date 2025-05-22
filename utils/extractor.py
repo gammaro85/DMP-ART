@@ -1,8 +1,9 @@
-# utils/extractor.py
+# utils/extractor.py - Enhanced version with improved DOCX processing
 import os
 import re
 import json
 import uuid
+import zipfile
 from docx import Document
 from datetime import datetime
 import PyPDF2
@@ -11,6 +12,7 @@ class DMPExtractor:
     def __init__(self):
         # Define start and end markers for extraction
         self.start_marks = [
+            "DATA MANAGEMENT PLAN",
             "DATA MANAGEMENT PLAN [in English]",
             "PLAN ZARZĄDZANIA DANYMI",
             "MINIATURA 9 -- PLAN ZARZĄDZANIA DANYMI"
@@ -29,9 +31,6 @@ class DMPExtractor:
             "Udostępnianie i długotrwałe przechowywanie": "5. Data sharing and long-term preservation",
             "Zadania związane z zarządzaniem danymi": "6. Data management responsibilities and resources"
         }
-        
-        # Normalize the Polish subsection names by removing trailing colons and standardizing
-        self.normalized_subsection_mapping = {}
         
         # Bilingual subsection mapping with exact Polish subsections
         raw_subsection_mapping = {
@@ -76,8 +75,10 @@ class DMPExtractor:
                 "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)?"
         }
         
-        # Create normalized versions of subsection mapping (lowercase, no trailing colons, etc.)
+        # Create normalized versions of subsection mapping
+        self.normalized_subsection_mapping = {}
         self.subsection_mapping = raw_subsection_mapping.copy()
+        
         for polish, english in raw_subsection_mapping.items():
             # Remove trailing colon if present
             normalized_polish = polish[:-1].strip() if polish.endswith(':') else polish.strip()
@@ -142,22 +143,96 @@ class DMPExtractor:
         # Define key phrases to identify and tag in paragraphs
         self.key_phrases = {
             "methodology": ["methodology", "approach", "procedure", "process", "technique"],
-            "data_format": ["format", "file type", "structure", "schema", "encoding", "xlsx", "docx", "csv", "txt"],
+            "data_format": ["format", "file type", "structure", "schema", "encoding", "xlsx", "docx", "csv", "txt", "tiff", "png", "pdf"],
             "data_volume": ["volume", "size", "amount", "quantity", "gigabyte", "terabyte", "mb", "gb", "tb"],
-            "metadata": ["metadata", "documentation", "description", "annotation"],
-            "quality": ["quality", "validation", "verification", "accuracy", "precision"],
-            "storage": ["storage", "repository", "database", "server", "cloud", "catalogue", "hard drive"],
+            "metadata": ["metadata", "documentation", "description", "annotation", "readme"],
+            "quality": ["quality", "validation", "verification", "accuracy", "precision", "control measures"],
+            "storage": ["storage", "repository", "database", "server", "cloud", "catalogue", "hard drive", "stored"],
             "backup": ["backup", "copy", "replicate", "redundancy"],
-            "security": ["security", "protection", "encryption", "access control", "password"],
+            "security": ["security", "protection", "encryption", "access control", "password", "protected"],
             "personal_data": ["personal data", "privacy", "consent", "gdpr", "anonymization"],
             "license": ["license", "copyright", "intellectual property", "ownership", "rights", "creative commons"],
             "sharing": ["sharing", "distribution", "dissemination", "access", "availability", "open access", "open research"],
             "preservation": ["preservation", "archiving", "long-term", "curation"],
-            "tools": ["software", "tools", "application", "program", "code"],
+            "tools": ["software", "tools", "application", "program", "code", "matlab"],
             "identifier": ["identifier", "doi", "persistent", "uuid", "orcid"],
             "responsibility": ["responsible", "manager", "steward", "oversight", "supervision", "investigator", "pi"],
             "resources": ["resources", "budget", "funding", "cost", "allocation"]
         }
+    
+    def validate_docx_file(self, file_path):
+        """Validate DOCX file integrity"""
+        try:
+            if not os.path.exists(file_path):
+                return False, "File does not exist"
+            
+            if not file_path.lower().endswith('.docx'):
+                return False, "File is not a DOCX file"
+            
+            # Check if it's a valid ZIP file (DOCX is ZIP-based)
+            try:
+                with zipfile.ZipFile(file_path, 'r') as zip_file:
+                    file_list = zip_file.namelist()
+                    if 'word/document.xml' not in file_list:
+                        return False, "Invalid DOCX structure: missing document.xml"
+            except zipfile.BadZipFile:
+                return False, "File is not a valid ZIP archive"
+            
+            # Try to load with python-docx
+            doc = Document(file_path)
+            paragraph_count = len(doc.paragraphs)
+            table_count = len(doc.tables)
+            
+            if paragraph_count == 0 and table_count == 0:
+                return False, "Document appears to be empty"
+            
+            return True, "File is valid"
+            
+        except Exception as e:
+            return False, f"Validation error: {str(e)}"
+    
+    def clean_table_delimiters(self, text):
+        """Remove table formatting artifacts"""
+        # Remove table border characters
+        text = re.sub(r'\+[-=]+\+', '', text)
+        text = re.sub(r'\|[\s]*\|', '', text)
+        text = re.sub(r'^\||\|$', '', text, flags=re.MULTILINE)
+        
+        # Clean up excessive whitespace
+        text = re.sub(r'\n\s*\n', '\n\n', text)
+        text = re.sub(r'[ \t]+', ' ', text)
+        
+        return text.strip()
+    
+    def extract_table_content(self, doc):
+        """Extract content from table structures in DOCX files"""
+        table_content = []
+        
+        for table in doc.tables:
+            for row in table.rows:
+                for cell in row.cells:
+                    cell_text = cell.text.strip()
+                    if cell_text and not self.should_skip_text(cell_text):
+                        # Clean table delimiters
+                        cell_text = self.clean_table_delimiters(cell_text)
+                        
+                        if not cell_text:
+                            continue
+                        
+                        # Check for formatting in cell runs
+                        is_bold = any(run.bold for paragraph in cell.paragraphs for run in paragraph.runs if run.bold)
+                        is_underlined = any(run.underline for paragraph in cell.paragraphs for run in paragraph.runs if run.underline)
+                        
+                        if is_bold and is_underlined:
+                            table_content.append(f"UNDERLINED_BOLD:{cell_text}")
+                        elif is_bold:
+                            table_content.append(f"BOLD:{cell_text}")
+                        elif is_underlined:
+                            table_content.append(f"UNDERLINED:{cell_text}")
+                        else:
+                            table_content.append(cell_text)
+        
+        return table_content
     
     def process_file(self, file_path, output_dir):
         """Process a file and extract DMP content based on file type"""
@@ -183,7 +258,9 @@ class DMPExtractor:
             r"WZÓR",              # Template marker
             r"W Z Ó R",           # Template marker with spaces
             r"OSF,",              # Document footer
-            r"^\d+$"              # Just page numbers
+            r"^\d+$",             # Just page numbers
+            r"^\+[-=]+\+$",       # Table borders
+            r"^\|[\s\|]*\|$"      # Table separators
         ]
         
         return any(re.search(pattern, text, re.IGNORECASE) is not None for pattern in skip_patterns)
@@ -212,11 +289,18 @@ class DMPExtractor:
         text = re.sub(r'\*\*([^*]+)\*\*', r'\1', text)
         # Remove other common markup
         text = re.sub(r'__([^_]+)__', r'\1', text)
+        # Remove mark formatting
+        text = re.sub(r'\{\.mark\}', '', text)
+        # Clean table delimiters
+        text = self.clean_table_delimiters(text)
         return text
     
     def extract_formatted_text(self, paragraph):
         """Extract text with formatting information from a DOCX paragraph"""
-        text = paragraph.text
+        text = paragraph.text.strip()
+        if not text:
+            return text
+            
         is_underlined = False
         is_bold = False
         
@@ -226,6 +310,9 @@ class DMPExtractor:
                 is_underlined = True
             if run.bold:
                 is_bold = True
+        
+        # Clean the text
+        text = self.clean_markup(text)
         
         # Return text with formatting info
         if is_underlined and is_bold:
@@ -337,6 +424,10 @@ class DMPExtractor:
         if is_underlined:
             text = text.replace("UNDERLINED:", "").strip()
         
+        # Check if this is bold text
+        if text.startswith("BOLD:"):
+            text = text.replace("BOLD:", "").strip()
+        
         # Normalize text - remove trailing colon and convert to lowercase
         normalized_text = text.lower()
         if normalized_text.endswith(':'):
@@ -394,8 +485,8 @@ class DMPExtractor:
                         print(f"Substring match: '{normalized_text}' ~ '{polish_lower}'")
                         return english
         
-        # 6. For underlined text or text ending with colon, try word-based matching
-        if is_underlined or original_text.endswith(':'):
+        # 6. For formatted text or text ending with colon, try word-based matching
+        if is_underlined or original_text.endswith(':') or original_text.startswith("BOLD:"):
             if current_section:
                 best_match = None
                 max_words = 0
@@ -428,23 +519,39 @@ class DMPExtractor:
         return None
     
     def process_docx(self, docx_path, output_dir):
-        """Process a DOCX file and extract DMP content"""
+        """Process a DOCX file and extract DMP content with enhanced table support"""
         try:
             print(f"Processing DOCX: {docx_path}")
+            
+            # Validate the DOCX file first
+            is_valid, validation_message = self.validate_docx_file(docx_path)
+            if not is_valid:
+                return {
+                    "success": False,
+                    "message": f"DOCX validation failed: {validation_message}"
+                }
+            
             # Create a new Word document for output
             output_doc = Document()
             
             # Load the input document
             doc = Document(docx_path)
             
-            # First pass: extract text with formatting information
+            # Extract text from both paragraphs and tables
             formatted_paragraphs = []
+            
+            # Process paragraphs
             for paragraph in doc.paragraphs:
                 formatted_text = self.extract_formatted_text(paragraph)
-                formatted_paragraphs.append(formatted_text)
+                if formatted_text.strip():  # Only add non-empty paragraphs
+                    formatted_paragraphs.append(formatted_text)
+            
+            # Process tables
+            table_content = self.extract_table_content(doc)
+            formatted_paragraphs.extend(table_content)
             
             # Join paragraphs for author detection and searching for markers
-            all_text = "\n".join([p.replace("UNDERLINED:", "").replace("BOLD:", "") 
+            all_text = "\n".join([p.replace("UNDERLINED:", "").replace("BOLD:", "").replace("UNDERLINED_BOLD:", "") 
                                  for p in formatted_paragraphs])
             
             # Extract author name
@@ -457,7 +564,7 @@ class DMPExtractor:
             
             # Find start marker
             for i, para in enumerate(formatted_paragraphs):
-                clean_para = para.replace("UNDERLINED:", "").replace("BOLD:", "").strip()
+                clean_para = para.replace("UNDERLINED:", "").replace("BOLD:", "").replace("UNDERLINED_BOLD:", "").strip()
                 for mark in self.start_marks:
                     if mark in clean_para:
                         start_idx = i + 1  # Start from the next paragraph
@@ -469,7 +576,7 @@ class DMPExtractor:
             if start_idx == -1:
                 # Try a more flexible approach - look for any paragraph that might be a section header
                 for i, para in enumerate(formatted_paragraphs):
-                    clean_para = para.replace("UNDERLINED:", "").replace("BOLD:", "").strip()
+                    clean_para = para.replace("UNDERLINED:", "").replace("BOLD:", "").replace("UNDERLINED_BOLD:", "").strip()
                     if re.match(r'^\s*1\.\s+', clean_para):  # Look for "1. " at the start
                         start_idx = i
                         print(f"Fallback: Found potential section 1 at paragraph {i}")
@@ -483,7 +590,7 @@ class DMPExtractor:
             
             # Find end marker
             for i in range(start_idx, len(formatted_paragraphs)):
-                clean_para = formatted_paragraphs[i].replace("UNDERLINED:", "").replace("BOLD:", "").strip()
+                clean_para = formatted_paragraphs[i].replace("UNDERLINED:", "").replace("BOLD:", "").replace("UNDERLINED_BOLD:", "").strip()
                 for mark in self.end_marks:
                     if mark in clean_para:
                         end_idx = i
@@ -567,7 +674,7 @@ class DMPExtractor:
                         pending_content = []
                     
                     current_subsection = detected_subsection
-                    print(f"Found subsection: {current_subsection[:30]}...")
+                    print(f"Found subsection: {current_subsection[:50]}...")
                     continue
                 
                 # Handle content based on current context
@@ -704,7 +811,7 @@ class DMPExtractor:
                 "path": output_path,
                 "cache_id": cache_id,
                 "cache_file": cache_filename,
-                "message": "DMP successfully extracted"
+                "message": "DMP successfully extracted from DOCX with table support"
             }
             
         except Exception as e:
@@ -985,7 +1092,7 @@ class DMPExtractor:
                     "path": output_path,
                     "cache_id": cache_id,
                     "cache_file": cache_filename,
-                    "message": "DMP successfully extracted"
+                    "message": "DMP successfully extracted from PDF"
                 }
                 
         except Exception as e:
