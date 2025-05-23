@@ -4,7 +4,6 @@ import sys
 sys.path.append('.')
 
 from utils.extractor import DMPExtractor
-from utils.docx_validator import DocxValidator
 
 def test_docx_processing():
     """Test the enhanced DOCX processing"""

@@ -1,138 +1,667 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DMP Template Editor</title>
+    <meta name="theme-color" content="#ffffff">
+    <title>DMP Template Editor - Customize Templates</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- Prevent flash of unstyled content -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('dmp-art-theme');
+            const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+            
+            document.documentElement.setAttribute('data-theme', theme);
+            
+            const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+            if (metaThemeColor) {
+                metaThemeColor.content = theme === 'dark' ? '#121212' : '#ffffff';
+            }
+        })();
+    </script>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>DMP Template Editor</h1>
-            <p>Customize all aspects of the DMP review system</p>
+            <h1>⚙️ DMP Template Editor</h1>
+            <p>Customize all aspects of the DMP review system to match your requirements</p>
+            <div class="nav-links">
+                <a href="/" class="nav-link">🏠 Back to Home</a>
+            </div>
         </header>
         
         <main class="template-editor">
+            <div class="editor-overview">
+                <div class="overview-cards">
+                    <div class="overview-card">
+                        <div class="card-icon">📝</div>
+                        <div class="card-content">
+                            <h3>Feedback Templates</h3>
+                            <p>{{ templates_by_section.values() | sum(attribute='__len__') | default(0) }} templates</p>
+                        </div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="card-icon">💬</div>
+                        <div class="card-content">
+                            <h3>Quick Comments</h3>
+                            <p>{{ comments | length }} comments</p>
+                        </div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="card-icon">🏷️</div>
+                        <div class="card-content">
+                            <h3>Keyword Groups</h3>
+                            <p>{{ key_phrases | length }} categories</p>
+                        </div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="card-icon">📊</div>
+                        <div class="card-content">
+                            <h3>DMP Sections</h3>
+                            <p>{{ dmp_structure | length }} sections</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="tab-container">
                 <div class="tab-buttons">
-                    <button class="tab-btn active" data-tab="templates">Feedback Templates</button>
-                    <button class="tab-btn" data-tab="comments">Common Comments</button>
-                    <button class="tab-btn" data-tab="keywords">Keywords</button>
-                    <button class="tab-btn" data-tab="structure">DMP Structure</button>
+                    <button class="tab-btn active" data-tab="templates">
+                        <span class="tab-icon">📝</span>
+                        <span>Feedback Templates</span>
+                    </button>
+                    <button class="tab-btn" data-tab="comments">
+                        <span class="tab-icon">💬</span>
+                        <span>Quick Comments</span>
+                    </button>
+                    <button class="tab-btn" data-tab="keywords">
+                        <span class="tab-icon">🏷️</span>
+                        <span>Keywords & Tags</span>
+                    </button>
+                    <button class="tab-btn" data-tab="structure">
+                        <span class="tab-icon">📊</span>
+                        <span>DMP Structure</span>
+                    </button>
                 </div>
                 
                 <div class="tab-content">
                     <!-- Templates Tab -->
                     <div class="tab-panel active" id="templates-panel">
                         <div class="section-header">
-                            <h2>Edit Feedback Templates</h2>
-                            <p>These templates will be available when reviewing DMPs</p>
+                            <h2>📝 Edit Feedback Templates</h2>
+                            <p>These templates provide default feedback text for each DMP section. Customize them to match your review criteria and standards.</p>
+                            <div class="header-actions">
+                                <button id="import-templates-btn" class="secondary-btn">📁 Import Templates</button>
+                                <button id="export-templates-btn" class="secondary-btn">💾 Export Templates</button>
+                            </div>
+                        </div>
+                        
+                        <div class="templates-search">
+                            <input type="text" id="templates-search" placeholder="🔍 Search templates by section or content..." class="search-input">
                         </div>
                         
                         <div id="templates-container">
                             {% for section, questions in templates_by_section.items() %}
-                            <div class="template-group">
-                                <h2>{{ section }}</h2>
-                                
-                                {% for id, item in questions.items() %}
-                                <div class="template-item" data-id="{{ id }}">
-                                    <h3>{{ item.question }}</h3>
-                                    <textarea class="template-input" id="template-{{ id }}">{{ item.template }}</textarea>
-                                    <button class="save-template-btn" data-id="{{ id }}">Save Template</button>
+                            <div class="template-group" data-section="{{ section }}">
+                                <div class="group-header">
+                                    <h2>{{ section }}</h2>
+                                    <div class="group-stats">
+                                        <span class="stat">{{ questions | length }} templates</span>
+                                        <button class="collapse-btn" onclick="toggleGroup(this)">−</button>
+                                    </div>
                                 </div>
-                                {% endfor %}
+                                
+                                <div class="group-content">
+                                    {% for id, item in questions.items() %}
+                                    <div class="template-item" data-id="{{ id }}">
+                                        <div class="template-header">
+                                            <h3>{{ id }}: {{ item.question }}</h3>
+                                            <div class="template-actions">
+                                                <button class="preview-btn" onclick="previewTemplate('{{ id }}')">👁️</button>
+                                                <button class="reset-template-btn" onclick="resetTemplate('{{ id }}')">🔄</button>
+                                            </div>
+                                        </div>
+                                        <div class="template-content">
+                                            <textarea class="template-input" 
+                                                      id="template-{{ id }}" 
+                                                      placeholder="Enter your feedback template for this section..."
+                                                      data-original="{{ item.template }}"
+                                                      rows="4">{{ item.template }}</textarea>
+                                            <div class="template-footer">
+                                                <div class="template-stats">
+                                                    <span id="chars-{{ id }}">{{ item.template | length }} chars</span>
+                                                    <span id="words-{{ id }}">{{ item.template.split() | length }} words</span>
+                                                </div>
+                                                <button class="save-template-btn" data-id="{{ id }}">💾 Save</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
                             </div>
                             {% endfor %}
                         </div>
                         
-                        <button id="save-all-templates" class="save-all-templates-btn">Save All Templates</button>
+                        <div class="section-footer">
+                            <button id="save-all-templates" class="primary-btn">💾 Save All Templates</button>
+                            <button id="reset-all-templates" class="secondary-btn">🔄 Reset All to Defaults</button>
+                        </div>
                     </div>
                     
                     <!-- Comments Tab -->
                     <div class="tab-panel" id="comments-panel">
-                        <h2>Edit Common Comments</h2>
-                        <button id="add-comment-btn" class="add-btn">Add New Comment</button>
+                        <div class="section-header">
+                            <h2>💬 Edit Quick Comments</h2>
+                            <p>Quick comments are pre-written feedback snippets that can be easily inserted during review. Organize them by category for easy access.</p>
+                        </div>
+                        
+                        <div class="comments-toolbar">
+                            <button id="add-comment-btn" class="add-btn">➕ Add New Comment</button>
+                            <input type="text" id="comments-search" placeholder="🔍 Search comments..." class="search-input">
+                            <select id="comments-filter" class="filter-select">
+                                <option value="">All Categories</option>
+                                <option value="methodology">Methodology</option>
+                                <option value="data_format">Data Format</option>
+                                <option value="quality">Quality</option>
+                                <option value="storage">Storage</option>
+                                <option value="sharing">Sharing</option>
+                            </select>
+                        </div>
+                        
                         <div id="comments-container">
                             {% for key, comment in comments.items() %}
-                            <div class="edit-item" data-id="{{ key }}">
+                            <div class="edit-item comment-item" data-id="{{ key }}" data-category="{{ key }}">
                                 <div class="edit-header">
-                                    <input type="text" class="key-input" value="{{ key }}" placeholder="Comment key">
-                                    <button class="delete-btn" data-type="comment" data-id="{{ key }}">Delete</button>
+                                    <div class="comment-key">
+                                        <label>Comment Key:</label>
+                                        <input type="text" class="key-input" value="{{ key }}" placeholder="unique_key_name">
+                                    </div>
+                                    <div class="comment-actions">
+                                        <button class="preview-comment-btn" onclick="previewComment('{{ key }}')">👁️</button>
+                                        <button class="delete-btn" data-type="comment" data-id="{{ key }}">🗑️</button>
+                                    </div>
                                 </div>
-                                <textarea class="content-input">{{ comment }}</textarea>
+                                <div class="comment-content">
+                                    <label>Comment Text:</label>
+                                    <textarea class="content-input" placeholder="Enter the comment text that will be inserted...">{{ comment }}</textarea>
+                                    <div class="comment-stats">
+                                        <span class="char-count">{{ comment | length }} chars</span>
+                                        <span class="word-count">{{ comment.split() | length }} words</span>
+                                    </div>
+                                </div>
                             </div>
                             {% endfor %}
                         </div>
-                        <button id="save-comments-btn" class="save-btn">Save All Comments</button>
+                        
+                        <div class="section-footer">
+                            <button id="save-comments-btn" class="primary-btn">💾 Save All Comments</button>
+                            <button id="import-comments-btn" class="secondary-btn">📁 Import Comments</button>
+                            <button id="export-comments-btn" class="secondary-btn">💾 Export Comments</button>
+                        </div>
                     </div>
                     
                     <!-- Keywords Tab -->
                     <div class="tab-panel" id="keywords-panel">
-                        <h2>Edit Keywords for Tagging</h2>
-                        <button id="add-keyword-group-btn" class="add-btn">Add New Keyword Group</button>
+                        <div class="section-header">
+                            <h2>🏷️ Edit Keywords for Auto-Tagging</h2>
+                            <p>Keywords are used to automatically tag and categorize content in DMP documents. Group related terms together for better organization.</p>
+                        </div>
+                        
+                        <div class="keywords-toolbar">
+                            <button id="add-keyword-group-btn" class="add-btn">➕ Add New Category</button>
+                            <input type="text" id="keywords-search" placeholder="🔍 Search keywords..." class="search-input">
+                            <button id="analyze-keywords-btn" class="secondary-btn">📊 Analyze Usage</button>
+                        </div>
+                        
                         <div id="keywords-container">
                             {% for category, phrases in key_phrases.items() %}
-                            <div class="edit-item" data-id="{{ category }}">
+                            <div class="edit-item keyword-group" data-id="{{ category }}">
                                 <div class="edit-header">
-                                    <input type="text" class="key-input" value="{{ category }}" placeholder="Category name">
-                                    <button class="delete-btn" data-type="keyword" data-id="{{ category }}">Delete</button>
+                                    <div class="keyword-category">
+                                        <label>Category Name:</label>
+                                        <input type="text" class="key-input" value="{{ category }}" placeholder="category_name">
+                                    </div>
+                                    <div class="keyword-stats">
+                                        <span class="phrase-count">{{ phrases | length }} phrases</span>
+                                        <button class="delete-btn" data-type="keyword" data-id="{{ category }}">🗑️</button>
+                                    </div>
                                 </div>
                                 <div class="phrases-container">
-                                    {% for phrase in phrases %}
-                                    <div class="phrase-item">
-                                        <input type="text" class="phrase-input" value="{{ phrase }}">
-                                        <button class="remove-phrase-btn">Remove</button>
+                                    <label>Keywords/Phrases:</label>
+                                    <div class="phrases-list">
+                                        {% for phrase in phrases %}
+                                        <div class="phrase-item">
+                                            <input type="text" class="phrase-input" value="{{ phrase }}" placeholder="keyword or phrase">
+                                            <button class="remove-phrase-btn" title="Remove this phrase">✕</button>
+                                        </div>
+                                        {% endfor %}
                                     </div>
-                                    {% endfor %}
-                                    <button class="add-phrase-btn">Add Phrase</button>
+                                    <button class="add-phrase-btn">➕ Add Phrase</button>
                                 </div>
                             </div>
                             {% endfor %}
                         </div>
-                        <button id="save-keywords-btn" class="save-btn">Save All Keywords</button>
+                        
+                        <div class="section-footer">
+                            <button id="save-keywords-btn" class="primary-btn">💾 Save All Keywords</button>
+                            <button id="import-keywords-btn" class="secondary-btn">📁 Import Keywords</button>
+                            <button id="export-keywords-btn" class="secondary-btn">💾 Export Keywords</button>
+                        </div>
                     </div>
                     
                     <!-- Structure Tab -->
                     <div class="tab-panel" id="structure-panel">
-                        <h2>Edit DMP Structure</h2>
-                        <button id="add-section-btn" class="add-btn">Add New Section</button>
+                        <div class="section-header">
+                            <h2>📊 Edit DMP Structure</h2>
+                            <p>Define the structure and questions that the system looks for when extracting DMP content. This affects how documents are parsed and organized.</p>
+                        </div>
+                        
+                        <div class="structure-toolbar">
+                            <button id="add-section-btn" class="add-btn">➕ Add New Section</button>
+                            <button id="import-structure-btn" class="secondary-btn">📁 Import Structure</button>
+                            <button id="export-structure-btn" class="secondary-btn">💾 Export Structure</button>
+                        </div>
+                        
                         <div id="structure-container">
                             {% for section, questions in dmp_structure.items() %}
                             <div class="section-item" data-section="{{ section }}">
-                                <div class="section-header">
-                                    <input type="text" class="section-input" value="{{ section }}" placeholder="Section title">
-                                    <button class="delete-btn" data-type="section" data-id="{{ section }}">Delete Section</button>
+                                <div class="section-header-edit">
+                                    <div class="section-title">
+                                        <label>Section Title:</label>
+                                        <input type="text" class="section-input" value="{{ section }}" placeholder="Section title">
+                                    </div>
+                                    <div class="section-stats">
+                                        <span class="question-count">{{ questions | length }} questions</span>
+                                        <button class="collapse-section-btn" onclick="toggleSection(this)">−</button>
+                                        <button class="delete-btn" data-type="section" data-id="{{ section }}">🗑️</button>
+                                    </div>
                                 </div>
                                 <div class="questions-container">
-                                    {% for question in questions %}
-                                    <div class="question-item">
-                                        <input type="text" class="question-input" value="{{ question }}">
-                                        <button class="remove-question-btn">Remove</button>
+                                    <label>Questions in this section:</label>
+                                    <div class="questions-list">
+                                        {% for question in questions %}
+                                        <div class="question-item">
+                                            <div class="question-number">{{ loop.index }}</div>
+                                            <input type="text" class="question-input" value="{{ question }}" placeholder="Question text">
+                                            <button class="remove-question-btn" title="Remove this question">✕</button>
+                                        </div>
+                                        {% endfor %}
                                     </div>
-                                    {% endfor %}
-                                    <button class="add-question-btn">Add Question</button>
+                                    <button class="add-question-btn">➕ Add Question</button>
                                 </div>
                             </div>
                             {% endfor %}
                         </div>
-                        <button id="save-structure-btn" class="save-btn">Save Structure</button>
+                        
+                        <div class="section-footer">
+                            <button id="save-structure-btn" class="primary-btn">💾 Save Structure</button>
+                            <button id="reset-structure-btn" class="secondary-btn">🔄 Reset to Default</button>
+                            <button id="validate-structure-btn" class="secondary-btn">✅ Validate Structure</button>
+                        </div>
                     </div>
                 </div>
             </div>
             
             <div class="navigation-links">
-                <a href="/" class="secondary-btn">Return to Home</a>
+                <a href="/" class="secondary-btn">🏠 Return to Home</a>
+                <a href="#" onclick="showHelp()" class="secondary-btn">❓ Help</a>
             </div>
         </main>
+        
+        <!-- Help Modal -->
+        <div id="help-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>❓ Template Editor Help</h3>
+                    <button class="close-btn" onclick="hideModal('help-modal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <h4>📝 Feedback Templates</h4>
+                    <p>Customize the default feedback text for each DMP section. Templates are used as starting points when reviewing documents.</p>
+                    
+                    <h4>💬 Quick Comments</h4>
+                    <p>Create reusable comment snippets that can be quickly inserted during review. Organize by category for easy access.</p>
+                    
+                    <h4>🏷️ Keywords & Tags</h4>
+                    <p>Define keywords that automatically tag content during extraction. Group related terms together for better categorization.</p>
+                    
+                    <h4>📊 DMP Structure</h4>
+                    <p>Configure how the system identifies and organizes DMP sections. This affects document parsing and content extraction.</p>
+                    
+                    <h4>⌨️ Keyboard Shortcuts</h4>
+                    <ul>
+                        <li><kbd>Ctrl/Cmd + S</kbd> - Save current tab</li>
+                        <li><kbd>Ctrl/Cmd + Shift + S</kbd> - Save all</li>
+                        <li><kbd>Ctrl/Cmd + Shift + D</kbd> - Toggle dark mode</li>
+                        <li><kbd>Tab</kbd> - Navigate between tabs</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Preview Modal -->
+        <div id="preview-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="preview-title">👁️ Template Preview</h3>
+                    <button class="close-btn" onclick="hideModal('preview-modal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="preview-content"></div>
+                </div>
+            </div>
+        </div>
         
         <div id="success-toast" class="success-toast">Changes saved successfully!</div>
         
         <footer>
-            <p>DMP Review Tool &copy; 2025</p>
+            <p>DMP ART Template Editor &copy; 2025 - Enhanced with Dark Mode</p>
         </footer>
     </div>
     
     <script src="{{ url_for('static', filename='js/template_editor.js') }}"></script>
+    <script>
+        // Enhanced template editor functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTemplateEditor();
+            setupSearch();
+            setupCharacterCounters();
+            setupKeyboardShortcuts();
+            initializeDarkModeToggle();
+        });
+
+        function initializeTemplateEditor() {
+            // Update character counters for all textareas
+            document.querySelectorAll('.template-input, .content-input').forEach(textarea => {
+                updateCharacterCount(textarea);
+                
+                textarea.addEventListener('input', function() {
+                    updateCharacterCount(this);
+                });
+            });
+        }
+
+        function updateCharacterCount(textarea) {
+            const text = textarea.value;
+            const chars = text.length;
+            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+            
+            const id = textarea.id.replace('template-', '');
+            const charsElement = document.getElementById(`chars-${id}`);
+            const wordsElement = document.getElementById(`words-${id}`);
+            
+            if (charsElement) charsElement.textContent = `${chars} chars`;
+            if (wordsElement) wordsElement.textContent = `${words} words`;
+            
+            // Update parent comment stats if it's a comment
+            const commentItem = textarea.closest('.comment-item');
+            if (commentItem) {
+                const charCount = commentItem.querySelector('.char-count');
+                const wordCount = commentItem.querySelector('.word-count');
+                if (charCount) charCount.textContent = `${chars} chars`;
+                if (wordCount) wordCount.textContent = `${words} words`;
+            }
+        }
+
+        function setupSearch() {
+            // Templates search
+            const templatesSearch = document.getElementById('templates-search');
+            if (templatesSearch) {
+                templatesSearch.addEventListener('input', function() {
+                    filterTemplates(this.value);
+                });
+            }
+            
+            // Comments search
+            const commentsSearch = document.getElementById('comments-search');
+            if (commentsSearch) {
+                commentsSearch.addEventListener('input', function() {
+                    filterComments(this.value);
+                });
+            }
+            
+            // Keywords search
+            const keywordsSearch = document.getElementById('keywords-search');
+            if (keywordsSearch) {
+                keywordsSearch.addEventListener('input', function() {
+                    filterKeywords(this.value);
+                });
+            }
+        }
+
+        function filterTemplates(query) {
+            const items = document.querySelectorAll('.template-item');
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                const match = text.includes(query.toLowerCase());
+                item.style.display = match ? 'block' : 'none';
+            });
+        }
+
+        function filterComments(query) {
+            const items = document.querySelectorAll('.comment-item');
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                const match = text.includes(query.toLowerCase());
+                item.style.display = match ? 'block' : 'none';
+            });
+        }
+
+        function filterKeywords(query) {
+            const items = document.querySelectorAll('.keyword-group');
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                const match = text.includes(query.toLowerCase());
+                item.style.display = match ? 'block' : 'none';
+            });
+        }
+
+        function setupCharacterCounters() {
+            document.querySelectorAll('textarea').forEach(textarea => {
+                textarea.addEventListener('input', function() {
+                    updateCharacterCount(this);
+                });
+                updateCharacterCount(textarea);
+            });
+        }
+
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                    e.preventDefault();
+                    const activeTab = document.querySelector('.tab-btn.active').getAttribute('data-tab');
+                    saveCurrentTab(activeTab);
+                }
+                
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'S') {
+                    e.preventDefault();
+                    saveAllTabs();
+                }
+                
+                if (e.key === 'Tab' && e.shiftKey) {
+                    // Navigate between tabs
+                    const tabs = document.querySelectorAll('.tab-btn');
+                    const currentIndex = Array.from(tabs).findIndex(tab => tab.classList.contains('active'));
+                    const nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+                    tabs[nextIndex].click();
+                    e.preventDefault();
+                } else if (e.key === 'Tab' && !e.shiftKey && e.target.classList.contains('tab-btn')) {
+                    const tabs = document.querySelectorAll('.tab-btn');
+                    const currentIndex = Array.from(tabs).findIndex(tab => tab.classList.contains('active'));
+                    const nextIndex = (currentIndex + 1) % tabs.length;
+                    tabs[nextIndex].click();
+                    e.preventDefault();
+                }
+            });
+        }
+
+        function saveCurrentTab(tabName) {
+            switch(tabName) {
+                case 'templates':
+                    document.getElementById('save-all-templates').click();
+                    break;
+                case 'comments':
+                    document.getElementById('save-comments-btn').click();
+                    break;
+                case 'keywords':
+                    document.getElementById('save-keywords-btn').click();
+                    break;
+                case 'structure':
+                    document.getElementById('save-structure-btn').click();
+                    break;
+            }
+        }
+
+        function saveAllTabs() {
+            document.getElementById('save-all-templates').click();
+            setTimeout(() => document.getElementById('save-comments-btn').click(), 500);
+            setTimeout(() => document.getElementById('save-keywords-btn').click(), 1000);
+            setTimeout(() => document.getElementById('save-structure-btn').click(), 1500);
+        }
+
+        function toggleGroup(button) {
+            const group = button.closest('.template-group');
+            const content = group.querySelector('.group-content');
+            const isCollapsed = content.style.display === 'none';
+            
+            content.style.display = isCollapsed ? 'block' : 'none';
+            button.textContent = isCollapsed ? '−' : '+';
+        }
+
+        function toggleSection(button) {
+            const section = button.closest('.section-item');
+            const content = section.querySelector('.questions-container');
+            const isCollapsed = content.style.display === 'none';
+            
+            content.style.display = isCollapsed ? 'block' : 'none';
+            button.textContent = isCollapsed ? '−' : '+';
+        }
+
+        function previewTemplate(id) {
+            const textarea = document.getElementById(`template-${id}`);
+            const question = textarea.closest('.template-item').querySelector('h3').textContent;
+            
+            document.getElementById('preview-title').textContent = `👁️ Template Preview: ${id}`;
+            document.getElementById('preview-content').innerHTML = `
+                <h4>${question}</h4>
+                <div style="background-color: var(--bg-secondary); padding: 15px; border-radius: 5px; margin-top: 10px;">
+                    <strong>Template:</strong><br>
+                    ${textarea.value.replace(/\n/g, '<br>')}
+                </div>
+                <div style="margin-top: 10px; font-size: 0.9rem; color: var(--text-secondary);">
+                    <strong>Stats:</strong> ${textarea.value.length} characters, ${textarea.value.trim().split(/\s+/).length} words
+                </div>
+            `;
+            showModal('preview-modal');
+        }
+
+        function previewComment(key) {
+            const item = document.querySelector(`[data-id="${key}"]`);
+            const comment = item.querySelector('.content-input').value;
+            
+            document.getElementById('preview-title').textContent = `👁️ Comment Preview: ${key}`;
+            document.getElementById('preview-content').innerHTML = `
+                <div style="background-color: var(--bg-secondary); padding: 15px; border-radius: 5px;">
+                    <strong>Comment:</strong><br>
+                    ${comment.replace(/\n/g, '<br>')}
+                </div>
+                <div style="margin-top: 10px; font-size: 0.9rem; color: var(--text-secondary);">
+                    <strong>Stats:</strong> ${comment.length} characters, ${comment.trim().split(/\s+/).length} words
+                </div>
+            `;
+            showModal('preview-modal');
+        }
+
+        function resetTemplate(id) {
+            const textarea = document.getElementById(`template-${id}`);
+            const original = textarea.getAttribute('data-original');
+            if (original && confirm('Reset this template to its original value?')) {
+                textarea.value = original;
+                updateCharacterCount(textarea);
+                showToast('🔄 Template reset to original!');
+            }
+        }
+
+        function showHelp() {
+            showModal('help-modal');
+        }
+
+        function showModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function hideModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('success-toast');
+            if (!toast) return;
+            
+            toast.textContent = message;
+            toast.className = 'success-toast';
+            
+            if (type === 'error') {
+                toast.classList.add('error');
+            }
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Dark mode toggle
+        function initializeDarkModeToggle() {
+            if (document.querySelector('.theme-toggle')) return;
+            
+            const toggle = document.createElement('button');
+            toggle.className = 'theme-toggle';
+            toggle.setAttribute('aria-label', 'Toggle dark mode');
+            
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            const isLight = currentTheme === 'light';
+            
+            toggle.innerHTML = `
+                <span class="icon">${isLight ? '🌙' : '☀️'}</span>
+                <span>${isLight ? 'Dark' : 'Light'}</span>
+            `;
+            
+            toggle.addEventListener('click', function() {
+                const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('dmp-art-theme', newTheme);
+                
+                const isLight = newTheme === 'light';
+                toggle.innerHTML = `
+                    <span class="icon">${isLight ? '🌙' : '☀️'}</span>
+                    <span>${isLight ? 'Dark' : 'Light'}</span>
+                `;
+                
+                const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+                if (metaThemeColor) {
+                    metaThemeColor.content = newTheme === 'dark' ? '#121212' : '#ffffff';
+                }
+                
+                showToast(`${newTheme === 'dark' ? '🌙' : '☀️'} ${newTheme === 'dark' ? 'Dark' : 'Light'} mode enabled`);
+            });
+            
+            document.body.appendChild(toggle);
+        }
+    </script>
 </body>
 </html>
