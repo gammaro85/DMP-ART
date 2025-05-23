@@ -1,22 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
     <title>DMP ART - Review DMP</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- Prevent flash of unstyled content -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('dmp-art-theme');
+            const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+            
+            document.documentElement.setAttribute('data-theme', theme);
+            
+            const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+            if (metaThemeColor) {
+                metaThemeColor.content = theme === 'dark' ? '#121212' : '#ffffff';
+            }
+        })();
+    </script>
+    
     <style>
-        /* Enhanced styles for table-extracted content */
+        /* Enhanced styles for review interface */
         .table-extracted-content {
-            background-color: #f0f8ff;
-            border-left: 3px solid #4a90e2;
+            background-color: var(--status-info);
+            border-left: 3px solid var(--secondary-color);
             padding: 15px;
             margin-bottom: 15px;
             border-radius: 4px;
         }
 
         .table-extracted-content h4 {
-            color: #2c3e50;
+            color: var(--text-primary);
             margin-bottom: 10px;
             font-size: 0.95rem;
         }
@@ -45,49 +63,51 @@
         }
 
         .extraction-info {
-            background-color: #e8f5e8;
-            border: 1px solid #4caf50;
+            background-color: var(--status-success);
+            border: 1px solid var(--success-color);
             border-radius: 5px;
-            padding: 10px;
+            padding: 15px;
             margin-bottom: 20px;
         }
 
         .extraction-info h3 {
-            color: #2e7d32;
+            color: var(--success-color);
             margin-bottom: 8px;
             font-size: 1rem;
         }
 
         .extraction-stats {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
         }
 
         .stat-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 5px 10px;
-            background-color: white;
-            border-radius: 3px;
-            border: 1px solid #ddd;
+            padding: 10px;
+            background-color: var(--bg-card);
+            border-radius: 5px;
+            border: 1px solid var(--border-light);
+            text-align: center;
         }
 
         .stat-number {
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             font-weight: bold;
-            color: #2e7d32;
+            color: var(--success-color);
+            margin-bottom: 4px;
         }
 
         .stat-label {
             font-size: 0.8rem;
-            color: #666;
+            color: var(--text-secondary);
         }
 
         .content-type-indicator {
             display: inline-block;
-            padding: 2px 8px;
+            padding: 3px 8px;
             border-radius: 12px;
             font-size: 0.7rem;
             font-weight: bold;
@@ -104,48 +124,62 @@
             color: #7b1fa2;
         }
 
+        [data-theme="dark"] .content-table {
+            background-color: #1a2332;
+            color: #64b5f6;
+        }
+
+        [data-theme="dark"] .content-paragraph {
+            background-color: #2d1b32;
+            color: #ba68c8;
+        }
+
         .enhanced-paragraph {
             position: relative;
             margin-bottom: 12px;
-            padding: 8px;
+            padding: 10px;
             border-radius: 4px;
-            background-color: #fafafa;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-light);
         }
 
         .enhanced-paragraph.has-tags {
-            border-left: 3px solid #4caf50;
+            border-left: 3px solid var(--success-color);
         }
 
         .paragraph-metadata {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             font-size: 0.8rem;
-            color: #666;
+            color: var(--text-secondary);
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--border-light);
         }
 
         .word-count {
-            background-color: #e0e0e0;
-            padding: 2px 6px;
-            border-radius: 10px;
+            background-color: var(--bg-tertiary);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 500;
         }
 
         .no-content-warning {
-            background-color: #fff3cd;
-            border: 1px solid #ffeaa7;
-            color: #856404;
-            padding: 15px;
-            border-radius: 5px;
+            background-color: var(--status-warning);
+            border: 1px solid var(--accent-color);
+            color: var(--text-primary);
+            padding: 20px;
+            border-radius: 8px;
             margin-bottom: 15px;
             text-align: center;
         }
 
         .enhanced-feedback-section {
-            background-color: white;
+            background-color: var(--bg-card);
             padding: 15px;
-            border-radius: 4px;
-            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            border: 1px solid var(--border-light);
             position: relative;
         }
 
@@ -155,40 +189,47 @@
             align-items: center;
             margin-bottom: 10px;
             padding-bottom: 8px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--border-light);
         }
 
         .feedback-toolbar h3 {
             margin: 0;
-            color: var(--dark-color);
+            color: var(--text-primary);
             font-size: 1rem;
         }
 
         .char-counter {
             font-size: 0.8rem;
-            color: #666;
-            padding: 2px 6px;
-            background-color: #f5f5f5;
-            border-radius: 10px;
+            color: var(--text-secondary);
+            padding: 4px 8px;
+            background-color: var(--bg-tertiary);
+            border-radius: 12px;
+            font-weight: 500;
         }
 
         .progress-indicator {
             position: fixed;
-            top: 70px;
+            top: 80px;
             right: 20px;
-            background-color: white;
-            border: 1px solid #ddd;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-medium);
             border-radius: 8px;
             padding: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow);
             z-index: 1000;
-            min-width: 200px;
+            min-width: 220px;
+        }
+
+        .progress-indicator h4 {
+            margin-bottom: 10px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
         }
 
         .progress-bar {
             width: 100%;
             height: 8px;
-            background-color: #e0e0e0;
+            background-color: var(--bg-tertiary);
             border-radius: 4px;
             overflow: hidden;
             margin-bottom: 8px;
@@ -196,48 +237,86 @@
 
         .progress-fill {
             height: 100%;
-            background-color: #4caf50;
+            background-color: var(--success-color);
             transition: width 0.3s ease;
         }
 
         .section-navigation {
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 5px;
-            padding: 10px;
-            margin-bottom: 20px;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+
+        .section-navigation h4 {
+            margin-bottom: 10px;
+            color: var(--text-primary);
+            font-size: 1rem;
         }
 
         .nav-buttons {
             display: flex;
-            gap: 5px;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
         .nav-btn {
-            padding: 5px 10px;
-            border: 1px solid #ccc;
-            background-color: white;
-            border-radius: 3px;
+            padding: 6px 12px;
+            border: 1px solid var(--border-medium);
+            background-color: var(--bg-card);
+            border-radius: 4px;
             cursor: pointer;
             font-size: 0.8rem;
             transition: all 0.2s ease;
+            color: var(--text-primary);
+            font-weight: 500;
         }
 
         .nav-btn:hover {
             background-color: var(--secondary-color);
-            color: white;
+            color: var(--light-color);
+            transform: translateY(-1px);
         }
 
         .nav-btn.completed {
-            background-color: #4caf50;
-            color: white;
-            border-color: #4caf50;
+            background-color: var(--success-color);
+            color: var(--light-color);
+            border-color: var(--success-color);
+        }
+
+        .feedback-stats {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .feedback-stats .stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .auto-save-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 0.7rem;
+            color: var(--success-color);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .auto-save-indicator.show {
+            opacity: 1;
         }
 
         @media (max-width: 768px) {
             .extraction-stats {
-                justify-content: center;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
             }
             
             .progress-indicator {
@@ -245,12 +324,19 @@
                 top: auto;
                 right: auto;
                 margin-bottom: 20px;
+                min-width: auto;
             }
             
             .feedback-toolbar {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 5px;
+                gap: 8px;
+            }
+            
+            .paragraph-metadata {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
             }
         }
     </style>
@@ -264,53 +350,75 @@
         
         <main class="review-container">
             <div class="control-panel">
-                <h2>Review DMP: {{ filename }}</h2>
+                <div class="panel-left">
+                    <h2>📋 Review DMP: {{ filename }}</h2>
+                    <div class="file-info">
+                        <span class="file-size">{{ "%.2f"|format((filename|length * 1024) / (1024*1024)) }} MB</span>
+                        {% if cache_id %}
+                        <span class="cache-info">Cache ID: {{ cache_id[:8] }}</span>
+                        {% endif %}
+                    </div>
+                </div>
                 <div class="action-btns">
-                    <a href="{{ url_for('download_file', filename=filename) }}" class="download-btn">Download Original</a>
-                    <button id="save-feedback-btn" class="save-all-btn">Save Feedback</button>
-                    <button id="compile-btn" class="compile-btn">Compile All Feedback</button>
+                    <a href="{{ url_for('download_file', filename=filename) }}" class="download-btn" title="Download original document">💾 Download Original</a>
+                    <button id="save-feedback-btn" class="save-all-btn" title="Save feedback to server">💾 Save Feedback</button>
+                    <button id="compile-btn" class="compile-btn" title="Compile all feedback into report">📋 Compile Report</button>
                 </div>
             </div>
 
             <!-- Extraction Information -->
             {% if extraction_info %}
             <div class="extraction-info">
-                <h3>Extraction Results</h3>
+                <h3>📊 Extraction Results</h3>
                 <div class="extraction-stats">
                     <div class="stat-item">
-                        <span class="stat-number">{{ extraction_info.total_sections }}</span>
+                        <span class="stat-number">{{ extraction_info.get('total_sections', 0) }}</span>
                         <span class="stat-label">Total Sections</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-number">{{ extraction_info.sections_with_content }}</span>
+                        <span class="stat-number">{{ extraction_info.get('sections_with_content', 0) }}</span>
                         <span class="stat-label">With Content</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-number">{{ ((extraction_info.sections_with_content / extraction_info.total_sections) * 100) | round | int }}%</span>
-                        <span class="stat-label">Extraction Rate</span>
+                        <span class="stat-number">{{ "%.0f"|format(((extraction_info.get('sections_with_content', 0) / extraction_info.get('total_sections', 1)) * 100) if extraction_info.get('total_sections', 0) > 0 else 0) }}%</span>
+                        <span class="stat-label">Success Rate</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">{{ extracted_content|length }}</span>
+                        <span class="stat-label">Questions</span>
                     </div>
                 </div>
-                <p style="margin-top: 10px; font-size: 0.9rem; color: #666;">
-                    Method: {{ extraction_info.extraction_method }}
+                <p style="margin-top: 12px; font-size: 0.9rem; color: var(--text-secondary);">
+                    <strong>Method:</strong> {{ extraction_info.get('extraction_method', 'Standard processing') }}
                 </p>
             </div>
             {% endif %}
 
             <!-- Section Navigation -->
             <div class="section-navigation">
-                <h4>Quick Navigation</h4>
+                <h4>🧭 Quick Navigation</h4>
                 <div class="nav-buttons" id="section-nav">
-                    <!-- Will be populated by JavaScript -->
+                    <!-- Populated by JavaScript -->
                 </div>
             </div>
 
             <!-- Progress Indicator -->
             <div class="progress-indicator" id="progress-indicator">
-                <h4>Review Progress</h4>
+                <h4>📈 Review Progress</h4>
                 <div class="progress-bar">
                     <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
                 </div>
                 <div id="progress-text">0 / {{ extracted_content|length }} sections completed</div>
+                <div class="feedback-stats" id="feedback-stats">
+                    <div class="stat">
+                        <span>📝</span>
+                        <span id="total-chars">0 chars</span>
+                    </div>
+                    <div class="stat">
+                        <span>📊</span>
+                        <span id="total-words">0 words</span>
+                    </div>
+                </div>
             </div>
             
             <div id="questions-container">
@@ -320,9 +428,9 @@
                         <div class="question-title">
                             {{ content.question }}
                             {% if content.paragraphs|length > 0 %}
-                                <span class="content-type-indicator content-table">Table Content</span>
+                                <span class="content-type-indicator content-table">📊 Table Content</span>
                             {% else %}
-                                <span class="content-type-indicator content-paragraph">Text Content</span>
+                                <span class="content-type-indicator content-paragraph">📄 Text Content</span>
                             {% endif %}
                         </div>
                         <div class="section-label">{{ content.section }}</div>
@@ -330,12 +438,12 @@
                     
                     <!-- Extracted DMP content -->
                     <div class="extracted-content">
-                        <h3>Extracted Content:</h3>
+                        <h3>📖 Extracted Content</h3>
                         {% if content.paragraphs|length > 0 %}
                             {% for paragraph in content.paragraphs %}
-                            <div class="enhanced-paragraph {% if content.tagged_paragraphs and loop.index0 < content.tagged_paragraphs|length and content.tagged_paragraphs[loop.index0].tags|length > 0 %}has-tags{% endif %}">
+                            <div class="enhanced-paragraph {% if content.tagged_paragraphs and loop.index0 < content.tagged_paragraphs|length and content.tagged_paragraphs[loop.index0].get('tags', [])|length > 0 %}has-tags{% endif %}">
                                 <div class="paragraph-metadata">
-                                    <span>Paragraph {{ loop.index }}</span>
+                                    <span><strong>Paragraph {{ loop.index }}</strong></span>
                                     <span class="word-count">{{ paragraph.split()|length }} words</span>
                                 </div>
                                 
@@ -343,10 +451,15 @@
                                 
                                 <!-- Enhanced tag display -->
                                 {% if content.tagged_paragraphs and loop.index0 < content.tagged_paragraphs|length %}
-                                    {% if content.tagged_paragraphs[loop.index0].tags|length > 0 %}
+                                    {% set tagged_para = content.tagged_paragraphs[loop.index0] %}
+                                    {% if tagged_para.get('tags', [])|length > 0 %}
                                     <div class="paragraph-tags">
-                                        {% for tag in content.tagged_paragraphs[loop.index0].tags %}
-                                        <button class="tag-btn" data-comment="{{ comments[tag] if tag in comments else 'No comment available for this tag.' }}" title="Click to add comment">{{ tag }}</button>
+                                        {% for tag in tagged_para.get('tags', []) %}
+                                        <button class="tag-btn" 
+                                                data-comment="{{ comments.get(tag, 'No comment available for this tag.') }}" 
+                                                title="Click to add: {{ tag }} comment">
+                                            🏷️ {{ tag }}
+                                        </button>
                                         {% endfor %}
                                     </div>
                                     {% endif %}
@@ -355,29 +468,49 @@
                             {% endfor %}
                         {% else %}
                             <div class="no-content-warning">
-                                <strong>⚠️ No content found for this section.</strong>
+                                <div style="font-size: 2rem; margin-bottom: 10px;">⚠️</div>
+                                <strong>No content found for this section</strong>
                                 <p>This may indicate that the extraction process couldn't identify content for this specific subsection, or the content may be in a format that wasn't recognized.</p>
+                                <details style="margin-top: 10px;">
+                                    <summary>Possible reasons</summary>
+                                    <ul style="text-align: left; display: inline-block; margin-top: 5px;">
+                                        <li>Content was in a different format than expected</li>
+                                        <li>Section headers weren't recognized</li>
+                                        <li>Content was in tables or complex layouts</li>
+                                        <li>Text was part of images or non-extractable elements</li>
+                                    </ul>
+                                </details>
                             </div>
                         {% endif %}
                     </div>
                     
                     <!-- Enhanced comment buttons -->
                     <div class="comment-buttons">
-                        <h3>Quick Comments:</h3>
+                        <h3>💬 Quick Comments</h3>
                         <div style="display: flex; flex-wrap: wrap; gap: 8px;">
                             {% for tag, comment in comments.items() %}
-                            <button class="comment-btn" data-id="{{ section_id }}" data-comment="{{ comment }}" title="{{ comment[:50] }}...">{{ tag }}</button>
+                            <button class="comment-btn" 
+                                    data-id="{{ section_id }}" 
+                                    data-comment="{{ comment }}" 
+                                    title="{{ comment[:50] }}..."
+                                    onclick="insertCommentWithAnimation('{{ section_id }}', '{{ comment|replace("'", "\\'") }}')">
+                                🏷️ {{ tag }}
+                            </button>
                             {% endfor %}
                         </div>
                     </div>
                     
                     <!-- Enhanced feedback section -->
                     <div class="enhanced-feedback-section">
+                        <div class="auto-save-indicator" id="auto-save-{{ section_id }}">💾 Auto-saved</div>
                         <div class="feedback-toolbar">
-                            <h3>Your Feedback:</h3>
+                            <h3>✍️ Your Feedback</h3>
                             <span class="char-counter" id="char-counter-{{ section_id }}">0 characters</span>
                         </div>
-                        <textarea class="feedback-text" id="feedback-{{ section_id }}" placeholder="Enter your feedback for this section...">{{ templates[section_id].template if section_id in templates else "" }}</textarea>
+                        <textarea class="feedback-text" 
+                                  id="feedback-{{ section_id }}" 
+                                  placeholder="Enter your feedback for this section..."
+                                  data-section-id="{{ section_id }}">{{ templates.get(section_id, {}).get('template', '') if section_id in templates else "" }}</textarea>
                         <div class="action-row">
                             <button class="copy-btn" data-id="{{ section_id }}" title="Copy feedback to clipboard">📋 Copy</button>
                             <button class="reset-btn" data-id="{{ section_id }}" title="Reset to original template">🔄 Reset</button>
@@ -390,31 +523,36 @@
             
             <!-- Enhanced compiled feedback section -->
             <div id="compiled-feedback-container" class="compiled-feedback-container hidden">
-                <h2>📄 Compiled Feedback Report</h2>
-                <div style="margin-bottom: 15px;">
-                    <strong>Document:</strong> {{ filename }}<br>
-                    <strong>Generated:</strong> <span id="generation-time"></span><br>
-                    <strong>Sections Reviewed:</strong> <span id="sections-reviewed"></span>
+                <div class="modal-header">
+                    <h2>📄 Compiled Feedback Report</h2>
+                    <button id="close-compiled-btn" class="close-btn" title="Close this dialog">&times;</button>
+                </div>
+                <div class="report-metadata">
+                    <div class="metadata-grid">
+                        <div><strong>Document:</strong> {{ filename }}</div>
+                        <div><strong>Generated:</strong> <span id="generation-time"></span></div>
+                        <div><strong>Sections Reviewed:</strong> <span id="sections-reviewed"></span></div>
+                        <div><strong>Total Feedback:</strong> <span id="total-feedback-length"></span></div>
+                    </div>
                 </div>
                 <textarea id="compiled-feedback" readonly placeholder="Your compiled feedback will appear here..."></textarea>
                 <div class="compiled-actions">
                     <button id="copy-compiled-btn" title="Copy all feedback to clipboard">📋 Copy All</button>
-                    <button id="download-feedback-btn" title="Download feedback as text file">💾 Download as Text</button>
-                    <button id="export-feedback-btn" title="Export as formatted document">📄 Export as Doc</button>
-                    <button id="close-compiled-btn" title="Close this dialog">❌ Close</button>
+                    <button id="download-feedback-btn" title="Download feedback as text file">💾 Download TXT</button>
+                    <button id="export-feedback-btn" title="Export as HTML document">📄 Export HTML</button>
                 </div>
             </div>
             
             <div class="action-buttons">
-                <a href="/" class="secondary-btn">Process Another PDF</a>
-                <a href="/template_editor" class="secondary-btn">Customize Templates</a>
+                <a href="/" class="secondary-btn">🏠 Process Another File</a>
+                <a href="/template_editor" class="secondary-btn">⚙️ Customize Templates</a>
             </div>
         </main>
         
         <div id="success-toast" class="success-toast">Operation completed successfully!</div>
         
         <footer>
-            <p>DMP ART &copy; 2025 - Enhanced DOCX Processing</p>
+            <p>DMP ART &copy; 2025 - Enhanced Review Interface with Dark Mode</p>
         </footer>
     </div>
     
@@ -430,6 +568,8 @@
             setupSectionNavigation();
             setupCharacterCounters();
             setupEnhancedFeedbackFeatures();
+            setupAutoSave();
+            initializeDarkModeToggle();
         });
 
         function initializeReviewInterface() {
@@ -457,25 +597,13 @@
                 originalTemplates[id] = textarea.value;
             });
 
-            // Handle comment button clicks
-            if (commentButtons) {
-                commentButtons.forEach(button => {
-                    button.addEventListener('click', function() {
-                        const id = this.getAttribute('data-id');
-                        const comment = this.getAttribute('data-comment');
-                        insertComment(id, comment);
-                        updateProgress();
-                    });
-                });
-            }
-
             // Handle tag button clicks
             if (tagButtons) {
                 tagButtons.forEach(button => {
                     button.addEventListener('click', function() {
                         const id = this.closest('.question-card').getAttribute('data-id');
                         const comment = this.getAttribute('data-comment');
-                        insertComment(id, comment);
+                        insertCommentWithAnimation(id, comment);
                         updateProgress();
                     });
                 });
@@ -489,7 +617,7 @@
                         const textarea = document.getElementById(`feedback-${id}`);
                         if (textarea) {
                             copyToClipboard(textarea.value);
-                            showToast('Feedback copied to clipboard! 📋');
+                            showToast('📋 Feedback copied to clipboard!');
                         }
                     });
                 });
@@ -506,6 +634,7 @@
                             textarea.value = originalTemplates[id];
                             updateCharacterCounter(id);
                             updateProgress();
+                            showToast('🔄 Template reset!');
                         }
                     });
                 });
@@ -522,6 +651,7 @@
                             textarea.value = '';
                             updateCharacterCounter(id);
                             updateProgress();
+                            showToast('🗑️ Feedback cleared!');
                         }
                     });
                 });
@@ -539,7 +669,7 @@
                 copyCompiledButton.addEventListener('click', function() {
                     if (compiledTextarea) {
                         copyToClipboard(compiledTextarea.value);
-                        showToast('All feedback copied to clipboard! 📋');
+                        showToast('📋 All feedback copied to clipboard!');
                     }
                 });
             }
@@ -555,7 +685,7 @@
             if (exportFeedbackButton) {
                 exportFeedbackButton.addEventListener('click', function() {
                     if (compiledTextarea && compiledTextarea.value) {
-                        downloadFeedback(compiledTextarea.value, 'doc');
+                        downloadFeedback(compiledTextarea.value, 'html');
                     }
                 });
             }
@@ -585,6 +715,7 @@
                 textarea.addEventListener('input', function() {
                     updateCharacterCounter(id);
                     updateProgress();
+                    updateOverallStats();
                 });
                 
                 // Initialize counter
@@ -603,8 +734,26 @@
             }
         }
 
+        function updateOverallStats() {
+            let totalChars = 0;
+            let totalWords = 0;
+            
+            document.querySelectorAll('.feedback-text').forEach(textarea => {
+                totalChars += textarea.value.length;
+                const words = textarea.value.trim().split(/\s+/).filter(word => word.length > 0).length;
+                totalWords += words;
+            });
+            
+            const charsElement = document.getElementById('total-chars');
+            const wordsElement = document.getElementById('total-words');
+            
+            if (charsElement) charsElement.textContent = `${totalChars} chars`;
+            if (wordsElement) wordsElement.textContent = `${totalWords} words`;
+        }
+
         function setupProgressTracking() {
             updateProgress();
+            updateOverallStats();
         }
 
         function updateProgress() {
@@ -637,13 +786,12 @@
             if (navContainer && questionCards.length > 0) {
                 questionCards.forEach((card, index) => {
                     const sectionId = card.getAttribute('data-id');
-                    const sectionTitle = card.querySelector('.question-title').textContent.trim();
                     const shortTitle = `${sectionId}`;
                     
                     const navBtn = document.createElement('button');
                     navBtn.className = 'nav-btn';
                     navBtn.textContent = shortTitle;
-                    navBtn.title = sectionTitle;
+                    navBtn.title = card.querySelector('.question-title').textContent.trim();
                     navBtn.onclick = () => scrollToSection(sectionId);
                     
                     navContainer.appendChild(navBtn);
@@ -676,7 +824,7 @@
                 card.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 
                 // Highlight the card briefly
-                card.style.boxShadow = '0 0 10px rgba(74, 144, 226, 0.5)';
+                card.style.boxShadow = '0 0 15px rgba(74, 144, 226, 0.6)';
                 setTimeout(() => {
                     card.style.boxShadow = '';
                 }, 2000);
@@ -684,21 +832,43 @@
         }
 
         function setupEnhancedFeedbackFeatures() {
-            // Auto-save functionality
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                    e.preventDefault();
+                    const feedbackText = compileAllFeedback(false);
+                    saveFeedbackToServer(feedbackText);
+                }
+                
+                if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+                    e.preventDefault();
+                    compileAllFeedback();
+                }
+            });
+        }
+
+        function setupAutoSave() {
             let autoSaveTimeout;
             document.querySelectorAll('.feedback-text').forEach(textarea => {
                 textarea.addEventListener('input', function() {
+                    const sectionId = this.getAttribute('data-section-id');
+                    const indicator = document.getElementById(`auto-save-${sectionId}`);
+                    
                     clearTimeout(autoSaveTimeout);
                     autoSaveTimeout = setTimeout(() => {
-                        console.log('Auto-saving feedback...');
-                        // Could implement auto-save here
-                    }, 5000);
+                        // Show auto-save indicator
+                        if (indicator) {
+                            indicator.classList.add('show');
+                            setTimeout(() => {
+                                indicator.classList.remove('show');
+                            }, 1500);
+                        }
+                    }, 3000);
                 });
             });
         }
 
-        // Insert comment into feedback textarea
-        function insertComment(id, comment) {
+        function insertCommentWithAnimation(id, comment) {
             const textarea = document.getElementById(`feedback-${id}`);
             if (!textarea) return;
             
@@ -706,63 +876,74 @@
             const startPos = textarea.selectionStart;
             const endPos = textarea.selectionEnd;
             
-            // Insert comment at cursor position or at the end
+            // Insert comment at cursor position
             if (startPos !== undefined && endPos !== undefined) {
-                // Add a newline if not at the beginning of the textarea
                 const prefix = startPos > 0 && textarea.value.charAt(startPos - 1) !== '\n' ? '\n' : '';
                 
-                // Add the comment
                 textarea.value = 
                     textarea.value.substring(0, startPos) + 
                     prefix + comment + '\n' + 
                     textarea.value.substring(endPos);
                 
-                // Set cursor position after inserted comment
                 const newPos = startPos + prefix.length + comment.length + 1;
                 textarea.selectionStart = newPos;
                 textarea.selectionEnd = newPos;
             } else {
-                // If no cursor position, append to the end
                 const prefix = textarea.value.length > 0 && textarea.value.charAt(textarea.value.length - 1) !== '\n' ? '\n' : '';
                 textarea.value += prefix + comment + '\n';
             }
             
-            // Focus the textarea
+            // Focus and animate
             textarea.focus();
+            textarea.style.backgroundColor = 'var(--bg-hover)';
+            setTimeout(() => {
+                textarea.style.backgroundColor = '';
+            }, 300);
             
-            // Update character counter
-            const sectionId = textarea.id.replace('feedback-', '');
-            updateCharacterCounter(sectionId);
+            // Update counters
+            updateCharacterCounter(id);
+            updateProgress();
+            updateOverallStats();
         }
 
-        // Compile all feedback
+        // Compile all feedback with enhanced formatting
         function compileAllFeedback(showCompiled = true) {
-            let allFeedback = `# DMP Feedback Report\n\n`;
+            let allFeedback = `# 📄 DMP Feedback Report\n\n`;
             allFeedback += `**Document:** ${dmpFilename}\n`;
-            allFeedback += `**Generated:** ${new Date().toLocaleString()}\n\n`;
+            allFeedback += `**Generated:** ${new Date().toLocaleString()}\n`;
+            allFeedback += `**Reviewer:** DMP ART Enhanced Edition\n\n`;
             allFeedback += `---\n\n`;
             
             let sectionsWithFeedback = 0;
+            let totalFeedbackLength = 0;
             
             document.querySelectorAll('.question-card').forEach(card => {
                 const id = card.getAttribute('data-id');
                 const titleElement = card.querySelector('.question-title');
                 const sectionElement = card.querySelector('.section-label');
-                const title = titleElement ? titleElement.textContent.trim() : `Section ${id}`;
+                const title = titleElement ? titleElement.textContent.trim().replace(/📊|📄/g, '').trim() : `Section ${id}`;
                 const section = sectionElement ? sectionElement.textContent.trim() : '';
                 const textarea = document.getElementById(`feedback-${id}`);
                 
                 if (textarea && textarea.value.trim()) {
                     sectionsWithFeedback++;
+                    totalFeedbackLength += textarea.value.trim().length;
+                    
                     allFeedback += `## ${section}\n\n`;
-                    allFeedback += `### ${title}\n\n`;
+                    allFeedback += `### ${id}: ${title}\n\n`;
                     allFeedback += `${textarea.value.trim()}\n\n`;
                     allFeedback += `---\n\n`;
                 }
             });
             
             if (sectionsWithFeedback === 0) {
-                allFeedback += `*No feedback has been provided for any sections.*\n`;
+                allFeedback += `*No feedback has been provided for any sections.*\n\n`;
+                allFeedback += `Please review the document and provide feedback using the interface above.\n`;
+            } else {
+                allFeedback += `## 📊 Summary\n\n`;
+                allFeedback += `- **Sections reviewed:** ${sectionsWithFeedback} of ${document.querySelectorAll('.question-card').length}\n`;
+                allFeedback += `- **Total feedback length:** ${totalFeedbackLength} characters\n`;
+                allFeedback += `- **Completion rate:** ${Math.round((sectionsWithFeedback / document.querySelectorAll('.question-card').length) * 100)}%\n\n`;
             }
             
             const compiledTextarea = document.getElementById('compiled-feedback');
@@ -773,6 +954,7 @@
             // Update generation info
             const generationTime = document.getElementById('generation-time');
             const sectionsReviewed = document.getElementById('sections-reviewed');
+            const totalFeedbackLengthElement = document.getElementById('total-feedback-length');
             
             if (generationTime) {
                 generationTime.textContent = new Date().toLocaleString();
@@ -780,6 +962,10 @@
             
             if (sectionsReviewed) {
                 sectionsReviewed.textContent = `${sectionsWithFeedback} of ${document.querySelectorAll('.question-card').length}`;
+            }
+            
+            if (totalFeedbackLengthElement) {
+                totalFeedbackLengthElement.textContent = `${totalFeedbackLength} characters`;
             }
             
             if (showCompiled) {
@@ -795,7 +981,7 @@
         // Save feedback to server
         function saveFeedbackToServer(feedbackText) {
             if (!feedbackText || !dmpFilename) {
-                showToast('No feedback to save! ⚠️', 'error');
+                showToast('⚠️ No feedback to save!', 'error');
                 return;
             }
             
@@ -814,13 +1000,13 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    showToast('Feedback saved successfully! 💾');
+                    showToast('💾 Feedback saved successfully!');
                 } else {
-                    showToast(`Error: ${data.message}`, 'error');
+                    showToast(`❌ Error: ${data.message}`, 'error');
                 }
             })
             .catch(error => {
-                showToast(`Error: ${error.message}`, 'error');
+                showToast(`❌ Error: ${error.message}`, 'error');
             });
         }
 
@@ -829,24 +1015,33 @@
             const timestamp = new Date().toISOString().slice(0,19).replace(/:/g, '-');
             let filename, mimeType, content;
             
-            if (format === 'doc') {
-                // Simple HTML format that can be opened by Word
+            if (format === 'html') {
                 filename = `DMP_Feedback_${timestamp}.html`;
                 mimeType = 'text/html';
                 content = `
                 <!DOCTYPE html>
-                <html>
+                <html lang="en">
                 <head>
                     <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
                     <title>DMP Feedback Report</title>
                     <style>
-                        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 40px; }
-                        h1, h2, h3 { color: #333; }
-                        hr { border: 1px solid #ccc; margin: 20px 0; }
-                        pre { white-space: pre-wrap; }
+                        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; margin: 40px; max-width: 800px; }
+                        h1, h2, h3 { color: #2c3e50; }
+                        h1 { border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+                        h2 { color: #e74c3c; margin-top: 30px; }
+                        h3 { color: #27ae60; }
+                        hr { border: 1px solid #bdc3c7; margin: 30px 0; }
+                        pre { white-space: pre-wrap; background-color: #f8f9fa; padding: 15px; border-radius: 5px; }
+                        .metadata { background-color: #ecf0f1; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+                        .summary { background-color: #e8f6f3; padding: 15px; border-radius: 5px; border-left: 4px solid #27ae60; }
                     </style>
                 </head>
                 <body>
+                    <div class="metadata">
+                        <strong>Generated by DMP ART Enhanced Edition</strong><br>
+                        <strong>Timestamp:</strong> ${new Date().toLocaleString()}
+                    </div>
                     <pre>${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
                 </body>
                 </html>
@@ -868,7 +1063,7 @@
             window.URL.revokeObjectURL(url);
             document.body.removeChild(a);
             
-            showToast(`Feedback downloaded as ${format.toUpperCase()}! 📄`);
+            showToast(`📄 Feedback downloaded as ${format.toUpperCase()}!`);
         }
 
         // Copy text to clipboard
@@ -876,7 +1071,6 @@
             if (navigator.clipboard && window.isSecureContext) {
                 return navigator.clipboard.writeText(text);
             } else {
-                // Fallback for older browsers
                 const textarea = document.createElement('textarea');
                 textarea.value = text;
                 document.body.appendChild(textarea);
@@ -886,12 +1080,11 @@
             }
         }
 
-        // Show toast message
+        // Enhanced toast notifications
         function showToast(message, type = 'success') {
             const toast = document.getElementById('success-toast');
             if (!toast) return;
             
-            // Set message and type
             toast.textContent = message;
             toast.className = 'success-toast';
             
@@ -899,15 +1092,54 @@
                 toast.classList.add('error');
             }
             
-            // Show the toast
             toast.classList.add('show');
             
-            // Hide after 4 seconds
             setTimeout(() => {
                 toast.classList.remove('show');
             }, 4000);
         }
+
+        // Dark mode toggle
+        function initializeDarkModeToggle() {
+            if (document.querySelector('.theme-toggle')) return;
+            
+            const toggle = document.createElement('button');
+            toggle.className = 'theme-toggle';
+            toggle.setAttribute('aria-label', 'Toggle dark mode');
+            
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            const isLight = currentTheme === 'light';
+            
+            toggle.innerHTML = `
+                <span class="icon">${isLight ? '🌙' : '☀️'}</span>
+                <span>${isLight ? 'Dark' : 'Light'}</span>
+            `;
+            
+            toggle.addEventListener('click', function() {
+                const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('dmp-art-theme', newTheme);
+                
+                const isLight = newTheme === 'light';
+                toggle.innerHTML = `
+                    <span class="icon">${isLight ? '🌙' : '☀️'}</span>
+                    <span>${isLight ? 'Dark' : 'Light'}</span>
+                `;
+                
+                const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+                if (metaThemeColor) {
+                    metaThemeColor.content = newTheme === 'dark' ? '#121212' : '#ffffff';
+                }
+                
+                showToast(`${newTheme === 'dark' ? '🌙' : '☀️'} ${newTheme === 'dark' ? 'Dark' : 'Light'} mode enabled`);
+            });
+            
+            document.body.appendChild(toggle);
+        }
     </script>
+    
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
