@@ -40,7 +40,7 @@
                         <div class="card-icon">📝</div>
                         <div class="card-content">
                             <h3>Feedback Templates</h3>
-                            <p>{{ templates_by_section.values() | sum(attribute='__len__') | default(0) }} templates</p>
+                           <p>{{ templates_by_section.values() | map('length') | sum }} templates</p>
                         </div>
                     </div>
                     <div class="overview-card">
