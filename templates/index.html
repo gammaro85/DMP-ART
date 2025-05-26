@@ -1,27 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#ffffff">
-    <title>DMP ART - Data Management Plan Assessment Tool</title>
+    <title>DMP ART</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    
-    <!-- Prevent flash of unstyled content -->
-    <script>
-        (function() {
-            const savedTheme = localStorage.getItem('dmp-art-theme');
-            const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
-            
-            document.documentElement.setAttribute('data-theme', theme);
-            
-            const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-            if (metaThemeColor) {
-                metaThemeColor.content = theme === 'dark' ? '#121212' : '#ffffff';
-            }
-        })();
-    </script>
 </head>
 <body>
     <div class="container">
@@ -29,364 +12,56 @@
             <h1>DMP ART: Data Management Plan Assessment and Response Tool</h1>
             <p>Upload PDF or DOCX files to extract, review, and provide feedback on DMPs</p>
             <div class="nav-links">
+                <a href="/about" class="nav-link">About</a>
                 <a href="/template_editor" class="nav-link">Customize Templates</a>
             </div>
         </header>
         
         <main>
-            <!-- Feature highlights -->
-            <div class="feature-highlights">
-                <div class="feature-card">
-                    <div class="feature-icon">📄</div>
-                    <h3>DOCX & PDF Support</h3>
-                    <p>Advanced processing for both DOCX and PDF files with table content extraction</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🏷️</div>
-                    <h3>Smart Tagging</h3>
-                    <p>Automatic identification of key concepts and methodology elements</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">💬</div>
-                    <h3>Quick Feedback</h3>
-                    <p>Pre-built comment templates and customizable feedback tools</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🌙</div>
-                    <h3>Dark Mode</h3>
-                    <p>Eye-friendly dark theme with automatic system detection</p>
-                </div>
-            </div>
-            
             <div class="upload-container">
                 <div id="drop-area">
                     <form id="upload-form" enctype="multipart/form-data">
-                        <div class="upload-icon">📁</div>
-                        <h2>Upload Your DMP Document</h2>
-                        <p>Drag and drop files here or click to browse</p>
-                        <p class="file-types">Supported formats: PDF, DOCX (max 16MB)</p>
+                        <p>Upload PDF or DOCX files by dragging and dropping or clicking below</p>
                         <input type="file" id="file-input" name="file" accept=".pdf,.docx" hidden>
                         <button type="button" id="select-file-btn">Select File</button>
                     </form>
                     <div id="file-info" class="hidden">
-                        <div class="file-preview">
-                            <div class="file-icon">📄</div>
-                            <div class="file-details">
-                                <p class="file-name" id="file-name"></p>
-                                <p class="file-size" id="file-size"></p>
-                            </div>
-                        </div>
-                        <div class="upload-actions">
-                            <button id="upload-btn">Extract & Review DMP</button>
-                            <button id="clear-btn">Clear</button>
-                        </div>
+                        <p id="file-name"></p>
+                        <button id="upload-btn">Extract & Review DMP</button>
+                        <button id="clear-btn">Clear</button>
                     </div>
                 </div>
             </div>
             
             <div id="loading" class="hidden">
-                <div class="loading-content">
-                    <div class="spinner"></div>
-                    <h3>Processing your document...</h3>
-                    <p id="loading-status">Analyzing file structure and extracting content</p>
-                    <div class="loading-steps">
-                        <div class="step" id="step-1">
-                            <span class="step-icon">⏳</span>
-                            <span class="step-text">Validating file</span>
-                        </div>
-                        <div class="step" id="step-2">
-                            <span class="step-icon">⏳</span>
-                            <span class="step-text">Extracting content</span>
-                        </div>
-                        <div class="step" id="step-3">
-                            <span class="step-icon">⏳</span>
-                            <span class="step-text">Processing sections</span>
-                        </div>
-                        <div class="step" id="step-4">
-                            <span class="step-icon">⏳</span>
-                            <span class="step-text">Generating review interface</span>
-                        </div>
-                    </div>
-                </div>
+                <div class="spinner"></div>
+                <p>Processing file...</p>
             </div>
             
             <div id="result" class="hidden">
-                <div id="success-message" class="result-card success hidden">
-                    <div class="result-title">
-                        <span class="result-icon">✅</span>
-                        Extraction Successful!
-                    </div>
-                    <div class="result-message">
-                        <p>Your DMP has been extracted and is ready for review.</p>
-                    </div>
-                    <div class="result-actions">
-                        <a id="review-link" href="#" class="primary-btn">📝 Review DMP</a>
-                        <a id="download-link" href="#" class="download-btn">💾 Download Word Document</a>
+                <div id="success-message" class="hidden">
+                    <h2>Extraction Successful!</h2>
+                    <p>Your DMP has been extracted and is ready for review.</p>
+                    <div class="button-group">
+                        <a id="review-link" href="#" class="primary-btn">Review DMP</a>
+                        <a id="download-link" href="#" class="download-btn">Download Word Document</a>
                     </div>
                     <button id="new-upload-btn" class="secondary-btn">Process Another File</button>
                 </div>
                 
-                <div id="error-message" class="result-card error hidden">
-                    <div class="result-title">
-                        <span class="result-icon">❌</span>
-                        Extraction Failed
-                    </div>
-                    <div class="result-message">
-                        <p id="error-text"></p>
-                    </div>
-                    <div class="result-actions">
-                        <button id="try-again-btn" class="secondary-btn">Try Again</button>
-                        <a href="/template_editor" class="nav-link">Check Templates</a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Help section -->
-            <div class="help-section">
-                <h2>How to Use DMP ART</h2>
-                <div class="help-steps">
-                    <div class="help-step">
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <h3>Upload Document</h3>
-                            <p>Upload your PDF or DOCX file containing the Data Management Plan</p>
-                        </div>
-                    </div>
-                    <div class="help-step">
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <h3>Review Extraction</h3>
-                            <p>Review the automatically extracted DMP content organized by sections</p>
-                        </div>
-                    </div>
-                    <div class="help-step">
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <h3>Provide Feedback</h3>
-                            <p>Use templates and quick comments to provide structured feedback</p>
-                        </div>
-                    </div>
-                    <div class="help-step">
-                        <div class="step-number">4</div>
-                        <div class="step-content">
-                            <h3>Export Results</h3>
-                            <p>Download your feedback as formatted documents for sharing</p>
-                        </div>
-                    </div>
+                <div id="error-message" class="hidden">
+                    <h2>Extraction Failed</h2>
+                    <p id="error-text"></p>
+                    <button id="try-again-btn" class="secondary-btn">Try Again</button>
                 </div>
             </div>
         </main>
         
         <footer>
-            <p>DMP ART &copy; 2025 - Enhanced with Dark Mode & Advanced Processing</p>
-            <div class="footer-links">
-                <a href="/template_editor">Customize Templates</a>
-                <span>•</span>
-                <a href="#" onclick="showKeyboardShortcuts()">Keyboard Shortcuts</a>
-                <span>•</span>
-                <a href="#" onclick="showAbout()">About</a>
-            </div>
+            <p>DMP ART &copy; 2025 - Enhanced DOCX Processing</p>
         </footer>
     </div>
     
-    <!-- Keyboard shortcuts modal -->
-    <div id="shortcuts-modal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>⌨️ Keyboard Shortcuts</h3>
-                <button class="close-btn" onclick="hideModal('shortcuts-modal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="shortcut-item">
-                    <kbd>Ctrl/Cmd</kbd> + <kbd>Shift</kbd> + <kbd>D</kbd>
-                    <span>Toggle Dark Mode</span>
-                </div>
-                <div class="shortcut-item">
-                    <kbd>Ctrl/Cmd</kbd> + <kbd>U</kbd>
-                    <span>Upload File</span>
-                </div>
-                <div class="shortcut-item">
-                    <kbd>Escape</kbd>
-                    <span>Close Modals</span>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- About modal -->
-    <div id="about-modal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>ℹ️ About DMP ART</h3>
-                <button class="close-btn" onclick="hideModal('about-modal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p><strong>DMP Assessment and Response Tool</strong></p>
-                <p>Version 1.0 Enhanced Edition</p>
-                <br>
-                <p>An advanced tool for processing and reviewing Data Management Plans from grant proposals and research documents.</p>
-                <br>
-                <p><strong>Features:</strong></p>
-                <ul>
-                    <li>Advanced DOCX and PDF processing</li>
-                    <li>Table content extraction</li>
-                    <li>Smart content tagging</li>
-                    <li>Customizable feedback templates</li>
-                    <li>Dark mode support</li>
-                    <li>Export functionality</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-    <script>
-        // Enhanced functionality for index page
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeIndexPage();
-        });
-        
-        function initializeIndexPage() {
-            // Add file size display
-            const fileInput = document.getElementById('file-input');
-            if (fileInput) {
-                fileInput.addEventListener('change', function() {
-                    if (this.files.length > 0) {
-                        const file = this.files[0];
-                        const sizeElement = document.getElementById('file-size');
-                        if (sizeElement) {
-                            const sizeInMB = (file.size / (1024 * 1024)).toFixed(2);
-                            sizeElement.textContent = `${sizeInMB} MB`;
-                        }
-                    }
-                });
-            }
-            
-            // Simulate loading steps
-            const uploadBtn = document.getElementById('upload-btn');
-            if (uploadBtn) {
-                uploadBtn.addEventListener('click', function() {
-                    simulateLoadingSteps();
-                });
-            }
-            
-            // Keyboard shortcuts
-            document.addEventListener('keydown', function(e) {
-                if ((e.ctrlKey || e.metaKey) && e.key === 'u') {
-                    e.preventDefault();
-                    document.getElementById('select-file-btn').click();
-                }
-                
-                if (e.key === 'Escape') {
-                    hideAllModals();
-                }
-            });
-        }
-        
-        function simulateLoadingSteps() {
-            const steps = ['step-1', 'step-2', 'step-3', 'step-4'];
-            let currentStep = 0;
-            
-            const interval = setInterval(() => {
-                if (currentStep < steps.length) {
-                    const stepElement = document.getElementById(steps[currentStep]);
-                    if (stepElement) {
-                        stepElement.querySelector('.step-icon').textContent = '✅';
-                        stepElement.classList.add('completed');
-                    }
-                    currentStep++;
-                } else {
-                    clearInterval(interval);
-                }
-            }, 1000);
-        }
-        
-        function showKeyboardShortcuts() {
-            showModal('shortcuts-modal');
-        }
-        
-        function showAbout() {
-            showModal('about-modal');
-        }
-        
-        function showModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-            }
-        }
-        
-        function hideModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.classList.add('hidden');
-                document.body.style.overflow = '';
-            }
-        }
-        
-        function hideAllModals() {
-            document.querySelectorAll('.modal').forEach(modal => {
-                modal.classList.add('hidden');
-            });
-            document.body.style.overflow = '';
-        }
-        
-        // Initialize dark mode
-        (function() {
-            const savedTheme = localStorage.getItem('dmp-art-theme');
-            const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
-            
-            document.documentElement.setAttribute('data-theme', theme);
-        })();
-    </script>
-    
-    <!-- Dark mode toggle script -->
-    <script>
-        // Create and initialize dark mode toggle
-        document.addEventListener('DOMContentLoaded', function() {
-            createDarkModeToggle();
-            
-            function createDarkModeToggle() {
-                if (document.querySelector('.theme-toggle')) return;
-                
-                const toggle = document.createElement('button');
-                toggle.className = 'theme-toggle';
-                toggle.setAttribute('aria-label', 'Toggle dark mode');
-                toggle.setAttribute('title', 'Switch between light and dark modes');
-                
-                const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-                const isLight = currentTheme === 'light';
-                
-                toggle.innerHTML = `
-                    <span class="icon">${isLight ? '🌙' : '☀️'}</span>
-                    <span>${isLight ? 'Dark' : 'Light'}</span>
-                `;
-                
-                toggle.addEventListener('click', function() {
-                    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-                    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                    
-                    document.documentElement.setAttribute('data-theme', newTheme);
-                    localStorage.setItem('dmp-art-theme', newTheme);
-                    
-                    const isLight = newTheme === 'light';
-                    toggle.innerHTML = `
-                        <span class="icon">${isLight ? '🌙' : '☀️'}</span>
-                        <span>${isLight ? 'Dark' : 'Light'}</span>
-                    `;
-                    
-                    // Update meta theme color
-                    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-                    if (metaThemeColor) {
-                        metaThemeColor.content = newTheme === 'dark' ? '#121212' : '#ffffff';
-                    }
-                });
-                
-                document.body.appendChild(toggle);
-            }
-        });
-    </script>
 </body>
 </html>
