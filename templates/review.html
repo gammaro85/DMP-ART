@@ -23,6 +23,41 @@
         })();
     </script>
 </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+    <title>DMP ART - Your Page Title</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- Prevent flash of unstyled content for dark mode -->
+    <script>
+        (function() {
+            // Get saved theme preference
+            const savedTheme = localStorage.getItem('dmp-art-theme');
+            
+            // Check system preference
+            const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            // Determine theme to apply
+            let theme = 'light'; // default
+            if (savedTheme) {
+                theme = savedTheme;
+            } else if (systemPrefersDark) {
+                theme = 'dark';
+            }
+            
+            // Apply theme immediately to prevent flash
+            document.documentElement.setAttribute('data-theme', theme);
+            
+            // Update meta theme-color
+            const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+            if (metaThemeColor) {
+                metaThemeColor.content = theme === 'dark' ? '#121212' : '#ffffff';
+            }
+        })();
+    </script>
+</head>
 <body>
     <div class="container">
         <header>
