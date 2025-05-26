@@ -5,8 +5,162 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DMP ART: Processing Results</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="results-page">
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <span id="theme-icon">🌙</span>
+        <span id="theme-text">Dark Mode</span>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>🎉 Processing Complete!</h1>
+            <p>Your Data Management Plan has been extracted and processed successfully</p>
+            <div class="nav-links">
+                <a href="/" class="nav-link">🏠 Home</a>
+                <a href="/about" class="nav-link">ℹ️ About</a>
+                <a href="/template_editor" class="nav-link">⚙️ Templates</a>
+            </div>
+        </header>
+        
+        <main>
+            <div class="results-container fade-in">
+                <div class="result-header">
+                    <div class="result-status success">
+                        <span>✅</span>
+                        <span>Successfully Processed</span>
+                    </div>
+                </div>
+
+                <!-- Processing Information -->
+                <div class="processing-info">
+                    <h3>📊 Processing Summary</h3>
+                    <div class="processing-stats">
+                        <div class="stat-item">
+                            <span class="stat-number" id="sections-extracted">14</span>
+                            <div class="stat-label">Sections Extracted</div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="processing-time">2.3s</span>
+                            <div class="stat-label">Processing Time</div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="file-size">1.2MB</span>
+                            <div class="stat-label">Output Size</div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="content-quality">95%</span>
+                            <div class="stat-label">Extraction Quality</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Success Message -->
+                <div class="result-card success">
+                    <h3>
+                        <span class="result-card-icon">🎯</span>
+                        Extraction Successful
+                    </h3>
+                    <p><strong>Great news!</strong> Your DMP content has been successfully extracted and formatted. The document is now ready for review and contains structured content organized by standard DMP sections.</p>
+                    <ul>
+                        <li>✅ All major sections identified and extracted</li>
+                        <li>✅ Content properly structured and formatted</li>
+                        <li>✅ Ready for detailed review and feedback</li>
+                    </ul>
+                </div>
+
+                <!-- Download Section -->
+                <div class="download-section">
+                    <h2>📥 Download Your Results</h2>
+                    <p>Choose your preferred format to download the processed DMP:</p>
+                    
+                    <div class="download-options">
+                        <a id="download-word" href="#" class="download-btn primary">
+                            <span>📄</span>
+                            <span>Download Word Document</span>
+                        </a>
+                        <a id="review-dmp" href="#" class="download-btn secondary">
+                            <span>🔍</span>
+                            <span>Review & Provide Feedback</span>
+                        </a>
+                    </div>
+
+                    <div class="download-options">
+                        <button id="copy-link" class="download-btn">
+                            <span>🔗</span>
+                            <span>Copy Share Link</span>
+                        </button>
+                        <button id="email-link" class="download-btn">
+                            <span>✉️</span>
+                            <span>Email Results</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Feature Highlights -->
+                <div class="feature-highlight">
+                    <div class="feature-card">
+                        <div class="feature-icon">🎨</div>
+                        <h4>Enhanced Review Interface</h4>
+                        <p>Use our advanced review interface to provide detailed feedback on each section of the DMP.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🏷️</div>
+                        <h4>Smart Content Tagging</h4>
+                        <p>Content has been automatically tagged with relevant keywords for easier review and feedback.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h4>Quality Assessment</h4>
+                        <p>Get insights into the completeness and quality of each section with our assessment tools.</p>
+                    </div>
+                </div>
+
+                <!-- Action Section -->
+                <div class="action-section">
+                    <h3>What's Next?</h3>
+                    <p>Choose your next action to continue working with your DMP:</p>
+                    
+                    <div class="action-buttons">
+                        <a href="/" class="secondary-btn">
+                            <span>🔄</span>
+                            <span>Process Another Document</span>
+                        </a>
+                        <a href="/template_editor" class="secondary-btn">
+                            <span>⚙️</span>
+                            <span>Customize Review Templates</span>
+                        </a>
+                        <button id="export-pdf" class="secondary-btn">
+                            <span>📑</span>
+                            <span>Export as PDF</span>
+                        </button>
+                    </div>
+
+                    <div style="margin-top: 2rem; padding: 1rem; background-color: #e8f4f8; border-radius: 6px; font-size: 0.9rem;">
+                        <strong>💡 Pro Tip:</strong> Use the review interface to provide comprehensive feedback. You can save your progress and return later to complete your review.
+                    </div>
+                </div>
+            </div>
+
+            <div class="progress-indicator" id="progress-indicator">
+                <div class="spinner"></div>
+                <p>Processing your request...</p>
+            </div>
+        </main>
+
+        <div class="success-toast" id="success-toast">
+            Operation completed successfully!
+        </div>
+
+        <footer>
+            <p style="text-align: center; margin-top: 2rem; color: #666;">
+                DMP ART &copy; 2025 - Enhanced Document Processing with Dark Mode Support
+            </p>
+        </footer>
+    </div>
+
     <style>
-        /* Enhanced Dark Mode Support */
+        /* Enhanced Dark Mode Support and Results Page Styling */
         :root {
             --results-bg-light: #ffffff;
             --results-bg-dark: #1a1a1a;
@@ -24,7 +178,6 @@
             --results-error-dark: #3a1e1e;
         }
 
-        /* Light mode (default) */
         .results-page {
             background-color: var(--results-bg-light);
             color: var(--results-text-light);
@@ -43,100 +196,9 @@
             transition: all 0.3s ease;
         }
 
-        /* Dark mode styles */
-        @media (prefers-color-scheme: dark) {
-            .results-page {
-                background-color: var(--results-bg-dark);
-                color: var(--results-text-dark);
-            }
-
-            .results-container {
-                background-color: var(--results-card-dark);
-                border-color: var(--results-border-dark);
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            }
-
-            .result-card.success {
-                background-color: var(--results-success-dark);
-                color: var(--results-text-dark);
-            }
-
-            .result-card.warning {
-                background-color: var(--results-warning-dark);
-                color: var(--results-text-dark);
-            }
-
-            .result-card.error {
-                background-color: var(--results-error-dark);
-                color: var(--results-text-dark);
-            }
-
-            .processing-info {
-                background-color: var(--results-card-dark);
-                border-color: var(--results-border-dark);
-            }
-
-            .feature-card {
-                background-color: var(--results-card-dark);
-                border-color: var(--results-border-dark);
-            }
-
-            .theme-toggle {
-                background-color: var(--results-card-dark);
-                border-color: var(--results-border-dark);
-                color: var(--results-text-dark);
-            }
-        }
-
-        /* Manual dark mode toggle */
-        .dark-mode {
-            background-color: var(--results-bg-dark) !important;
-            color: var(--results-text-dark) !important;
-        }
-
-        .dark-mode .results-container {
-            background-color: var(--results-card-dark) !important;
-            border-color: var(--results-border-dark) !important;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
-        }
-
-        .dark-mode .result-card.success {
-            background-color: var(--results-success-dark) !important;
-            color: var(--results-text-dark) !important;
-        }
-
-        .dark-mode .result-card.warning {
-            background-color: var(--results-warning-dark) !important;
-            color: var(--results-text-dark) !important;
-        }
-
-        .dark-mode .result-card.error {
-            background-color: var(--results-error-dark) !important;
-            color: var(--results-text-dark) !important;
-        }
-
-        .dark-mode .processing-info,
-        .dark-mode .feature-card {
-            background-color: var(--results-card-dark) !important;
-            border-color: var(--results-border-dark) !important;
-        }
-
-        .dark-mode .theme-toggle {
-            background-color: var(--results-card-dark) !important;
-            border-color: var(--results-border-dark) !important;
-            color: var(--results-text-dark) !important;
-        }
-
-        /* Enhanced result styling */
         .result-header {
             text-align: center;
             margin-bottom: 2rem;
-        }
-
-        .result-header h1 {
-            color: var(--primary-color);
-            margin-bottom: 0.5rem;
-            font-size: 2.2rem;
         }
 
         .result-status {
@@ -155,16 +217,6 @@
             color: white;
         }
 
-        .result-status.warning {
-            background-color: #ff9800;
-            color: white;
-        }
-
-        .result-status.error {
-            background-color: var(--error-color);
-            color: white;
-        }
-
         .result-card {
             padding: 1.5rem;
             border-radius: 8px;
@@ -176,16 +228,6 @@
         .result-card.success {
             background-color: var(--results-success-light);
             border-left-color: var(--success-color);
-        }
-
-        .result-card.warning {
-            background-color: var(--results-warning-light);
-            border-left-color: #ff9800;
-        }
-
-        .result-card.error {
-            background-color: var(--results-error-light);
-            border-left-color: var(--error-color);
         }
 
         .result-card h3 {
@@ -406,6 +448,41 @@
             opacity: 1;
         }
 
+        /* Dark mode styles */
+        @media (prefers-color-scheme: dark) {
+            .results-page {
+                background-color: var(--results-bg-dark);
+                color: var(--results-text-dark);
+            }
+
+            .results-container {
+                background-color: var(--results-card-dark);
+                border-color: var(--results-border-dark);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            }
+
+            .result-card.success {
+                background-color: var(--results-success-dark);
+                color: var(--results-text-dark);
+            }
+
+            .processing-info {
+                background-color: var(--results-card-dark);
+                border-color: var(--results-border-dark);
+            }
+
+            .feature-card {
+                background-color: var(--results-card-dark);
+                border-color: var(--results-border-dark);
+            }
+
+            .theme-toggle {
+                background-color: var(--results-card-dark);
+                border-color: var(--results-border-dark);
+                color: var(--results-text-dark);
+            }
+        }
+
         /* Responsive design */
         @media (max-width: 768px) {
             .container {
@@ -462,149 +539,6 @@
             }
         }
     </style>
-</head>
-<body class="results-page">
-    <div class="theme-toggle" onclick="toggleTheme()">
-        <span id="theme-icon">🌙</span>
-        <span id="theme-text">Dark Mode</span>
-    </div>
-
-    <div class="container">
-        <div class="results-container fade-in">
-            <div class="result-header">
-                <h1>🎉 Processing Complete!</h1>
-                <div class="result-status success">
-                    <span>✅</span>
-                    <span>Successfully Processed</span>
-                </div>
-                <p>Your Data Management Plan has been extracted and processed successfully.</p>
-            </div>
-
-            <!-- Processing Information -->
-            <div class="processing-info">
-                <h3>📊 Processing Summary</h3>
-                <div class="processing-stats">
-                    <div class="stat-item">
-                        <span class="stat-number" id="sections-extracted">14</span>
-                        <div class="stat-label">Sections Extracted</div>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number" id="processing-time">2.3s</span>
-                        <div class="stat-label">Processing Time</div>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number" id="file-size">1.2MB</span>
-                        <div class="stat-label">Output Size</div>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number" id="content-quality">95%</span>
-                        <div class="stat-label">Extraction Quality</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Success Message -->
-            <div class="result-card success">
-                <h3>
-                    <span class="result-card-icon">🎯</span>
-                    Extraction Successful
-                </h3>
-                <p><strong>Great news!</strong> Your DMP content has been successfully extracted and formatted. The document is now ready for review and contains structured content organized by standard DMP sections.</p>
-                <ul>
-                    <li>✅ All major sections identified and extracted</li>
-                    <li>✅ Content properly structured and formatted</li>
-                    <li>✅ Ready for detailed review and feedback</li>
-                </ul>
-            </div>
-
-            <!-- Download Section -->
-            <div class="download-section">
-                <h2>📥 Download Your Results</h2>
-                <p>Choose your preferred format to download the processed DMP:</p>
-                
-                <div class="download-options">
-                    <a id="download-word" href="#" class="download-btn primary">
-                        <span>📄</span>
-                        <span>Download Word Document</span>
-                    </a>
-                    <a id="review-dmp" href="#" class="download-btn secondary">
-                        <span>🔍</span>
-                        <span>Review & Provide Feedback</span>
-                    </a>
-                </div>
-
-                <div class="download-options">
-                    <button id="copy-link" class="download-btn">
-                        <span>🔗</span>
-                        <span>Copy Share Link</span>
-                    </button>
-                    <button id="email-link" class="download-btn">
-                        <span>✉️</span>
-                        <span>Email Results</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Feature Highlights -->
-            <div class="feature-highlight">
-                <div class="feature-card">
-                    <div class="feature-icon">🎨</div>
-                    <h4>Enhanced Review Interface</h4>
-                    <p>Use our advanced review interface to provide detailed feedback on each section of the DMP.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🏷️</div>
-                    <h4>Smart Content Tagging</h4>
-                    <p>Content has been automatically tagged with relevant keywords for easier review and feedback.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📊</div>
-                    <h4>Quality Assessment</h4>
-                    <p>Get insights into the completeness and quality of each section with our assessment tools.</p>
-                </div>
-            </div>
-
-            <!-- Action Section -->
-            <div class="action-section">
-                <h3>What's Next?</h3>
-                <p>Choose your next action to continue working with your DMP:</p>
-                
-                <div class="action-buttons">
-                    <a href="/" class="secondary-btn">
-                        <span>🔄</span>
-                        <span>Process Another Document</span>
-                    </a>
-                    <a href="/template_editor" class="secondary-btn">
-                        <span>⚙️</span>
-                        <span>Customize Review Templates</span>
-                    </a>
-                    <button id="export-pdf" class="secondary-btn">
-                        <span>📑</span>
-                        <span>Export as PDF</span>
-                    </button>
-                </div>
-
-                <div style="margin-top: 2rem; padding: 1rem; background-color: #e8f4f8; border-radius: 6px; font-size: 0.9rem;">
-                    <strong>💡 Pro Tip:</strong> Use the review interface to provide comprehensive feedback. You can save your progress and return later to complete your review.
-                </div>
-            </div>
-        </div>
-
-        <div class="progress-indicator" id="progress-indicator">
-            <div class="spinner"></div>
-            <p>Processing your request...</p>
-        </div>
-    </div>
-
-    <div class="success-toast" id="success-toast">
-        Operation completed successfully!
-    </div>
-
-    <footer>
-        <p style="text-align: center; margin-top: 2rem; color: #666;">
-            DMP ART &copy; 2025 - Enhanced Document Processing with Dark Mode Support
-        </p>
-    </footer>
 
     <script>
         // Enhanced JavaScript functionality
@@ -737,18 +671,6 @@
                     showToast('PDF export feature coming soon! 📑', 'info');
                 });
             }
-
-            // Add hover effects to cards
-            const featureCards = document.querySelectorAll('.feature-card');
-            featureCards.forEach(card => {
-                card.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-4px) scale(1.02)';
-                });
-                
-                card.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0) scale(1)';
-                });
-            });
         }
 
         function loadProcessingStats() {
@@ -830,51 +752,6 @@
                 toast.classList.remove('show');
             }, 4000);
         }
-
-        function showProgress() {
-            const progressIndicator = document.getElementById('progress-indicator');
-            if (progressIndicator) {
-                progressIndicator.style.display = 'block';
-            }
-        }
-
-        function hideProgress() {
-            const progressIndicator = document.getElementById('progress-indicator');
-            if (progressIndicator) {
-                progressIndicator.style.display = 'none';
-            }
-        }
-
-        // Handle download button clicks with progress indication
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.download-btn') && e.target.closest('.download-btn').href) {
-                showProgress();
-                setTimeout(hideProgress, 2000);
-            }
-        });
-
-        // Add keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            // Ctrl/Cmd + D for download
-            if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
-                e.preventDefault();
-                const downloadBtn = document.getElementById('download-word');
-                if (downloadBtn) downloadBtn.click();
-            }
-            
-            // Ctrl/Cmd + R for review
-            if ((e.ctrlKey || e.metaKey) && e.key === 'r' && e.shiftKey) {
-                e.preventDefault();
-                const reviewBtn = document.getElementById('review-dmp');
-                if (reviewBtn) reviewBtn.click();
-            }
-            
-            // Ctrl/Cmd + Shift + T for theme toggle
-            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'T') {
-                e.preventDefault();
-                toggleTheme();
-            }
-        });
     </script>
 </body>
 </html>

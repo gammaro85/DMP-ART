@@ -1,4 +1,4 @@
-# app.py - Enhanced Flask application with improved DOCX support
+# app.py - Enhanced Flask application with About page
 import os
 import json
 import time
@@ -204,6 +204,11 @@ def validate_pdf_file(file_path):
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/about')
+def about():
+    """About page with features and technical information"""
+    return render_template('about.html')
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
