@@ -205,10 +205,10 @@ def validate_pdf_file(file_path):
 def index():
     return render_template('index.html')
 
-@app.route('/about')
-def about():
-    """About page with features and technical information"""
-    return render_template('about.html')
+@app.route('/documentation')
+def documentation():
+    """Documentation page with features and technical information"""
+    return render_template('documentation.html')
 
 @app.route('/upload', methods=['POST'])
 def upload_file():

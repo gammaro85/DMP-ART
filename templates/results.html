@@ -6,41 +6,6 @@
     <title>DMP ART: Processing Results</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#ffffff">
-    <title>DMP ART - Your Page Title</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    
-    <!-- Prevent flash of unstyled content for dark mode -->
-    <script>
-        (function() {
-            // Get saved theme preference
-            const savedTheme = localStorage.getItem('dmp-art-theme');
-            
-            // Check system preference
-            const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            
-            // Determine theme to apply
-            let theme = 'light'; // default
-            if (savedTheme) {
-                theme = savedTheme;
-            } else if (systemPrefersDark) {
-                theme = 'dark';
-            }
-            
-            // Apply theme immediately to prevent flash
-            document.documentElement.setAttribute('data-theme', theme);
-            
-            // Update meta theme-color
-            const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-            if (metaThemeColor) {
-                metaThemeColor.content = theme === 'dark' ? '#121212' : '#ffffff';
-            }
-        })();
-    </script>
-</head>
 <body class="results-page">
     <div class="theme-toggle" onclick="toggleTheme()">
         <span id="theme-icon">🌙</span>
@@ -53,7 +18,6 @@
             <p>Your Data Management Plan has been extracted and processed successfully</p>
             <div class="nav-links">
                 <a href="/" class="nav-link">🏠 Home</a>
-                <a href="/about" class="nav-link">ℹ️ About</a>
                 <a href="/template_editor" class="nav-link">⚙️ Templates</a>
             </div>
         </header>
@@ -188,39 +152,34 @@
         </div>
 
         <footer>
-            <p style="text-align: center; margin-top: 2rem; color: #666;">
-                DMP ART &copy; 2025 - Enhanced Document Processing with Dark Mode Support
-            </p>
+            <div class="footer-content">
+                <div class="footer-main">
+                    <p style="text-align: center; margin-top: 2rem; color: #666;">
+                        DMP ART &copy; 2025 - Enhanced Document Processing with Dark Mode Support
+                    </p>
+                </div>
+                <div class="footer-links">
+                    <a href="/documentation" class="footer-link">Documentation</a>
+                </div>
+            </div>
         </footer>
     </div>
 
     <style>
-        /* Enhanced Dark Mode Support and Results Page Styling */
         :root {
-            --results-bg-light: #ffffff;
-            --results-bg-dark: #1a1a1a;
-            --results-card-light: #f8f9fa;
-            --results-card-dark: #2d2d2d;
-            --results-text-light: #333333;
-            --results-text-dark: #e0e0e0;
-            --results-border-light: #dee2e6;
-            --results-border-dark: #404040;
-            --results-success-light: #d4edda;
-            --results-success-dark: #1e3a2e;
-            --results-warning-light: #fff3cd;
-            --results-warning-dark: #3d3a1e;
-            --results-error-light: #f8d7da;
-            --results-error-dark: #3a1e1e;
+            /* ...remove or override local variables, rely on style.css... */
         }
-
-        .results-page {
-            background-color: var(--results-bg-light);
-            color: var(--results-text-light);
-            min-height: 100vh;
-            transition: all 0.3s ease;
+        body.results-page {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
         }
-
+        .container {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
         .results-container {
+            background-color: var(--bg-card);
+            color: var(--text-primary);
             max-width: 800px;
             margin: 0 auto;
             background-color: var(--results-card-light);
