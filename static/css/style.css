@@ -1,28 +1,28 @@
 /* Enhanced CSS with Dark Mode Support for DMP ART */
 :root {
-    /* Light mode colors (default) */
-    --primary-color: #001220;
-    --secondary-color: #002e54;
+    /* Unified Light mode colors */
+    --primary-color: #2c3e50;
+    --secondary-color: #2980b9;
     --accent-color: #e31b23;
     --light-color: #ffffff;
-    --dark-color: #001220;
+    --dark-color: #2c3e50;
     --error-color: #b0141b;
-    --success-color: rgba(41, 97, 68, 0.86);
-    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --success-color: #27ae60;
+    --shadow: 0 4px 12px rgba(0,0,0,0.08);
     --border-color: #cccccc;
-    --tag-color: rgba(89, 101, 55, 0.67);
+    --tag-color: #e3f2fd;
 
-    /* Background colors */
-    --bg-primary: rgba(213, 221, 250, 0.59);
+    /* Unified background colors */
+    --bg-primary: #f8f9fa;
     --bg-secondary: #f8f9fa;
-    --bg-tertiary: #f5f5f5;
-    --bg-card: #ffffff;
+    --bg-tertiary: #e9ecef;
+    --bg-card: #fff;
     --bg-hover: #e3f2fd;
 
     /* Text colors */
-    --text-primary: #001220;
-    --text-secondary: #666666;
-    --text-muted: #777777;
+    --text-primary: #222;
+    --text-secondary: #666;
+    --text-muted: #777;
 
     /* Border and divider colors */
     --border-light: #e0e0e0;
@@ -36,32 +36,30 @@
     --status-error: #ffebee;
 }
 
-/* Dark mode color scheme */
+/* Unified Dark mode color scheme */
 [data-theme="dark"] {
-    --primary-color: #ffffff;
-    --secondary-color: #4a90e2;
+    --primary-color: #8ecfff;
+    --secondary-color: #4fa3ff;
     --accent-color: #ff4757;
-    --light-color: #1a1a1a;
-    --dark-color: #ffffff;
+    --light-color: #23272b;
+    --dark-color: #e0e0e0;
     --error-color: #ff6b6b;
-    --success-color: #51cf66;
-    --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    --success-color: #27ae60;
+    --shadow: 0 4px 16px rgba(0,0,0,0.25);
     --border-color: #404040;
-    --tag-color: #7c4dff;
+    --tag-color: #1a2332;
 
-    /* Background colors */
-    --bg-primary: #061a3e;
-    --bg-primary: #061a3e;
-    --bg-primary: #274379;
-    --bg-secondary: #1e1e1e;
-    --bg-tertiary: #2d2d2d;
-    --bg-card: #1e1e1e;
-    --bg-hover: #2d2d2d;
+    /* Unified background colors */
+    --bg-primary: #181c20;
+    --bg-secondary: #181c20;
+    --bg-tertiary: #23272b;
+    --bg-card: #23272b;
+    --bg-hover: #23272b;
 
     /* Text colors */
-    --text-primary: #ffffff;
+    --text-primary: #e0e0e0;
     --text-secondary: #b0b0b0;
-    --text-muted: #888888;
+    --text-muted: #888;
 
     /* Border and divider colors */
     --border-light: #404040;
@@ -70,7 +68,7 @@
 
     /* Status colors */
     --status-info: #1a2332;
-    --status-warning: #2d2416;
+    --status-warning: #3d3a1e;
     --status-success: #1a2e1a;
     --status-error: #2d1a1a;
 }
@@ -760,11 +758,66 @@ button,
 
 /* Footer */
 footer {
-    text-align: center;
-    padding: 1rem 0;
     margin-top: auto;
-    color: var(--text-secondary);
     border-top: 1px solid var(--border-light);
+    padding: 1rem 0;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.footer-main {
+    color: var(--text-secondary);
+}
+
+.footer-links {
+    display: flex;
+    gap: 1rem;
+}
+
+.footer-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.footer-link:hover {
+    color: var(--secondary-color);
+}
+
+.footer-link.current-page {
+    color: var(--primary-color);
+    font-weight: bold;
+    cursor: default;
+}
+
+/* Mobile footer */
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+        padding: 0 1rem;
+    }
+
+    .footer-main {
+        order: 2;
+    }
+
+    .footer-links {
+        order: 1;
+        justify-content: center;
+    }
 }
 
 /* Utility classes */

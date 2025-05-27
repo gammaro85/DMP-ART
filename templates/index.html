@@ -1,53 +1,89 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#ffffff">
-    <title>DMP ART - Your Page Title</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    
-    <!-- Prevent flash of unstyled content for dark mode -->
-    <script>
-        (function() {
-            // Get saved theme preference
-            const savedTheme = localStorage.getItem('dmp-art-theme');
-            
-            // Check system preference
-            const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            
-            // Determine theme to apply
-            let theme = 'light'; // default
-            if (savedTheme) {
-                theme = savedTheme;
-            } else if (systemPrefersDark) {
-                theme = 'dark';
-            }
-            
-            // Apply theme immediately to prevent flash
-            document.documentElement.setAttribute('data-theme', theme);
-            
-            // Update meta theme-color
-            const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-            if (metaThemeColor) {
-                metaThemeColor.content = theme === 'dark' ? '#121212' : '#ffffff';
-            }
-        })();
-    </script>
-</head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DMP ART</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        :root {
+            /* ...remove or override local variables, rely on style.css... */
+        }
+        [data-theme="dark"] {
+            /* ...remove or override local variables, rely on style.css... */
+        }
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background 0.2s, color 0.2s;
+        }
+        .container {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+        .primary-btn, .secondary-btn, .download-btn {
+            transition: background 0.2s, color 0.2s;
+        }
+        .primary-btn {
+            background: var(--primary-color);
+            color: #fff;
+        }
+        .secondary-btn {
+            background: var(--secondary-color);
+            color: #fff;
+        }
+        .primary-btn:hover, .secondary-btn:hover {
+            opacity: 0.85;
+        }
+        .footer-content {
+            background: var(--bg-alt);
+            color: var(--text-secondary);
+        }
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--bg-alt);
+            color: var(--text-main);
+            border: 1px solid var(--secondary-color);
+            border-radius: 50px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background 0.2s, color 0.2s;
+        }
+        .theme-toggle:hover {
+            background: var(--secondary-color);
+            color: #fff;
+        }
+        /* Add gap below the upload instruction and above the Select File button */
+        #select-file-btn {
+            margin-top: 1rem;
+        }
+        @media (max-width: 768px) {
+            .theme-toggle {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <span id="theme-icon">🌙</span>
+        <span id="theme-text">Dark Mode</span>
+    </div>
     <div class="container">
         <header>
             <h1>DMP ART: Data Management Plan Assessment and Response Tool</h1>
             <p>Upload PDF or DOCX files to extract, review, and provide feedback on DMPs</p>
             <div class="nav-links">
-                <a href="/about" class="nav-link">About</a>
                 <a href="/template_editor" class="nav-link">Customize Templates</a>
             </div>
         </header>
@@ -62,8 +98,8 @@
                     </form>
                     <div id="file-info" class="hidden">
                         <p id="file-name"></p>
-                        <button id="upload-btn">Extract & Review DMP</button>
-                        <button id="clear-btn">Clear</button>
+                        <button id="upload-btn" class="primary-btn">Extract & Review DMP</button>
+                        <button id="clear-btn" class="secondary-btn">Clear</button>
                     </div>
                 </div>
             </div>
@@ -93,10 +129,58 @@
         </main>
         
         <footer>
-            <p>DMP ART &copy; 2025 - Enhanced DOCX Processing</p>
+            <div class="footer-content">
+                <div class="footer-main">
+                    <p>DMP ART &copy; 2025</p>
+                </div>
+                <div class="footer-links">
+                    <a href="/documentation" class="footer-link">Documentation</a>
+                </div>
+            </div>
         </footer>
     </div>
     
+    <script>
+        // Theme toggle logic
+        (function() {
+            const root = document.documentElement;
+            const themeToggle = () => {
+                const current = root.getAttribute('data-theme');
+                const next = current === 'dark' ? 'light' : 'dark';
+                root.setAttribute('data-theme', next);
+                localStorage.setItem('dmp-art-theme', next);
+                updateThemeToggle(next === 'dark');
+            };
+            window.toggleTheme = themeToggle;
+            function updateThemeToggle(isDark) {
+                const icon = document.getElementById('theme-icon');
+                const text = document.getElementById('theme-text');
+                if (icon && text) {
+                    if (isDark) {
+                        icon.textContent = '⚪';
+                        text.textContent = 'Light Mode';
+                    } else {
+                        icon.textContent = '⚫';
+                        text.textContent = 'Dark Mode';
+                    }
+                }
+            }
+            // Set theme on load
+            const saved = localStorage.getItem('dmp-art-theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = saved || (prefersDark ? 'dark' : 'light');
+            root.setAttribute('data-theme', theme);
+            updateThemeToggle(theme === 'dark');
+            // Listen for system changes if no saved theme
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                if (!localStorage.getItem('dmp-art-theme')) {
+                    const newTheme = e.matches ? 'dark' : 'light';
+                    root.setAttribute('data-theme', newTheme);
+                    updateThemeToggle(newTheme === 'dark');
+                }
+            });
+        })();
+    </script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>

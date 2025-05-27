@@ -22,41 +22,18 @@
             }
         })();
     </script>
-</head>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#ffffff">
-    <title>DMP ART - Your Page Title</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    
-    <!-- Prevent flash of unstyled content for dark mode -->
-    <script>
-        (function() {
-            // Get saved theme preference
-            const savedTheme = localStorage.getItem('dmp-art-theme');
-            
-            // Check system preference
-            const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            
-            // Determine theme to apply
-            let theme = 'light'; // default
-            if (savedTheme) {
-                theme = savedTheme;
-            } else if (systemPrefersDark) {
-                theme = 'dark';
-            }
-            
-            // Apply theme immediately to prevent flash
-            document.documentElement.setAttribute('data-theme', theme);
-            
-            // Update meta theme-color
-            const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-            if (metaThemeColor) {
-                metaThemeColor.content = theme === 'dark' ? '#121212' : '#ffffff';
-            }
-        })();
-    </script>
+    <style>
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background 0.2s, color 0.2s;
+        }
+        .container {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+        /* ...existing code... */
+    </style>
 </head>
 <body>
     <div class="container">
@@ -65,7 +42,6 @@
             <p>Review and provide feedback on the extracted Data Management Plan</p>
             <div class="nav-links">
                 <a href="/" class="nav-link">🏠 Home</a>
-                <a href="/about" class="nav-link">ℹ️ About</a>
                 <a href="/template_editor" class="nav-link">⚙️ Templates</a>
             </div>
         </header>
@@ -274,7 +250,14 @@
         <div id="success-toast" class="success-toast">Operation completed successfully!</div>
         
         <footer>
-            <p>DMP ART &copy; 2025 - Enhanced Review Interface with Dark Mode</p>
+            <div class="footer-content">
+                <div class="footer-main">
+                    <p>DMP ART &copy; 2025 - Enhanced Review Interface with Dark Mode</p>
+                </div>
+                <div class="footer-links">
+                    <a href="/documentation" class="footer-link">Documentation</a>
+                </div>
+            </div>
         </footer>
     </div>
     
