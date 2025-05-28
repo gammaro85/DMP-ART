@@ -6,16 +6,13 @@
     <meta name="theme-color" content="#ffffff">
     <title>DMP ART - Review DMP</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    
-    <!-- Prevent flash of unstyled content -->
     <script>
+        // Prevent flash of wrong theme
         (function() {
             const savedTheme = localStorage.getItem('dmp-art-theme');
-            const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
-            
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
             document.documentElement.setAttribute('data-theme', theme);
-            
             const metaThemeColor = document.querySelector('meta[name="theme-color"]');
             if (metaThemeColor) {
                 metaThemeColor.content = theme === 'dark' ? '#121212' : '#ffffff';
