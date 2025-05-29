@@ -8,7 +8,7 @@
     --dark-color: #2c3e50;
     --error-color: #b0141b;
     --success-color: #27ae60;
-    --shadow: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     --border-color: #cccccc;
     --tag-color: #e3f2fd;
 
@@ -45,7 +45,7 @@
     --dark-color: #e0e0e0;
     --error-color: #ff6b6b;
     --success-color: #27ae60;
-    --shadow: 0 4px 16px rgba(0,0,0,0.25);
+    --shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
     --border-color: #404040;
     --tag-color: #1a2332;
 
