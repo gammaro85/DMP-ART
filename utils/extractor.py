@@ -1034,31 +1034,13 @@ class DMPExtractor:
                 # Create a structured representation for the review interface
                 review_structure = {}
                 
-                for section in self.dmp_structure:
-                    for subsection in self.dmp_structure[section]:
-                        section_id = self.map_section_to_id(section, subsection)
-                        
-                        # Safely get paragraphs and tagged paragraphs
-                        paragraphs = []
-                        tagged_paragraphs = []
-                        
-                        try:
-                            paragraphs = section_content[section][subsection]
-                        except KeyError:
-                            print(f"Warning: Missing paragraphs for {section} - {subsection}")
-                        
-                        try:
-                            tagged_paragraphs = tagged_content[section][subsection]
-                        except KeyError:
-                            print(f"Warning: Missing tagged paragraphs for {section} - {subsection}")
-                        
+                                        
                         # Add to review structure
                         review_structure[section_id] = {
                             "section": section,
                             "question": subsection,
                             "paragraphs": paragraphs,
-                            "tagged_paragraphs": tagged_paragraphs
-                        }
+                        } 
                 
                 # Generate output filename
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
