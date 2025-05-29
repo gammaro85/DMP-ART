@@ -38,15 +38,15 @@
             <h1>DMP ART - Review DMP</h1>
             <p>Review and provide feedback on the extracted Data Management Plan</p>
             <div class="nav-links">
-                <a href="/" class="nav-link">🏠 Home</a>
-                <a href="/template_editor" class="nav-link">⚙️ Templates</a>
+                <a href="/" class="nav-link">Home</a>
+                <a href="/template_editor" class="nav-link">Templates</a>
             </div>
         </header>
         
         <main class="review-container">
             <div class="control-panel">
                 <div class="panel-left">
-                    <h2>📋 Review DMP: {{ filename }}</h2>
+                    <h2>Review DMP: {{ filename }}</h2>
                     <div class="file-info">
                         <span class="file-size">{{ "%.2f"|format((filename|length * 1024) / (1024*1024)) }} MB</span>
                         {% if cache_id %}
@@ -61,58 +61,11 @@
                 </div>
             </div>
 
-            <!-- Extraction Information -->
-            {% if extraction_info %}
-            <div class="extraction-info">
-                <h3>📊 Extraction Results</h3>
-                <div class="extraction-stats">
-                    <div class="stat-item">
-                        <span class="stat-number">{{ extraction_info.get('total_sections', 0) }}</span>
-                        <span class="stat-label">Total Sections</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">{{ extraction_info.get('sections_with_content', 0) }}</span>
-                        <span class="stat-label">With Content</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">{{ "%.0f"|format(((extraction_info.get('sections_with_content', 0) / extraction_info.get('total_sections', 1)) * 100) if extraction_info.get('total_sections', 0) > 0 else 0) }}%</span>
-                        <span class="stat-label">Success Rate</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">{{ extracted_content|length }}</span>
-                        <span class="stat-label">Questions</span>
-                    </div>
-                </div>
-                <p style="margin-top: 12px; font-size: 0.9rem; color: var(--text-secondary);">
-                    <strong>Method:</strong> {{ extraction_info.get('extraction_method', 'Standard processing') }}
-                </p>
-            </div>
-            {% endif %}
-
-            <!-- Section Navigation -->
+           <!-- Section Navigation -->
             <div class="section-navigation">
-                <h4>🧭 Quick Navigation</h4>
+                <h4>Quick Navigation</h4>
                 <div class="nav-buttons" id="section-nav">
                     <!-- Populated by JavaScript -->
-                </div>
-            </div>
-
-            <!-- Progress Indicator -->
-            <div class="progress-indicator" id="progress-indicator">
-                <h4>📈 Review Progress</h4>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
-                </div>
-                <div id="progress-text">0 / {{ extracted_content|length }} sections completed</div>
-                <div class="feedback-stats" id="feedback-stats">
-                    <div class="stat">
-                        <span>📝</span>
-                        <span id="total-chars">0 chars</span>
-                    </div>
-                    <div class="stat">
-                        <span>📊</span>
-                        <span id="total-words">0 words</span>
-                    </div>
                 </div>
             </div>
             
@@ -123,9 +76,9 @@
                         <div class="question-title">
                             {{ content.question }}
                             {% if content.paragraphs|length > 0 %}
-                                <span class="content-type-indicator content-table">📊 Table Content</span>
+                                <span class="content-type-indicator content-table">Table Content</span>
                             {% else %}
-                                <span class="content-type-indicator content-paragraph">📄 Text Content</span>
+                                <span class="content-type-indicator content-paragraph">Text Content</span>
                             {% endif %}
                         </div>
                         <div class="section-label">{{ content.section }}</div>
@@ -133,7 +86,7 @@
                     
                     <!-- Extracted DMP content -->
                     <div class="extracted-content">
-                        <h3>📖 Extracted Content</h3>
+                        <h3> Extracted Content</h3>
                         {% if content.paragraphs|length > 0 %}
                             {% for paragraph in content.paragraphs %}
                             <div class="enhanced-paragraph {% if content.tagged_paragraphs and loop.index0 < content.tagged_paragraphs|length and content.tagged_paragraphs[loop.index0].get('tags', [])|length > 0 %}has-tags{% endif %}">
@@ -153,7 +106,7 @@
                                         <button class="tag-btn" 
                                                 data-comment="{{ comments.get(tag, 'No comment available for this tag.') }}" 
                                                 title="Click to add: {{ tag }} comment">
-                                            🏷️ {{ tag }}
+                                                {{ tag }}
                                         </button>
                                         {% endfor %}
                                     </div>
@@ -163,7 +116,7 @@
                             {% endfor %}
                         {% else %}
                             <div class="no-content-warning">
-                                <div style="font-size: 2rem; margin-bottom: 10px;">⚠️</div>
+                                <div style="font-size: 2rem; margin-bottom: 10px;"></div>
                                 <strong>No content found for this section</strong>
                                 <p>This may indicate that the extraction process couldn't identify content for this specific subsection, or the content may be in a format that wasn't recognized.</p>
                                 <details style="margin-top: 10px;">
@@ -181,7 +134,7 @@
                     
                     <!-- Enhanced comment buttons -->
                     <div class="comment-buttons">
-                        <h3>💬 Quick Comments</h3>
+                        <h3> Quick Comments</h3>
                         <div style="display: flex; flex-wrap: wrap; gap: 8px;">
                             {% for tag, comment in comments.items() %}
                             <button class="comment-btn" 
@@ -189,7 +142,7 @@
                                     data-comment="{{ comment }}" 
                                     title="{{ comment[:50] }}..."
                                     onclick="insertCommentWithAnimation('{{ section_id }}', '{{ comment|replace("'", "\\'") }}')">
-                                🏷️ {{ tag }}
+                                    {{ tag }}
                             </button>
                             {% endfor %}
                         </div>
@@ -197,9 +150,9 @@
                     
                     <!-- Enhanced feedback section -->
                     <div class="enhanced-feedback-section">
-                        <div class="auto-save-indicator" id="auto-save-{{ section_id }}">💾 Auto-saved</div>
+                        <div class="auto-save-indicator" id="auto-save-{{ section_id }}"> Auto-saved</div>
                         <div class="feedback-toolbar">
-                            <h3>✍️ Your Feedback</h3>
+                            <h3> Your Feedback</h3>
                             <span class="char-counter" id="char-counter-{{ section_id }}">0 characters</span>
                         </div>
                         <textarea class="feedback-text" 
@@ -207,9 +160,9 @@
                                   placeholder="Enter your feedback for this section..."
                                   data-section-id="{{ section_id }}">{{ templates.get(section_id, {}).get('template', '') if section_id in templates else "" }}</textarea>
                         <div class="action-row">
-                            <button class="copy-btn" data-id="{{ section_id }}" title="Copy feedback to clipboard">📋 Copy</button>
-                            <button class="reset-btn" data-id="{{ section_id }}" title="Reset to original template">🔄 Reset</button>
-                            <button class="clear-btn" data-id="{{ section_id }}" title="Clear all text">🗑️ Clear</button>
+                            <button class="copy-btn" data-id="{{ section_id }}" title="Copy feedback to clipboard"> Copy</button>
+                            <button class="reset-btn" data-id="{{ section_id }}" title="Reset to original template"> Reset</button>
+                            <button class="clear-btn" data-id="{{ section_id }}" title="Clear all text"> Clear</button>
                         </div>
                     </div>
                 </div>
@@ -219,7 +172,7 @@
             <!-- Enhanced compiled feedback section -->
             <div id="compiled-feedback-container" class="compiled-feedback-container hidden">
                 <div class="modal-header">
-                    <h2>📄 Compiled Feedback Report</h2>
+                    <h2> Compiled Feedback Report</h2>
                     <button id="close-compiled-btn" class="close-btn" title="Close this dialog">&times;</button>
                 </div>
                 <div class="report-metadata">
@@ -232,15 +185,15 @@
                 </div>
                 <textarea id="compiled-feedback" readonly placeholder="Your compiled feedback will appear here..."></textarea>
                 <div class="compiled-actions">
-                    <button id="copy-compiled-btn" title="Copy all feedback to clipboard">📋 Copy All</button>
-                    <button id="download-feedback-btn" title="Download feedback as text file">💾 Download TXT</button>
-                    <button id="export-feedback-btn" title="Export as HTML document">📄 Export HTML</button>
+                    <button id="copy-compiled-btn" title="Copy all feedback to clipboard"> Copy All</button>
+                    <button id="download-feedback-btn" title="Download feedback as text file"> Download TXT</button>
+                    <button id="export-feedback-btn" title="Export as HTML document"> Export HTML</button>
                 </div>
             </div>
             
             <div class="action-buttons">
-                <a href="/" class="secondary-btn">🏠 Process Another File</a>
-                <a href="/template_editor" class="secondary-btn">⚙️ Customize Templates</a>
+                <a href="/" class="secondary-btn"> Process Another File</a>
+                <a href="/template_editor" class="secondary-btn">⚙ Customize Templates</a>
             </div>
         </main>
         

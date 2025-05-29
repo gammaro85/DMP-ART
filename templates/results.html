@@ -461,25 +461,22 @@
                 document.body.classList.remove('dark-mode');
                 localStorage.setItem('theme', 'light');
                 updateThemeToggle(false);
-                showToast('Switched to Light Mode ☀️');
+                showToast('Switched to Light Mode');
             } else {
                 document.body.classList.add('dark-mode');
                 localStorage.setItem('theme', 'dark');
                 updateThemeToggle(true);
-                showToast('Switched to Dark Mode 🌙');
+                showToast('Switched to Dark Mode');
             }
         }
 
         function updateThemeToggle(isDark) {
-            const themeIcon = document.getElementById('theme-icon');
             const themeText = document.getElementById('theme-text');
             
-            if (themeIcon && themeText) {
+            if themeText {
                 if (isDark) {
-                    themeIcon.textContent = '☀️';
-                    themeText.textContent = 'Light Mode';
+                    themeTextemeText.textContent = 'Light Mode';
                 } else {
-                    themeIcon.textContent = '🌙';
                     themeText.textContent = 'Dark Mode';
                 }
             }
@@ -511,50 +508,12 @@
             const exportPdfBtn = document.getElementById('export-pdf');
             if (exportPdfBtn) {
                 exportPdfBtn.addEventListener('click', function() {
-                    showToast('PDF export feature coming soon! 📑', 'info');
+                    showToast('PDF export feature coming soon!', 'info');
                 });
             }
         }
 
-        function loadProcessingStats() {
-            // Simulate loading stats (in real implementation, these would come from the server)
-            const stats = {
-                sectionsExtracted: Math.floor(Math.random() * 6) + 10,
-                processingTime: (Math.random() * 3 + 1).toFixed(1) + 's',
-                fileSize: (Math.random() * 2 + 0.5).toFixed(1) + 'MB',
-                contentQuality: Math.floor(Math.random() * 15) + 85 + '%'
-            };
-
-            // Update the stats with animation
-            setTimeout(() => {
-                animateCounter('sections-extracted', stats.sectionsExtracted);
-                document.getElementById('processing-time').textContent = stats.processingTime;
-                document.getElementById('file-size').textContent = stats.fileSize;
-                document.getElementById('content-quality').textContent = stats.contentQuality;
-            }, 500);
-        }
-
-        function animateCounter(elementId, targetValue) {
-            const element = document.getElementById(elementId);
-            const startValue = 0;
-            const duration = 1000;
-            const startTime = performance.now();
-
-            function updateCounter(currentTime) {
-                const elapsed = currentTime - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                const current = Math.floor(startValue + (targetValue - startValue) * progress);
-                
-                element.textContent = current;
-                
-                if (progress < 1) {
-                    requestAnimationFrame(updateCounter);
-                }
-            }
-            
-            requestAnimationFrame(updateCounter);
-        }
-
+        
         function copyToClipboard(text) {
             if (navigator.clipboard && window.isSecureContext) {
                 return navigator.clipboard.writeText(text);
@@ -569,32 +528,7 @@
             }
         }
 
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('success-toast');
-            if (!toast) return;
-            
-            // Set message and type
-            toast.textContent = message;
-            toast.className = 'success-toast';
-            
-            if (type === 'warning') {
-                toast.style.backgroundColor = '#ff9800';
-            } else if (type === 'error') {
-                toast.style.backgroundColor = '#f44336';
-            } else if (type === 'info') {
-                toast.style.backgroundColor = '#2196f3';
-            } else {
-                toast.style.backgroundColor = '#4caf50';
-            }
-            
-            // Show the toast
-            toast.classList.add('show');
-            
-            // Hide after 4 seconds
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 4000);
-        }
+     
     </script>
 </body>
 </html>
