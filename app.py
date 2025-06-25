@@ -7,8 +7,6 @@ import zipfile
 from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for
 from werkzeug.utils import secure_filename
 from utils.extractor import DMPExtractor
-extractor = DMPExtractor()
-validation_result = extractor.validate_docx_file(test_file)
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -234,16 +232,16 @@ def upload_file():
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(file_path)
         elif filename.lower().endswith('.pdf'):
-        is_valid, validation_message = validate_pdf_file(file_path)
-    if not is_valid:
-        try:
-            os.remove(file_path)
-        except:
-            pass
-        return jsonify({
-            'success': False,
-            'message': f'PDF validation failed: {validation_message}'
-        })
+                is_valid, validation_message = validate_pdf_file(file_path)
+                if not is_valid:
+                    try:
+                        os.remove(file_path)
+                    except:
+                        pass
+                    return jsonify({
+                        'success': False,
+                        'message': f'PDF validation failed: {validation_message}'
+                    })
         
             # Enhanced file validation based on type
             if filename.lower().endswith('.docx'):
