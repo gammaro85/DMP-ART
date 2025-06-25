@@ -15,8 +15,7 @@ class DMPExtractor:
             "DATA MANAGEMENT PLAN",
             "DATA MANAGEMENT PLAN [in English]",
             "PLAN ZARZĄDZANIA DANYMI",
-            "MINIATURA 9 -- PLAN ZARZĄDZANIA DANYMI"
-        ]
+            ]
         self.end_marks = [
             "ADMINISTRATIVE DECLARATIONS",
             "OŚWIADCZENIA ADMINISTRACYJNE"

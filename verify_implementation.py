@@ -52,9 +52,9 @@ def check_enhanced_extractor():
     """Check if the enhanced extractor has the expected methods"""
     try:
         from utils.extractor import DMPExtractor
-        
+
         extractor = DMPExtractor()
-        
+
         # Check for enhanced methods
         expected_methods = [
             'validate_docx_file',
@@ -66,21 +66,31 @@ def check_enhanced_extractor():
             'detect_section_from_text',
             'detect_subsection_from_text'
         ]
-        
+
         print("\nChecking enhanced extractor methods:")
         print("-" * 45)
-        
+
         all_methods_ok = True
-        
+
         for method_name in expected_methods:
             if hasattr(extractor, method_name):
                 print(f"✅ {method_name}")
             else:
                 print(f"❌ {method_name} - NOT FOUND")
                 all_methods_ok = False
-        
+
+        # Also check for validate_docx_file return format
+        if hasattr(extractor, 'validate_docx_file'):
+            # Test with a non-existent file to check return format
+            result = extractor.validate_docx_file("non_existent_file.docx")
+            if isinstance(result, tuple) and len(result) == 2:
+                print(f"✅ validate_docx_file returns correct format (tuple)")
+            else:
+                print(f"❌ validate_docx_file return format incorrect")
+                all_methods_ok = False
+
         return all_methods_ok
-        
+
     except Exception as e:
         print(f"❌ Enhanced extractor check failed: {str(e)}")
         return False

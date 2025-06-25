@@ -1,4 +1,4 @@
-# test_docx_processing.py
+# test_docx_processing.py - FIXED
 import os
 import sys
 sys.path.append('.')
@@ -12,17 +12,15 @@ def test_docx_processing():
     test_file = "DMP_sheng4 final.docx"
     
     print("=== DOCX Validation Test ===")
-    validator = DocxValidator()
-    validation_result = validator.validate_file(test_file)
+    # FIX: Use DMPExtractor instead of non-existent DocxValidator
+    extractor = DMPExtractor()
+    validation_result = extractor.validate_docx_file(test_file)
     
-    print(f"File valid: {validation_result['is_valid']}")
-    print(f"Errors: {validation_result['errors']}")
-    print(f"Warnings: {validation_result['warnings']}")
-    print(f"File info: {validation_result['file_info']}")
+    print(f"File valid: {validation_result[0]}")
+    print(f"Message: {validation_result[1]}")
     
-    if validation_result['is_valid']:
+    if validation_result[0]:  # If valid
         print("\n=== DMP Extraction Test ===")
-        extractor = DMPExtractor()
         result = extractor.process_file(test_file, "test_output")
         
         if result['success']:
