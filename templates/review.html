@@ -4,35 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#ffffff">
-    <title>DMP ART - Review DMP</title>
+    <title>{% block title %}DMP ART{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Prevent flash of wrong theme -->
     <script>
-        // Prevent flash of wrong theme
         (function() {
-            const savedTheme = localStorage.getItem('dmp-art-theme');
-            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+            const saved = localStorage.getItem('dmp-art-theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = saved || (prefersDark ? 'dark' : 'light');
             document.documentElement.setAttribute('data-theme', theme);
-            const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-            if (metaThemeColor) {
-                metaThemeColor.content = theme === 'dark' ? '#121212' : '#ffffff';
-            }
+            const meta = document.querySelector('meta[name="theme-color"]');
+            if (meta) meta.content = theme === 'dark' ? '#121212' : '#ffffff';
         })();
     </script>
-    <style>
-        body {
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            transition: background 0.2s, color 0.2s;
-        }
-        .container {
-            background: var(--bg-card);
-            color: var(--text-primary);
-        }
-        /* ...existing code... */
-    </style>
 </head>
 <body>
+    <!-- content -->
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <span id="theme-icon"></span>
+        <span id="theme-text">Dark Mode</span>
+    </div>
     <div class="container">
         <header>
             <h1>DMP ART - Review DMP</h1>
@@ -211,16 +202,9 @@
             </div>
         </footer>
     </div>
-    
-    <script>
-        // Store the filename and cache_id for use in JavaScript
-        const dmpFilename = "{{ filename }}";
-        const cacheId = "{{ cache_id }}";
-        
-        // All the existing JavaScript code from review.html would go here
-        // (I'm truncating for brevity but would include the full JavaScript)
-    </script>
-    
+    <!-- Load dark mode script before other scripts -->
+    <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {% block scripts %}{% endblock %}
 </body>
 </html>

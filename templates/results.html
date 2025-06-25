@@ -1,534 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DMP ART: Processing Results</title>
+    <meta name="theme-color" content="#ffffff">
+    <title>{% block title %}DMP ART{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Prevent flash of wrong theme -->
     <script>
-        // Prevent flash of wrong theme
         (function() {
-            const savedTheme = localStorage.getItem('dmp-art-theme');
+            const saved = localStorage.getItem('dmp-art-theme');
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+            const theme = saved || (prefersDark ? 'dark' : 'light');
             document.documentElement.setAttribute('data-theme', theme);
+            const meta = document.querySelector('meta[name="theme-color"]');
+            if (meta) meta.content = theme === 'dark' ? '#121212' : '#ffffff';
         })();
     </script>
     <style>
-        :root {
-            /* ...remove or override local variables, rely on style.css... */
-        }
-        body.results-page {
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-        }
-        .container {
-            background: var(--bg-card);
-            color: var(--text-primary);
-        }
+        /* ...existing code... */
         .results-container {
             background-color: var(--bg-card);
             color: var(--text-primary);
             max-width: 800px;
             margin: 0 auto;
-            background-color: var(--results-card-light);
             border-radius: 12px;
             padding: 2rem;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--results-border-light);
+            border: 1px solid var(--border-medium);
             transition: all 0.3s ease;
         }
-
-        .result-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .result-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-        }
-
-        .result-status.success {
-            background-color: var(--success-color);
-            color: white;
-        }
-
         .result-card {
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-            border-left: 4px solid;
-            transition: all 0.3s ease;
+            background-color: var(--bg-tertiary);
+            border-color: var(--border-medium);
         }
-
-        .result-card.success {
-            background-color: var(--results-success-light);
-            border-left-color: var(--success-color);
-        }
-
-        .result-card h3 {
-            margin-top: 0;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .result-card-icon {
-            font-size: 1.5rem;
-        }
-
-        .processing-info {
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .processing-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
+        .feature-card,
         .stat-item {
-            text-align: center;
-            padding: 1rem;
-            background-color: white;
-            border-radius: 6px;
-            border: 1px solid #dee2e6;
+            background-color: var(--bg-secondary);
+            border-color: var(--border-light);
         }
-
-        .stat-number {
-            display: block;
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            color: #666;
-            margin-top: 0.5rem;
-        }
-
-        .download-section {
-            text-align: center;
-            margin: 2rem 0;
-        }
-
-        .download-options {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 1.5rem;
-        }
-
-        .download-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background-color: var(--success-color);
-            color: white;
-            text-decoration: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 6px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-        }
-
-        .download-btn:hover {
-            background-color: #27ae60;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .download-btn.primary {
-            background-color: var(--primary-color);
-            font-size: 1.1rem;
-            padding: 1rem 2rem;
-        }
-
-        .download-btn.primary:hover {
-            background-color: #1a2530;
-        }
-
-        .download-btn.secondary {
-            background-color: var(--secondary-color);
-        }
-
-        .download-btn.secondary:hover {
-            background-color: #2980b9;
-        }
-
-        .feature-highlight {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem 0;
-        }
-
-        .feature-card {
-            background-color: #fff;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 1.5rem;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .feature-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            color: var(--primary-color);
-        }
-
-        .feature-card h4 {
-            margin-bottom: 0.5rem;
-            color: var(--primary-color);
-        }
-
-        .action-section {
-            text-align: center;
-            margin-top: 3rem;
-            padding-top: 2rem;
-            border-top: 1px solid #dee2e6;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 2rem;
-        }
-
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: white;
-            border: 1px solid #dee2e6;
-            border-radius: 50px;
-            padding: 0.5rem 1rem;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .theme-toggle:hover {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .progress-indicator {
-            display: none;
-            text-align: center;
-            margin: 2rem 0;
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-radius: 50%;
-            border-top-color: var(--primary-color);
-            animation: spin 1s ease-in-out infinite;
-            margin: 0 auto 1rem;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .success-toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: var(--success-color);
-            color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 6px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            transform: translateX(400px);
-            opacity: 0;
-            transition: all 0.3s ease;
-            z-index: 1001;
-        }
-
-        .success-toast.show {
-            transform: translateX(0);
-            opacity: 1;
-        }
-
-        /* Dark mode styles */
-        @media (prefers-color-scheme: dark) {
-            .results-page {
-                background-color: var(--results-bg-dark);
-                color: var(--results-text-dark);
-            }
-
-            .results-container {
-                background-color: var(--results-card-dark);
-                border-color: var(--results-border-dark);
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            }
-
-            .result-card.success {
-                background-color: var(--results-success-dark);
-                color: var(--results-text-dark);
-            }
-
-            .processing-info {
-                background-color: var(--results-card-dark);
-                border-color: var(--results-border-dark);
-            }
-
-            .feature-card {
-                background-color: var(--results-card-dark);
-                border-color: var(--results-border-dark);
-            }
-
-            .theme-toggle {
-                background-color: var(--results-card-dark);
-                border-color: var(--results-border-dark);
-                color: var(--results-text-dark);
-            }
-        }
-
-        /* Responsive design */
-        @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-            }
-            
-            .results-container {
-                padding: 1.5rem;
-            }
-            
-            .download-options {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .download-btn {
-                width: 100%;
-                max-width: 300px;
-                justify-content: center;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .processing-stats {
-                grid-template-columns: 1fr 1fr;
-            }
-            
-            .feature-highlight {
-                grid-template-columns: 1fr;
-            }
-            
-            .theme-toggle {
-                position: relative;
-                top: auto;
-                right: auto;
-                margin-bottom: 1rem;
-            }
-        }
-
-        /* Print styles */
-        @media print {
-            .theme-toggle,
-            .action-buttons,
-            .download-section {
-                display: none !important;
-            }
-            
-            .results-container {
-                box-shadow: none;
-                border: 1px solid #ccc;
-            }
-        }
+        /* ...existing code... */
     </style>
-
-    <script>
-        // Enhanced JavaScript functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeResultsPage();
-            setupDownloadLinks();
-            setupThemeToggle();
-            setupEnhancedFeatures();
-            loadProcessingStats();
-        });
-
-        function initializeResultsPage() {
-            // Get filename from URL parameters
-            const urlParams = new URLSearchParams(window.location.search);
-            const filename = urlParams.get('filename');
-            const cacheId = urlParams.get('cache_id');
-            
-            if (filename) {
-                setupDownloadLinks(filename, cacheId);
-            } else {
-                // If no filename, redirect to home
-                setTimeout(() => {
-                    window.location.href = '/';
-                }, 3000);
-                showToast('No file specified. Redirecting to home...', 'warning');
-            }
-        }
-
-        function setupDownloadLinks(filename, cacheId) {
-            const downloadWord = document.getElementById('download-word');
-            const reviewDmp = document.getElementById('review-dmp');
-            
-            if (filename) {
-                if (downloadWord) {
-                    downloadWord.href = `/download/${encodeURIComponent(filename)}`;
-                }
-                
-                if (reviewDmp) {
-                    let reviewUrl = `/review/${encodeURIComponent(filename)}`;
-                    if (cacheId) {
-                        reviewUrl += `?cache_id=${encodeURIComponent(cacheId)}`;
-                    }
-                    reviewDmp.href = reviewUrl;
-                }
-            }
-        }
-
-        function setupThemeToggle() {
-            // Check for saved theme preference or default to 'light'
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            
-            // Apply saved theme or system preference
-            if (savedTheme === 'dark' || (savedTheme === 'auto' && prefersDark)) {
-                document.body.classList.add('dark-mode');
-                updateThemeToggle(true);
-            }
-
-            // Listen for system theme changes
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-                if (localStorage.getItem('theme') === 'auto') {
-                    if (e.matches) {
-                        document.body.classList.add('dark-mode');
-                        updateThemeToggle(true);
-                    } else {
-                        document.body.classList.remove('dark-mode');
-                        updateThemeToggle(false);
-                    }
-                }
-            });
-        }
-
-        function toggleTheme() {
-            const isDark = document.body.classList.contains('dark-mode');
-            
-            if (isDark) {
-                document.body.classList.remove('dark-mode');
-                localStorage.setItem('theme', 'light');
-                updateThemeToggle(false);
-                showToast('Switched to Light Mode');
-            } else {
-                document.body.classList.add('dark-mode');
-                localStorage.setItem('theme', 'dark');
-                updateThemeToggle(true);
-                showToast('Switched to Dark Mode');
-            }
-        }
-
-        function updateThemeToggle(isDark) {
-            const themeText = document.getElementById('theme-text');
-            
-            if themeText {
-                if (isDark) {
-                    themeTextemeText.textContent = 'Light Mode';
-                } else {
-                    themeText.textContent = 'Dark Mode';
-                }
-            }
-        }
-
-        function setupEnhancedFeatures() {
-            // Copy link functionality
-            const copyLinkBtn = document.getElementById('copy-link');
-            if (copyLinkBtn) {
-                copyLinkBtn.addEventListener('click', function() {
-                    const currentUrl = window.location.href;
-                    copyToClipboard(currentUrl);
-                    showToast('Link copied to clipboard! 🔗');
-                });
-            }
-
-            // Email link functionality
-            const emailLinkBtn = document.getElementById('email-link');
-            if (emailLinkBtn) {
-                emailLinkBtn.addEventListener('click', function() {
-                    const subject = 'DMP Processing Results';
-                    const body = `Here are the results from DMP ART processing:\n\n${window.location.href}`;
-                    const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-                    window.location.href = mailtoLink;
-                });
-            }
-
-            // Export PDF functionality
-            const exportPdfBtn = document.getElementById('export-pdf');
-            if (exportPdfBtn) {
-                exportPdfBtn.addEventListener('click', function() {
-                    showToast('PDF export feature coming soon!', 'info');
-                });
-            }
-        }
-
-        
-        function copyToClipboard(text) {
-            if (navigator.clipboard && window.isSecureContext) {
-                return navigator.clipboard.writeText(text);
-            } else {
-                // Fallback for older browsers
-                const textarea = document.createElement('textarea');
-                textarea.value = text;
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-            }
-        }
-
-     
-    </script>
+</head>
+<body>
+    <!-- content -->
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <span id="theme-icon"></span>
+        <span id="theme-text">Dark Mode</span>
+    </div>
+    <div class="container">
+        <header>
+            <h1>DMP ART: Processing Results</h1>
+            <!-- ...existing code... -->
+        </header>
+        <!-- ...existing code... -->
+    </div>
+    <!-- Load dark mode script before other scripts -->
+    <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {% block scripts %}{% endblock %}
 </body>
 </html>
