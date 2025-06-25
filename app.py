@@ -231,17 +231,7 @@ def upload_file():
             filename = secure_filename(file.filename)
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(file_path)
-        elif filename.lower().endswith('.pdf'):
-                is_valid, validation_message = validate_pdf_file(file_path)
-                if not is_valid:
-                    try:
-                        os.remove(file_path)
-                    except:
-                        pass
-                    return jsonify({
-                        'success': False,
-                        'message': f'PDF validation failed: {validation_message}'
-                    })
+     
         
             # Enhanced file validation based on type
             if filename.lower().endswith('.docx'):
