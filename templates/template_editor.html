@@ -5,149 +5,134 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DMP Template Editor</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <script>
-        // Prevent flash of wrong theme
-        (function() {
-            const savedTheme = localStorage.getItem('dmp-art-theme');
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
-            document.documentElement.setAttribute('data-theme', theme);
-        })();
-    </script>
     <style>
-            :root {
-                /* ...remove or override local variables, rely on style.css... */
-            }
-            [data-theme="dark"] {
-                /* ...remove or override local variables, rely on style.css... */
-            }
-            body {
-                background: var(--bg-primary);
-                color: var(--text-primary);
-                transition: background 0.2s, color 0.2s;
-            }
-            .container {
-                background: var(--bg-card);
-                color: var(--text-primary);
-            }
-            .primary-btn, .secondary-btn, .add-btn, 
-            .tab-btn.active, .tab-btn:not(.active):hover, .delete-btn, .remove-phrase-btn, .add-question-btn, .remove-question-btn {
-                background: rgb(55, 93, 120) !important;
-                color: #fff !important;
-                transition: background 0.2s, color 0.2s;
-            }
-            /* Specific background for Save Template button */
-            .save-template-btn, save-btn, .save-all-templates-btn, .add-phrase-btn,  {
-                background:rgb(64, 138, 139) !important; /* mediumseagreen */
-                color: #fff !important;
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #2980b9;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --text-main: #222;
+            --text-secondary: #666;
+            --bg-main: #fff;
+            --bg-alt: #f8f9fa;
+            --success-color: #27ae60;
+        }
+        [data-theme="dark"] {
+            --primary-color: #8ecfff;
+            --secondary-color: #4fa3ff;
+            --shadow: 0 4px 16px rgba(0,0,0,0.25);
+            --text-main: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --bg-main: #181c20;
+            --bg-alt: #23272b;
+            --success-color: #27ae60;
+        }
+        body {
+            background: var(--bg-main);
+            color: var(--text-main);
+            transition: background 0.2s, color 0.2s;
+        }
+        .container {
+            background: var(--bg-main);
+            color: var(--text-main);
+        }
+        .primary-btn, .secondary-btn, .save-btn, .save-all-templates-btn, .add-btn {
+            transition: background 0.2s, color 0.2s;
+        }
+        .primary-btn, .save-btn, .save-all-templates-btn {
+            background: var(--primary-color);
+            color: #fff;
+        }
+        .secondary-btn, .add-btn {
+            background: var(--secondary-color);
+            color: #fff;
+        }
+        .primary-btn:hover, .secondary-btn:hover, .save-btn:hover, .save-all-templates-btn:hover, .add-btn:hover {
+            opacity: 0.85;
+        }
+        .footer-content {
+            background: var(--bg-alt);
+            color: var(--text-secondary);
+        }
+        .tab-panel, .template-group, .edit-item, .section-item {
+            background: var(--bg-main);
+            color: var(--text-main);
+            box-shadow: var(--shadow);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+        }
+        .tab-buttons {
+            background: var(--bg-alt);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        .tab-btn.active {
+            background: var(--secondary-color);
+            color: #fff;
+        }
+        .tab-btn {
+            background: var(--bg-main);
+            color: var(--text-main);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px 8px 0 0;
+            margin-right: 0.5rem;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .tab-btn:not(.active):hover {
+            background: var(--primary-color);
+            color: #fff;
+        }
+        .template-input, .content-input, .key-input, .section-input, .question-input, .phrase-input {
+            background: var(--bg-alt);
+            color: var(--text-main);
+            border: 1px solid var(--secondary-color);
+            border-radius: 4px;
+            padding: 0.5rem;
+            width: 100%;
+            margin-bottom: 0.5rem;
+            transition: background 0.2s, color 0.2s;
+        }
+        .success-toast {
+            background: var(--success-color);
+            color: #fff;
+        }
+        .success-toast.error {
+            background: #e74c3c;
+        }
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--bg-alt);
+            color: var(--text-main);
+            border: 1px solid var(--secondary-color);
+            border-radius: 50px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background 0.2s, color 0.2s;
+        }
+        .theme-toggle:hover {
+            background: var(--secondary-color);
+            color: #fff;
+        }
+        @media (max-width: 768px) {
+            .theme-toggle {
+                position: relative;
+                top: auto;
+                right: auto;
                 margin-bottom: 1rem;
-            }
-            .add-phrase-btn,
-            .add-btn,
-            .add-question-btn {
-                background: rgb(64, 138, 139) !important;
-                color: #fff !important;
-            }
-            /* Add space below every button */
-            button,
-            .save-template-btn,
-            .save-btn,
-            .save-all-templates-btn,
-            .add-btn,
-            .delete-btn,
-            .remove-phrase-btn,
-            .add-phrase-btn,
-            .add-question-btn,
-            .remove-question-btn {
-                margin-bottom: 1rem;
-            }
-            .primary-btn:hover, .secondary-btn:hover, .save-btn:hover, .save-all-templates-btn:hover, .add-btn:hover, .save-template-btn:hover {
-                opacity: 0.85;
-            }
-            .footer-content {
-                background: var(--bg-alt);
-                color: var(--text-secondary);
             }
             .tab-panel, .template-group, .edit-item, .section-item {
-                background: var(--bg-main);
-                color: var(--text-main);
-                box-shadow: var(--shadow);
-                border-radius: 8px;
-                margin-bottom: 1.5rem;
-                padding: 1rem;
+                padding: 0.75rem;
             }
-            .tab-buttons {
-                background: var(--bg-alt);
-                border-radius: 8px;
-                margin-bottom: 1rem;
-            }
-            .tab-btn.active {
-                background: var(--secondary-color);
-                color: #fff;
-            }
-            .tab-btn {
-                background: var(--bg-main);
-                color: var(--text-main);
-                border: none;
-                padding: 0.75rem 1.5rem;
-                border-radius: 8px 8px 0 0;
-                margin-right: 0.5rem;
-                cursor: pointer;
-                transition: background 0.2s, color 0.2s;
-            }
-            .tab-btn:not(.active):hover {
-                background: var(--primary-color);
-                color: #fff;
-            }
-            .template-input, .content-input, .key-input, .section-input, .question-input, .phrase-input {
-                background: var(--bg-alt);
-                color: var(--text-main);
-                border: 1px solid var(--secondary-color);
-                border-radius: 4px;
-                padding: 0.5rem;
-                width: 100%;
-                margin-bottom: 0.5rem;
-                transition: background 0.2s, color 0.2s;
-            }
-            .success-toast {
-                background: var(--success-color);
-                color: #fff;
-            }
-            .success-toast.error {
-                background: #e74c3c;
-            }
-            .theme-toggle {
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: var(--bg-alt);
-                color: var(--text-main);
-                border: 1px solid var(--secondary-color);
-                border-radius: 50px;
-                padding: 0.5rem 1rem;
-                cursor: pointer;
-                font-size: 0.9rem;
-                z-index: 1000;
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                transition: background 0.2s, color 0.2s;
-            }
-            .theme-toggle:hover {
-                background: var(--secondary-color);
-                color: #fff;
-            }
-            @media (max-width: 768px) {
-                .theme-toggle {
-                    position: relative;
-                    top: auto;
-                    right: auto;
-                    margin-bottom: 1rem;
-                }
-                .tab-panel, .template-group, .edit-item, .section-item {
-                    padding: 0.75rem;
-                }
-            }
+        }
     </style>
 </head>
 <body>
@@ -160,7 +145,7 @@
             <h1>DMP Template Editor</h1>
             <p>Customize all aspects of the DMP review system</p>
             <div class="nav-links">
-                <a href="/" class="nav-link">Home</a>
+                <a href="/" class="nav-link">🏠 Home</a>
             </div>
         </header>
         
@@ -233,7 +218,7 @@
                                     {% for phrase in phrases %}
                                     <div class="phrase-item">
                                         <input type="text" class="phrase-input" value="{{ phrase }}">
-                                        <button class="delete-btn">Delete</button>
+                                        <button class="remove-phrase-btn">Remove</button>
                                     </div>
                                     {% endfor %}
                                     <button class="add-phrase-btn">Add Phrase</button>
@@ -259,7 +244,7 @@
                                     {% for question in questions %}
                                     <div class="question-item">
                                         <input type="text" class="question-input" value="{{ question }}">
-                                        <button class="delete-btn">Delete</button>
+                                        <button class="remove-question-btn">Remove</button>
                                     </div>
                                     {% endfor %}
                                     <button class="add-question-btn">Add Question</button>
@@ -282,10 +267,10 @@
         <footer>
             <div class="footer-content">
                 <div class="footer-main">
-                    <p>DMP ART &copy; 2025</p>
+                    <p>DMP ART &copy; 2025 - Enhanced DOCX Processing</p>
                 </div>
                 <div class="footer-links">
-                    <a href="/documentation" class="footer-link secondary-btn" style="margin: 0;">Documentation</a>
+                    <a href="/documentation" class="footer-link">📖 Documentation</a>
                 </div>
             </div>
         </footer>
@@ -308,10 +293,10 @@
                 const text = document.getElementById('theme-text');
                 if (icon && text) {
                     if (isDark) {
-                        icon.textContent = '⚪';
+                        icon.textContent = '☀️';
                         text.textContent = 'Light Mode';
                     } else {
-                        icon.textContent = '⚫';
+                        icon.textContent = '🌙';
                         text.textContent = 'Dark Mode';
                     }
                 }
