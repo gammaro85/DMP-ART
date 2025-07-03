@@ -3,37 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DMP ART</title>
+    <meta name="theme-color" content="#ffffff">
+    <title>{% block title %}DMP ART{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Prevent flash of wrong theme -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('dmp-art-theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = saved || (prefersDark ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+            const meta = document.querySelector('meta[name="theme-color"]');
+            if (meta) meta.content = theme === 'dark' ? '#121212' : '#ffffff';
+        })();
+    </script>
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #2980b9;
-            --shadow: 0 4px 12px rgba(0,0,0,0.08);
-            --text-main: #222;
-            --text-secondary: #666;
-            --bg-main: #fff;
-            --bg-alt: #f8f9fa;
-            --success-color: #27ae60;
+            /* ...remove or override local variables, rely on style.css... */
         }
         [data-theme="dark"] {
-            --primary-color: #8ecfff;
-            --secondary-color: #4fa3ff;
-            --shadow: 0 4px 16px rgba(0,0,0,0.25);
-            --text-main: #e0e0e0;
-            --text-secondary: #b0b0b0;
-            --bg-main: #181c20;
-            --bg-alt: #23272b;
-            --success-color: #27ae60;
+            /* ...remove or override local variables, rely on style.css... */
         }
         body {
-            background: var(--bg-main);
-            color: var(--text-main);
+            background: var(--bg-primary);
+            color: var(--text-primary);
             transition: background 0.2s, color 0.2s;
         }
         .container {
-            background: var(--bg-main);
-            color: var(--text-main);
+            background: var(--bg-card);
+            color: var(--text-primary);
         }
         .primary-btn, .secondary-btn, .download-btn {
             transition: background 0.2s, color 0.2s;
@@ -89,17 +87,15 @@
     </style>
 </head>
 <body>
+    <!-- content -->
     <div class="theme-toggle" onclick="toggleTheme()">
-        <span id="theme-icon">🌙</span>
+        <span id="theme-icon"></span>
         <span id="theme-text">Dark Mode</span>
     </div>
     <div class="container">
         <header>
-            <h1>DMP ART: Data Management Plan Assessment and Response Tool</h1>
-            <p>Upload PDF or DOCX files to extract, review, and provide feedback on DMPs</p>
-            <div class="nav-links">
-                <a href="/template_editor" class="nav-link">Customize Templates</a>
-            </div>
+            <h1>DMP ART</h1>
+            <h2>Data Management Plan Assessment and Response Tool</h2>
         </header>
         
         <main>
@@ -112,8 +108,8 @@
                     </form>
                     <div id="file-info" class="hidden">
                         <p id="file-name"></p>
-                        <button id="upload-btn">Extract & Review DMP</button>
-                        <button id="clear-btn">Clear</button>
+                        <button id="upload-btn" class="primary-btn">Extract & Review DMP</button>
+                        <button id="clear-btn" class="secondary-btn">Clear</button>
                     </div>
                 </div>
             </div>
@@ -145,56 +141,19 @@
         <footer>
             <div class="footer-content">
                 <div class="footer-main">
-                    <p>DMP ART &copy; 2025 - Enhanced DOCX Processing</p>
+                    <p>DMP ART &copy; 2025</p>
                 </div>
                 <div class="footer-links">
-                    <a href="/documentation" class="footer-link">📖 Documentation</a>
+                    <a href="/template_editor" class="footer-link secondary-btn" style="margin: 0;">Customize Templates</a>
+                    <a href="/documentation" class="footer-link secondary-btn" style="margin: 0;">Documentation</a>
                 </div>
             </div>
         </footer>
     </div>
     
-    <script>
-        // Theme toggle logic
-        (function() {
-            const root = document.documentElement;
-            const themeToggle = () => {
-                const current = root.getAttribute('data-theme');
-                const next = current === 'dark' ? 'light' : 'dark';
-                root.setAttribute('data-theme', next);
-                localStorage.setItem('dmp-art-theme', next);
-                updateThemeToggle(next === 'dark');
-            };
-            window.toggleTheme = themeToggle;
-            function updateThemeToggle(isDark) {
-                const icon = document.getElementById('theme-icon');
-                const text = document.getElementById('theme-text');
-                if (icon && text) {
-                    if (isDark) {
-                        icon.textContent = '☀️';
-                        text.textContent = 'Light Mode';
-                    } else {
-                        icon.textContent = '🌙';
-                        text.textContent = 'Dark Mode';
-                    }
-                }
-            }
-            // Set theme on load
-            const saved = localStorage.getItem('dmp-art-theme');
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const theme = saved || (prefersDark ? 'dark' : 'light');
-            root.setAttribute('data-theme', theme);
-            updateThemeToggle(theme === 'dark');
-            // Listen for system changes if no saved theme
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-                if (!localStorage.getItem('dmp-art-theme')) {
-                    const newTheme = e.matches ? 'dark' : 'light';
-                    root.setAttribute('data-theme', newTheme);
-                    updateThemeToggle(newTheme === 'dark');
-                }
-            });
-        })();
-    </script>
+    <!-- Load dark mode script before other scripts -->
+    <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {% block scripts %}{% endblock %}
 </body>
 </html>

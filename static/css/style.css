@@ -88,7 +88,7 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Dark mode toggle button */
+/* Dark mode toggle button - no icons */
 .theme-toggle {
     position: fixed;
     top: 20px;
@@ -111,10 +111,6 @@ body {
 .theme-toggle:hover {
     background-color: var(--bg-hover);
     transform: translateY(-2px);
-}
-
-.theme-toggle .icon {
-    font-size: 1.2rem;
 }
 
 .container {
@@ -354,7 +350,44 @@ button,
     transform: translateY(-2px);
 }
 
-/* Question cards */
+/* Section Navigation */
+.section-navigation {
+    background-color: var(--bg-secondary);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-light);
+}
+
+.section-navigation h4 {
+    color: var(--text-primary);
+    margin-bottom: 10px;
+}
+
+.nav-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.nav-btn {
+    background-color: var(--secondary-color);
+    color: var(--light-color);
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    min-width: 40px;
+}
+
+.nav-btn:hover {
+    background-color: var(--primary-color);
+    transform: translateY(-1px);
+}
+
+/* Question cards with swapped formatting */
 .question-card {
     border: 1px solid var(--border-light);
     border-radius: 8px;
@@ -370,23 +403,59 @@ button,
 }
 
 .question-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     margin-bottom: 15px;
 }
 
-.question-title {
+/* SWAPPED FORMATTING: Section is now prominent, question is secondary */
+.question-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.section-number {
+    font-size: 1.8rem;
     font-weight: bold;
     color: var(--primary-color);
-    font-size: 1.2rem;
+    min-width: 60px;
+}
+
+.section-title {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--primary-color);
     flex: 1;
 }
 
-.section-label {
-    font-size: 0.9rem;
+.question-content {
+    margin-left: 75px;
+    /* Align with section title */
+}
+
+.question-title {
+    font-size: 1rem;
     color: var(--text-secondary);
-    margin-left: 10px;
+    font-weight: normal;
+    line-height: 1.4;
+    margin-bottom: 8px;
+}
+
+.content-type-indicator {
+    font-size: 0.8rem;
+    padding: 3px 8px;
+    border-radius: 12px;
+    background-color: var(--bg-tertiary);
+    color: var(--text-muted);
+    display: inline-block;
+}
+
+.content-table {
+    background-color: var(--status-info);
+}
+
+.content-paragraph {
+    background-color: var(--status-success);
 }
 
 /* Extracted content */
@@ -400,18 +469,27 @@ button,
     border-radius: 4px;
 }
 
-.extracted-content h3 {
-    margin-bottom: 10px;
-    color: var(--text-primary);
-    font-size: 1rem;
-}
-
 .dmp-paragraph {
     margin-bottom: 15px;
     position: relative;
 }
 
-.dmp-paragraph p {
+.enhanced-paragraph {
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.paragraph-metadata {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.dmp-paragraph p,
+.enhanced-paragraph p {
     margin-bottom: 5px;
     color: var(--text-primary);
 }
@@ -423,16 +501,19 @@ button,
     margin-top: 5px;
 }
 
-.no-content {
+.no-content,
+.no-content-warning {
     font-style: italic;
     color: var(--text-muted);
+    text-align: center;
+    padding: 20px;
 }
 
 /* Tags and buttons */
 .tag-btn {
     background-color: var(--tag-color);
-    color: var(--light-color);
-    border: none;
+    color: var(--text-primary);
+    border: 1px solid var(--border-light);
     border-radius: 4px;
     padding: 3px 8px;
     font-size: 0.8rem;
@@ -441,7 +522,8 @@ button,
 }
 
 .tag-btn:hover {
-    filter: brightness(1.2);
+    background-color: var(--secondary-color);
+    color: var(--light-color);
     transform: translateY(-1px);
 }
 
@@ -479,13 +561,36 @@ button,
     padding: 15px;
     border-radius: 4px;
     border: 1px solid var(--border-light);
+    position: relative;
+}
+
+.auto-save-indicator {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 0.8rem;
+    color: var(--success-color);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.feedback-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
 }
 
 .feedback-section h3,
 .enhanced-feedback-section h3 {
-    margin-bottom: 10px;
     color: var(--text-primary);
     font-size: 1rem;
+    margin: 0;
+}
+
+.char-counter {
+    font-size: 0.8rem;
+    color: var(--text-muted);
 }
 
 .feedback-text {
@@ -535,9 +640,9 @@ button,
 }
 
 .reset-btn:hover {
-    background-color: var(--tag-color);
+    background-color: var(--secondary-color);
     color: var(--light-color);
-    border-color: var(--tag-color);
+    border-color: var(--secondary-color);
 }
 
 .clear-btn:hover {
@@ -562,9 +667,48 @@ button,
     border: 1px solid var(--border-medium);
 }
 
-.compiled-feedback-container h2 {
-    color: var(--primary-color);
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 15px;
+}
+
+.modal-header h2 {
+    color: var(--primary-color);
+    margin: 0;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-muted);
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-btn:hover {
+    color: var(--error-color);
+}
+
+.report-metadata {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: var(--bg-secondary);
+    border-radius: 4px;
+}
+
+.metadata-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    font-size: 0.9rem;
 }
 
 #compiled-feedback {
@@ -607,14 +751,6 @@ button,
 #export-feedback-btn:hover {
     filter: brightness(1.1);
     transform: translateY(-2px);
-}
-
-#close-compiled-btn {
-    background-color: var(--error-color);
-}
-
-#close-compiled-btn:hover {
-    filter: brightness(1.1);
 }
 
 /* Toast notifications */
@@ -875,9 +1011,31 @@ footer {
         align-items: flex-start;
     }
 
+    .question-section {
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+
+    .question-content {
+        margin-left: 0;
+    }
+
+    .section-number {
+        font-size: 1.5rem;
+    }
+
+    .section-title {
+        font-size: 1.2rem;
+    }
+
     .compiled-feedback-container {
         width: 95%;
         padding: 15px;
+    }
+
+    .metadata-grid {
+        grid-template-columns: 1fr;
     }
 
     .tab-buttons {

@@ -46,9 +46,9 @@
                     </div>
                 </div>
                 <div class="action-btns">
-                    <a href="{{ url_for('download_file', filename=filename) }}" class="download-btn" title="Download original document">💾 Download Original</a>
-                    <button id="save-feedback-btn" class="save-all-btn" title="Save feedback to server">💾 Save Feedback</button>
-                    <button id="compile-btn" class="compile-btn" title="Compile all feedback into report">📋 Compile Report</button>
+                    <a href="{{ url_for('download_file', filename=filename) }}" class="download-btn" title="Download original document">Download Original</a>
+                    <button id="save-feedback-btn" class="save-all-btn" title="Save feedback to server">Save Feedback</button>
+                    <button id="compile-btn" class="compile-btn" title="Compile all feedback into report">Compile Report</button>
                 </div>
             </div>
 
@@ -56,34 +56,37 @@
             <div class="section-navigation">
                 <h4>Quick Navigation</h4>
                 <div class="nav-buttons" id="section-nav">
-                    <!-- Populated by JavaScript -->
+                    {% for section_id, content in extracted_content.items() %}
+                    <button class="nav-btn" onclick="scrollToSection('{{ section_id }}')" title="{{ content.question }}">{{ section_id }}</button>
+                    {% endfor %}
                 </div>
             </div>
             
             <div id="questions-container">
                 {% for section_id, content in extracted_content.items() %}
-                <div class="question-card" data-id="{{ section_id }}">
+                <div class="question-card" data-id="{{ section_id }}" id="section-{{ section_id }}">
                     <div class="question-header">
-                        <div class="question-title">
-                            {{ content.question }}
+                        <div class="question-section">
+                            <div class="section-number">{{ section_id }}</div>
+                            <div class="section-title">{{ content.section }}</div>
+                        </div>
+                        <div class="question-content">
+                            <div class="question-title">{{ content.question }}</div>
                             {% if content.paragraphs|length > 0 %}
                                 <span class="content-type-indicator content-table">Table Content</span>
                             {% else %}
                                 <span class="content-type-indicator content-paragraph">Text Content</span>
                             {% endif %}
                         </div>
-                        <div class="section-label">{{ content.section }}</div>
                     </div>
                     
                     <!-- Extracted DMP content -->
                     <div class="extracted-content">
-                        <h3> Extracted Content</h3>
                         {% if content.paragraphs|length > 0 %}
                             {% for paragraph in content.paragraphs %}
                             <div class="enhanced-paragraph {% if content.tagged_paragraphs and loop.index0 < content.tagged_paragraphs|length and content.tagged_paragraphs[loop.index0].get('tags', [])|length > 0 %}has-tags{% endif %}">
                                 <div class="paragraph-metadata">
                                     <span><strong>Paragraph {{ loop.index }}</strong></span>
-                                    <span class="word-count">{{ paragraph.split()|length }} words</span>
                                 </div>
                                 
                                 <p>{{ paragraph }}</p>
@@ -125,7 +128,7 @@
                     
                     <!-- Enhanced comment buttons -->
                     <div class="comment-buttons">
-                        <h3> Quick Comments</h3>
+                        <h3>Quick Comments</h3>
                         <div style="display: flex; flex-wrap: wrap; gap: 8px;">
                             {% for tag, comment in comments.items() %}
                             <button class="comment-btn" 
@@ -141,9 +144,9 @@
                     
                     <!-- Enhanced feedback section -->
                     <div class="enhanced-feedback-section">
-                        <div class="auto-save-indicator" id="auto-save-{{ section_id }}"> Auto-saved</div>
+                        <div class="auto-save-indicator" id="auto-save-{{ section_id }}">Auto-saved</div>
                         <div class="feedback-toolbar">
-                            <h3> Your Feedback</h3>
+                            <h3>Your Feedback</h3>
                             <span class="char-counter" id="char-counter-{{ section_id }}">0 characters</span>
                         </div>
                         <textarea class="feedback-text" 
@@ -151,9 +154,9 @@
                                   placeholder="Enter your feedback for this section..."
                                   data-section-id="{{ section_id }}">{{ templates.get(section_id, {}).get('template', '') if section_id in templates else "" }}</textarea>
                         <div class="action-row">
-                            <button class="copy-btn" data-id="{{ section_id }}" title="Copy feedback to clipboard"> Copy</button>
-                            <button class="reset-btn" data-id="{{ section_id }}" title="Reset to original template"> Reset</button>
-                            <button class="clear-btn" data-id="{{ section_id }}" title="Clear all text"> Clear</button>
+                            <button class="copy-btn" data-id="{{ section_id }}" title="Copy feedback to clipboard">Copy</button>
+                            <button class="reset-btn" data-id="{{ section_id }}" title="Reset to original template">Reset</button>
+                            <button class="clear-btn" data-id="{{ section_id }}" title="Clear all text">Clear</button>
                         </div>
                     </div>
                 </div>
@@ -163,7 +166,7 @@
             <!-- Enhanced compiled feedback section -->
             <div id="compiled-feedback-container" class="compiled-feedback-container hidden">
                 <div class="modal-header">
-                    <h2> Compiled Feedback Report</h2>
+                    <h2>Compiled Feedback Report</h2>
                     <button id="close-compiled-btn" class="close-btn" title="Close this dialog">&times;</button>
                 </div>
                 <div class="report-metadata">
@@ -176,15 +179,15 @@
                 </div>
                 <textarea id="compiled-feedback" readonly placeholder="Your compiled feedback will appear here..."></textarea>
                 <div class="compiled-actions">
-                    <button id="copy-compiled-btn" title="Copy all feedback to clipboard"> Copy All</button>
-                    <button id="download-feedback-btn" title="Download feedback as text file"> Download TXT</button>
-                    <button id="export-feedback-btn" title="Export as HTML document"> Export HTML</button>
+                    <button id="copy-compiled-btn" title="Copy all feedback to clipboard">Copy All</button>
+                    <button id="download-feedback-btn" title="Download feedback as text file">Download TXT</button>
+                    <button id="export-feedback-btn" title="Export as HTML document">Export HTML</button>
                 </div>
             </div>
             
             <div class="action-buttons">
-                <a href="/" class="secondary-btn"> Process Another File</a>
-                <a href="/template_editor" class="secondary-btn">⚙ Customize Templates</a>
+                <a href="/" class="secondary-btn">Process Another File</a>
+                <a href="/template_editor" class="secondary-btn">Customize Templates</a>
             </div>
         </main>
         
@@ -205,6 +208,83 @@
     <!-- Load dark mode script before other scripts -->
     <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        // Enhanced navigation functionality
+        function scrollToSection(sectionId) {
+            const element = document.getElementById('section-' + sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // Highlight the section temporarily
+                element.style.border = '2px solid var(--accent-color)';
+                setTimeout(() => {
+                    element.style.border = '';
+                }, 2000);
+            }
+        }
+
+        // Auto-update character counters
+        document.addEventListener('DOMContentLoaded', function() {
+            const textareas = document.querySelectorAll('.feedback-text');
+            textareas.forEach(textarea => {
+                const sectionId = textarea.getAttribute('data-section-id');
+                const counter = document.getElementById('char-counter-' + sectionId);
+                
+                function updateCounter() {
+                    if (counter) {
+                        counter.textContent = textarea.value.length + ' characters';
+                    }
+                }
+                
+                // Update counter initially
+                updateCounter();
+                
+                // Update counter on input
+                textarea.addEventListener('input', updateCounter);
+            });
+        });
+
+        // Enhanced comment insertion with animation
+        function insertCommentWithAnimation(id, comment) {
+            const textarea = document.getElementById(`feedback-${id}`);
+            if (!textarea) return;
+
+            // Get current cursor position
+            const startPos = textarea.selectionStart;
+            const endPos = textarea.selectionEnd;
+
+            // Insert comment at cursor position or at the end
+            if (startPos !== undefined && endPos !== undefined) {
+                // Add a newline if not at the beginning of the textarea
+                const prefix = startPos > 0 && textarea.value.charAt(startPos - 1) !== '\n' ? '\n' : '';
+
+                // Add the comment
+                textarea.value =
+                    textarea.value.substring(0, startPos) +
+                    prefix + comment + '\n' +
+                    textarea.value.substring(endPos);
+
+                // Set cursor position after inserted comment
+                const newPos = startPos + prefix.length + comment.length + 1;
+                textarea.selectionStart = newPos;
+                textarea.selectionEnd = newPos;
+            } else {
+                // If no cursor position, append to the end
+                const prefix = textarea.value.length > 0 && textarea.value.charAt(textarea.value.length - 1) !== '\n' ? '\n' : '';
+                textarea.value += prefix + comment + '\n';
+            }
+
+            // Focus the textarea and animate
+            textarea.focus();
+            textarea.style.borderColor = 'var(--accent-color)';
+            setTimeout(() => {
+                textarea.style.borderColor = '';
+            }, 1000);
+
+            // Update character counter
+            const event = new Event('input');
+            textarea.dispatchEvent(event);
+        }
+    </script>
     {% block scripts %}{% endblock %}
 </body>
 </html>
