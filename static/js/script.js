@@ -1,4 +1,4 @@
-// static/js/script.js - Enhanced with Dark Mode Integration
+// static/js/script.js - Enhanced with Dark Mode Integration and Fixed Navigation
 document.addEventListener('DOMContentLoaded', function () {
     // Initialize dark mode first
     initializeDarkMode();
@@ -40,7 +40,7 @@ function createDarkModeToggle() {
     toggle.setAttribute('title', 'Switch between light and dark modes');
 
     toggle.innerHTML = `
-        <span class="icon" id="theme-icon">🌙</span>
+        <span class="icon" id="theme-icon"></span>
         <span id="theme-text">Dark</span>
     `;
 
@@ -88,10 +88,10 @@ function updateToggleButton(theme) {
 
     if (icon && text) {
         if (theme === 'dark') {
-            icon.textContent = '☀️';
+            icon.textContent = '';
             text.textContent = 'Light';
         } else {
-            icon.textContent = '🌙';
+            icon.textContent = '';
             text.textContent = 'Dark';
         }
     }
@@ -116,7 +116,7 @@ function updateMetaThemeColor(theme) {
 function showThemeChangeNotification(theme) {
     // Check if we have the toast system available
     if (typeof showToast === 'function') {
-        const message = theme === 'dark' ? '🌙 Dark mode enabled' : '☀️ Light mode enabled';
+        const message = theme === 'dark' ? 'Dark mode enabled' : 'Light mode enabled';
         showToast(message);
     } else {
         // Fallback notification
@@ -136,7 +136,7 @@ function showThemeChangeNotification(theme) {
             border: 1px solid ${theme === 'dark' ? '#555' : '#ddd'};
         `;
 
-        const message = theme === 'dark' ? '🌙 Dark mode enabled' : '☀️ Light mode enabled';
+        const message = theme === 'dark' ? 'Dark mode enabled' : 'Light mode enabled';
         notification.textContent = message;
 
         document.body.appendChild(notification);
@@ -468,6 +468,9 @@ function initializeReviewPage() {
 
     if (!commentButtons.length && !compileButton) return; // Exit if not on review page
 
+    // Initialize navigation functionality
+    initializeSectionNavigation();
+
     // Original template text for reset functionality
     const originalTemplates = {};
 
@@ -677,6 +680,60 @@ function initializeReviewPage() {
     }
 }
 
+// SECTION NAVIGATION FUNCTIONALITY
+function initializeSectionNavigation() {
+    // Find all question cards and create navigation
+    const questionCards = document.querySelectorAll('.question-card');
+    const navContainer = document.getElementById('section-nav');
+
+    if (!navContainer || questionCards.length === 0) return;
+
+    // Clear existing navigation
+    navContainer.innerHTML = '';
+
+    questionCards.forEach(card => {
+        const sectionId = card.getAttribute('data-id');
+        const sectionTitle = card.querySelector('.question-title');
+
+        if (sectionId && sectionTitle) {
+            const navBtn = document.createElement('button');
+            navBtn.className = 'nav-btn';
+            navBtn.textContent = sectionId;
+            navBtn.title = sectionTitle.textContent;
+            navBtn.onclick = () => scrollToSection(sectionId);
+
+            navContainer.appendChild(navBtn);
+        }
+    });
+}
+
+// Enhanced scroll to section function
+function scrollToSection(sectionId) {
+    const element = document.getElementById('section-' + sectionId) ||
+        document.querySelector(`[data-id="${sectionId}"]`);
+
+    if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        // Highlight the section temporarily
+        element.style.border = '2px solid var(--accent-color)';
+        element.style.borderRadius = '8px';
+
+        setTimeout(() => {
+            element.style.border = '';
+            element.style.borderRadius = '';
+        }, 2000);
+
+        // Focus on the feedback textarea for this section
+        const textarea = element.querySelector('.feedback-text');
+        if (textarea) {
+            setTimeout(() => {
+                textarea.focus();
+            }, 500);
+        }
+    }
+}
+
 // TEMPLATE EDITOR FUNCTIONALITY
 function initializeTemplateEditor() {
     // Get template editor elements
@@ -816,3 +873,6 @@ window.DarkMode = {
         }
     }
 };
+
+// Make scrollToSection globally available
+window.scrollToSection = scrollToSection;
