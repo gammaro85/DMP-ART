@@ -1,0 +1,609 @@
+{
+  "1.1": {
+    "section": "1. Data description and collection or re-use of existing data",
+    "question": "How will new data be collected or produced and/or how will existing data be re-used?",
+    "paragraphs": [
+      "The data will be produced during the realization of the project (already existing data will not be used). The production",
+      "of data will be performed by scientists involved in the project realization during samples preparation and",
+      "measurements. It will consist of laboratory notes and datasets recorded during experiments. The type of data will vary",
+      "depending on the type of experiment (mainly numeric data in a form of columns and graphs). Owned devices are",
+      "equipped with dedicated software.",
+      "All measuring devices are periodically calibrated or checked using calibration samples.",
+      "The data source can be read from the saved files extension (e.g. *.ocw- voltammetry curves recorded using GPES",
+      "software using Autolab potentiostat, *spc - Raman spectra recorded using Micro-Raman Renishaw InVia spectrometer).",
+      "Attention will be paid to the correct and unambiguous naming of files (including sample name, date of production, type",
+      "and conditions of measurement).",
+      "[w języku angielskim]"
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The data will be produced during the realization of the project (already existing data will not be used). The production",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "of data will be performed by scientists involved in the project realization during samples preparation and",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "measurements. It will consist of laboratory notes and datasets recorded during experiments. The type of data will vary",
+        "tags": [],
+        "title": "measurements."
+      },
+      {
+        "text": "depending on the type of experiment (mainly numeric data in a form of columns and graphs). Owned devices are",
+        "tags": [],
+        "title": "depending on the type of experiment (mainly numeric data in a form of columns and graphs)."
+      },
+      {
+        "text": "equipped with dedicated software.",
+        "tags": [
+          "tools"
+        ],
+        "title": "equipped with dedicated software."
+      },
+      {
+        "text": "All measuring devices are periodically calibrated or checked using calibration samples.",
+        "tags": [],
+        "title": "All measuring devices are periodically calibrated or checked using calibration samples."
+      },
+      {
+        "text": "The data source can be read from the saved files extension (e.g. *.ocw- voltammetry curves recorded using GPES",
+        "tags": [],
+        "title": "The data source can be read from the saved files extension (e.g."
+      },
+      {
+        "text": "software using Autolab potentiostat, *spc - Raman spectra recorded using Micro-Raman Renishaw InVia spectrometer).",
+        "tags": [
+          "tools"
+        ],
+        "title": null
+      },
+      {
+        "text": "Attention will be paid to the correct and unambiguous naming of files (including sample name, date of production, type",
+        "tags": [
+          "data_volume"
+        ],
+        "title": null
+      },
+      {
+        "text": "and conditions of measurement).",
+        "tags": [],
+        "title": "and conditions of measurement)."
+      },
+      {
+        "text": "[w języku angielskim]",
+        "tags": [],
+        "title": "[w języku angielskim]"
+      }
+    ]
+  },
+  "1.2": {
+    "section": "1. Data description and collection or re-use of existing data",
+    "question": "What data (for example the types, formats, and volumes) will be collected or produced?",
+    "paragraphs": [
+      "As a result of the project realization, physical samples and experimental data will be produced. It is estimated that the",
+      "total volume of data will be in a range of 25-500 GB. Depending on the measurement device and used software,",
+      "different format of the files will be produced, e.g.:",
+      "- data from electrochemical measurements recorded using autolab system (*.oxw, *.ocw),",
+      "- data from electrochemical measurements recorded using biologic system (*.mp*),",
+      "- data from Raman spectrometer (*.spc),",
+      "- data from scanning electron microscope (*.tiff, *.jpeg),",
+      "- data containing XRD patterns, impedance spectra require appropriate software to read the data, thus data will be",
+      "converted to readable *.csv format."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "As a result of the project realization, physical samples and experimental data will be produced. It is estimated that the",
+        "tags": [],
+        "title": "As a result of the project realization, physical samples and experimental data will be produced."
+      },
+      {
+        "text": "total volume of data will be in a range of 25-500 GB. Depending on the measurement device and used software,",
+        "tags": [
+          "data_volume",
+          "tools"
+        ],
+        "title": "total volume of data will be in a range of 25-500 GB."
+      },
+      {
+        "text": "different format of the files will be produced, e.g.:",
+        "tags": [
+          "data_format"
+        ],
+        "title": "different format of the files will be produced, e.g.:"
+      },
+      {
+        "text": "- data from electrochemical measurements recorded using autolab system (*.oxw, *.ocw),",
+        "tags": [],
+        "title": "- data from electrochemical measurements recorded using autolab system (*.oxw, *.ocw),"
+      },
+      {
+        "text": "- data from electrochemical measurements recorded using biologic system (*.mp*),",
+        "tags": [],
+        "title": "- data from electrochemical measurements recorded using biologic system (*.mp*),"
+      },
+      {
+        "text": "- data from Raman spectrometer (*.spc),",
+        "tags": [],
+        "title": "- data from Raman spectrometer (*.spc),"
+      },
+      {
+        "text": "- data from scanning electron microscope (*.tiff, *.jpeg),",
+        "tags": [
+          "data_format"
+        ],
+        "title": "- data from scanning electron microscope (*.tiff, *.jpeg),"
+      },
+      {
+        "text": "- data containing XRD patterns, impedance spectra require appropriate software to read the data, thus data will be",
+        "tags": [
+          "tools"
+        ],
+        "title": null
+      },
+      {
+        "text": "converted to readable *.csv format.",
+        "tags": [
+          "data_format"
+        ],
+        "title": "converted to readable *.csv format."
+      }
+    ]
+  },
+  "2.1": {
+    "section": "2. Documentation and data quality",
+    "question": "What metadata and documentation (for example methodology or data collection and way of organising data) will accompany data?",
+    "paragraphs": [
+      "The data will be produced using measurement and experimental procedures established during the project",
+      "implementation. The standardized naming of files and catalogues will enable finding and reading the searched data.",
+      "The part of the produced data will be facilitated by the open research data repository system The Bridge of Data (MOST",
+      "danych) with metadata standards. Metadata description will be stored in JSON-LD format. The principle investigator of",
+      "the project will be identified and authorized using ORCID."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The data will be produced using measurement and experimental procedures established during the project",
+        "tags": [
+          "methodology"
+        ],
+        "title": null
+      },
+      {
+        "text": "implementation. The standardized naming of files and catalogues will enable finding and reading the searched data.",
+        "tags": [
+          "storage"
+        ],
+        "title": "implementation."
+      },
+      {
+        "text": "The part of the produced data will be facilitated by the open research data repository system The Bridge of Data (MOST",
+        "tags": [
+          "storage",
+          "sharing"
+        ],
+        "title": null
+      },
+      {
+        "text": "danych) with metadata standards. Metadata description will be stored in JSON-LD format. The principle investigator of",
+        "tags": [
+          "data_format",
+          "metadata",
+          "storage",
+          "responsibility"
+        ],
+        "title": "danych) with metadata standards."
+      },
+      {
+        "text": "the project will be identified and authorized using ORCID.",
+        "tags": [
+          "identifier"
+        ],
+        "title": "the project will be identified and authorized using ORCID."
+      }
+    ]
+  },
+  "2.2": {
+    "section": "2. Documentation and data quality",
+    "question": "What data quality control measures will be used?",
+    "paragraphs": [
+      "In order to ensure the high quality of the obtained data, the measuring devices will be periodically calibrated (e.g. pH",
+      "meter, Raman spectrometer) or checked using calibration samples (e.g. potentiostat). In the case of electrochemical",
+      "impedance spectroscopy measurements, the Kramers-Kronig test will be performed each time. The light intensity of",
+      "solar simulator will be control using the power meter.",
+      "The data will be catalogued in a standardized way fulfilling the requirements of FAIR standards. The data available in an",
+      "open repository will have DOI assigned and the data will be positioned in the way to ensure its accessibility."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "In order to ensure the high quality of the obtained data, the measuring devices will be periodically calibrated (e.g. pH",
+        "tags": [
+          "quality"
+        ],
+        "title": null
+      },
+      {
+        "text": "meter, Raman spectrometer) or checked using calibration samples (e.g. potentiostat). In the case of electrochemical",
+        "tags": [],
+        "title": "meter, Raman spectrometer) or checked using calibration samples (e.g."
+      },
+      {
+        "text": "impedance spectroscopy measurements, the Kramers-Kronig test will be performed each time. The light intensity of",
+        "tags": [
+          "backup"
+        ],
+        "title": "impedance spectroscopy measurements, the Kramers-Kronig test will be performed each time."
+      },
+      {
+        "text": "solar simulator will be control using the power meter.",
+        "tags": [],
+        "title": "solar simulator will be control using the power meter."
+      },
+      {
+        "text": "The data will be catalogued in a standardized way fulfilling the requirements of FAIR standards. The data available in an",
+        "tags": [
+          "storage"
+        ],
+        "title": "The data will be catalogued in a standardized way fulfilling the requirements of FAIR standards."
+      },
+      {
+        "text": "open repository will have DOI assigned and the data will be positioned in the way to ensure its accessibility.",
+        "tags": [
+          "storage",
+          "sharing",
+          "identifier"
+        ],
+        "title": null
+      }
+    ]
+  },
+  "3.1": {
+    "section": "3. Storage and backup during the research process",
+    "question": "How will data and metadata be stored and backed up during the research process?",
+    "paragraphs": [
+      "The volume of produced data will not exceed the storage volume of standard hard drives. The data will be stored on",
+      "the computers connected to the devices. Additionally, the data will be copied to computers used by the personnel",
+      "involved in the project implementation in order to process the data. The developed data will be exchanged between",
+      "the personnel involved in the project implementation using USB memory sticks. All computers will be protected by",
+      "periodically changed passwords.",
+      "Once a quarter all data will be copied to an external hard drive used for data storage, stored in a locked cabinet. The",
+      "principal investigator will be responsible for backing up data to an external disk. The part of data will be stored using",
+      "data repository - the bridge of data.Dominika Parasińska, Politechnika Gdańska 650474"
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The volume of produced data will not exceed the storage volume of standard hard drives. The data will be stored on",
+        "tags": [
+          "data_volume",
+          "storage"
+        ],
+        "title": "The volume of produced data will not exceed the storage volume of standard hard drives."
+      },
+      {
+        "text": "the computers connected to the devices. Additionally, the data will be copied to computers used by the personnel",
+        "tags": [
+          "responsibility"
+        ],
+        "title": "the computers connected to the devices."
+      },
+      {
+        "text": "involved in the project implementation in order to process the data. The developed data will be exchanged between",
+        "tags": [
+          "methodology"
+        ],
+        "title": "involved in the project implementation in order to process the data."
+      },
+      {
+        "text": "the personnel involved in the project implementation using USB memory sticks. All computers will be protected by",
+        "tags": [
+          "security"
+        ],
+        "title": "the personnel involved in the project implementation using USB memory sticks."
+      },
+      {
+        "text": "periodically changed passwords.",
+        "tags": [
+          "security"
+        ],
+        "title": "periodically changed passwords."
+      },
+      {
+        "text": "Once a quarter all data will be copied to an external hard drive used for data storage, stored in a locked cabinet. The",
+        "tags": [
+          "storage",
+          "responsibility"
+        ],
+        "title": null
+      },
+      {
+        "text": "principal investigator will be responsible for backing up data to an external disk. The part of data will be stored using",
+        "tags": [
+          "storage",
+          "responsibility"
+        ],
+        "title": "principal investigator will be responsible for backing up data to an external disk."
+      },
+      {
+        "text": "data repository - the bridge of data.Dominika Parasińska, Politechnika Gdańska 650474",
+        "tags": [
+          "storage"
+        ],
+        "title": "data repository - the bridge of data.Dominika Parasińska, Politechnika Gdańska 650474"
+      }
+    ]
+  },
+  "3.2": {
+    "section": "3. Storage and backup during the research process",
+    "question": "How will data security and protection of sensitive data be taken care of during the research?",
+    "paragraphs": [
+      "No special data protection is planned. There is no such need because it is not sensitive data. The data will be accessible",
+      "for trained persons using measuring devices connected to computers used to carry out the project's tasks. The data will",
+      "be stored on the hard disks of computers connected to the devices, on the computers of people working in the project,",
+      "partly on USB sticks, partly in the data bridge repository, and on an external disk. The risk of all data being lost is",
+      "extremely low."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "No special data protection is planned. There is no such need because it is not sensitive data. The data will be accessible",
+        "tags": [
+          "security",
+          "sharing"
+        ],
+        "title": "No special data protection is planned."
+      },
+      {
+        "text": "for trained persons using measuring devices connected to computers used to carry out the project's tasks. The data will",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "be stored on the hard disks of computers connected to the devices, on the computers of people working in the project,",
+        "tags": [
+          "storage"
+        ],
+        "title": null
+      },
+      {
+        "text": "partly on USB sticks, partly in the data bridge repository, and on an external disk. The risk of all data being lost is",
+        "tags": [
+          "storage"
+        ],
+        "title": "partly on USB sticks, partly in the data bridge repository, and on an external disk."
+      },
+      {
+        "text": "extremely low.",
+        "tags": [],
+        "title": "extremely low."
+      }
+    ]
+  },
+  "4.1": {
+    "section": "4. Legal requirements, codes of conduct",
+    "question": "If personal data are processed, how will compliance with legislation on personal data and on data security be ensured?",
+    "paragraphs": [
+      "Nie dotyczy"
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Nie dotyczy",
+        "tags": [],
+        "title": "Nie dotyczy"
+      }
+    ]
+  },
+  "4.2": {
+    "section": "4. Legal requirements, codes of conduct",
+    "question": "How will other legal issues, such as intelectual property rights and ownership, be managed? What legislation is applicable?",
+    "paragraphs": [
+      "przepisy",
+      "The ownership and management of any intellectual property developed in collaboration relating to the project remain",
+      "of the Gdansk University of Technology. The data and results published in open-access will have one of the Creative",
+      "Commons licences."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "przepisy",
+        "tags": [
+          "responsibility"
+        ],
+        "title": "przepisy"
+      },
+      {
+        "text": "The ownership and management of any intellectual property developed in collaboration relating to the project remain",
+        "tags": [
+          "license"
+        ],
+        "title": null
+      },
+      {
+        "text": "of the Gdansk University of Technology. The data and results published in open-access will have one of the Creative",
+        "tags": [
+          "sharing"
+        ],
+        "title": "of the Gdansk University of Technology."
+      },
+      {
+        "text": "Commons licences.",
+        "tags": [],
+        "title": "Commons licences."
+      }
+    ]
+  },
+  "5.1": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How and when will data be shared? Are there possible restrictions to data sharing or embargo reasons?",
+    "paragraphs": [
+      "The part of the produced data will be published by the open research data repository - the Bridge of Data (MOST",
+      "Danych) provided by Gdansk University of Technology. Some data may be published in journals requiring the sharing of",
+      "raw data. The data will be stored for a minimum of 10 years, in accordance with NCN guidelines"
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The part of the produced data will be published by the open research data repository - the Bridge of Data (MOST",
+        "tags": [
+          "storage",
+          "sharing"
+        ],
+        "title": null
+      },
+      {
+        "text": "Danych) provided by Gdansk University of Technology. Some data may be published in journals requiring the sharing of",
+        "tags": [
+          "sharing"
+        ],
+        "title": "Danych) provided by Gdansk University of Technology."
+      },
+      {
+        "text": "raw data. The data will be stored for a minimum of 10 years, in accordance with NCN guidelines",
+        "tags": [
+          "storage"
+        ],
+        "title": "raw data."
+      }
+    ]
+  },
+  "5.2": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How will data for preservation be selected, and where will data be preserved long-term (for example a data repository or archive)?",
+    "paragraphs": [
+      "The main data repository will be the Bridge of Data. The choice of data will be based on their quality. In the case of e.g.",
+      "incorrectly performed experiments, no data transfer to the repository is planned. The repository will mainly contain the",
+      "data that will be the basis for publication. The data provided in the Bridge of Data fulfil FAIR requirements and will be",
+      "properly categorized and labeled according to the standard file formats."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The main data repository will be the Bridge of Data. The choice of data will be based on their quality. In the case of e.g.",
+        "tags": [
+          "quality",
+          "storage"
+        ],
+        "title": "The main data repository will be the Bridge of Data."
+      },
+      {
+        "text": "incorrectly performed experiments, no data transfer to the repository is planned. The repository will mainly contain the",
+        "tags": [
+          "storage"
+        ],
+        "title": "incorrectly performed experiments, no data transfer to the repository is planned."
+      },
+      {
+        "text": "data that will be the basis for publication. The data provided in the Bridge of Data fulfil FAIR requirements and will be",
+        "tags": [],
+        "title": "data that will be the basis for publication."
+      },
+      {
+        "text": "properly categorized and labeled according to the standard file formats.",
+        "tags": [
+          "data_format"
+        ],
+        "title": "properly categorized and labeled according to the standard file formats."
+      }
+    ]
+  },
+  "5.3": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "What methods or software tools will be needed to access and use the data?",
+    "paragraphs": [
+      "Most of the data will be available in a format that does not require specialized reading software. (e.g. * .csv, * .tiff).",
+      "Data obtained from electrochemical measurements using an autolab device (e.g. * .ocw) can also be read by generally",
+      "available software. In the case of the data requiring dedicated software, the files can be converted to readable format",
+      "on a direct request."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Most of the data will be available in a format that does not require specialized reading software. (e.g. * .csv, * .tiff).",
+        "tags": [
+          "data_format",
+          "tools"
+        ],
+        "title": "Most of the data will be available in a format that does not require specialized reading software."
+      },
+      {
+        "text": "Data obtained from electrochemical measurements using an autolab device (e.g. * .ocw) can also be read by generally",
+        "tags": [],
+        "title": "Data obtained from electrochemical measurements using an autolab device (e.g."
+      },
+      {
+        "text": "available software. In the case of the data requiring dedicated software, the files can be converted to readable format",
+        "tags": [
+          "data_format",
+          "tools"
+        ],
+        "title": "available software."
+      },
+      {
+        "text": "on a direct request.",
+        "tags": [],
+        "title": "on a direct request."
+      }
+    ]
+  },
+  "5.4": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How will the application of a unique and persistent identifier (such us a Digital Object Identifier (DOI)) to each data set be ensured?",
+    "paragraphs": [
+      "The datasets transferred to the repository will have the DOI assigned."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The datasets transferred to the repository will have the DOI assigned.",
+        "tags": [
+          "storage",
+          "identifier"
+        ],
+        "title": "The datasets transferred to the repository will have the DOI assigned."
+      }
+    ]
+  },
+  "6.1": {
+    "section": "6. Data management responsibilities and resources",
+    "question": "Who (for example role, position, and institution) will be responsible for data management (i.e the data steward)?",
+    "paragraphs": [
+      "Open Science Competence Center (pg.edu.pl/openscience) - established by GUT will be responsible for DMP and data",
+      "storage and dissemination. The principle investigator - Konrad Trzciński will be responsible for the development of the",
+      "measurements procedures, appropriate cataloguing of data and overall data quality."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Open Science Competence Center (pg.edu.pl/openscience) - established by GUT will be responsible for DMP and data",
+        "tags": [
+          "responsibility"
+        ],
+        "title": null
+      },
+      {
+        "text": "storage and dissemination. The principle investigator - Konrad Trzciński will be responsible for the development of the",
+        "tags": [
+          "storage",
+          "sharing",
+          "responsibility"
+        ],
+        "title": "storage and dissemination."
+      },
+      {
+        "text": "measurements procedures, appropriate cataloguing of data and overall data quality.",
+        "tags": [
+          "methodology",
+          "quality"
+        ],
+        "title": "measurements procedures, appropriate cataloguing of data and overall data quality."
+      }
+    ]
+  },
+  "6.2": {
+    "section": "6. Data management responsibilities and resources",
+    "question": "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)?",
+    "paragraphs": [
+      "Nie dotyczyDominika Parasińska, Politechnika Gdańska 650474"
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Nie dotyczyDominika Parasińska, Politechnika Gdańska 650474",
+        "tags": [],
+        "title": "Nie dotyczyDominika Parasińska, Politechnika Gdańska 650474"
+      }
+    ]
+  }
+}

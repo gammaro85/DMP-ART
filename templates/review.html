@@ -66,12 +66,18 @@
                 {% for section_id, content in extracted_content.items() %}
                 <div class="question-card" data-id="{{ section_id }}" id="section-{{ section_id }}">
                     <div class="question-header">
-                        <div class="question-section">
-                            <div class="section-number">{{ section_id }}</div>
-                            <div class="section-title">{{ content.section }}</div>
+                        <div class="section-title-only">
+                            {% set section_parts = content.section.split('.', 1) %}
+                            {% if section_parts|length > 1 %}
+                                {{ section_parts[1].strip() }}
+                            {% else %}
+                                {{ content.section }}
+                            {% endif %}
+                        </div>
+                        <div class="question-section-combined">
+                            <strong>{{ section_id }}. {{ content.question }}</strong>
                         </div>
                         <div class="question-content">
-                            <div class="question-title">{{ content.question }}</div>
                             {% if content.paragraphs|length > 0 %}
                                 <span class="content-type-indicator content-table">Table Content</span>
                             {% else %}
