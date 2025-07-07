@@ -455,7 +455,6 @@ function initializeUploadPage() {
 function initializeReviewPage() {
     // Get all interactive elements
     const commentButtons = document.querySelectorAll('.comment-btn');
-    const tagButtons = document.querySelectorAll('.tag-btn');
     const copyButtons = document.querySelectorAll('.copy-btn');
     const resetButtons = document.querySelectorAll('.reset-btn');
     const compileButton = document.getElementById('compile-btn');
@@ -485,17 +484,6 @@ function initializeReviewPage() {
         commentButtons.forEach(button => {
             button.addEventListener('click', function () {
                 const id = this.getAttribute('data-id');
-                const comment = this.getAttribute('data-comment');
-                insertComment(id, comment);
-            });
-        });
-    }
-
-    // Handle tag button clicks
-    if (tagButtons) {
-        tagButtons.forEach(button => {
-            button.addEventListener('click', function () {
-                const id = this.closest('.question-card').getAttribute('data-id');
                 const comment = this.getAttribute('data-comment');
                 insertComment(id, comment);
             });

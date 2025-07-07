@@ -387,7 +387,7 @@ button,
     transform: translateY(-1px);
 }
 
-/* Question cards with swapped formatting */
+/* Question cards with updated formatting */
 .question-card {
     border: 1px solid var(--border-light);
     border-radius: 8px;
@@ -406,39 +406,27 @@ button,
     margin-bottom: 15px;
 }
 
-/* SWAPPED FORMATTING: Section is now prominent, question is secondary */
-.question-section {
-    display: flex;
-    align-items: center;
-    gap: 15px;
+/* Updated section formatting */
+.section-title-only {
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    font-weight: normal;
+}
+
+.question-section-combined {
+    font-size: 1rem;
+    color: var(--primary-color);
     margin-bottom: 10px;
+    line-height: 1.4;
 }
 
-.section-number {
-    font-size: 1.8rem;
+.question-section-combined strong {
     font-weight: bold;
-    color: var(--primary-color);
-    min-width: 60px;
-}
-
-.section-title {
-    font-size: 1.4rem;
-    font-weight: bold;
-    color: var(--primary-color);
-    flex: 1;
 }
 
 .question-content {
-    margin-left: 75px;
-    /* Align with section title */
-}
-
-.question-title {
-    font-size: 1rem;
-    color: var(--text-secondary);
-    font-weight: normal;
-    line-height: 1.4;
-    margin-bottom: 8px;
+    margin-left: 0;
 }
 
 .content-type-indicator {
@@ -617,7 +605,8 @@ button,
 .action-row {
     display: flex;
     justify-content: space-between;
-    gap: 10px;
+    gap: 8px;
+    margin: 8px 0;
 }
 
 .copy-btn,
@@ -625,10 +614,10 @@ button,
 .clear-btn {
     background-color: var(--bg-secondary);
     border: 1px solid var(--border-medium);
-    padding: 8px 15px;
-    border-radius: 4px;
+    padding: 6px 12px;
+    border-radius: 12px;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 0.72rem;
     transition: all 0.2s ease;
     color: var(--text-primary);
 }
@@ -989,7 +978,8 @@ footer {
     .action-row,
     .compiled-actions {
         flex-direction: column;
-        gap: 10px;
+        gap: 8px;
+        margin: 6px 0;
     }
 
     .button-group,
@@ -1011,22 +1001,16 @@ footer {
         align-items: flex-start;
     }
 
-    .question-section {
-        flex-direction: column;
-        gap: 8px;
-        align-items: flex-start;
+    .section-title-only {
+        font-size: 1.1rem;
+    }
+
+    .question-section-combined {
+        font-size: 0.95rem;
     }
 
     .question-content {
         margin-left: 0;
-    }
-
-    .section-number {
-        font-size: 1.5rem;
-    }
-
-    .section-title {
-        font-size: 1.2rem;
     }
 
     .compiled-feedback-container {
