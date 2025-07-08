@@ -1,425 +1,180 @@
-// static/js/script.js - Enhanced with Dark Mode Integration and Fixed Navigation
-document.addEventListener('DOMContentLoaded', function () {
-    // Initialize dark mode first
-    initializeDarkMode();
+// static/js/script.js
 
-    // Then initialize other functionality
+// Global variables
+let window_dmpFilename = '';
+
+// Toast notification function
+function showToast(message, type = 'success') {
+    // Remove any existing toast
+    const existingToast = document.querySelector('.toast');
+    if (existingToast) {
+        existingToast.remove();
+    }
+
+    // Create new toast
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+
+    // Add styles
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'success' ? '#28a745' : '#dc3545'};
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        font-size: 14px;
+        max-width: 300px;
+        opacity: 0;
+        transform: translateX(100%);
+        transition: all 0.3s ease;
+    `;
+
+    document.body.appendChild(toast);
+
+    // Animate in
+    setTimeout(() => {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateX(0)';
+    }, 100);
+
+    // Remove after 3 seconds
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 300);
+    }, 3000);
+}
+
+// Copy text to clipboard
+function copyToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+        return navigator.clipboard.writeText(text);
+    } else {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        return new Promise((res, rej) => {
+            document.execCommand('copy') ? res() : rej();
+            textArea.remove();
+        });
+    }
+}
+
+// Initialize functionality based on page
+document.addEventListener('DOMContentLoaded', function () {
+    // Initialize page-specific functionality
     initializeUploadPage();
     initializeReviewPage();
     initializeTemplateEditor();
 });
 
-// DARK MODE FUNCTIONALITY
-function initializeDarkMode() {
-    // Create the dark mode toggle button
-    createDarkModeToggle();
-
-    // Load saved theme preference or default to light mode
-    const savedTheme = localStorage.getItem('dmp-art-theme') || 'light';
-    setTheme(savedTheme);
-
-    // Update toggle button state
-    updateToggleButton(savedTheme);
-
-    // Add keyboard shortcut
-    addDarkModeKeyboardShortcut();
-
-    // Listen for system theme changes
-    listenForSystemThemeChanges();
-}
-
-function createDarkModeToggle() {
-    // Check if toggle already exists
-    if (document.querySelector('.theme-toggle')) {
-        return;
-    }
-
-    const toggle = document.createElement('button');
-    toggle.className = 'theme-toggle';
-    toggle.setAttribute('aria-label', 'Toggle dark mode');
-    toggle.setAttribute('title', 'Switch between light and dark modes');
-
-    toggle.innerHTML = `
-        <span class="icon" id="theme-icon"></span>
-        <span id="theme-text">Dark</span>
-    `;
-
-    // Add click event listener
-    toggle.addEventListener('click', function () {
-        toggleTheme();
-    });
-
-    // Add keyboard support
-    toggle.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            toggleTheme();
-        }
-    });
-
-    // Append to body
-    document.body.appendChild(toggle);
-}
-
-function toggleTheme() {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-
-    setTheme(newTheme);
-    updateToggleButton(newTheme);
-
-    // Save preference
-    localStorage.setItem('dmp-art-theme', newTheme);
-
-    // Show notification
-    showThemeChangeNotification(newTheme);
-}
-
-function setTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-
-    // Update meta theme-color for mobile browsers
-    updateMetaThemeColor(theme);
-}
-
-function updateToggleButton(theme) {
-    const icon = document.getElementById('theme-icon');
-    const text = document.getElementById('theme-text');
-
-    if (icon && text) {
-        if (theme === 'dark') {
-            icon.textContent = '';
-            text.textContent = 'Light';
-        } else {
-            icon.textContent = '';
-            text.textContent = 'Dark';
-        }
-    }
-}
-
-function updateMetaThemeColor(theme) {
-    let metaThemeColor = document.querySelector('meta[name="theme-color"]');
-
-    if (!metaThemeColor) {
-        metaThemeColor = document.createElement('meta');
-        metaThemeColor.name = 'theme-color';
-        document.head.appendChild(metaThemeColor);
-    }
-
-    if (theme === 'dark') {
-        metaThemeColor.content = '#121212';
-    } else {
-        metaThemeColor.content = '#ffffff';
-    }
-}
-
-function showThemeChangeNotification(theme) {
-    // Check if we have the toast system available
-    if (typeof showToast === 'function') {
-        const message = theme === 'dark' ? 'Dark mode enabled' : 'Light mode enabled';
-        showToast(message);
-    } else {
-        // Fallback notification
-        const notification = document.createElement('div');
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: ${theme === 'dark' ? '#333' : '#fff'};
-            color: ${theme === 'dark' ? '#fff' : '#333'};
-            padding: 10px 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            z-index: 10000;
-            font-size: 14px;
-            border: 1px solid ${theme === 'dark' ? '#555' : '#ddd'};
-        `;
-
-        const message = theme === 'dark' ? 'Dark mode enabled' : 'Light mode enabled';
-        notification.textContent = message;
-
-        document.body.appendChild(notification);
-
-        // Remove after 2 seconds
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.parentNode.removeChild(notification);
-            }
-        }, 2000);
-    }
-}
-
-function addDarkModeKeyboardShortcut() {
-    document.addEventListener('keydown', function (e) {
-        // Ctrl/Cmd + Shift + D to toggle dark mode
-        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'D') {
-            e.preventDefault();
-            toggleTheme();
-        }
-    });
-}
-
-function listenForSystemThemeChanges() {
-    if (window.matchMedia) {
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-
-        mediaQuery.addEventListener('change', function (e) {
-            // Only auto-switch if user hasn't manually set a preference
-            if (!localStorage.getItem('dmp-art-theme')) {
-                const newTheme = e.matches ? 'dark' : 'light';
-                setTheme(newTheme);
-                updateToggleButton(newTheme);
-            }
-        });
-    }
-}
-
 // UPLOAD PAGE FUNCTIONALITY
 function initializeUploadPage() {
-    var dropArea = document.getElementById('drop-area');
-    var fileInput = document.getElementById('file-input');
-    var selectFileBtn = document.getElementById('select-file-btn');
-    var fileInfo = document.getElementById('file-info');
-    var fileName = document.getElementById('file-name');
-    var uploadBtn = document.getElementById('upload-btn');
-    var clearBtn = document.getElementById('clear-btn');
-    var loading = document.getElementById('loading');
-    var result = document.getElementById('result');
-    var successMessage = document.getElementById('success-message');
-    var errorMessage = document.getElementById('error-message');
-    var errorText = document.getElementById('error-text');
-    var downloadLink = document.getElementById('download-link');
-    var reviewLink = document.getElementById('review-link');
-    var newUploadBtn = document.getElementById('new-upload-btn');
-    var tryAgainBtn = document.getElementById('try-again-btn');
+    const form = document.getElementById('upload-form');
+    const fileInput = document.getElementById('file-input');
+    const submitBtn = document.getElementById('submit-btn');
+    const loading = document.getElementById('loading');
+    const result = document.getElementById('result');
+    const successMessage = document.getElementById('success-message');
+    const errorMessage = document.getElementById('error-message');
+    const errorText = document.getElementById('error-text');
 
-    if (!dropArea) return; // Exit if not on upload page
+    if (!form) return; // Exit if not on upload page
 
-    // Prevent default drag behaviors
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(function (eventName) {
-        dropArea.addEventListener(eventName, preventDefaults, false);
-    });
-
-    function preventDefaults(e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-
-    // Highlight drop area when dragging file over it
-    ['dragenter', 'dragover'].forEach(function (eventName) {
-        dropArea.addEventListener(eventName, highlight, false);
-    });
-
-    ['dragleave', 'drop'].forEach(function (eventName) {
-        dropArea.addEventListener(eventName, unhighlight, false);
-    });
-
-    function highlight() {
-        dropArea.classList.add('highlight');
-    }
-
-    function unhighlight() {
-        dropArea.classList.remove('highlight');
-    }
-
-    // Handle dropped files
-    dropArea.addEventListener('drop', handleDrop, false);
-
-    function handleDrop(e) {
-        var dt = e.dataTransfer;
-        var files = dt.files;
-
-        if (files.length > 0) {
-            handleFiles(files);
-        }
-    }
-
-    // Handle selected files
-    if (selectFileBtn) {
-        selectFileBtn.addEventListener('click', function () {
-            if (fileInput) {
-                fileInput.click();
-            }
-        });
-    }
-
+    // File input change handler
     if (fileInput) {
         fileInput.addEventListener('change', function () {
-            if (fileInput.files.length > 0) {
-                handleFiles(fileInput.files);
+            const file = this.files[0];
+            if (file && submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = `Upload ${file.name}`;
             }
         });
     }
 
-    function handleFiles(files) {
-        var file = files[0];
+    // Form submit handler
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            uploadFile();
+        });
+    }
 
-        // Validate file type
-        if (!file.type || (file.type !== 'application/pdf' &&
-            file.type !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')) {
-            showError('Please select a PDF or DOCX file.');
+    function uploadFile() {
+        const formData = new FormData();
+        const file = fileInput.files[0];
+
+        if (!file) {
+            showError('Please select a file to upload.');
             return;
         }
 
-        // Validate file size (max 16MB)
-        if (file.size > 16 * 1024 * 1024) {
-            showError('File is too large. Maximum size is 16MB.');
-            return;
-        }
-
-        // Display file info
-        if (fileName) {
-            fileName.textContent = file.name;
-        }
-        if (fileInfo) {
-            fileInfo.classList.remove('hidden');
-        }
-    }
-
-    // Handle upload button
-    if (uploadBtn) {
-        uploadBtn.addEventListener('click', function () {
-            if (!fileInput || fileInput.files.length === 0) {
-                showError('Please select a file first.');
-                return;
-            }
-
-            var file = fileInput.files[0];
-
-            // Validate file again before upload
-            if (file.type !== 'application/pdf' &&
-                file.type !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-                showError('Please select a PDF or DOCX file.');
-                return;
-            }
-
-            uploadFile(file);
-        });
-    }
-
-    // Handle clear button
-    if (clearBtn) {
-        clearBtn.addEventListener('click', function () {
-            resetForm();
-        });
-    }
-
-    // Handle new upload button
-    if (newUploadBtn) {
-        newUploadBtn.addEventListener('click', function () {
-            resetForm();
-            if (result) {
-                result.classList.add('hidden');
-            }
-            if (fileInfo) {
-                fileInfo.classList.add('hidden');
-            }
-        });
-    }
-
-    // Handle try again button
-    if (tryAgainBtn) {
-        tryAgainBtn.addEventListener('click', function () {
-            resetForm();
-            if (result) {
-                result.classList.add('hidden');
-            }
-        });
-    }
-
-    function resetForm() {
-        if (fileInput) {
-            fileInput.value = '';
-        }
-        if (fileName) {
-            fileName.textContent = '';
-        }
-        if (fileInfo) {
-            fileInfo.classList.add('hidden');
-        }
-    }
-
-    function uploadFile(file) {
-        var formData = new FormData();
         formData.append('file', file);
 
-        // Show loading spinner
-        if (fileInfo) {
-            fileInfo.classList.add('hidden');
-        }
+        // Show loading state
         if (loading) {
             loading.classList.remove('hidden');
         }
+        if (result) {
+            result.classList.add('hidden');
+        }
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Processing...';
+        }
 
-        // Set up upload timeout
-        var uploadTimeout = setTimeout(function () {
+        // Set upload timeout (60 seconds)
+        const uploadTimeout = setTimeout(() => {
             if (loading) {
                 loading.classList.add('hidden');
             }
-            showError('Upload timed out. Please try again.');
-        }, 60000); // 60 seconds timeout
+            showError('Upload timeout. The file might be too large or the server is busy.');
+        }, 60000);
 
-        // Send the file to the server
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', '/upload', true);
+        const xhr = new XMLHttpRequest();
 
-        xhr.onload = function () {
-            clearTimeout(uploadTimeout);
-            if (loading) {
-                loading.classList.add('hidden');
-            }
-
-            if (xhr.status === 200) {
-                try {
-                    var data = JSON.parse(xhr.responseText);
-
-                    if (data.success) {
-                        // Check if we should redirect to review page
-                        if (data.redirect) {
-                            window.location.href = data.redirect;
-                            return;
-                        }
-
-                        // Otherwise show success message with download link
-                        if (result) {
-                            result.classList.remove('hidden');
-                        }
-                        if (successMessage) {
-                            successMessage.classList.remove('hidden');
-                        }
-                        if (errorMessage) {
-                            errorMessage.classList.add('hidden');
-                        }
-
-                        if (downloadLink) {
-                            downloadLink.href = '/download/' + encodeURIComponent(data.filename);
-                        }
-
-                        if (reviewLink) {
-                            reviewLink.href = '/review/' + encodeURIComponent(data.filename);
-                        }
-                    } else {
-                        if (result) {
-                            result.classList.remove('hidden');
-                        }
-                        if (successMessage) {
-                            successMessage.classList.add('hidden');
-                        }
-                        if (errorMessage) {
-                            errorMessage.classList.remove('hidden');
-                        }
-                        if (errorText) {
-                            errorText.textContent = data.message || 'An error occurred during processing.';
-                        }
-                    }
-                } catch (e) {
-                    showError('Error parsing server response.');
-                    console.error('Error parsing response:', e);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                clearTimeout(uploadTimeout);
+                if (loading) {
+                    loading.classList.add('hidden');
                 }
-            } else {
-                showError('Server error: ' + xhr.status);
-                console.error('Server error:', xhr.status);
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Upload File';
+                }
+
+                if (xhr.status === 200) {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            window.location.href = '/review?file=' + encodeURIComponent(response.filename);
+                        } else {
+                            showError(response.message || 'An error occurred during processing.');
+                        }
+                    } catch (e) {
+                        showError('Invalid response from server.');
+                        console.error('Error parsing response:', e);
+                    }
+                } else {
+                    showError('Server error: ' + xhr.status);
+                    console.error('Server error:', xhr.status);
+                }
             }
         };
 
@@ -432,6 +187,7 @@ function initializeUploadPage() {
             console.error('Network error');
         };
 
+        xhr.open('POST', '/upload');
         xhr.send(formData);
     }
 
@@ -520,8 +276,12 @@ function initializeReviewPage() {
             textarea.value += prefix + comment + '\n';
         }
 
-        // Focus the textarea
+        // Focus the textarea and trigger change event
         textarea.focus();
+        textarea.dispatchEvent(new Event('input'));
+
+        // Show feedback with animation
+        showToast('Comment added successfully!');
     }
 
     // Handle copy button clicks
@@ -530,9 +290,12 @@ function initializeReviewPage() {
             button.addEventListener('click', function () {
                 const id = this.getAttribute('data-id');
                 const textarea = document.getElementById(`feedback-${id}`);
-                if (textarea) {
-                    copyToClipboard(textarea.value);
-                    showToast('Feedback copied to clipboard!');
+                if (textarea && textarea.value.trim()) {
+                    copyToClipboard(textarea.value)
+                        .then(() => showToast('Copied to clipboard!'))
+                        .catch(() => showToast('Failed to copy to clipboard', 'error'));
+                } else {
+                    showToast('No feedback to copy', 'error');
                 }
             });
         });
@@ -544,9 +307,12 @@ function initializeReviewPage() {
             button.addEventListener('click', function () {
                 const id = this.getAttribute('data-id');
                 const textarea = document.getElementById(`feedback-${id}`);
-
-                if (textarea && originalTemplates[id]) {
-                    textarea.value = originalTemplates[id];
+                if (textarea && originalTemplates[id] !== undefined) {
+                    if (confirm('Are you sure you want to reset this feedback to the original template?')) {
+                        textarea.value = originalTemplates[id];
+                        textarea.dispatchEvent(new Event('input'));
+                        showToast('Feedback reset to original template');
+                    }
                 }
             });
         });
@@ -559,26 +325,25 @@ function initializeReviewPage() {
         });
     }
 
-    // Handle copy compiled button click
+    // Handle compiled feedback actions
     if (copyCompiledButton) {
         copyCompiledButton.addEventListener('click', function () {
             if (compiledTextarea) {
-                copyToClipboard(compiledTextarea.value);
-                showToast('All feedback copied to clipboard!');
+                copyToClipboard(compiledTextarea.value)
+                    .then(() => showToast('Report copied to clipboard!'))
+                    .catch(() => showToast('Failed to copy to clipboard', 'error'));
             }
         });
     }
 
-    // Handle download feedback button click
     if (downloadFeedbackButton) {
         downloadFeedbackButton.addEventListener('click', function () {
-            if (compiledTextarea && compiledTextarea.value) {
+            if (compiledTextarea) {
                 downloadFeedback(compiledTextarea.value);
             }
         });
     }
 
-    // Handle close compiled button click
     if (closeCompiledButton) {
         closeCompiledButton.addEventListener('click', function () {
             if (compiledContainer) {
@@ -587,50 +352,70 @@ function initializeReviewPage() {
         });
     }
 
-    // Handle save feedback button click
+    // Handle save feedback button
     if (saveFeedbackButton) {
         saveFeedbackButton.addEventListener('click', function () {
-            const feedbackText = compileAllFeedback(false);
-            saveFeedbackToServer(feedbackText);
+            saveAllFeedback();
         });
     }
 
-    // Compile all feedback
-    function compileAllFeedback(showCompiled = true) {
-        let allFeedback = '';
+    // Compile all feedback into a report
+    function compileAllFeedback() {
+        let compiledText = '# DMP Feedback Report\n\n';
+        compiledText += `Generated on: ${new Date().toLocaleDateString()}\n\n`;
 
-        document.querySelectorAll('.question-card').forEach(card => {
-            const id = card.getAttribute('data-id');
-            const titleElement = card.querySelector('.question-title');
-            const title = titleElement ? titleElement.textContent : `Section ${id}`;
-            const textarea = document.getElementById(`feedback-${id}`);
+        const feedbackTextareas = document.querySelectorAll('.feedback-text');
+        let hasContent = false;
 
-            if (textarea && textarea.value.trim()) {
-                allFeedback += `## ${title} ##\n\n${textarea.value.trim()}\n\n`;
+        feedbackTextareas.forEach(textarea => {
+            const sectionId = textarea.id.replace('feedback-', '');
+            const questionCard = document.querySelector(`[data-id="${sectionId}"]`);
+
+            if (questionCard && textarea.value.trim()) {
+                const questionElement = questionCard.querySelector('.question-section-combined strong');
+                const questionText = questionElement ? questionElement.textContent : `Section ${sectionId}`;
+
+                compiledText += `## ${questionText}\n\n`;
+                compiledText += `${textarea.value.trim()}\n\n`;
+                compiledText += '---\n\n';
+                hasContent = true;
             }
         });
 
-        if (compiledTextarea) {
-            compiledTextarea.value = allFeedback;
+        if (!hasContent) {
+            showToast('No feedback content to compile', 'error');
+            return;
         }
 
-        if (showCompiled && compiledContainer) {
+        if (compiledTextarea) {
+            compiledTextarea.value = compiledText;
+        }
+        if (compiledContainer) {
             compiledContainer.classList.remove('hidden');
         }
-
-        return allFeedback;
     }
 
-    // Save feedback to server
-    function saveFeedbackToServer(feedbackText) {
-        if (!feedbackText || !window.dmpFilename) {
-            showToast('No feedback to save!', 'error');
+    // Save all feedback to server
+    function saveAllFeedback() {
+        const feedbackData = {};
+        const feedbackTextareas = document.querySelectorAll('.feedback-text');
+
+        feedbackTextareas.forEach(textarea => {
+            const sectionId = textarea.id.replace('feedback-', '');
+            feedbackData[sectionId] = textarea.value;
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const filename = urlParams.get('file');
+
+        if (!filename) {
+            showToast('No filename found for saving feedback', 'error');
             return;
         }
 
         const data = {
-            filename: window.dmpFilename,
-            feedback: feedbackText
+            filename: filename,
+            feedback: feedbackData
         };
 
         fetch('/save_feedback', {
@@ -681,13 +466,13 @@ function initializeSectionNavigation() {
 
     questionCards.forEach(card => {
         const sectionId = card.getAttribute('data-id');
-        const sectionTitle = card.querySelector('.question-title');
+        const questionElement = card.querySelector('.question-section-combined strong');
 
-        if (sectionId && sectionTitle) {
+        if (sectionId && questionElement) {
             const navBtn = document.createElement('button');
             navBtn.className = 'nav-btn';
             navBtn.textContent = sectionId;
-            navBtn.title = sectionTitle.textContent;
+            navBtn.title = questionElement.textContent;
             navBtn.onclick = () => scrollToSection(sectionId);
 
             navContainer.appendChild(navBtn);
@@ -809,58 +594,3 @@ function initializeTemplateEditor() {
             });
     }
 }
-
-// UTILITY FUNCTIONS
-// Copy text to clipboard
-function copyToClipboard(text) {
-    if (navigator.clipboard && window.isSecureContext) {
-        return navigator.clipboard.writeText(text);
-    } else {
-        // Fallback for older browsers
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-    }
-}
-
-// Show toast message
-function showToast(message, type = 'success') {
-    const toast = document.getElementById('success-toast');
-    if (!toast) return;
-
-    // Set message and type
-    toast.textContent = message;
-    toast.className = 'success-toast';
-
-    if (type === 'error') {
-        toast.classList.add('error');
-    }
-
-    // Show the toast
-    toast.classList.add('show');
-
-    // Hide after 3 seconds
-    setTimeout(() => {
-        toast.classList.remove('show');
-    }, 3000);
-}
-
-// Export dark mode functions for use in other parts of the application
-window.DarkMode = {
-    toggle: toggleTheme,
-    setTheme: setTheme,
-    getCurrentTheme: () => document.documentElement.getAttribute('data-theme') || 'light',
-    forceTheme: (theme) => {
-        if (theme === 'dark' || theme === 'light') {
-            setTheme(theme);
-            updateToggleButton(theme);
-            localStorage.setItem('dmp-art-theme', theme);
-        }
-    }
-};
-
-// Make scrollToSection globally available
-window.scrollToSection = scrollToSection;
