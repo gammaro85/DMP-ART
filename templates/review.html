@@ -1,17 +1,14 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#ffffff">
-    <title>{% block title %}DMP ART{% endblock %}</title>
+    <title>DMP ART - Review DMP</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <!-- Prevent flash of wrong theme -->
+    <meta name="theme-color" content="#ffffff">
     <script>
         (function() {
-            const saved = localStorage.getItem('dmp-art-theme');
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const theme = saved || (prefersDark ? 'dark' : 'light');
+            const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
             document.documentElement.setAttribute('data-theme', theme);
             const meta = document.querySelector('meta[name="theme-color"]');
             if (meta) meta.content = theme === 'dark' ? '#121212' : '#ffffff';
@@ -56,9 +53,7 @@
             <div class="section-navigation">
                 <h4>Quick Navigation</h4>
                 <div class="nav-buttons" id="section-nav">
-                    {% for section_id, content in extracted_content.items() %}
-                    <button class="nav-btn" onclick="scrollToSection('{{ section_id }}')" title="{{ content.question }}">{{ section_id }}</button>
-                    {% endfor %}
+                    <!-- Navigation buttons will be populated by JavaScript -->
                 </div>
             </div>
             
@@ -77,41 +72,18 @@
                         <div class="question-section-combined">
                             <strong>{{ section_id }}. {{ content.question }}</strong>
                         </div>
-                        <div class="question-content">
-                            {% if content.paragraphs|length > 0 %}
-                                <span class="content-type-indicator content-table">Table Content</span>
-                            {% else %}
-                                <span class="content-type-indicator content-paragraph">Text Content</span>
-                            {% endif %}
-                        </div>
                     </div>
                     
                     <!-- Extracted DMP content -->
                     <div class="extracted-content">
                         {% if content.paragraphs|length > 0 %}
                             {% for paragraph in content.paragraphs %}
-                            <div class="enhanced-paragraph {% if content.tagged_paragraphs and loop.index0 < content.tagged_paragraphs|length and content.tagged_paragraphs[loop.index0].get('tags', [])|length > 0 %}has-tags{% endif %}">
+                            <div class="enhanced-paragraph">
                                 <div class="paragraph-metadata">
                                     <span><strong>Paragraph {{ loop.index }}</strong></span>
                                 </div>
                                 
                                 <p>{{ paragraph }}</p>
-                                
-                                <!-- Enhanced tag display -->
-                                {% if content.tagged_paragraphs and loop.index0 < content.tagged_paragraphs|length %}
-                                    {% set tagged_para = content.tagged_paragraphs[loop.index0] %}
-                                    {% if tagged_para.get('tags', [])|length > 0 %}
-                                    <div class="paragraph-tags">
-                                        {% for tag in tagged_para.get('tags', []) %}
-                                        <button class="tag-btn" 
-                                                data-comment="{{ comments.get(tag, 'No comment available for this tag.') }}" 
-                                                title="Click to add: {{ tag }} comment">
-                                                {{ tag }}
-                                        </button>
-                                        {% endfor %}
-                                    </div>
-                                    {% endif %}
-                                {% endif %}
                             </div>
                             {% endfor %}
                         {% else %}
@@ -140,8 +112,7 @@
                             <button class="comment-btn" 
                                     data-id="{{ section_id }}" 
                                     data-comment="{{ comment }}" 
-                                    title="{{ comment[:50] }}..."
-                                    onclick="insertCommentWithAnimation('{{ section_id }}', '{{ comment|replace("'", "\\'") }}')">
+                                    title="Click to add: {{ tag }} comment">
                                     {{ tag }}
                             </button>
                             {% endfor %}
@@ -150,68 +121,64 @@
                     
                     <!-- Enhanced feedback section -->
                     <div class="enhanced-feedback-section">
-                        <div class="auto-save-indicator" id="auto-save-{{ section_id }}">Auto-saved</div>
                         <div class="feedback-toolbar">
-                            <h3>Your Feedback</h3>
-                            <span class="char-counter" id="char-counter-{{ section_id }}">0 characters</span>
+                            <h3>Feedback for Section {{ section_id }}</h3>
+                            <div class="char-counter" id="char-counter-{{ section_id }}">0 characters</div>
                         </div>
+                        
                         <textarea class="feedback-text" 
                                   id="feedback-{{ section_id }}" 
+                                  data-section-id="{{ section_id }}"
                                   placeholder="Enter your feedback for this section..."
-                                  data-section-id="{{ section_id }}">{{ templates.get(section_id, {}).get('template', '') if section_id in templates else "" }}</textarea>
+                                  rows="8">{{ templates.get(section_id, '') }}</textarea>
+                        
                         <div class="action-row">
-                            <button class="copy-btn" data-id="{{ section_id }}" title="Copy feedback to clipboard">Copy</button>
-                            <button class="reset-btn" data-id="{{ section_id }}" title="Reset to original template">Reset</button>
-                            <button class="clear-btn" data-id="{{ section_id }}" title="Clear all text">Clear</button>
+                            <div class="left-actions">
+                                <button class="copy-btn" data-id="{{ section_id }}" title="Copy feedback to clipboard">Copy</button>
+                                <button class="reset-btn" data-id="{{ section_id }}" title="Reset to original template">Reset</button>
+                            </div>
+                            <div class="completion-indicator" id="completion-{{ section_id }}">
+                                <span class="status-text">Draft</span>
+                            </div>
                         </div>
                     </div>
                 </div>
                 {% endfor %}
             </div>
-            
-            <!-- Enhanced compiled feedback section -->
-            <div id="compiled-feedback-container" class="compiled-feedback-container hidden">
-                <div class="modal-header">
-                    <h2>Compiled Feedback Report</h2>
-                    <button id="close-compiled-btn" class="close-btn" title="Close this dialog">&times;</button>
-                </div>
-                <div class="report-metadata">
-                    <div class="metadata-grid">
-                        <div><strong>Document:</strong> {{ filename }}</div>
-                        <div><strong>Generated:</strong> <span id="generation-time"></span></div>
-                        <div><strong>Sections Reviewed:</strong> <span id="sections-reviewed"></span></div>
-                        <div><strong>Total Feedback:</strong> <span id="total-feedback-length"></span></div>
-                    </div>
-                </div>
-                <textarea id="compiled-feedback" readonly placeholder="Your compiled feedback will appear here..."></textarea>
-                <div class="compiled-actions">
-                    <button id="copy-compiled-btn" title="Copy all feedback to clipboard">Copy All</button>
-                    <button id="download-feedback-btn" title="Download feedback as text file">Download TXT</button>
-                    <button id="export-feedback-btn" title="Export as HTML document">Export HTML</button>
-                </div>
-            </div>
-            
-            <div class="action-buttons">
-                <a href="/" class="secondary-btn">Process Another File</a>
-                <a href="/template_editor" class="secondary-btn">Customize Templates</a>
-            </div>
         </main>
         
-        <div id="success-toast" class="success-toast">Operation completed successfully!</div>
-        
-        <footer>
-            <div class="footer-content">
-                <div class="footer-main">
-                    <p>DMP ART &copy; 2025 - Enhanced Review Interface with Dark Mode</p>
+        <!-- Compiled feedback modal -->
+        <div id="compiled-feedback-container" class="compiled-feedback-container hidden">
+            <div class="compiled-feedback-modal">
+                <div class="modal-header">
+                    <h2>Compiled Feedback Report</h2>
+                    <button id="close-compiled-btn" class="close-btn" title="Close report">×</button>
                 </div>
-                <div class="footer-links">
-                    <a href="/template_editor" class="footer-link secondary-btn" style="margin: 0;">Customize Templates</a>
-                    <a href="/documentation" class="footer-link secondary-btn" style="margin: 0;">Documentation</a>
+                
+                <div class="modal-content">
+                    <textarea id="compiled-feedback" readonly></textarea>
+                </div>
+                
+                <div class="modal-actions">
+                    <button id="copy-compiled-btn" class="action-btn" title="Copy report to clipboard">Copy Report</button>
+                    <button id="download-feedback-btn" class="action-btn" title="Download as text file">Download TXT</button>
                 </div>
             </div>
-        </footer>
+        </div>
     </div>
-    <!-- Load dark mode script before other scripts -->
+    
+    <footer>
+        <div class="footer-content">
+            <div class="footer-main">
+                <p>&copy; 2025 DMP ART. All rights reserved.</p>
+            </div>
+            <div class="footer-links">
+                <a href="#" class="footer-link">Help</a>
+                <a href="#" class="footer-link">About</a>
+            </div>
+        </div>
+    </footer>
+
     <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <script>
@@ -222,9 +189,19 @@
                 element.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 // Highlight the section temporarily
                 element.style.border = '2px solid var(--accent-color)';
+                element.style.borderRadius = '8px';
                 setTimeout(() => {
                     element.style.border = '';
+                    element.style.borderRadius = '';
                 }, 2000);
+                
+                // Focus on the feedback textarea for this section
+                const textarea = element.querySelector('.feedback-text');
+                if (textarea) {
+                    setTimeout(() => {
+                        textarea.focus();
+                    }, 500);
+                }
             }
         }
 
@@ -237,7 +214,9 @@
                 
                 function updateCounter() {
                     if (counter) {
-                        counter.textContent = textarea.value.length + ' characters';
+                        const charCount = textarea.value.length;
+                        const wordCount = textarea.value.trim() ? textarea.value.trim().split(/\s+/).length : 0;
+                        counter.textContent = `${charCount} characters, ${wordCount} words`;
                     }
                 }
                 
@@ -248,49 +227,6 @@
                 textarea.addEventListener('input', updateCounter);
             });
         });
-
-        // Enhanced comment insertion with animation
-        function insertCommentWithAnimation(id, comment) {
-            const textarea = document.getElementById(`feedback-${id}`);
-            if (!textarea) return;
-
-            // Get current cursor position
-            const startPos = textarea.selectionStart;
-            const endPos = textarea.selectionEnd;
-
-            // Insert comment at cursor position or at the end
-            if (startPos !== undefined && endPos !== undefined) {
-                // Add a newline if not at the beginning of the textarea
-                const prefix = startPos > 0 && textarea.value.charAt(startPos - 1) !== '\n' ? '\n' : '';
-
-                // Add the comment
-                textarea.value =
-                    textarea.value.substring(0, startPos) +
-                    prefix + comment + '\n' +
-                    textarea.value.substring(endPos);
-
-                // Set cursor position after inserted comment
-                const newPos = startPos + prefix.length + comment.length + 1;
-                textarea.selectionStart = newPos;
-                textarea.selectionEnd = newPos;
-            } else {
-                // If no cursor position, append to the end
-                const prefix = textarea.value.length > 0 && textarea.value.charAt(textarea.value.length - 1) !== '\n' ? '\n' : '';
-                textarea.value += prefix + comment + '\n';
-            }
-
-            // Focus the textarea and animate
-            textarea.focus();
-            textarea.style.borderColor = 'var(--accent-color)';
-            setTimeout(() => {
-                textarea.style.borderColor = '';
-            }, 1000);
-
-            // Update character counter
-            const event = new Event('input');
-            textarea.dispatchEvent(event);
-        }
     </script>
-    {% block scripts %}{% endblock %}
 </body>
 </html>
