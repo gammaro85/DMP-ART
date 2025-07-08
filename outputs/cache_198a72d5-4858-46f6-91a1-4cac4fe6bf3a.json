@@ -1,0 +1,795 @@
+{
+  "1.1": {
+    "section": "1. Data description and collection or re-use of existing data",
+    "question": "How will new data be collected or produced and/or how will existing data be re-used?",
+    "paragraphs": [
+      "New data will be acquired by cyclic voltammetry (CV) and Dynamic Electrochemical Impedance Spectroscopy (DEIS)",
+      "measurements conducted on polished platinum electrode after multi-step cleaning and stabilisation of its potential in",
+      "an electrochemical system. Data determination from DEIS measurements will be carried out using an application",
+      "prepared in LabView, then saved in text documents (.txt), and read in by code developed in Python.",
+      "Solutions will be prepared using water of grade I purity according to EN 3696:1999 and chemical reagents of the",
+      "highest possible purity. CV measurements will verify the purity of the system prior to DEIS measurement. A",
+      "measurement will be considered valid when a CV curve consistent with the literature for the solution is obtained. At",
+      "least 3 repeated measurements will be collected for each solution.",
+      "Files will be stored in labeled folders separate for each solution, concentration and temperature as well as",
+      "measurement repetition.",
+      "[w języku angielskim]"
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "New data will be acquired by cyclic voltammetry (CV) and Dynamic Electrochemical Impedance Spectroscopy (DEIS)",
+        "tags": [
+          "backup"
+        ],
+        "title": null
+      },
+      {
+        "text": "measurements conducted on polished platinum electrode after multi-step cleaning and stabilisation of its potential in",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "an electrochemical system. Data determination from DEIS measurements will be carried out using an application",
+        "tags": [
+          "tools"
+        ],
+        "title": "an electrochemical system."
+      },
+      {
+        "text": "prepared in LabView, then saved in text documents (.txt), and read in by code developed in Python.",
+        "tags": [
+          "data_format",
+          "tools"
+        ],
+        "title": "prepared in LabView, then saved in text documents (.txt), and read in by code developed in Python."
+      },
+      {
+        "text": "Solutions will be prepared using water of grade I purity according to EN 3696:1999 and chemical reagents of the",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "highest possible purity. CV measurements will verify the purity of the system prior to DEIS measurement. A",
+        "tags": [],
+        "title": "highest possible purity."
+      },
+      {
+        "text": "measurement will be considered valid when a CV curve consistent with the literature for the solution is obtained. At",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "least 3 repeated measurements will be collected for each solution.",
+        "tags": [],
+        "title": "least 3 repeated measurements will be collected for each solution."
+      },
+      {
+        "text": "Files will be stored in labeled folders separate for each solution, concentration and temperature as well as",
+        "tags": [
+          "storage"
+        ],
+        "title": null
+      },
+      {
+        "text": "measurement repetition.",
+        "tags": [],
+        "title": "measurement repetition."
+      },
+      {
+        "text": "[w języku angielskim]",
+        "tags": [],
+        "title": "[w języku angielskim]"
+      }
+    ]
+  },
+  "1.2": {
+    "section": "1. Data description and collection or re-use of existing data",
+    "question": "What data (for example the types, formats, and volumes) will be collected or produced?",
+    "paragraphs": [
+      "For each measurement repetition, 7 text documents (.txt) with a total size of approx. 9 MB will be obtained, containing",
+      "the values of current, potential, real and imaginary part of the electrode impedance and the so-called “frequency",
+      "package”. The measurement results will be plotted on spectrograms and spectra of impedance, capacitance and",
+      "charge, as well as associated graphs in .JPG format. The quantities determined in the analysis of the raw results (real",
+      "and imaginary part of capacitance and charge as a function of electrode potential, equivalent circuit parameters) will",
+      "be saved as text documents (.txt) or as CSV files (.CSV). Text studies will be prepared in .docx or .pdf documents.",
+      "The estimated total size of all files will be 0.5-2GB, depending on the required measurement repetitions and the",
+      "number of created graphs."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "For each measurement repetition, 7 text documents (.txt) with a total size of approx. 9 MB will be obtained, containing",
+        "tags": [
+          "data_format",
+          "data_volume"
+        ],
+        "title": "For each measurement repetition, 7 text documents (.txt) with a total size of approx."
+      },
+      {
+        "text": "the values of current, potential, real and imaginary part of the electrode impedance and the so-called “frequency",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "package”. The measurement results will be plotted on spectrograms and spectra of impedance, capacitance and",
+        "tags": [],
+        "title": "package”."
+      },
+      {
+        "text": "charge, as well as associated graphs in .JPG format. The quantities determined in the analysis of the raw results (real",
+        "tags": [
+          "data_format"
+        ],
+        "title": "charge, as well as associated graphs in .JPG format."
+      },
+      {
+        "text": "and imaginary part of capacitance and charge as a function of electrode potential, equivalent circuit parameters) will",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "be saved as text documents (.txt) or as CSV files (.CSV). Text studies will be prepared in .docx or .pdf documents.",
+        "tags": [
+          "data_format"
+        ],
+        "title": "be saved as text documents (.txt) or as CSV files (.CSV)."
+      },
+      {
+        "text": "The estimated total size of all files will be 0.5-2GB, depending on the required measurement repetitions and the",
+        "tags": [
+          "data_volume"
+        ],
+        "title": null
+      },
+      {
+        "text": "number of created graphs.",
+        "tags": [
+          "data_volume"
+        ],
+        "title": "number of created graphs."
+      }
+    ]
+  },
+  "2.1": {
+    "section": "2. Documentation and data quality",
+    "question": "What metadata and documentation (for example methodology or data collection and way of organising data) will accompany data?",
+    "paragraphs": [
+      "The files will be stored in folders with names describing the type and concentration of electrolyte, divided into internal",
+      "folders describing the temperature of the solution, and further internal folders labelled with numbers representing the",
+      "measurement repetition number and information regarding deoxygenation of the solution. An explanation of the data",
+      "description and additional information on the measurement conditions (e.g. electrode surface area, measurement",
+      "technique and parameters) will be included in the README file, which will be provided with the measurement data.",
+      "The raw measurement data and the data resulting from the conducted analyses can be read out using a computer with",
+      "standard MS software and/or Adobe Reader software, and no dedicated software is required to read and reuse the",
+      "data. However, interpretation of the results requires knowledge of impedance techniques and oxygen electrochemistry",
+      "on platinum."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The files will be stored in folders with names describing the type and concentration of electrolyte, divided into internal",
+        "tags": [
+          "storage"
+        ],
+        "title": null
+      },
+      {
+        "text": "folders describing the temperature of the solution, and further internal folders labelled with numbers representing the",
+        "tags": [
+          "data_volume"
+        ],
+        "title": null
+      },
+      {
+        "text": "measurement repetition number and information regarding deoxygenation of the solution. An explanation of the data",
+        "tags": [
+          "data_format",
+          "data_volume"
+        ],
+        "title": "measurement repetition number and information regarding deoxygenation of the solution."
+      },
+      {
+        "text": "description and additional information on the measurement conditions (e.g. electrode surface area, measurement",
+        "tags": [
+          "data_format",
+          "metadata"
+        ],
+        "title": "description and additional information on the measurement conditions (e.g."
+      },
+      {
+        "text": "technique and parameters) will be included in the README file, which will be provided with the measurement data.",
+        "tags": [
+          "methodology",
+          "metadata"
+        ],
+        "title": null
+      },
+      {
+        "text": "The raw measurement data and the data resulting from the conducted analyses can be read out using a computer with",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "standard MS software and/or Adobe Reader software, and no dedicated software is required to read and reuse the",
+        "tags": [
+          "tools"
+        ],
+        "title": null
+      },
+      {
+        "text": "data. However, interpretation of the results requires knowledge of impedance techniques and oxygen electrochemistry",
+        "tags": [
+          "methodology"
+        ],
+        "title": "data."
+      },
+      {
+        "text": "on platinum.",
+        "tags": [],
+        "title": "on platinum."
+      }
+    ]
+  },
+  "2.2": {
+    "section": "2. Documentation and data quality",
+    "question": "What data quality control measures will be used?",
+    "paragraphs": [
+      "Minimising data validity risks will be realised by providing measurement conditions of the highest possible purity",
+      "through the use of high purity water and reagents and multi-step cleaning of the electrode surface.",
+      "Quality evaluation is implemented by performing a CV measurement prior to the DEIS measurement, which verifies",
+      "purity of the system, and by monitoring the spectra shape during DEIS measurement. At least three measurement",
+      "repetitions will be performed for each solution to eliminate measurement errors.",
+      "The problem of bias will be addressed by documenting the procedure for preparing the solutions and sample for",
+      "measurement as well as documenting the CV and DEIS measurement parameters, to enable reproduction of the",
+      "measurements by other researchers."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Minimising data validity risks will be realised by providing measurement conditions of the highest possible purity",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "through the use of high purity water and reagents and multi-step cleaning of the electrode surface.",
+        "tags": [],
+        "title": "through the use of high purity water and reagents and multi-step cleaning of the electrode surface."
+      },
+      {
+        "text": "Quality evaluation is implemented by performing a CV measurement prior to the DEIS measurement, which verifies",
+        "tags": [
+          "quality"
+        ],
+        "title": null
+      },
+      {
+        "text": "purity of the system, and by monitoring the spectra shape during DEIS measurement. At least three measurement",
+        "tags": [],
+        "title": "purity of the system, and by monitoring the spectra shape during DEIS measurement."
+      },
+      {
+        "text": "repetitions will be performed for each solution to eliminate measurement errors.",
+        "tags": [],
+        "title": "repetitions will be performed for each solution to eliminate measurement errors."
+      },
+      {
+        "text": "The problem of bias will be addressed by documenting the procedure for preparing the solutions and sample for",
+        "tags": [
+          "methodology"
+        ],
+        "title": null
+      },
+      {
+        "text": "measurement as well as documenting the CV and DEIS measurement parameters, to enable reproduction of the",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "measurements by other researchers.",
+        "tags": [],
+        "title": "measurements by other researchers."
+      }
+    ]
+  },
+  "3.1": {
+    "section": "3. Storage and backup during the research process",
+    "question": "How will data and metadata be stored and backed up during the research process?",
+    "paragraphs": [
+      "Data will be stored according to the 3-2-1 rule. Copies of all data will be stored on the project manager's computer with",
+      "a storage capacity of 237GB, on an external drive with a storage capacity of 2TB and in the university's OneDrive cloud",
+      "with a storage capacity of 100GB, so that both members of the project will have access to the data, but only after",
+      "logging in to the university system. Data on the computer and drive will be protected through the passwords. The data",
+      "on the computer and external drive will be copied as soon as the measurements are taken, while the data to the",
+      "university cloud will be copied every month. Project manager is responsible for creating backups."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Data will be stored according to the 3-2-1 rule. Copies of all data will be stored on the project manager's computer with",
+        "tags": [
+          "storage",
+          "responsibility"
+        ],
+        "title": "Data will be stored according to the 3-2-1 rule."
+      },
+      {
+        "text": "a storage capacity of 237GB, on an external drive with a storage capacity of 2TB and in the university's OneDrive cloud",
+        "tags": [
+          "data_volume",
+          "storage"
+        ],
+        "title": null
+      },
+      {
+        "text": "with a storage capacity of 100GB, so that both members of the project will have access to the data, but only after",
+        "tags": [
+          "data_volume",
+          "storage",
+          "sharing"
+        ],
+        "title": null
+      },
+      {
+        "text": "logging in to the university system. Data on the computer and drive will be protected through the passwords. The data",
+        "tags": [
+          "security"
+        ],
+        "title": "logging in to the university system."
+      },
+      {
+        "text": "on the computer and external drive will be copied as soon as the measurements are taken, while the data to the",
+        "tags": [
+          "responsibility"
+        ],
+        "title": null
+      },
+      {
+        "text": "university cloud will be copied every month. Project manager is responsible for creating backups.",
+        "tags": [
+          "storage",
+          "backup",
+          "responsibility"
+        ],
+        "title": "university cloud will be copied every month."
+      }
+    ]
+  },
+  "3.2": {
+    "section": "3. Storage and backup during the research process",
+    "question": "How will data security and protection of sensitive data be taken care of during the research?",
+    "paragraphs": [
+      "Project members will have access to the measurement data during the project, and coporrespondence related to the",
+      "project will be carried out using work email. The project subjects are not expected to obtain sensitive data. If such data",
+      "is obtained, it will be encrypted and stored in locked metal cabinets. In accordance with the Gdańsk Tech data security",
+      "policy, personal data in paper form will be securely stored in locked file cabinets. Personal data and sensitive data in",
+      "electronic form will be stored on workplace computers in an encrypted format, password protected for computer and",
+      "document access, while computers are protected with anti-virus software. Only authorised persons may process",
+      "personal data."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Project members will have access to the measurement data during the project, and coporrespondence related to the",
+        "tags": [
+          "data_volume",
+          "sharing"
+        ],
+        "title": null
+      },
+      {
+        "text": "project will be carried out using work email. The project subjects are not expected to obtain sensitive data. If such data",
+        "tags": [],
+        "title": "project will be carried out using work email."
+      },
+      {
+        "text": "is obtained, it will be encrypted and stored in locked metal cabinets. In accordance with the Gdańsk Tech data security",
+        "tags": [
+          "storage",
+          "security"
+        ],
+        "title": "is obtained, it will be encrypted and stored in locked metal cabinets."
+      },
+      {
+        "text": "policy, personal data in paper form will be securely stored in locked file cabinets. Personal data and sensitive data in",
+        "tags": [
+          "storage",
+          "personal_data"
+        ],
+        "title": "policy, personal data in paper form will be securely stored in locked file cabinets."
+      },
+      {
+        "text": "electronic form will be stored on workplace computers in an encrypted format, password protected for computer and",
+        "tags": [
+          "data_format",
+          "storage",
+          "security"
+        ],
+        "title": null
+      },
+      {
+        "text": "document access, while computers are protected with anti-virus software. Only authorised persons may process",
+        "tags": [
+          "methodology",
+          "security",
+          "sharing",
+          "tools"
+        ],
+        "title": "document access, while computers are protected with anti-virus software."
+      },
+      {
+        "text": "personal data.",
+        "tags": [
+          "personal_data"
+        ],
+        "title": "personal data."
+      }
+    ]
+  },
+  "4.1": {
+    "section": "4. Legal requirements, codes of conduct",
+    "question": "If personal data are processed, how will compliance with legislation on personal data and on data security be ensured?",
+    "paragraphs": [
+      "The project subject matter does not involve the collection and processing of personal data. If such data will be",
+      "collected in order to comply with Polish RODO regulations, participants will be informed about the existing privacy",
+      "policy and about the administrator of their personal data. Participants' consent will be obtained for recording and",
+      "sharing their personal data. If necessary, the data will be anonymised or pseudonymised to preserve confidentiality."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The project subject matter does not involve the collection and processing of personal data. If such data will be",
+        "tags": [
+          "methodology",
+          "personal_data"
+        ],
+        "title": "The project subject matter does not involve the collection and processing of personal data."
+      },
+      {
+        "text": "collected in order to comply with Polish RODO regulations, participants will be informed about the existing privacy",
+        "tags": [
+          "personal_data"
+        ],
+        "title": null
+      },
+      {
+        "text": "policy and about the administrator of their personal data. Participants' consent will be obtained for recording and",
+        "tags": [
+          "personal_data"
+        ],
+        "title": "policy and about the administrator of their personal data."
+      },
+      {
+        "text": "sharing their personal data. If necessary, the data will be anonymised or pseudonymised to preserve confidentiality.",
+        "tags": [
+          "personal_data",
+          "sharing"
+        ],
+        "title": "sharing their personal data."
+      }
+    ]
+  },
+  "4.2": {
+    "section": "4. Legal requirements, codes of conduct",
+    "question": "How will other legal issues, such as intelectual property rights and ownership, be managed? What legislation is applicable?",
+    "paragraphs": [
+      "przepisy",
+      "Researchers will contribute through collaborative agreements, but in accordance with the Regulations concerning",
+      "management of copyright, related rights, industrial design rights and principles of commercialization (Resolution of the",
+      "Gdańsk Tech Senate No. 117/2021/XXV of May 19, 2021), Gdansk Tech university will retain ownership of the",
+      "intellectual property rights. The CC BY/CC BY-SA licenses will be used or as requested in the data sharing application,",
+      "ensuring appropriate acknowledgement of authorship and attribution."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "przepisy",
+        "tags": [
+          "responsibility"
+        ],
+        "title": "przepisy"
+      },
+      {
+        "text": "Researchers will contribute through collaborative agreements, but in accordance with the Regulations concerning",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "management of copyright, related rights, industrial design rights and principles of commercialization (Resolution of the",
+        "tags": [
+          "backup",
+          "license"
+        ],
+        "title": null
+      },
+      {
+        "text": "Gdańsk Tech Senate No. 117/2021/XXV of May 19, 2021), Gdansk Tech university will retain ownership of the",
+        "tags": [
+          "license"
+        ],
+        "title": "Gdańsk Tech Senate No."
+      },
+      {
+        "text": "intellectual property rights. The CC BY/CC BY-SA licenses will be used or as requested in the data sharing application,",
+        "tags": [
+          "license",
+          "sharing",
+          "tools"
+        ],
+        "title": "intellectual property rights."
+      },
+      {
+        "text": "ensuring appropriate acknowledgement of authorship and attribution.",
+        "tags": [],
+        "title": "ensuring appropriate acknowledgement of authorship and attribution."
+      }
+    ]
+  },
+  "5.1": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How and when will data be shared? Are there possible restrictions to data sharing or embargo reasons?",
+    "paragraphs": [
+      "Raw data in .txt format will be published no later than the publication of the scientific article in the MOST Wiedzy Open",
+      "Research Data Catalogue under a CC BY 4.0 license. The embargo duration will be in line with the requirements of the",
+      "journal, but will be no longer than 36 months, and the embargo will be lifted as soon as the article is published. Data",
+      "not stored in the repository will be retained for 10 years. Access to the data may be delayed to protect intellectual",
+      "property, but once any restrictions are removed, the data will be made openly available."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Raw data in .txt format will be published no later than the publication of the scientific article in the MOST Wiedzy Open",
+        "tags": [
+          "data_format"
+        ],
+        "title": null
+      },
+      {
+        "text": "Research Data Catalogue under a CC BY 4.0 license. The embargo duration will be in line with the requirements of the",
+        "tags": [
+          "data_volume",
+          "storage",
+          "license"
+        ],
+        "title": "Research Data Catalogue under a CC BY 4.0 license."
+      },
+      {
+        "text": "journal, but will be no longer than 36 months, and the embargo will be lifted as soon as the article is published. Data",
+        "tags": [
+          "data_volume"
+        ],
+        "title": null
+      },
+      {
+        "text": "not stored in the repository will be retained for 10 years. Access to the data may be delayed to protect intellectual",
+        "tags": [
+          "storage",
+          "sharing"
+        ],
+        "title": "not stored in the repository will be retained for 10 years."
+      },
+      {
+        "text": "property, but once any restrictions are removed, the data will be made openly available.",
+        "tags": [],
+        "title": "property, but once any restrictions are removed, the data will be made openly available."
+      }
+    ]
+  },
+  "5.2": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How will data for preservation be selected, and where will data be preserved long-term (for example a data repository or archive)?",
+    "paragraphs": [
+      "Only data containing valid measurement results will be designated for storage in the Gdańsk Tech University repository",
+      "- MOST Wiedzy Open Research Data Catalogue, which fulfils the principles of FAIR Data, making the data findable,",
+      "accessible, interoperable and reusable for other researchers and will be accessible for a long time.",
+      "All research data, including unpublished data, will be stored for min. 10 years in the research data archive of the user in",
+      "the OneDrive cloud installed as a disk in the computer by an employee of the Gdańsk Tech IT Centre. Both the release",
+      "of data in the repository and the storage in the OneDrive cloud are free of charge."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Only data containing valid measurement results will be designated for storage in the Gdańsk Tech University repository",
+        "tags": [
+          "storage"
+        ],
+        "title": null
+      },
+      {
+        "text": "- MOST Wiedzy Open Research Data Catalogue, which fulfils the principles of FAIR Data, making the data findable,",
+        "tags": [
+          "storage",
+          "sharing"
+        ],
+        "title": null
+      },
+      {
+        "text": "accessible, interoperable and reusable for other researchers and will be accessible for a long time.",
+        "tags": [
+          "sharing"
+        ],
+        "title": null
+      },
+      {
+        "text": "All research data, including unpublished data, will be stored for min. 10 years in the research data archive of the user in",
+        "tags": [
+          "storage"
+        ],
+        "title": "All research data, including unpublished data, will be stored for min."
+      },
+      {
+        "text": "the OneDrive cloud installed as a disk in the computer by an employee of the Gdańsk Tech IT Centre. Both the release",
+        "tags": [
+          "storage"
+        ],
+        "title": "the OneDrive cloud installed as a disk in the computer by an employee of the Gdańsk Tech IT Centre."
+      },
+      {
+        "text": "of data in the repository and the storage in the OneDrive cloud are free of charge.",
+        "tags": [
+          "storage"
+        ],
+        "title": "of data in the repository and the storage in the OneDrive cloud are free of charge."
+      }
+    ]
+  },
+  "5.3": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "What methods or software tools will be needed to access and use the data?",
+    "paragraphs": [
+      "Measurement data will be saved and stored as text documents (.txt), which does not require access to special software",
+      "to read them. The data will be made available in the MOST Wiedzy Open Research Data Catalogue, and its structure",
+      "will be explained in an additional README file. Data in the repository will be shared in formats accessible in the Open",
+      "Source software. If the project produces data that requires specific software to read, this information, along with a",
+      "description of the procedure for reading the data, will also be included in the README file. However, interpretation of",
+      "the results requires specialised knowledge of the used measurement techniques and the investigated research area."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Measurement data will be saved and stored as text documents (.txt), which does not require access to special software",
+        "tags": [
+          "data_format",
+          "storage",
+          "sharing",
+          "tools"
+        ],
+        "title": null
+      },
+      {
+        "text": "to read them. The data will be made available in the MOST Wiedzy Open Research Data Catalogue, and its structure",
+        "tags": [
+          "data_format",
+          "storage",
+          "sharing"
+        ],
+        "title": "to read them."
+      },
+      {
+        "text": "will be explained in an additional README file. Data in the repository will be shared in formats accessible in the Open",
+        "tags": [
+          "data_format",
+          "metadata",
+          "storage",
+          "sharing"
+        ],
+        "title": "will be explained in an additional README file."
+      },
+      {
+        "text": "Source software. If the project produces data that requires specific software to read, this information, along with a",
+        "tags": [
+          "data_format",
+          "tools"
+        ],
+        "title": "Source software."
+      },
+      {
+        "text": "description of the procedure for reading the data, will also be included in the README file. However, interpretation of",
+        "tags": [
+          "methodology",
+          "metadata"
+        ],
+        "title": "description of the procedure for reading the data, will also be included in the README file."
+      },
+      {
+        "text": "the results requires specialised knowledge of the used measurement techniques and the investigated research area.",
+        "tags": [
+          "methodology"
+        ],
+        "title": null
+      }
+    ]
+  },
+  "5.4": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How will the application of a unique and persistent identifier (such us a Digital Object Identifier (DOI)) to each data set be ensured?",
+    "paragraphs": [
+      "To ensure accurate and efficient data localisation, a DOI (Digital Object Identifier) will be permanently assigned to each",
+      "dataset."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "To ensure accurate and efficient data localisation, a DOI (Digital Object Identifier) will be permanently assigned to each",
+        "tags": [
+          "identifier"
+        ],
+        "title": null
+      },
+      {
+        "text": "dataset.",
+        "tags": [],
+        "title": "dataset."
+      }
+    ]
+  },
+  "6.1": {
+    "section": "6. Data management responsibilities and resources",
+    "question": "Who (for example role, position, and institution) will be responsible for data management (i.e the data steward)?",
+    "paragraphs": [
+      "The project manager will be responsible for the substantive value of the data published in the MOST Wiedzy Open",
+      "Research Data Catalogue, the quality of the data and the timing of its release. The staff of the Gdańsk Tech Library",
+      "Open Science Competence Center and Gdańsk Navigation IT Services Center will be involved in ensuring that the data is",
+      "properly stored, documented, made available and that the intellectual property rights of the research data and the",
+      "licences under which the data can be published are defined."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The project manager will be responsible for the substantive value of the data published in the MOST Wiedzy Open",
+        "tags": [
+          "responsibility"
+        ],
+        "title": null
+      },
+      {
+        "text": "Research Data Catalogue, the quality of the data and the timing of its release. The staff of the Gdańsk Tech Library",
+        "tags": [
+          "quality",
+          "storage"
+        ],
+        "title": "Research Data Catalogue, the quality of the data and the timing of its release."
+      },
+      {
+        "text": "Open Science Competence Center and Gdańsk Navigation IT Services Center will be involved in ensuring that the data is",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "properly stored, documented, made available and that the intellectual property rights of the research data and the",
+        "tags": [
+          "storage",
+          "license"
+        ],
+        "title": null
+      },
+      {
+        "text": "licences under which the data can be published are defined.",
+        "tags": [],
+        "title": "licences under which the data can be published are defined."
+      }
+    ]
+  },
+  "6.2": {
+    "section": "6. Data management responsibilities and resources",
+    "question": "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)?",
+    "paragraphs": [
+      "Both data storage in the MOST Wiedzy Open Research Data Catalogue and data storage on OneDrive (up to 100GB)",
+      "cloud is free. Appropriate staff hours, software and storage space will be provided to ensure that all FAIR principles are",
+      "fulfilled. If additional costs are generated they will be covered from indirect costs of the project.Anna Karólkowska, Politechnika Gdańska 647441"
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Both data storage in the MOST Wiedzy Open Research Data Catalogue and data storage on OneDrive (up to 100GB)",
+        "tags": [
+          "data_volume",
+          "storage",
+          "sharing"
+        ],
+        "title": null
+      },
+      {
+        "text": "cloud is free. Appropriate staff hours, software and storage space will be provided to ensure that all FAIR principles are",
+        "tags": [
+          "storage",
+          "tools"
+        ],
+        "title": "cloud is free."
+      },
+      {
+        "text": "fulfilled. If additional costs are generated they will be covered from indirect costs of the project.Anna Karólkowska, Politechnika Gdańska 647441",
+        "tags": [
+          "resources"
+        ],
+        "title": "fulfilled."
+      }
+    ]
+  }
+}

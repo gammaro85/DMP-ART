@@ -1548,3 +1548,413 @@ footer {
         border: 1px solid #000;
     }
 }
+
+/* ===========================================
+   ADDITIONAL STYLES FOR INDEX.HTML FIXES
+   =========================================== */
+
+/* These styles should be ADDED to your existing style.css file */
+
+/* ===========================================
+   RESPONSIVE UPLOAD CONTAINER FIXES
+   =========================================== */
+
+.upload-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+    .upload-container {
+        padding: 0 2rem;
+    }
+}
+
+#drop-area {
+    width: 100%;
+    min-height: 300px;
+    border: 2px dashed var(--secondary-color);
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    background-color: var(--bg-card);
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+@media (min-width: 768px) {
+    #drop-area {
+        padding: 3rem;
+        min-height: 350px;
+    }
+}
+
+#drop-area.highlight {
+    background-color: var(--bg-hover);
+    border-color: var(--accent-color);
+    transform: scale(1.02);
+}
+
+.upload-instruction {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+    .upload-instruction {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+}
+
+/* ===========================================
+   CONSISTENT BUTTON STYLING FOR INDEX PAGE
+   =========================================== */
+
+/* Select File Button */
+.select-file-button {
+    background-color: var(--secondary-color);
+    color: #ffffff;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-block;
+    text-align: center;
+    box-sizing: border-box;
+    margin-top: 1rem;
+}
+
+.select-file-button:hover {
+    background-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+@media (max-width: 768px) {
+    .select-file-button {
+        padding: 0.875rem 1.5rem;
+        font-size: 0.95rem;
+        width: 100%;
+        max-width: 250px;
+    }
+}
+
+/* Upload and Clear Buttons */
+.upload-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+    .upload-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+        width: 100%;
+    }
+}
+
+.upload-button {
+    background-color: var(--accent-color);
+    color: #ffffff;
+    border: none;
+    padding: 0.875rem 1.75rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.upload-button:hover {
+    background-color: var(--success-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.clear-button {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-medium);
+    padding: 0.875rem 1.75rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.clear-button:hover {
+    background-color: var(--secondary-color);
+    color: #ffffff;
+    border-color: var(--secondary-color);
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+
+    .upload-button,
+    .clear-button {
+        width: 100%;
+        max-width: 300px;
+    }
+}
+
+/* ===========================================
+   FILE INFO SECTION
+   =========================================== */
+
+.file-info {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background-color: var(--bg-secondary);
+    border-radius: 10px;
+    border: 1px solid var(--border-light);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.file-name-display {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    word-break: break-all;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .file-info {
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+
+    .file-name-display {
+        font-size: 1rem;
+    }
+}
+
+/* ===========================================
+   LOADING CONTAINER
+   =========================================== */
+
+.loading-container {
+    text-align: center;
+    margin: 2rem 0;
+    padding: 2rem;
+}
+
+.loading-container p {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-top: 1rem;
+}
+
+/* ===========================================
+   RESULTS SECTION
+   =========================================== */
+
+.result-container {
+    width: 100%;
+    max-width: 700px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    box-sizing: border-box;
+}
+
+.success-result,
+.error-result {
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-light);
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+
+    .success-result,
+    .error-result {
+        padding: 1.5rem;
+    }
+}
+
+.success-result h2 {
+    color: var(--success-color);
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+}
+
+.error-result h2 {
+    color: var(--error-color);
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+}
+
+@media (max-width: 768px) {
+
+    .success-result h2,
+    .error-result h2 {
+        font-size: 1.5rem;
+    }
+}
+
+.result-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 1.5rem 0;
+}
+
+@media (max-width: 768px) {
+    .result-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: center;
+    }
+}
+
+.review-button {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    text-decoration: none;
+    padding: 0.875rem 1.75rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-block;
+    box-sizing: border-box;
+}
+
+.review-button:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.download-button {
+    background-color: var(--success-color);
+    color: #ffffff;
+    text-decoration: none;
+    padding: 0.875rem 1.75rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-block;
+    box-sizing: border-box;
+}
+
+.download-button:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.new-upload-button,
+.try-again-button {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-medium);
+    padding: 0.875rem 1.75rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+    box-sizing: border-box;
+}
+
+.new-upload-button:hover,
+.try-again-button:hover {
+    background-color: var(--secondary-color);
+    color: #ffffff;
+    border-color: var(--secondary-color);
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+
+    .review-button,
+    .download-button,
+    .new-upload-button,
+    .try-again-button {
+        width: 100%;
+        max-width: 300px;
+    }
+}
+
+/* ===========================================
+   RESPONSIVE FOOTER FIXES
+   =========================================== */
+
+.footer-content {
+    background-color: transparent;
+}
+
+.footer-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+}
+
+.footer-link:hover {
+    color: var(--secondary-color);
+    background-color: var(--bg-hover);
+}
+
+/* ===========================================
+   UTILITY CLASSES
+   =========================================== */
+
+.hidden {
+    display: none !important;
+}
+
+/* ===========================================
+   RESPONSIVE CONTAINER OVERRIDES
+   =========================================== */
+
+@media (max-width: 480px) {
+    .upload-container {
+        padding: 0 0.5rem;
+        margin: 1rem auto;
+    }
+
+    #drop-area {
+        padding: 1.5rem;
+        min-height: 250px;
+    }
+
+    .upload-instruction {
+        font-size: 0.95rem;
+    }
+
+    .result-container {
+        padding: 0 0.5rem;
+    }
+}
