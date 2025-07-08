@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#ffffff">
-    <title>{% block title %}DMP ART{% endblock %}</title>
+    <title>DMP ART - Data Management Plan Assessment Tool</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <!-- Prevent flash of wrong theme -->
     <script>
@@ -17,81 +17,14 @@
             if (meta) meta.content = theme === 'dark' ? '#121212' : '#ffffff';
         })();
     </script>
-    <style>
-        :root {
-            /* ...remove or override local variables, rely on style.css... */
-        }
-        [data-theme="dark"] {
-            /* ...remove or override local variables, rely on style.css... */
-        }
-        body {
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            transition: background 0.2s, color 0.2s;
-        }
-        .container {
-            background: var(--bg-card);
-            color: var(--text-primary);
-        }
-        .primary-btn, .secondary-btn, .download-btn {
-            transition: background 0.2s, color 0.2s;
-        }
-        .primary-btn {
-            background: var(--primary-color);
-            color: #fff;
-        }
-        .secondary-btn {
-            background: var(--secondary-color);
-            color: #fff;
-        }
-        .primary-btn:hover, .secondary-btn:hover {
-            opacity: 0.85;
-        }
-        .footer-content {
-            background: var(--bg-alt);
-            color: var(--text-secondary);
-        }
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--bg-alt);
-            color: var(--text-main);
-            border: 1px solid var(--secondary-color);
-            border-radius: 50px;
-            padding: 0.5rem 1rem;
-            cursor: pointer;
-            font-size: 0.9rem;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: background 0.2s, color 0.2s;
-        }
-        .theme-toggle:hover {
-            background: var(--secondary-color);
-            color: #fff;
-        }
-        /* Add gap below the upload instruction and above the Select File button */
-        #select-file-btn {
-            margin-top: 1rem;
-        }
-        @media (max-width: 768px) {
-            .theme-toggle {
-                position: relative;
-                top: auto;
-                right: auto;
-                margin-bottom: 1rem;
-            }
-        }
-    </style>
 </head>
 <body>
-    <!-- content -->
+    <!-- Theme toggle button -->
     <div class="theme-toggle" onclick="toggleTheme()">
         <span id="theme-icon"></span>
         <span id="theme-text">Dark Mode</span>
     </div>
+    
     <div class="container">
         <header>
             <h1>DMP ART</h1>
@@ -99,41 +32,46 @@
         </header>
         
         <main>
+            <!-- Upload Section -->
             <div class="upload-container">
                 <div id="drop-area">
                     <form id="upload-form" enctype="multipart/form-data">
-                        <p>Upload PDF or DOCX files by dragging and dropping or clicking below</p>
+                        <p class="upload-instruction">Upload PDF or DOCX files by dragging and dropping or clicking below</p>
                         <input type="file" id="file-input" name="file" accept=".pdf,.docx" hidden>
-                        <button type="button" id="select-file-btn">Select File</button>
+                        <button type="button" id="select-file-btn" class="select-file-button">Select File</button>
                     </form>
-                    <div id="file-info" class="hidden">
-                        <p id="file-name"></p>
-                        <button id="upload-btn" class="primary-btn">Extract & Review DMP</button>
-                        <button id="clear-btn" class="secondary-btn">Clear</button>
+                    <div id="file-info" class="file-info hidden">
+                        <p id="file-name" class="file-name-display"></p>
+                        <div class="upload-buttons">
+                            <button id="upload-btn" class="upload-button">Extract & Review DMP</button>
+                            <button id="clear-btn" class="clear-button">Clear</button>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <div id="loading" class="hidden">
+            <!-- Loading Spinner -->
+            <div id="loading" class="loading-container hidden">
                 <div class="spinner"></div>
                 <p>Processing file...</p>
             </div>
             
-            <div id="result" class="hidden">
-                <div id="success-message" class="hidden">
+            <!-- Results Section -->
+            <div id="result" class="result-container hidden">
+                <div id="success-message" class="success-result hidden">
                     <h2>Extraction Successful!</h2>
                     <p>Your DMP has been extracted and is ready for review.</p>
-                    <div class="button-group">
-                        <a id="review-link" href="#" class="primary-btn">Review DMP</a>
-                        <a id="download-link" href="#" class="download-btn">Download Word Document</a>
+                    <div class="result-buttons">
+                        <a id="review-link" href="#" class="review-button">Review DMP</a>
+                        <a id="download-link" href="#" class="download-button">Download Word Document</a>
                     </div>
-                    <button id="new-upload-btn" class="secondary-btn">Process Another File</button>
+                    <button id="new-upload-btn" class="new-upload-button">Process Another File</button>
                 </div>
                 
-                <div id="error-message" class="hidden">
+                <div id="error-message" class="error-result hidden">
                     <h2>Extraction Failed</h2>
                     <p id="error-text"></p>
-                    <button id="try-again-btn" class="secondary-btn">Try Again</button>
+                    <button id="try-again-btn" class="try-again-button">Try Again</button>
                 </div>
             </div>
         </main>
@@ -144,16 +82,15 @@
                     <p>DMP ART &copy; 2025</p>
                 </div>
                 <div class="footer-links">
-                    <a href="/template_editor" class="footer-link secondary-btn" style="margin: 0;">Customize Templates</a>
-                    <a href="/documentation" class="footer-link secondary-btn" style="margin: 0;">Documentation</a>
+                    <a href="/template_editor" class="footer-link">Customize Templates</a>
+                    <a href="/documentation" class="footer-link">Documentation</a>
                 </div>
             </div>
         </footer>
     </div>
     
-    <!-- Load dark mode script before other scripts -->
+    <!-- Scripts -->
     <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-    {% block scripts %}{% endblock %}
 </body>
 </html>
