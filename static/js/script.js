@@ -62,7 +62,7 @@ function toggleTheme() {
         localStorage.setItem('dmp-art-theme', newTheme);
 
         console.log('Theme toggled to:', newTheme);
-        showThemeNotification(newTheme);
+        //showThemeNotification(newTheme);
     } catch (error) {
         console.error('Error toggling theme:', error);
     }
@@ -101,19 +101,19 @@ function updateToggleButton(theme) {
     }
 }
 
-function showThemeNotification(theme) {
-    try {
-        // Try to use existing toast system first
-        if (typeof showToast === 'function') {
-            const message = theme === 'dark' ? '🌙 Dark mode enabled' : '☀️ Light mode enabled';
-            showToast(message);
-            return;
-        }
+//function showThemeNotification(theme) {
+try {
+    // Try to use existing toast system first
+    if (typeof showToast === 'function') {
+        const message = theme === 'dark' ? '🌙 Dark mode enabled' : '☀️ Light mode enabled';
+        showToast(message);
+        return;
+    }
 
-        // Fallback notification
-        const notification = document.createElement('div');
-        notification.className = 'theme-notification';
-        notification.style.cssText = `
+    // Fallback notification
+    const notification = document.createElement('div');
+    notification.className = 'theme-notification';
+    notification.style.cssText = `
             position: fixed;
             top: 20px;
             left: 50%;
@@ -130,29 +130,29 @@ function showThemeNotification(theme) {
             transition: opacity 0.3s ease;
         `;
 
-        const message = theme === 'dark' ? '🌙 Dark mode enabled' : '☀️ Light mode enabled';
-        notification.textContent = message;
+    const message = theme === 'dark' ? '🌙 Dark mode enabled' : '☀️ Light mode enabled';
+    notification.textContent = message;
 
-        document.body.appendChild(notification);
+    document.body.appendChild(notification);
 
-        // Animate in
+    // Animate in
+    setTimeout(() => {
+        notification.style.opacity = '1';
+    }, 10);
+
+    // Remove after 2 seconds
+    setTimeout(() => {
+        notification.style.opacity = '0';
         setTimeout(() => {
-            notification.style.opacity = '1';
-        }, 10);
-
-        // Remove after 2 seconds
-        setTimeout(() => {
-            notification.style.opacity = '0';
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 300);
-        }, 2000);
-    } catch (error) {
-        console.error('Error showing theme notification:', error);
-    }
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 300);
+    }, 2000);
+} catch (error) {
+    console.error('Error showing theme notification:', error);
 }
+
 
 function addDarkModeKeyboardShortcut() {
     try {
