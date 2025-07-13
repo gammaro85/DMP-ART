@@ -62,7 +62,6 @@ function toggleTheme() {
         localStorage.setItem('dmp-art-theme', newTheme);
 
         console.log('Theme toggled to:', newTheme);
-        //showThemeNotification(newTheme);
     } catch (error) {
         console.error('Error toggling theme:', error);
     }
@@ -75,7 +74,8 @@ function setTheme(theme) {
         // Update meta theme color
         const metaThemeColor = document.querySelector('meta[name="theme-color"]');
         if (metaThemeColor) {
-            metaThemeColor.setAttribute('content', theme === 'dark' ? '#121212' : '#ffffff');
+            metaThemeColor.setAttribute('content', theme === 'dark' ?
+                '#121212' : '#ffffff');
         }
     } catch (error) {
         console.error('Error setting theme:', error);
@@ -84,15 +84,12 @@ function setTheme(theme) {
 
 function updateToggleButton(theme) {
     try {
-        const themeIcon = document.getElementById('theme-icon');
         const themeText = document.getElementById('theme-text');
 
-        if (themeIcon && themeText) {
+        if (themeText) {
             if (theme === 'dark') {
-                themeIcon.textContent = '☀️';
                 themeText.textContent = 'Light Mode';
             } else {
-                themeIcon.textContent = '🌙';
                 themeText.textContent = 'Dark Mode';
             }
         }
@@ -100,59 +97,6 @@ function updateToggleButton(theme) {
         console.error('Error updating toggle button:', error);
     }
 }
-
-//function showThemeNotification(theme) {
-try {
-    // Try to use existing toast system first
-    if (typeof showToast === 'function') {
-        const message = theme === 'dark' ? '🌙 Dark mode enabled' : '☀️ Light mode enabled';
-        showToast(message);
-        return;
-    }
-
-    // Fallback notification
-    const notification = document.createElement('div');
-    notification.className = 'theme-notification';
-    notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--bg-card);
-            color: var(--text-primary);
-            padding: 12px 24px;
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-            z-index: 10000;
-            border: 1px solid var(--border-medium);
-            font-size: 14px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        `;
-
-    const message = theme === 'dark' ? '🌙 Dark mode enabled' : '☀️ Light mode enabled';
-    notification.textContent = message;
-
-    document.body.appendChild(notification);
-
-    // Animate in
-    setTimeout(() => {
-        notification.style.opacity = '1';
-    }, 10);
-
-    // Remove after 2 seconds
-    setTimeout(() => {
-        notification.style.opacity = '0';
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.parentNode.removeChild(notification);
-            }
-        }, 300);
-    }, 2000);
-} catch (error) {
-    console.error('Error showing theme notification:', error);
-}
-
 
 function addDarkModeKeyboardShortcut() {
     try {
@@ -209,25 +153,20 @@ function initializeUploadPage() {
         successMessage: document.getElementById('success-message'),
         errorMessage: document.getElementById('error-message'),
         errorText: document.getElementById('error-text'),
-        downloadLink: document.getElementById('download-link'),
-        reviewLink: document.getElementById('review-link'),
-        newUploadBtn: document.getElementById('new-upload-btn'),
-        tryAgainBtn: document.getElementById('try-again-btn')
+        downloadBtn: document.getElementById('download-btn')
     };
 
     // Exit if not on upload page
-    if (!elements.dropArea) {
+    if (!elements.dropArea && !elements.fileInput) {
         console.log('Not on upload page, skipping upload initialization');
         return;
     }
-
-    console.log('Upload page elements found, setting up functionality...');
 
     try {
         setupDragAndDrop(elements);
         setupFileSelection(elements);
         setupUploadButton(elements);
-        setupUtilityButtons(elements);
+        setupClearButton(elements);
 
         console.log('Upload page initialized successfully');
     } catch (error) {
@@ -237,293 +176,220 @@ function initializeUploadPage() {
 
 function setupDragAndDrop(elements) {
     const { dropArea } = elements;
+    if (!dropArea) return;
 
-    // Prevent default drag behaviors
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropArea.addEventListener(eventName, preventDefaults, false);
-        document.body.addEventListener(eventName, preventDefaults, false);
     });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropArea.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, unhighlight, false);
+    });
+
+    dropArea.addEventListener('drop', handleDrop, false);
 
     function preventDefaults(e) {
         e.preventDefault();
         e.stopPropagation();
     }
 
-    // Highlight drop area when dragging file over it
-    ['dragenter', 'dragover'].forEach(eventName => {
-        dropArea.addEventListener(eventName, () => {
-            dropArea.classList.add('highlight');
-        }, false);
-    });
+    function highlight() {
+        dropArea.classList.add('drag-over');
+    }
 
-    ['dragleave', 'drop'].forEach(eventName => {
-        dropArea.addEventListener(eventName, () => {
-            dropArea.classList.remove('highlight');
-        }, false);
-    });
+    function unhighlight() {
+        dropArea.classList.remove('drag-over');
+    }
 
-    // Handle dropped files
-    dropArea.addEventListener('drop', function (e) {
-        const files = e.dataTransfer.files;
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+
         if (files.length > 0) {
-            handleFiles(files, elements);
+            handleFileSelection(files[0], elements);
         }
-    }, false);
+    }
 }
 
 function setupFileSelection(elements) {
-    const { selectFileBtn, fileInput } = elements;
+    const { fileInput, selectFileBtn } = elements;
 
-    if (selectFileBtn && fileInput) {
-        selectFileBtn.addEventListener('click', function () {
-            fileInput.click();
+    if (selectFileBtn) {
+        selectFileBtn.addEventListener('click', () => {
+            if (fileInput) fileInput.click();
         });
+    }
 
-        fileInput.addEventListener('change', function () {
-            if (fileInput.files.length > 0) {
-                handleFiles(fileInput.files, elements);
+    if (fileInput) {
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelection(e.target.files[0], elements);
             }
         });
     }
 }
 
-function setupUploadButton(elements) {
-    const { uploadBtn, fileInput } = elements;
+function handleFileSelection(file, elements) {
+    const { fileInfo, fileName, uploadBtn } = elements;
 
-    if (uploadBtn) {
-        uploadBtn.addEventListener('click', function () {
-            if (!fileInput || fileInput.files.length === 0) {
-                showError('Please select a file first.', elements);
-                return;
-            }
+    console.log('File selected:', file.name);
 
-            const file = fileInput.files[0];
-            if (validateFile(file)) {
-                uploadFile(file, elements);
-            } else {
-                showError('Invalid file. Please select a valid PDF or DOCX file.', elements);
-            }
-        });
-    }
-}
+    // Validate file type
+    const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    const allowedExtensions = ['.pdf', '.docx'];
 
-function setupUtilityButtons(elements) {
-    const { clearBtn, newUploadBtn, tryAgainBtn } = elements;
+    const isValidType = allowedTypes.includes(file.type) ||
+        allowedExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
 
-    if (clearBtn) {
-        clearBtn.addEventListener('click', () => resetForm(elements));
-    }
-
-    if (newUploadBtn) {
-        newUploadBtn.addEventListener('click', () => {
-            resetForm(elements);
-            hideResults(elements);
-        });
-    }
-
-    if (tryAgainBtn) {
-        tryAgainBtn.addEventListener('click', () => {
-            resetForm(elements);
-            hideResults(elements);
-        });
-    }
-}
-
-function handleFiles(files, elements) {
-    console.log('Handling files:', files.length);
-
-    const file = files[0];
-
-    console.log('File details:', {
-        name: file.name,
-        type: file.type,
-        size: file.size,
-        sizeKB: Math.round(file.size / 1024),
-        sizeMB: Math.round(file.size / (1024 * 1024) * 100) / 100
-    });
-
-    if (!validateFile(file)) {
+    if (!isValidType) {
+        showToast('Please select a PDF or DOCX file', 'error');
         return;
     }
 
-    // Display file info
-    const { fileName, fileInfo } = elements;
+    // Validate file size (16MB limit)
+    const maxSize = 16 * 1024 * 1024;
+    if (file.size > maxSize) {
+        showToast('File size must be less than 16MB', 'error');
+        return;
+    }
+
+    // Store file and update UI
+    elements.selectedFile = file;
+
     if (fileName) {
         fileName.textContent = file.name;
     }
+
     if (fileInfo) {
-        fileInfo.classList.remove('hidden');
+        fileInfo.style.display = 'block';
     }
 
-    // Hide any previous results
-    hideResults(elements);
+    if (uploadBtn) {
+        uploadBtn.disabled = false;
+        uploadBtn.style.opacity = '1';
+    }
 
-    console.log('File ready for upload:', file.name);
+    showToast('File selected successfully');
 }
 
-function validateFile(file) {
-    const allowedTypes = [
-        'application/pdf',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    ];
+function setupUploadButton(elements) {
+    const { uploadBtn } = elements;
 
-    // Check file type
-    if (!allowedTypes.includes(file.type)) {
-        const typeError = `Invalid file type: ${file.type || 'unknown'}. Please select a PDF or DOCX file.`;
-        console.error(typeError);
-        showError(typeError);
-        return false;
+    if (uploadBtn) {
+        uploadBtn.addEventListener('click', () => {
+            if (elements.selectedFile) {
+                uploadFile(elements.selectedFile, elements);
+            } else {
+                showToast('Please select a file first', 'error');
+            }
+        });
     }
+}
 
-    // Check file size (16MB limit)
-    const maxSize = 16 * 1024 * 1024; // 16MB in bytes
-    if (file.size > maxSize) {
-        const sizeError = `File too large: ${(file.size / (1024 * 1024)).toFixed(2)}MB. Maximum size is 16MB.`;
-        console.error(sizeError);
-        showError(sizeError);
-        return false;
+function setupClearButton(elements) {
+    const { clearBtn, fileInput, fileInfo, fileName, uploadBtn } = elements;
+
+    if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+            elements.selectedFile = null;
+
+            if (fileInput) fileInput.value = '';
+            if (fileInfo) fileInfo.style.display = 'none';
+            if (fileName) fileName.textContent = '';
+            if (uploadBtn) {
+                uploadBtn.disabled = true;
+                uploadBtn.style.opacity = '0.6';
+            }
+
+            showToast('File cleared');
+        });
     }
-
-    console.log('File validation passed');
-    return true;
 }
 
 function uploadFile(file, elements) {
+    const { loading, result, successMessage, errorMessage, errorText } = elements;
+
     console.log('Starting file upload:', file.name);
 
-    const { fileInfo, loading } = elements;
     const formData = new FormData();
     formData.append('file', file);
 
     // Show loading state
-    if (fileInfo) fileInfo.classList.add('hidden');
-    if (loading) loading.classList.remove('hidden');
+    if (loading) {
+        loading.style.display = 'block';
+    }
 
-    // Create XMLHttpRequest for better control
-    const xhr = new XMLHttpRequest();
+    // Hide previous results
+    if (result) result.style.display = 'none';
+    if (successMessage) successMessage.style.display = 'none';
+    if (errorMessage) errorMessage.style.display = 'none';
 
-    // Set up timeout (5 minutes)
-    const uploadTimeout = setTimeout(() => {
-        xhr.abort();
-        if (loading) loading.classList.add('hidden');
-        showError('Upload timed out after 5 minutes. Please try again with a smaller file.', elements);
-        console.error('Upload timeout');
-    }, 5 * 60 * 1000);
+    fetch('/upload', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Upload response:', data);
 
-    // Track upload progress
-    xhr.upload.addEventListener('progress', function (e) {
-        if (e.lengthComputable) {
-            const percentComplete = Math.round((e.loaded / e.total) * 100);
-            console.log(`Upload progress: ${percentComplete}%`);
-
-            // Update loading text if element exists
-            const loadingText = loading?.querySelector('p');
-            if (loadingText) {
-                loadingText.textContent = `Processing file... ${percentComplete}%`;
+            // Hide loading
+            if (loading) {
+                loading.style.display = 'none';
             }
-        }
-    });
 
-    // Handle successful response
-    xhr.onload = function () {
-        clearTimeout(uploadTimeout);
-
-        if (loading) loading.classList.add('hidden');
-
-        console.log('Upload completed with status:', xhr.status);
-        console.log('Response text:', xhr.responseText);
-
-        if (xhr.status === 200) {
-            try {
-                const response = JSON.parse(xhr.responseText);
-                console.log('Parsed response:', response);
-
-                if (response.success) {
-                    showSuccess(response, elements);
-                } else {
-                    showError(response.message || 'Processing failed', elements);
+            if (data.success && data.redirect) {
+                // Center the success message
+                if (successMessage) {
+                    successMessage.style.position = 'fixed';
+                    successMessage.style.top = '50%';
+                    successMessage.style.left = '50%';
+                    successMessage.style.transform = 'translate(-50%, -50%)';
+                    successMessage.style.zIndex = '1000';
+                    successMessage.style.maxWidth = '90%';
+                    successMessage.style.width = 'auto';
+                    successMessage.style.display = 'block';
                 }
-            } catch (e) {
-                console.error('Error parsing response:', e);
-                showError('Server returned invalid response. Please try again.', elements);
+
+                showToast('File processed successfully!');
+
+                // Redirect after showing success message
+                setTimeout(() => {
+                    window.location.href = data.redirect;
+                }, 2000);
+            } else {
+                // Show error
+                if (errorMessage) {
+                    errorMessage.style.display = 'block';
+                }
+                if (errorText) {
+                    errorText.textContent = data.message || 'Unknown error occurred';
+                }
+
+                showToast(data.message || 'Upload failed', 'error');
             }
-        } else {
-            console.error('HTTP error:', xhr.status);
-            showError(`Server error (Status: ${xhr.status}). Please try again.`, elements);
-        }
-    };
+        })
+        .catch(error => {
+            console.error('Upload error:', error);
 
-    // Handle network errors
-    xhr.onerror = function () {
-        clearTimeout(uploadTimeout);
-        if (loading) loading.classList.add('hidden');
-        console.error('Network error during upload');
-        showError('Network error. Please check your connection and try again.', elements);
-    };
+            // Hide loading
+            if (loading) {
+                loading.style.display = 'none';
+            }
 
-    // Handle aborted uploads
-    xhr.onabort = function () {
-        clearTimeout(uploadTimeout);
-        if (loading) loading.classList.add('hidden');
-        console.log('Upload aborted');
-    };
+            // Show error
+            if (errorMessage) {
+                errorMessage.style.display = 'block';
+            }
+            if (errorText) {
+                errorText.textContent = 'Network error occurred';
+            }
 
-    // Send the request
-    xhr.open('POST', '/upload');
-    xhr.send(formData);
-}
-
-function showSuccess(response, elements) {
-    console.log('Upload successful');
-
-    const { result, successMessage, errorMessage, downloadLink, reviewLink } = elements;
-
-    if (result) result.classList.remove('hidden');
-    if (successMessage) successMessage.classList.remove('hidden');
-    if (errorMessage) errorMessage.classList.add('hidden');
-
-    // Set up download and review links
-    if (downloadLink && response.download_url) {
-        downloadLink.href = response.download_url;
-    }
-    if (reviewLink && response.review_url) {
-        reviewLink.href = response.review_url;
-    }
-}
-
-function showError(message, elements = {}) {
-    console.log('Showing error:', message);
-
-    const { result, successMessage, errorMessage, errorText, fileInfo, fileInput } = elements;
-
-    if (result) result.classList.remove('hidden');
-    if (successMessage) successMessage.classList.add('hidden');
-    if (errorMessage) errorMessage.classList.remove('hidden');
-    if (errorText) errorText.textContent = message;
-
-    // Show file info again so user can try again
-    if (fileInfo && fileInput && fileInput.files.length > 0) {
-        fileInfo.classList.remove('hidden');
-    }
-}
-
-function resetForm(elements) {
-    console.log('Resetting form');
-
-    const { fileInput, fileName, fileInfo, loading } = elements;
-
-    if (fileInput) fileInput.value = '';
-    if (fileName) fileName.textContent = '';
-    if (fileInfo) fileInfo.classList.add('hidden');
-    if (loading) loading.classList.add('hidden');
-}
-
-function hideResults(elements) {
-    const { result, successMessage, errorMessage } = elements;
-
-    if (result) result.classList.add('hidden');
-    if (successMessage) successMessage.classList.add('hidden');
-    if (errorMessage) errorMessage.classList.add('hidden');
+            showToast('Network error occurred', 'error');
+        });
 }
 
 // ===========================================
@@ -535,16 +401,14 @@ function initializeReviewPage() {
 
     const elements = {
         commentButtons: document.querySelectorAll('.comment-btn'),
+        compileButton: document.getElementById('compile-feedback-btn'),
         copyButtons: document.querySelectorAll('.copy-btn'),
         resetButtons: document.querySelectorAll('.reset-btn'),
         clearButtons: document.querySelectorAll('.clear-btn'),
-        compileButton: document.getElementById('compile-btn'),
-        saveFeedbackButton: document.getElementById('save-feedback-btn'),
         compiledContainer: document.getElementById('compiled-feedback-container'),
         compiledTextarea: document.getElementById('compiled-feedback'),
-        copyCompiledButton: document.getElementById('copy-compiled-btn'),
-        downloadFeedbackButton: document.getElementById('download-feedback-btn'),
-        closeCompiledButton: document.getElementById('close-compiled-btn')
+        closeCompiledButton: document.getElementById('close-compiled-btn'),
+        saveFeedbackButton: document.getElementById('save-feedback-btn')
     };
 
     // Exit if not on review page
@@ -853,7 +717,8 @@ function getSectionTitle(sectionId) {
 function initializeCharacterCounters() {
     console.log('Initializing character counters...');
 
-    document.querySelectorAll('.feedback-text').forEach(textarea => {
+    // Only add counters for question-level sections, not comments
+    document.querySelectorAll('.feedback-text[data-section-type="question"], .feedback-text[data-section-type="original_text"], .feedback-text[data-section-type="text_insertion"]').forEach(textarea => {
         const sectionId = textarea.id.replace('feedback-', '');
 
         // Update counter on input
@@ -862,6 +727,20 @@ function initializeCharacterCounters() {
         // Initial count
         updateCharacterCounter(sectionId);
     });
+
+    // For current implementation without section types, initialize all counters
+    // This is a fallback for the current system
+    if (document.querySelectorAll('.feedback-text[data-section-type]').length === 0) {
+        document.querySelectorAll('.feedback-text').forEach(textarea => {
+            const sectionId = textarea.id.replace('feedback-', '');
+
+            // Update counter on input
+            textarea.addEventListener('input', () => updateCharacterCounter(sectionId));
+
+            // Initial count
+            updateCharacterCounter(sectionId);
+        });
+    }
 }
 
 function updateCharacterCounter(sectionId) {
@@ -870,8 +749,7 @@ function updateCharacterCounter(sectionId) {
 
     if (textarea && counter) {
         const charCount = textarea.value.length;
-        const wordCount = textarea.value.trim().split(/\s+/).filter(word => word.length > 0).length;
-
+        const wordCount = textarea.value.trim() ? textarea.value.trim().split(/\s+/).length : 0;
         counter.textContent = `${charCount} characters, ${wordCount} words`;
     }
 }
@@ -883,44 +761,54 @@ function updateCharacterCounter(sectionId) {
 function initializeTemplateEditor() {
     console.log('Initializing template editor...');
 
-    const elements = {
-        saveTemplateButtons: document.querySelectorAll('.save-template-btn'),
-        saveAllTemplatesButton: document.getElementById('save-all-templates'),
-        tabButtons: document.querySelectorAll('.tab-btn'),
-        tabPanels: document.querySelectorAll('.tab-panel')
-    };
-
-    // Exit if not on template editor page
-    if (!elements.saveTemplateButtons.length && !elements.saveAllTemplatesButton && !elements.tabButtons.length) {
+    // Check if we're on the template editor page
+    const templateContainer = document.getElementById('templates-container');
+    if (!templateContainer) {
         console.log('Not on template editor page, skipping template editor initialization');
         return;
     }
 
     try {
-        setupTabNavigation(elements);
-        setupTemplateSaving(elements);
-
+        setupTemplateButtons();
+        setupTabSwitching();
         console.log('Template editor initialized successfully');
     } catch (error) {
         console.error('Error initializing template editor:', error);
     }
 }
 
-function setupTabNavigation(elements) {
-    const { tabButtons, tabPanels } = elements;
-
-    tabButtons.forEach(button => {
+function setupTemplateButtons() {
+    // Save individual template buttons
+    document.querySelectorAll('.save-template-btn').forEach(button => {
         button.addEventListener('click', function () {
-            // Remove active class from all buttons and panels
-            tabButtons.forEach(btn => btn.classList.remove('active'));
-            tabPanels.forEach(panel => panel.classList.remove('active'));
+            const id = this.getAttribute('data-id');
+            const textarea = document.getElementById(`template-${id}`);
 
-            // Add active class to clicked button
+            if (textarea) {
+                saveIndividualTemplate(id, textarea.value);
+            }
+        });
+    });
+
+    // Save all templates button
+    const saveAllBtn = document.getElementById('save-all-templates');
+    if (saveAllBtn) {
+        saveAllBtn.addEventListener('click', saveAllTemplates);
+    }
+}
+
+function setupTabSwitching() {
+    document.querySelectorAll('.tab-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const targetTab = this.getAttribute('data-target');
+
+            // Remove active class from all tabs and panels
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+
+            // Add active class to clicked tab and corresponding panel
             this.classList.add('active');
-
-            // Show corresponding panel
-            const tabId = this.getAttribute('data-tab');
-            const targetPanel = document.getElementById(`${tabId}-panel`);
+            const targetPanel = document.getElementById(targetTab);
             if (targetPanel) {
                 targetPanel.classList.add('active');
             }
@@ -928,46 +816,11 @@ function setupTabNavigation(elements) {
     });
 }
 
-function setupTemplateSaving(elements) {
-    const { saveTemplateButtons, saveAllTemplatesButton } = elements;
+function saveIndividualTemplate(id, content) {
+    const data = {};
+    data[id] = content;
 
-    // Individual save buttons
-    saveTemplateButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            const id = this.getAttribute('data-id');
-            const templateInput = document.getElementById(`template-${id}`);
-
-            if (templateInput) {
-                const data = {};
-                data[id] = templateInput.value;
-                saveToServer('/save_templates', data);
-            }
-        });
-    });
-
-    // Save all button
-    if (saveAllTemplatesButton) {
-        saveAllTemplatesButton.addEventListener('click', function () {
-            const templates = {};
-
-            document.querySelectorAll('.template-item').forEach(item => {
-                const id = item.getAttribute('data-id');
-                const templateInput = document.getElementById(`template-${id}`);
-
-                if (templateInput) {
-                    templates[id] = templateInput.value;
-                }
-            });
-
-            saveToServer('/save_templates', templates);
-        });
-    }
-}
-
-function saveToServer(endpoint, data) {
-    console.log('Saving to server:', endpoint, data);
-
-    fetch(endpoint, {
+    fetch('/save_templates', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -975,16 +828,45 @@ function saveToServer(endpoint, data) {
         body: JSON.stringify(data)
     })
         .then(response => response.json())
-        .then(result => {
-            if (result.success) {
-                showToast('Saved successfully!');
+        .then(data => {
+            if (data.success) {
+                showToast('Template saved successfully!');
             } else {
-                showToast('Error: ' + (result.message || 'Unknown error'), 'error');
+                showToast('Error saving template: ' + (data.message || 'Unknown error'), 'error');
             }
         })
         .catch(error => {
-            console.error('Save error:', error);
-            showToast('Error saving data', 'error');
+            console.error('Error saving template:', error);
+            showToast('Error saving template', 'error');
+        });
+}
+
+function saveAllTemplates() {
+    const templates = {};
+
+    document.querySelectorAll('.template-input').forEach(textarea => {
+        const id = textarea.id.replace('template-', '');
+        templates[id] = textarea.value;
+    });
+
+    fetch('/save_templates', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(templates)
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast('All templates saved successfully!');
+            } else {
+                showToast('Error saving templates: ' + (data.message || 'Unknown error'), 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error saving templates:', error);
+            showToast('Error saving templates', 'error');
         });
 }
 
@@ -992,74 +874,93 @@ function saveToServer(endpoint, data) {
 // UTILITY FUNCTIONS
 // ===========================================
 
-function copyToClipboard(text) {
-    if (navigator.clipboard && window.isSecureContext) {
-        return navigator.clipboard.writeText(text);
-    } else {
-        // Fallback for older browsers
-        return new Promise((resolve, reject) => {
-            try {
-                const textarea = document.createElement('textarea');
-                textarea.value = text;
-                textarea.style.position = 'fixed';
-                textarea.style.opacity = '0';
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-                resolve();
-            } catch (error) {
-                reject(error);
-            }
-        });
-    }
-}
-
 function showToast(message, type = 'success') {
-    console.log(`Toast: ${message} (${type})`);
+    console.log(`Toast (${type}):`, message);
 
-    // Try to find existing toast element
-    let toast = document.querySelector('.success-toast');
-
-    // Create toast if it doesn't exist
-    if (!toast) {
-        toast = document.createElement('div');
-        toast.className = 'success-toast';
-        document.body.appendChild(toast);
+    // Create or get toast container
+    let toastContainer = document.getElementById('toast-container');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'toast-container';
+        toastContainer.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        `;
+        document.body.appendChild(toastContainer);
     }
 
-    // Set message and type
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
     toast.textContent = message;
-    toast.className = 'success-toast';
+    toast.style.cssText = `
+        background: ${type === 'error' ? 'var(--error-color)' : 'var(--success-color)'};
+        color: white;
+        padding: 12px 16px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        max-width: 300px;
+        word-wrap: break-word;
+    `;
 
-    if (type === 'error') {
-        toast.classList.add('error');
-    }
+    toastContainer.appendChild(toast);
 
-    // Show the toast
-    toast.classList.add('show');
-
-    // Hide after 3 seconds
+    // Animate in
     setTimeout(() => {
-        toast.classList.remove('show');
+        toast.style.transform = 'translateX(0)';
+    }, 10);
+
+    // Remove after 3 seconds
+    setTimeout(() => {
+        toast.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 300);
     }, 3000);
 }
 
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
+async function copyToClipboard(text) {
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(text);
+        } else {
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            document.execCommand('copy');
+            textArea.remove();
+        }
+        return Promise.resolve();
+    } catch (err) {
+        console.error('Failed to copy text: ', err);
+        return Promise.reject(err);
+    }
 }
+
+// ===========================================
+// TEMPLATE MANAGEMENT
+// ===========================================
 
 // Store original templates for reset functionality
 function storeOriginalTemplates() {
-    if (!window.originalTemplates) {
+    console.log('Storing original templates...');
+
+    if (typeof window.originalTemplates === 'undefined') {
         window.originalTemplates = {};
 
         document.querySelectorAll('.feedback-text').forEach(textarea => {

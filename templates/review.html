@@ -1,65 +1,97 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DMP ART - Review DMP</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <meta name="theme-color" content="#ffffff">
+    <title>Review DMP - DMP ART</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Prevent flash of wrong theme -->
     <script>
         (function() {
-            const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            const saved = localStorage.getItem('dmp-art-theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = saved || (prefersDark ? 'dark' : 'light');
             document.documentElement.setAttribute('data-theme', theme);
             const meta = document.querySelector('meta[name="theme-color"]');
             if (meta) meta.content = theme === 'dark' ? '#121212' : '#ffffff';
         })();
     </script>
+    <style>
+        /* Enhanced Review Page Styles */
+        .results-container {
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-medium);
+            transition: all 0.3s ease;
+        }
+        .result-card {
+            background-color: var(--bg-tertiary);
+            border-color: var(--border-medium);
+        }
+        .feature-card,
+        .stat-item {
+            background-color: var(--bg-secondary);
+            border-color: var(--border-light);
+        }
+    </style>
 </head>
 <body>
-    <!-- content -->
+    <!-- Theme Toggle Button -->
     <div class="theme-toggle" onclick="toggleTheme()">
-        <span id="theme-icon"></span>
         <span id="theme-text">Dark Mode</span>
     </div>
-    <div class="container">
-        <header>
-            <h1>DMP ART - Review DMP</h1>
-            <p>Review and provide feedback on the extracted Data Management Plan</p>
-            <div class="nav-links">
-                <a href="/" class="nav-link">Home</a>
-                <a href="/template_editor" class="nav-link">Templates</a>
-            </div>
-        </header>
-        
-        <main class="review-container">
-            <div class="control-panel">
-                <div class="panel-left">
-                    <h2>Review DMP: {{ filename }}</h2>
-                    <div class="file-info">
-                        <span class="file-size">{{ "%.2f"|format((filename|length * 1024) / (1024*1024)) }} MB</span>
-                        {% if cache_id %}
-                        <span class="cache-info">Cache ID: {{ cache_id[:8] }}</span>
-                        {% endif %}
+    
+    <div class="review-container">
+        <header class="review-header">
+            <h1 class="review-title">DMP Review & Feedback</h1>
+            <p class="review-subtitle">Review extracted content and provide structured feedback</p>
+            
+            {% if extraction_info %}
+            <div class="extraction-info">
+                <h3>Extraction Summary</h3>
+                <div class="extraction-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">{{ extraction_info.total_sections }}</span>
+                        <span class="stat-label">Total Sections</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">{{ extraction_info.sections_with_content }}</span>
+                        <span class="stat-label">Sections with Content</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">{{ extraction_info.extraction_method }}</span>
+                        <span class="stat-label">Processing Method</span>
                     </div>
                 </div>
-                <div class="action-btns">
-                    <a href="{{ url_for('download_file', filename=filename) }}" class="download-btn" title="Download original document">Download Original</a>
-                    <button id="save-feedback-btn" class="save-all-btn" title="Save feedback to server">Save Feedback</button>
-                    <button id="compile-btn" class="compile-btn" title="Compile all feedback into report">Compile Report</button>
-                </div>
             </div>
-
-           <!-- Section Navigation -->
-            <div class="section-navigation">
-                <h4>Quick Navigation</h4>
-                <div class="nav-buttons" id="section-nav">
-                    <!-- Navigation buttons will be populated by JavaScript -->
-                </div>
+            {% endif %}
+        </header>
+        
+        <!-- Section Navigation -->
+        <div class="section-navigation">
+            <h3 class="nav-title">Quick Navigation</h3>
+            <div class="nav-buttons" id="section-nav">
+                <!-- Navigation buttons will be generated by JavaScript -->
+            </div>
+        </div>
+        
+        <main class="main-content">
+            <!-- Action Buttons -->
+            <div class="action-buttons" style="text-align: center; margin-bottom: 2rem;">
+                <button id="compile-feedback-btn" class="primary-btn">Compile Feedback Report</button>
+                <button id="save-feedback-btn" class="secondary-btn">Save Progress</button>
             </div>
             
-            <div id="questions-container">
+            <!-- Questions Container -->
+            <div class="questions-container">
                 {% for section_id, content in extracted_content.items() %}
-                <div class="question-card" data-id="{{ section_id }}" id="section-{{ section_id }}">
+                <div class="question-card" id="section-{{ section_id }}" data-id="{{ section_id }}">
                     <div class="question-header">
                         <div class="section-title-only">
                             {% set section_parts = content.section.split('.', 1) %}
@@ -123,12 +155,15 @@
                     <div class="enhanced-feedback-section">
                         <div class="feedback-toolbar">
                             <h3>Feedback for Section {{ section_id }}</h3>
+                            {% if content.get('type') in ['question', 'original_text', 'text_insertion'] %}
                             <div class="char-counter" id="char-counter-{{ section_id }}">0 characters</div>
+                            {% endif %}
                         </div>
                         
                         <textarea class="feedback-text" 
                                   id="feedback-{{ section_id }}" 
                                   data-section-id="{{ section_id }}"
+                                  {% if content.get('type') %}data-section-type="{{ content.get('type') }}"{% endif %}
                                   placeholder="Enter your feedback for this section..."
                                   rows="8">{{ templates.get(section_id, '') }}</textarea>
                         

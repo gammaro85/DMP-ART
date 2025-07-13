@@ -1,0 +1,836 @@
+{
+  "analysis_summary": {
+    "files_analyzed": 15,
+    "total_issues": 160,
+    "categories": [
+      "dead_functions",
+      "dead_imports",
+      "inconsistent_naming",
+      "debug_code",
+      "inconsistent_themes",
+      "duplicate_css",
+      "dead_css_classes",
+      "missing_css"
+    ]
+  },
+  "issues_by_category": {
+    "dead_functions": [
+      "Potentially unused function 'internal_error' in app.py",
+      "Potentially unused function 'save_dmp_structure' in app.py",
+      "Potentially unused function 'save_templates' in app.py",
+      "Potentially unused function 'results' in app.py",
+      "Potentially unused function 'save_comments' in app.py",
+      "Potentially unused function 'review_dmp' in app.py",
+      "Potentially unused function 'save_key_phrases' in app.py",
+      "Potentially unused function 'too_large' in app.py",
+      "Potentially unused function 'index' in app.py",
+      "Potentially unused function 'save_feedback' in app.py",
+      "Potentially unused function 'documentation' in app.py",
+      "Potentially unused function 'download_file' in app.py",
+      "Potentially unused function 'upload_file' in app.py",
+      "Potentially unused function 'not_found' in app.py",
+      "Potentially unused function 'health_check' in app.py",
+      "Potentially unused function 'template_editor' in app.py",
+      "Potentially unused function 'visit_FunctionDef' in debug_analyzer.py",
+      "Potentially unused function 'visit_Call' in debug_analyzer.py",
+      "Potentially unused function 'visit_ImportFrom' in debug_analyzer.py",
+      "Potentially unused function 'visit_Import' in debug_analyzer.py",
+      "Potentially unused function 'get_key_phrases' in utils\\extractor.py",
+      "Potentially unused function 'get_section_ids' in utils\\extractor.py",
+      "Potentially unused function 'process_file' in utils\\extractor.py",
+      "Potentially unused function 'get_templates' in utils\\templates_manager.py",
+      "Potentially unused function 'save_templates' in utils\\templates_manager.py"
+    ],
+    "dead_imports": [
+      "Potentially unused import 'threading' in app.py",
+      "Potentially unused import 'Set' in debug_analyzer.py",
+      "Potentially unused import 'Tuple' in debug_analyzer.py",
+      "Potentially unused import 'os' in test_docx_processing.py",
+      "Potentially unused import 'importlib.util' in verify_implementation.py"
+    ],
+    "inconsistent_naming": [
+      "Function 'visit_FunctionDef' doesn't follow snake_case in debug_analyzer.py",
+      "Function 'visit_Call' doesn't follow snake_case in debug_analyzer.py",
+      "Function 'visit_Import' doesn't follow snake_case in debug_analyzer.py",
+      "Function 'visit_ImportFrom' doesn't follow snake_case in debug_analyzer.py"
+    ],
+    "debug_code": [
+      "Found 27 console.log statements in static\\js\\script.js",
+      "Found 2 console.log statements in static\\js\\template_editor.js"
+    ],
+    "inconsistent_themes": [
+      "Found theme-icon reference in templates\\documentation.html",
+      "Theme toggle has unwanted theme-icon in documentation.html"
+    ],
+    "duplicate_css": [
+      "Duplicate selector 'body' appears 2 times in static\\css\\style.css",
+      "Duplicate selector 'header h1' appears 2 times in static\\css\\style.css",
+      "Duplicate selector 'header .subtitle' appears 2 times in static\\css\\style.css",
+      "Duplicate selector '@media (max-width: 768px)' appears 10 times in static\\css\\style.css",
+      "Duplicate selector '.container' appears 3 times in static\\css\\style.css",
+      "Duplicate selector '.theme-toggle' appears 2 times in static\\css\\style.css",
+      "Duplicate selector '.upload-icon' appears 2 times in static\\css\\style.css",
+      "Duplicate selector '.upload-text' appears 2 times in static\\css\\style.css",
+      "Duplicate selector '.upload-area' appears 2 times in static\\css\\style.css",
+      "Duplicate selector '0%' appears 2 times in static\\css\\style.css",
+      "Duplicate selector '100%' appears 2 times in static\\css\\style.css",
+      "Duplicate selector '.review-header' appears 2 times in static\\css\\style.css",
+      "Duplicate selector '.review-title' appears 2 times in static\\css\\style.css",
+      "Duplicate selector '.extraction-stats' appears 2 times in static\\css\\style.css",
+      "Duplicate selector '.review-container' appears 3 times in static\\css\\style.css",
+      "Duplicate selector '.nav-buttons' appears 2 times in static\\css\\style.css",
+      "Duplicate selector '.nav-btn' appears 2 times in static\\css\\style.css",
+      "Duplicate selector '.section-navigation' appears 2 times in static\\css\\style.css",
+      "Duplicate selector '.question-card' appears 3 times in static\\css\\style.css",
+      "Duplicate selector '.question-header' appears 2 times in static\\css\\style.css",
+      "Duplicate selector '.question-section-combined' appears 2 times in static\\css\\style.css",
+      "Duplicate selector '.question-content' appears 2 times in static\\css\\style.css",
+      "Duplicate selector '.enhanced-paragraph' appears 2 times in static\\css\\style.css",
+      "Duplicate selector '.feedback-text' appears 2 times in static\\css\\style.css",
+      "Duplicate selector '.action-row' appears 2 times in static\\css\\style.css",
+      "Duplicate selector '.compiled-feedback-container' appears 3 times in static\\css\\style.css",
+      "Duplicate selector '@media (max-width: 480px)' appears 2 times in static\\css\\style.css",
+      "Duplicate selector '.modal-actions' appears 2 times in static\\css\\style.css",
+      "Duplicate selector '.footer-content' appears 2 times in static\\css\\style.css",
+      "Duplicate selector '.footer-links' appears 2 times in static\\css\\style.css",
+      "Duplicate selector '.doc-title' appears 2 times in static\\css\\style.css",
+      "Duplicate selector '.doc-subtitle' appears 2 times in static\\css\\style.css",
+      "Duplicate selector '.doc-section' appears 2 times in static\\css\\style.css",
+      "Duplicate selector '.action-buttons' appears 2 times in static\\css\\style.css",
+      "Duplicate selector 'from' appears 2 times in static\\css\\style.css",
+      "Duplicate selector 'to' appears 2 times in static\\css\\style.css"
+    ],
+    "dead_css_classes": [
+      "Potentially unused CSS class: .mt-1",
+      "Potentially unused CSS class: .slide-in-up",
+      "Potentially unused CSS class: .border-radius-md",
+      "Potentially unused CSS class: .footer",
+      "Potentially unused CSS class: .question-content",
+      "Potentially unused CSS class: .clear-btn",
+      "Potentially unused CSS class: .mb-1",
+      "Potentially unused CSS class: .nav-btn",
+      "Potentially unused CSS class: .mt-4",
+      "Potentially unused CSS class: .drag-over",
+      "Potentially unused CSS class: .box-shadow-md",
+      "Potentially unused CSS class: .doc-section",
+      "Potentially unused CSS class: .p-3",
+      "Potentially unused CSS class: .mb-2",
+      "Potentially unused CSS class: .text-right",
+      "Potentially unused CSS class: .border-radius-lg",
+      "Potentially unused CSS class: .box-shadow-lg",
+      "Potentially unused CSS class: .mb-4",
+      "Potentially unused CSS class: .border-radius-sm",
+      "Potentially unused CSS class: .text-center",
+      "Potentially unused CSS class: .p-2",
+      "Potentially unused CSS class: .d-flex",
+      "Potentially unused CSS class: .justify-center",
+      "Potentially unused CSS class: .box-shadow-sm",
+      "Potentially unused CSS class: .doc-title",
+      "Potentially unused CSS class: .mb-3",
+      "Potentially unused CSS class: .d-none",
+      "Potentially unused CSS class: .centered",
+      "Potentially unused CSS class: .align-center",
+      "Potentially unused CSS class: .flex-row",
+      "Potentially unused CSS class: .feedback-section",
+      "Potentially unused CSS class: .h-100",
+      "Potentially unused CSS class: .text-left",
+      "Potentially unused CSS class: .p-4",
+      "Potentially unused CSS class: .justify-between",
+      "Potentially unused CSS class: .bounce-in",
+      "Potentially unused CSS class: .flex-column",
+      "Potentially unused CSS class: .p-1",
+      "Potentially unused CSS class: .mt-3",
+      "Potentially unused CSS class: .doc-subtitle",
+      "Potentially unused CSS class: .fade-in",
+      "Potentially unused CSS class: .documentation-container",
+      "Potentially unused CSS class: .mt-2",
+      "Potentially unused CSS class: .d-block",
+      "Potentially unused CSS class: .doc-header",
+      "Potentially unused CSS class: .d-grid",
+      "Potentially unused CSS class: .w-100"
+    ],
+    "missing_css": [
+      "CSS class used but not defined: .usage-section",
+      "CSS class used but not defined: .results-subtitle",
+      "CSS class used but not defined: .phrase-item",
+      "CSS class used but not defined: .data-sources-section",
+      "CSS class used but not defined: .section-input",
+      "CSS class used but not defined: .success-toast",
+      "CSS class used but not defined: .edit-item",
+      "CSS class used but not defined: .results-header",
+      "CSS class used but not defined: .phrase-input",
+      "CSS class used but not defined: .section-header",
+      "CSS class used but not defined: .limitations-section",
+      "CSS class used but not defined: .technical-section",
+      "CSS class used but not defined: .download-section",
+      "CSS class used but not defined: .processing-stats",
+      "CSS class used but not defined: .about-container",
+      "CSS class used but not defined: .next-steps",
+      "CSS class used but not defined: .features-section",
+      "CSS class used but not defined: .section-item",
+      "CSS class used but not defined: .left-actions",
+      "CSS class used but not defined: .intro-section",
+      "CSS class used but not defined: .results-container",
+      "CSS class used but not defined: .limitation-card",
+      "CSS class used but not defined: .edit-header",
+      "CSS class used but not defined: .step-list",
+      "CSS class used but not defined: .question-input",
+      "CSS class used but not defined: .capabilities-list",
+      "CSS class used but not defined: .upload-actions",
+      "CSS class used but not defined: .download-options",
+      "CSS class used but not defined: .content-input",
+      "CSS class used but not defined: .question-item",
+      "CSS class used but not defined: .getting-started-section",
+      "CSS class used but not defined: .compiled-feedback-modal",
+      "CSS class used but not defined: .steps-grid",
+      "CSS class used but not defined: .processing-summary",
+      "CSS class used but not defined: .key-input",
+      "CSS class used but not defined: .results-title",
+      "CSS class used but not defined: .phrases-container",
+      "CSS class used but not defined: .status-text",
+      "CSS class used but not defined: .features-grid"
+    ]
+  },
+  "all_issues": [
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'internal_error' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'save_dmp_structure' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'save_templates' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'results' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'save_comments' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'review_dmp' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'save_key_phrases' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'too_large' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'index' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'save_feedback' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'documentation' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'download_file' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'upload_file' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'not_found' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'health_check' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'template_editor' in app.py"
+    },
+    {
+      "category": "dead_imports",
+      "description": "Potentially unused import 'threading' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'visit_FunctionDef' in debug_analyzer.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'visit_Call' in debug_analyzer.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'visit_ImportFrom' in debug_analyzer.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'visit_Import' in debug_analyzer.py"
+    },
+    {
+      "category": "dead_imports",
+      "description": "Potentially unused import 'Set' in debug_analyzer.py"
+    },
+    {
+      "category": "dead_imports",
+      "description": "Potentially unused import 'Tuple' in debug_analyzer.py"
+    },
+    {
+      "category": "inconsistent_naming",
+      "description": "Function 'visit_FunctionDef' doesn't follow snake_case in debug_analyzer.py"
+    },
+    {
+      "category": "inconsistent_naming",
+      "description": "Function 'visit_Call' doesn't follow snake_case in debug_analyzer.py"
+    },
+    {
+      "category": "inconsistent_naming",
+      "description": "Function 'visit_Import' doesn't follow snake_case in debug_analyzer.py"
+    },
+    {
+      "category": "inconsistent_naming",
+      "description": "Function 'visit_ImportFrom' doesn't follow snake_case in debug_analyzer.py"
+    },
+    {
+      "category": "dead_imports",
+      "description": "Potentially unused import 'os' in test_docx_processing.py"
+    },
+    {
+      "category": "dead_imports",
+      "description": "Potentially unused import 'importlib.util' in verify_implementation.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'get_key_phrases' in utils\\extractor.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'get_section_ids' in utils\\extractor.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'process_file' in utils\\extractor.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'get_templates' in utils\\templates_manager.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'save_templates' in utils\\templates_manager.py"
+    },
+    {
+      "category": "debug_code",
+      "description": "Found 27 console.log statements in static\\js\\script.js"
+    },
+    {
+      "category": "debug_code",
+      "description": "Found 2 console.log statements in static\\js\\template_editor.js"
+    },
+    {
+      "category": "inconsistent_themes",
+      "description": "Found theme-icon reference in templates\\documentation.html"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector 'body' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector 'header h1' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector 'header .subtitle' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '@media (max-width: 768px)' appears 10 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.container' appears 3 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.theme-toggle' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.upload-icon' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.upload-text' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.upload-area' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '0%' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '100%' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.review-header' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.review-title' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.extraction-stats' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.review-container' appears 3 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.nav-buttons' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.nav-btn' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.section-navigation' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.question-card' appears 3 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.question-header' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.question-section-combined' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.question-content' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.enhanced-paragraph' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.feedback-text' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.action-row' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.compiled-feedback-container' appears 3 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '@media (max-width: 480px)' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.modal-actions' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.footer-content' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.footer-links' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.doc-title' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.doc-subtitle' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.doc-section' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.action-buttons' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector 'from' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector 'to' appears 2 times in static\\css\\style.css"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .mt-1"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .slide-in-up"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .border-radius-md"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .footer"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .question-content"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .clear-btn"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .mb-1"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .nav-btn"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .mt-4"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .drag-over"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .box-shadow-md"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .doc-section"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .p-3"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .mb-2"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .text-right"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .border-radius-lg"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .box-shadow-lg"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .mb-4"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .border-radius-sm"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .text-center"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .p-2"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .d-flex"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .justify-center"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .box-shadow-sm"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .doc-title"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .mb-3"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .d-none"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .centered"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .align-center"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .flex-row"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .feedback-section"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .h-100"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .text-left"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .p-4"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .justify-between"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .bounce-in"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .flex-column"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .p-1"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .mt-3"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .doc-subtitle"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .fade-in"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .documentation-container"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .mt-2"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .d-block"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .doc-header"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .d-grid"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .w-100"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .usage-section"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .results-subtitle"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .phrase-item"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .data-sources-section"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .section-input"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .success-toast"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .edit-item"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .results-header"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .phrase-input"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .section-header"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .limitations-section"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .technical-section"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .download-section"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .processing-stats"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .about-container"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .next-steps"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .features-section"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .section-item"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .left-actions"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .intro-section"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .results-container"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .limitation-card"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .edit-header"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .step-list"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .question-input"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .capabilities-list"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .upload-actions"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .download-options"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .content-input"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .question-item"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .getting-started-section"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .compiled-feedback-modal"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .steps-grid"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .processing-summary"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .key-input"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .results-title"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .phrases-container"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .status-text"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .features-grid"
+    },
+    {
+      "category": "inconsistent_themes",
+      "description": "Theme toggle has unwanted theme-icon in documentation.html"
+    }
+  ]
+}

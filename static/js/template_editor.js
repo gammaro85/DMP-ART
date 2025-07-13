@@ -1,240 +1,300 @@
-// static/js/template_editor.js
+// Template Editor JavaScript - Enhanced and Consolidated
+(function () {
+    'use strict';
 
-document.addEventListener('DOMContentLoaded', function () {
-    // Tab navigation
-    const tabButtons = document.querySelectorAll('.tab-btn');
-    const tabPanels = document.querySelectorAll('.tab-panel');
-
-    tabButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            // Remove active class from all buttons and panels
-            tabButtons.forEach(btn => btn.classList.remove('active'));
-            tabPanels.forEach(panel => panel.classList.remove('active'));
-
-            // Add active class to clicked button
-            this.classList.add('active');
-
-            // Show corresponding panel
-            const tabId = this.getAttribute('data-tab');
-            document.getElementById(`${tabId}-panel`).classList.add('active');
-        });
+    // Wait for DOM to be ready
+    document.addEventListener('DOMContentLoaded', function () {
+        initializeTemplateEditor();
     });
 
-    // TEMPLATES TAB FUNCTIONALITY
-    const saveTemplateButtons = document.querySelectorAll('.save-template-btn');
-    const saveAllTemplatesButton = document.getElementById('save-all-templates');
+    function initializeTemplateEditor() {
+        console.log('Initializing template editor...');
 
-    // Handle individual template save buttons
-    if (saveTemplateButtons) {
-        saveTemplateButtons.forEach(button => {
+        // Initialize all tabs
+        initializeTabSwitching();
+        initializeTemplatesTab();
+        initializeCommentsTab();
+        initializeKeywordsTab();
+        initializeStructureTab();
+
+        console.log('Template editor initialized successfully');
+    }
+
+    // TAB SWITCHING FUNCTIONALITY
+    function initializeTabSwitching() {
+        document.querySelectorAll('.tab-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const targetTab = this.getAttribute('data-target');
+
+                // Remove active class from all tabs and panels
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+
+                // Add active class to clicked tab and corresponding panel
+                this.classList.add('active');
+                const targetPanel = document.getElementById(targetTab);
+                if (targetPanel) {
+                    targetPanel.classList.add('active');
+                }
+            });
+        });
+    }
+
+    // TEMPLATES TAB FUNCTIONALITY
+    function initializeTemplatesTab() {
+        // Save individual template buttons
+        document.querySelectorAll('.save-template-btn').forEach(button => {
             button.addEventListener('click', function () {
                 const id = this.getAttribute('data-id');
-                const templateText = document.getElementById(`template-${id}`).value;
+                const textarea = document.getElementById(`template-${id}`);
 
-                const data = {};
-                data[id] = templateText;
-
-                saveToServer('/save_templates', data);
-            });
-        });
-    }
-
-    // Handle save all templates button
-    if (saveAllTemplatesButton) {
-        saveAllTemplatesButton.addEventListener('click', function () {
-            const templates = {};
-
-            document.querySelectorAll('.template-item').forEach(item => {
-                const id = item.getAttribute('data-id');
-                const templateInput = document.getElementById(`template-${id}`);
-
-                if (templateInput) {
-                    templates[id] = templateInput.value;
+                if (textarea) {
+                    saveIndividualTemplate(id, textarea.value);
                 }
             });
-
-            saveToServer('/save_templates', templates);
         });
-    }
 
-    // COMMENTS TAB FUNCTIONALITY
-    const addCommentBtn = document.getElementById('add-comment-btn');
-    const commentsContainer = document.getElementById('comments-container');
-    const saveCommentsBtn = document.getElementById('save-comments-btn');
-
-    // Add new comment
-    if (addCommentBtn) {
-        addCommentBtn.addEventListener('click', function () {
-            const newCommentId = 'new_comment_' + Date.now();
-
-            const newComment = document.createElement('div');
-            newComment.className = 'edit-item';
-            newComment.setAttribute('data-id', newCommentId);
-            newComment.innerHTML = `
-                <div class="edit-header">
-                    <input type="text" class="key-input" value="" placeholder="Comment key">
-                    <button class="delete-btn" data-type="comment" data-id="${newCommentId}">Delete</button>
-                </div>
-                <textarea class="content-input"></textarea>
-            `;
-
-            commentsContainer.appendChild(newComment);
-
-            // Add event listener for delete button
-            newComment.querySelector('.delete-btn').addEventListener('click', handleDelete);
-        });
-    }
-
-    // Save all comments
-    if (saveCommentsBtn) {
-        saveCommentsBtn.addEventListener('click', function () {
-            const comments = {};
-
-            document.querySelectorAll('#comments-container .edit-item').forEach(item => {
-                const keyInput = item.querySelector('.key-input');
-                const contentInput = item.querySelector('.content-input');
-
-                // Skip items with empty keys
-                if (keyInput.value.trim() !== '') {
-                    comments[keyInput.value.trim()] = contentInput.value;
-                }
-            });
-
-            saveToServer('/save_comments', comments);
-        });
-    }
-
-    // KEYWORDS TAB FUNCTIONALITY
-    const addKeywordGroupBtn = document.getElementById('add-keyword-group-btn');
-    const keywordsContainer = document.getElementById('keywords-container');
-    const saveKeywordsBtn = document.getElementById('save-keywords-btn');
-
-    // Add new keyword group
-    if (addKeywordGroupBtn) {
-        addKeywordGroupBtn.addEventListener('click', function () {
-            const newGroupId = 'new_group_' + Date.now();
-
-            const newGroup = document.createElement('div');
-            newGroup.className = 'edit-item';
-            newGroup.setAttribute('data-id', newGroupId);
-            newGroup.innerHTML = `
-                <div class="edit-header">
-                    <input type="text" class="key-input" value="" placeholder="Category name">
-                    <button class="delete-btn" data-type="keyword" data-id="${newGroupId}">Delete</button>
-                </div>
-                <div class="phrases-container">
-                    <div class="phrase-item">
-                        <input type="text" class="phrase-input" value="">
-                        <button class="remove-phrase-btn">Remove</button>
-                    </div>
-                    <button class="add-phrase-btn">Add Phrase</button>
-                </div>
-            `;
-
-            keywordsContainer.appendChild(newGroup);
-
-            // Add event listeners
-            newGroup.querySelector('.delete-btn').addEventListener('click', handleDelete);
-            newGroup.querySelector('.add-phrase-btn').addEventListener('click', handleAddPhrase);
-            newGroup.querySelector('.remove-phrase-btn').addEventListener('click', handleRemovePhrase);
-        });
-    }
-
-    // Add phrase to a group
-    function handleAddPhrase() {
-        const phrasesContainer = this.closest('.phrases-container');
-
-        const newPhrase = document.createElement('div');
-        newPhrase.className = 'phrase-item';
-        newPhrase.innerHTML = `
-            <input type="text" class="phrase-input" value="">
-            <button class="remove-phrase-btn">Remove</button>
-        `;
-
-        phrasesContainer.insertBefore(newPhrase, this);
-
-        // Add event listener for remove button
-        newPhrase.querySelector('.remove-phrase-btn').addEventListener('click', handleRemovePhrase);
-    }
-
-    // Remove phrase from a group
-    function handleRemovePhrase() {
-        const phraseItem = this.closest('.phrase-item');
-        const phrasesContainer = phraseItem.closest('.phrases-container');
-
-        // Don't remove if it's the last phrase
-        if (phrasesContainer.querySelectorAll('.phrase-item').length > 1) {
-            phraseItem.remove();
+        // Save all templates button
+        const saveAllBtn = document.getElementById('save-all-templates');
+        if (saveAllBtn) {
+            saveAllBtn.addEventListener('click', saveAllTemplates);
         }
     }
 
-    // Save all keywords
-    if (saveKeywordsBtn) {
-        saveKeywordsBtn.addEventListener('click', function () {
-            const keywords = {};
+    function saveIndividualTemplate(id, content) {
+        const data = {};
+        data[id] = content;
 
-            document.querySelectorAll('#keywords-container .edit-item').forEach(item => {
-                const keyInput = item.querySelector('.key-input');
-                const phraseInputs = item.querySelectorAll('.phrase-input');
+        saveToServer('/save_templates', data);
+    }
 
-                // Skip items with empty keys
-                if (keyInput.value.trim() !== '') {
-                    const phrases = [];
+    function saveAllTemplates() {
+        const templates = {};
 
-                    phraseInputs.forEach(input => {
-                        if (input.value.trim() !== '') {
-                            phrases.push(input.value.trim());
-                        }
-                    });
-
-                    keywords[keyInput.value.trim()] = phrases;
-                }
-            });
-
-            saveToServer('/save_key_phrases', keywords);
+        document.querySelectorAll('.template-input').forEach(textarea => {
+            const id = textarea.id.replace('template-', '');
+            templates[id] = textarea.value;
         });
+
+        saveToServer('/save_templates', templates);
+    }
+
+    // COMMENTS TAB FUNCTIONALITY
+    function initializeCommentsTab() {
+        const addCommentBtn = document.getElementById('add-comment-btn');
+        const commentsContainer = document.getElementById('comments-container');
+        const saveCommentsBtn = document.getElementById('save-comments-btn');
+
+        // Add new comment
+        if (addCommentBtn) {
+            addCommentBtn.addEventListener('click', function () {
+                const newCommentId = 'new_comment_' + Date.now();
+
+                const newComment = document.createElement('div');
+                newComment.className = 'edit-item';
+                newComment.setAttribute('data-id', newCommentId);
+                newComment.innerHTML = `
+                    <div class="edit-header">
+                        <input type="text" class="key-input" value="" placeholder="Comment key">
+                        <button class="delete-btn" data-type="comment" data-id="${newCommentId}">Delete</button>
+                    </div>
+                    <textarea class="content-input" placeholder="Comment text"></textarea>
+                `;
+
+                commentsContainer.appendChild(newComment);
+
+                // Add event listener to the new delete button
+                newComment.querySelector('.delete-btn').addEventListener('click', handleDelete);
+            });
+        }
+
+        // Save comments
+        if (saveCommentsBtn) {
+            saveCommentsBtn.addEventListener('click', function () {
+                const comments = {};
+
+                document.querySelectorAll('#comments-container .edit-item').forEach(item => {
+                    const keyInput = item.querySelector('.key-input');
+                    const contentInput = item.querySelector('.content-input');
+
+                    if (keyInput.value.trim() !== '') {
+                        comments[keyInput.value.trim()] = contentInput.value;
+                    }
+                });
+
+                saveToServer('/save_comments', comments);
+            });
+        }
+    }
+
+    // KEYWORDS TAB FUNCTIONALITY
+    function initializeKeywordsTab() {
+        const addKeywordBtn = document.getElementById('add-keyword-btn');
+        const keywordsContainer = document.getElementById('keywords-container');
+        const saveKeywordsBtn = document.getElementById('save-keywords-btn');
+
+        // Add new keyword
+        if (addKeywordBtn) {
+            addKeywordBtn.addEventListener('click', function () {
+                const newKeywordId = 'new_keyword_' + Date.now();
+
+                const newKeyword = document.createElement('div');
+                newKeyword.className = 'edit-item';
+                newKeyword.setAttribute('data-id', newKeywordId);
+                newKeyword.innerHTML = `
+                    <div class="edit-header">
+                        <input type="text" class="key-input" value="" placeholder="Keyword">
+                        <button class="delete-btn" data-type="keyword" data-id="${newKeywordId}">Delete</button>
+                    </div>
+                    <div class="phrases-container">
+                        <div class="phrase-item">
+                            <input type="text" class="phrase-input" value="" placeholder="Phrase">
+                            <button class="remove-phrase-btn">Remove</button>
+                        </div>
+                        <button class="add-phrase-btn">Add Phrase</button>
+                    </div>
+                `;
+
+                keywordsContainer.appendChild(newKeyword);
+
+                // Add event listeners to new elements
+                newKeyword.querySelector('.delete-btn').addEventListener('click', handleDelete);
+                newKeyword.querySelector('.add-phrase-btn').addEventListener('click', handleAddPhrase);
+                newKeyword.querySelector('.remove-phrase-btn').addEventListener('click', handleRemovePhrase);
+            });
+        }
+
+        // Save keywords
+        if (saveKeywordsBtn) {
+            saveKeywordsBtn.addEventListener('click', function () {
+                const keywords = {};
+
+                document.querySelectorAll('#keywords-container .edit-item').forEach(item => {
+                    const keyInput = item.querySelector('.key-input');
+                    const phraseInputs = item.querySelectorAll('.phrase-input');
+
+                    // Skip items with empty keys
+                    if (keyInput.value.trim() !== '') {
+                        const phrases = [];
+
+                        phraseInputs.forEach(input => {
+                            if (input.value.trim() !== '') {
+                                phrases.push(input.value.trim());
+                            }
+                        });
+
+                        keywords[keyInput.value.trim()] = phrases;
+                    }
+                });
+
+                saveToServer('/save_key_phrases', keywords);
+            });
+        }
+    }
+
+    // Phrase management functions
+    function handleAddPhrase() {
+        const phrasesContainer = this.parentNode;
+        const newPhrase = document.createElement('div');
+        newPhrase.className = 'phrase-item';
+        newPhrase.innerHTML = `
+            <input type="text" class="phrase-input" value="" placeholder="Phrase">
+            <button class="remove-phrase-btn">Remove</button>
+        `;
+
+        // Insert before the "Add Phrase" button
+        phrasesContainer.insertBefore(newPhrase, this);
+
+        // Add event listener to the new remove button
+        newPhrase.querySelector('.remove-phrase-btn').addEventListener('click', handleRemovePhrase);
+    }
+
+    function handleRemovePhrase() {
+        const phraseItem = this.parentNode;
+        const phrasesContainer = phraseItem.parentNode;
+
+        // Don't remove if it's the only phrase item
+        const phraseItems = phrasesContainer.querySelectorAll('.phrase-item');
+        if (phraseItems.length > 1) {
+            phraseItem.remove();
+        } else {
+            // Clear the input instead
+            const phraseInput = phraseItem.querySelector('.phrase-input');
+            if (phraseInput) {
+                phraseInput.value = '';
+            }
+        }
     }
 
     // STRUCTURE TAB FUNCTIONALITY
-    const addSectionBtn = document.getElementById('add-section-btn');
-    const structureContainer = document.getElementById('structure-container');
-    const saveStructureBtn = document.getElementById('save-structure-btn');
+    function initializeStructureTab() {
+        const addSectionBtn = document.getElementById('add-section-btn');
+        const structureContainer = document.getElementById('structure-container');
+        const saveStructureBtn = document.getElementById('save-structure-btn');
 
-    // Add new section
-    if (addSectionBtn) {
-        addSectionBtn.addEventListener('click', function () {
-            const newSectionId = 'new_section_' + Date.now();
+        // Add new section
+        if (addSectionBtn) {
+            addSectionBtn.addEventListener('click', function () {
+                const newSectionId = 'new_section_' + Date.now();
 
-            const newSection = document.createElement('div');
-            newSection.className = 'section-item';
-            newSection.setAttribute('data-section', newSectionId);
-            newSection.innerHTML = `
-                <div class="section-header">
-                    <input type="text" class="section-input" value="" placeholder="Section title">
-                    <button class="delete-btn" data-type="section" data-id="${newSectionId}">Delete Section</button>
-                </div>
-                <div class="questions-container">
-                    <div class="question-item">
-                        <input type="text" class="question-input" value="">
-                        <button class="remove-question-btn">Remove</button>
+                const newSection = document.createElement('div');
+                newSection.className = 'section-item';
+                newSection.setAttribute('data-section', newSectionId);
+                newSection.innerHTML = `
+                    <div class="section-header">
+                        <input type="text" class="section-input" value="" placeholder="Section title">
+                        <button class="delete-btn" data-type="section" data-id="${newSectionId}">Delete Section</button>
                     </div>
-                    <button class="add-question-btn">Add Question</button>
-                </div>
-            `;
+                    <div class="questions-container">
+                        <div class="question-item">
+                            <input type="text" class="question-input" value="">
+                            <button class="remove-question-btn">Remove</button>
+                        </div>
+                        <button class="add-question-btn">Add Question</button>
+                    </div>
+                `;
 
-            structureContainer.appendChild(newSection);
+                structureContainer.appendChild(newSection);
 
-            // Add event listeners
-            newSection.querySelector('.delete-btn').addEventListener('click', handleDelete);
-            newSection.querySelector('.add-question-btn').addEventListener('click', handleAddQuestion);
-            newSection.querySelector('.remove-question-btn').addEventListener('click', handleRemoveQuestion);
-        });
+                // Add event listeners to new elements
+                newSection.querySelector('.delete-btn').addEventListener('click', handleDelete);
+                newSection.querySelector('.add-question-btn').addEventListener('click', handleAddQuestion);
+                newSection.querySelector('.remove-question-btn').addEventListener('click', handleRemoveQuestion);
+            });
+        }
+
+        // Save structure
+        if (saveStructureBtn) {
+            saveStructureBtn.addEventListener('click', function () {
+                const structure = {};
+
+                document.querySelectorAll('#structure-container .section-item').forEach(item => {
+                    const sectionInput = item.querySelector('.section-input');
+                    const questionInputs = item.querySelectorAll('.question-input');
+
+                    if (sectionInput.value.trim() !== '') {
+                        const questions = [];
+
+                        questionInputs.forEach(input => {
+                            if (input.value.trim() !== '') {
+                                questions.push(input.value.trim());
+                            }
+                        });
+
+                        if (questions.length > 0) {
+                            structure[sectionInput.value.trim()] = questions;
+                        }
+                    }
+                });
+
+                saveToServer('/save_dmp_structure', structure);
+            });
+        }
     }
 
-    // Add question to a section
+    // Question management functions
     function handleAddQuestion() {
-        const questionsContainer = this.closest('.questions-container');
-
+        const questionsContainer = this.parentNode;
         const newQuestion = document.createElement('div');
         newQuestion.className = 'question-item';
         newQuestion.innerHTML = `
@@ -242,51 +302,28 @@ document.addEventListener('DOMContentLoaded', function () {
             <button class="remove-question-btn">Remove</button>
         `;
 
+        // Insert before the "Add Question" button
         questionsContainer.insertBefore(newQuestion, this);
 
-        // Add event listener for remove button
+        // Add event listener to the new remove button
         newQuestion.querySelector('.remove-question-btn').addEventListener('click', handleRemoveQuestion);
     }
 
-    // Remove question from a section
     function handleRemoveQuestion() {
-        const questionItem = this.closest('.question-item');
-        const questionsContainer = questionItem.closest('.questions-container');
+        const questionItem = this.parentNode;
+        const questionsContainer = questionItem.parentNode;
 
-        // Don't remove if it's the last question
-        if (questionsContainer.querySelectorAll('.question-item').length > 1) {
+        // Don't remove if it's the only question item
+        const questionItems = questionsContainer.querySelectorAll('.question-item');
+        if (questionItems.length > 1) {
             questionItem.remove();
+        } else {
+            // Clear the input instead
+            const questionInput = questionItem.querySelector('.question-input');
+            if (questionInput) {
+                questionInput.value = '';
+            }
         }
-    }
-
-    // Save structure
-    if (saveStructureBtn) {
-        saveStructureBtn.addEventListener('click', function () {
-            const structure = {};
-
-            document.querySelectorAll('#structure-container .section-item').forEach(item => {
-                const sectionInput = item.querySelector('.section-input');
-                const questionInputs = item.querySelectorAll('.question-input');
-
-                // Skip items with empty section titles
-                if (sectionInput.value.trim() !== '') {
-                    const questions = [];
-
-                    questionInputs.forEach(input => {
-                        if (input.value.trim() !== '') {
-                            questions.push(input.value.trim());
-                        }
-                    });
-
-                    // Only add if there's at least one question
-                    if (questions.length > 0) {
-                        structure[sectionInput.value.trim()] = questions;
-                    }
-                }
-            });
-
-            saveToServer('/save_dmp_structure', structure);
-        });
     }
 
     // COMMON FUNCTIONALITY
@@ -380,11 +417,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function updateThemeToggle(isDark) {
-        const icon = document.getElementById('theme-icon');
         const text = document.getElementById('theme-text');
-        if (icon && text) {
-            icon.textContent = '';
+        if (text) {
             text.textContent = isDark ? 'Light Mode' : 'Dark Mode';
         }
     }
-});
+})();
