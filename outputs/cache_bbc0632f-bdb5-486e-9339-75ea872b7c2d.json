@@ -1,0 +1,252 @@
+{
+  "1.1": {
+    "section": "1. Data description and collection or re-use of existing data",
+    "question": "How will new data be collected or produced and/or how will existing data be re-used?",
+    "paragraphs": [
+      "The data generated within the described project will be diverse. For the synthesis and processing of thermoplastic biopolyurethanes, data will be collected in the form of notes, which will then be used to generate reports in file formats such as DOCX, XLSX, and PDF. In contrast, the data obtained at the material testing stages—resulting from measurements, analyses, and tests—will depend on the type of investigation but may include plots in XLSX format, graphic files in JPG and PNG formats, as well as data presented in tabular and numerical forms (DOCX)."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The data generated within the described project will be diverse. For the synthesis and processing of thermoplastic biopolyurethanes, data will be collected in the form of notes, which will then be used to generate reports in file formats such as DOCX, XLSX, and PDF. In contrast, the data obtained at the material testing stages—resulting from measurements, analyses, and tests—will depend on the type of investigation but may include plots in XLSX format, graphic files in JPG and PNG formats, as well as data presented in tabular and numerical forms (DOCX).",
+        "tags": [
+          "methodology",
+          "data_format"
+        ],
+        "title": "The data generated within the described project will be diverse."
+      }
+    ]
+  },
+  "1.2": {
+    "section": "1. Data description and collection or re-use of existing data",
+    "question": "What data (for example the types, formats, and volumes) will be collected or produced?",
+    "paragraphs": [
+      "Physical thermoplastic bio-polyurethane materials; data from synthesis (XLSX, DOC, DOCX, PDF); data from measurements (XLSX, DOC, DOCX, JPG, TIFF, PNG, OPJU); paper notes in notebooks. The total volume of data will range from 50 to 500 GB."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Physical thermoplastic bio-polyurethane materials; data from synthesis (XLSX, DOC, DOCX, PDF); data from measurements (XLSX, DOC, DOCX, JPG, TIFF, PNG, OPJU); paper notes in notebooks. The total volume of data will range from 50 to 500 GB.",
+        "tags": [
+          "data_format",
+          "data_volume"
+        ],
+        "title": null
+      }
+    ]
+  },
+  "2.1": {
+    "section": "2. Documentation and data quality",
+    "question": "What metadata and documentation (for example methodology or data collection and way of organising data) will accompany data?",
+    "paragraphs": [
+      "The data will be generated during the synthesis, processing, and materials testing phases. The collected data will be named, indexed, and organized in dedicated folders. Selected data will be shared in MOST Wiedzy Open Research Data Catalog – repository provided by the Gdańsk University of Technology, in accordance with widely recognized metadata standards and schemas. Metadata descriptions will be stored in formats such as JSON-LD. Authors will be identified and authenticated using their ORCID identifiers."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The data will be generated during the synthesis, processing, and materials testing phases. The collected data will be named, indexed, and organized in dedicated folders. Selected data will be shared in MOST Wiedzy Open Research Data Catalog – repository provided by the Gdańsk University of Technology, in accordance with widely recognized metadata standards and schemas. Metadata descriptions will be stored in formats such as JSON-LD. Authors will be identified and authenticated using their ORCID identifiers.",
+        "tags": [
+          "methodology",
+          "data_format",
+          "metadata",
+          "storage",
+          "sharing",
+          "identifier"
+        ],
+        "title": "The data will be generated during the synthesis, processing, and materials testing phases."
+      }
+    ]
+  },
+  "2.2": {
+    "section": "2. Documentation and data quality",
+    "question": "What data quality control measures will be used?",
+    "paragraphs": [
+      "The data will be collected through standardized and normalized measurements and research experiments. They will be catalogued in a standardized manner, compliant with the FAIR principles. Data deposited in the open repository “Most Danych” will be assigned a DOI (Digital Object Identifier)."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The data will be collected through standardized and normalized measurements and research experiments. They will be catalogued in a standardized manner, compliant with the FAIR principles. Data deposited in the open repository “Most Danych” will be assigned a DOI (Digital Object Identifier).",
+        "tags": [
+          "storage",
+          "identifier"
+        ],
+        "title": null
+      }
+    ]
+  },
+  "3.1": {
+    "section": "3. Storage and backup during the research process",
+    "question": "How will data and metadata be stored and backed up during the research process?",
+    "paragraphs": [
+      "Due to their volume, the data collected in the project may be stored on standard hard drives and external storage devices such as USB drives and external hard disks. Most of the data will be stored on computers belonging to Gdańsk University of Technology. Each dataset will have a backup copy stored on an external drive dedicated solely for this purpose."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Due to their volume, the data collected in the project may be stored on standard hard drives and external storage devices such as USB drives and external hard disks. Most of the data will be stored on computers belonging to Gdańsk University of Technology. Each dataset will have a backup copy stored on an external drive dedicated solely for this purpose.",
+        "tags": [
+          "data_volume",
+          "storage",
+          "backup"
+        ],
+        "title": null
+      }
+    ]
+  },
+  "3.2": {
+    "section": "3. Storage and backup during the research process",
+    "question": "How will data security and protection of sensitive data be taken care of during the research?",
+    "paragraphs": [
+      "Regular, periodic backups of the data generated during the project will be carried out. Access to these backups will be restricted to the three members of the research team. The data will be protected by a password known only to the team members. The external drive containing the backups will be stored in a locked cabinet to limit access to external individuals."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Regular, periodic backups of the data generated during the project will be carried out. Access to these backups will be restricted to the three members of the research team. The data will be protected by a password known only to the team members. The external drive containing the backups will be stored in a locked cabinet to limit access to external individuals.",
+        "tags": [
+          "data_volume",
+          "storage",
+          "backup",
+          "security",
+          "sharing"
+        ],
+        "title": "Regular, periodic backups of the data generated during the project will be carried out."
+      }
+    ]
+  },
+  "4.1": {
+    "section": "4. Legal requirements, codes of conduct",
+    "question": "If personal data are processed, how will compliance with legislation on personal data and on data security be ensured?",
+    "paragraphs": [
+      "Nie dotyczy"
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Nie dotyczy",
+        "tags": [],
+        "title": "Nie dotyczy"
+      }
+    ]
+  },
+  "4.2": {
+    "section": "4. Legal requirements, codes of conduct",
+    "question": "How will other legal issues, such as intelectual property rights and ownership, be managed? What legislation is applicable?",
+    "paragraphs": [
+      "The ownership and management of any intellectual property relating to the Project remain in the rights of the Gdansk University of Technology and the research team members accordingly to the Polish law and institutional regulations (Resolution of the Senate of the Gdańsk University of Technology No. 117/2021/XXV of 19 May 2021 https://link.pg.edu.pl/GdańskTech_intprop)."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The ownership and management of any intellectual property relating to the Project remain in the rights of the Gdansk University of Technology and the research team members accordingly to the Polish law and institutional regulations (Resolution of the Senate of the Gdańsk University of Technology No. 117/2021/XXV of 19 May 2021 https://link.pg.edu.pl/GdańskTech_intprop).",
+        "tags": [
+          "data_volume",
+          "license"
+        ],
+        "title": null
+      }
+    ]
+  },
+  "5.1": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How and when will data be shared? Are there possible restrictions to data sharing or embargo reasons?",
+    "paragraphs": [
+      "Selected data will be published in the Bridge of Data repository, managed by Gdańsk University of Technology.Data will be shared in accordance with the publication dates of the articles that are derived from this data. Some data will also be published in scientific journals. In cases where restrictions or embargoes are applied, this situation will be fully justified and documented."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Selected data will be published in the Bridge of Data repository, managed by Gdańsk University of Technology.Data will be shared in accordance with the publication dates of the articles that are derived from this data. Some data will also be published in scientific journals. In cases where restrictions or embargoes are applied, this situation will be fully justified and documented.",
+        "tags": [
+          "data_volume",
+          "storage"
+        ],
+        "title": null
+      }
+    ]
+  },
+  "5.2": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How will data for preservation be selected, and where will data be preserved long-term (for example a data repository or archive)?",
+    "paragraphs": [
+      "The Bridge of Data repository will be the main data repository.for sharing and preservation purposes. The PI will carefully select data for repository deposit based on scientific relevance and potential utility. The repository is CoreTrustSeal certified, which means that it has established good preservation and dissemination practices. Data deposited in the repository will be automatically categorized for long term storage, without expiration date. \nMoreover, all data not selected for sharing will be stored by PI for at least 10 years after the project is finished and access to them will be possible on direct request with the PI consent."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The Bridge of Data repository will be the main data repository.for sharing and preservation purposes. The PI will carefully select data for repository deposit based on scientific relevance and potential utility. The repository is CoreTrustSeal certified, which means that it has established good preservation and dissemination practices. Data deposited in the repository will be automatically categorized for long term storage, without expiration date. \nMoreover, all data not selected for sharing will be stored by PI for at least 10 years after the project is finished and access to them will be possible on direct request with the PI consent.",
+        "tags": [
+          "storage",
+          "personal_data",
+          "sharing",
+          "preservation",
+          "responsibility"
+        ],
+        "title": null
+      }
+    ]
+  },
+  "5.3": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "What methods or software tools will be needed to access and use the data?",
+    "paragraphs": [
+      "Access to opening and processing the data and results generated in the project will depend on the software chosen for data processing. The software may be either open-source or proprietary. Data in the open repository will be provided in standard formats, accessible to everyone, such as TXT, CSV, or PDF."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Access to opening and processing the data and results generated in the project will depend on the software chosen for data processing. The software may be either open-source or proprietary. Data in the open repository will be provided in standard formats, accessible to everyone, such as TXT, CSV, or PDF.",
+        "tags": [
+          "methodology",
+          "data_format",
+          "storage",
+          "sharing",
+          "tools"
+        ],
+        "title": null
+      }
+    ]
+  },
+  "5.4": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How will the application of a unique and persistent identifier (such us a Digital Object Identifier (DOI)) to each data set be ensured?",
+    "paragraphs": [
+      "The data available in the repository will be assigned a DOI (Digital Object Identifier)."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The data available in the repository will be assigned a DOI (Digital Object Identifier).",
+        "tags": [
+          "storage",
+          "identifier"
+        ],
+        "title": "The data available in the repository will be assigned a DOI (Digital Object Identifier)."
+      }
+    ]
+  },
+  "6.1": {
+    "section": "6. Data management responsibilities and resources",
+    "question": "Who (for example role, position, and institution) will be responsible for data management (i.e the data steward)?",
+    "paragraphs": [
+      "The Open Science Competence Centre (pg.edu.pl/openscience) – established by the Gdańsk University of Technology will be responsible for DMP and quality of metadata descriptions of datasets deposited in Bridge of Data repository. Responsibility for data management, ensuring their completeness and scientific relevance, will rest with the project investigator."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The Open Science Competence Centre (pg.edu.pl/openscience) – established by the Gdańsk University of Technology will be responsible for DMP and quality of metadata descriptions of datasets deposited in Bridge of Data repository. Responsibility for data management, ensuring their completeness and scientific relevance, will rest with the project investigator.",
+        "tags": [
+          "metadata",
+          "quality",
+          "storage",
+          "responsibility"
+        ],
+        "title": null
+      }
+    ]
+  },
+  "6.2": {
+    "section": "6. Data management responsibilities and resources",
+    "question": "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)?",
+    "paragraphs": [
+      "The financial resources that will be requested will come from Gdańsk University of Technology and will be included in the project’s budget."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The financial resources that will be requested will come from Gdańsk University of Technology and will be included in the project’s budget.",
+        "tags": [
+          "resources"
+        ],
+        "title": null
+      }
+    ]
+  }
+}

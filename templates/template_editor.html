@@ -3,300 +3,425 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DMP Template Editor</title>
+    <meta name="theme-color" content="#ffffff">
+    <title>Template Editor - DMP ART</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Prevent flash of wrong theme -->
     <script>
-        // Prevent flash of wrong theme
         (function() {
-            const savedTheme = localStorage.getItem('dmp-art-theme');
+            const saved = localStorage.getItem('dmp-art-theme');
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+            const theme = saved || (prefersDark ? 'dark' : 'light');
             document.documentElement.setAttribute('data-theme', theme);
+            const meta = document.querySelector('meta[name="theme-color"]');
+            if (meta) meta.content = theme === 'dark' ? '#121212' : '#ffffff';
         })();
     </script>
     <style>
-            :root {
-                /* ...remove or override local variables, rely on style.css... */
+        /* Template Editor Specific Styles */
+        .primary-btn, .secondary-btn, .add-btn, 
+        .tab-btn.active, .tab-btn:not(.active):hover, .delete-btn, .remove-phrase-btn, .add-question-btn, .remove-question-btn {
+            background: #375D78 !important;
+            color: #fff !important;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .save-template-btn, .save-btn, .save-all-templates-btn, .add-phrase-btn {
+            background: #408A8B !important;
+            color: #fff !important;
+            margin-bottom: 1rem;
+        }
+
+        .add-phrase-btn,
+        .add-btn,
+        .add-question-btn {
+            background: #408A8B !important;
+            color: #fff !important;
+        }
+
+        .template-editor-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .tab-navigation {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--text-secondary);
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active,
+        .tab-btn:hover {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        .template-group {
+            margin-bottom: 2rem;
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-light);
+        }
+
+        .template-group h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .template-item {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+        }
+
+        .template-item h3 {
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .template-input {
+            width: 100%;
+            min-height: 80px;
+            padding: 10px;
+            border: 2px solid var(--border-medium);
+            border-radius: 6px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            resize: vertical;
+            margin-bottom: 0.75rem;
+        }
+
+        .template-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .edit-item {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+        }
+
+        .edit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            gap: 1rem;
+        }
+
+        .key-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 2px solid var(--border-medium);
+            border-radius: 6px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .content-input {
+            width: 100%;
+            min-height: 60px;
+            padding: 10px;
+            border: 2px solid var(--border-medium);
+            border-radius: 6px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            resize: vertical;
+        }
+
+        .phrases-container {
+            margin-top: 0.75rem;
+        }
+
+        .phrase-item {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            align-items: center;
+        }
+
+        .phrase-input {
+            flex: 1;
+            padding: 6px 10px;
+            border: 1px solid var(--border-medium);
+            border-radius: 4px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 0.85rem;
+        }
+
+        .section-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            gap: 1rem;
+        }
+
+        .section-input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 2px solid var(--border-medium);
+            border-radius: 6px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .questions-container {
+            background: var(--bg-secondary);
+            border-radius: 6px;
+            padding: 1rem;
+        }
+
+        .question-item {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            align-items: center;
+        }
+
+        .question-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border-medium);
+            border-radius: 4px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .success-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--success-color);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+
+        .success-toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .success-toast.error {
+            background: var(--error-color);
+        }
+
+        @media (max-width: 768px) {
+            .template-editor-container {
+                padding: 15px;
             }
-            [data-theme="dark"] {
-                /* ...remove or override local variables, rely on style.css... */
-            }
-            body {
-                background: var(--bg-primary);
-                color: var(--text-primary);
-                transition: background 0.2s, color 0.2s;
-            }
-            .container {
-                background: var(--bg-card);
-                color: var(--text-primary);
-            }
-            .primary-btn, .secondary-btn, .add-btn, 
-            .tab-btn.active, .tab-btn:not(.active):hover, .delete-btn, .remove-phrase-btn, .add-question-btn, .remove-question-btn {
-                background: rgb(55, 93, 120) !important;
-                color: #fff !important;
-                transition: background 0.2s, color 0.2s;
-            }
-            /* Specific background for Save Template button */
-            .save-template-btn, save-btn, .save-all-templates-btn, .add-phrase-btn,  {
-                background:rgb(64, 138, 139) !important; /* mediumseagreen */
-                color: #fff !important;
-                margin-bottom: 1rem;
-            }
-            .add-phrase-btn,
-            .add-btn,
-            .add-question-btn {
-                background: rgb(64, 138, 139) !important;
-                color: #fff !important;
-            }
-            /* Add space below every button */
-            button,
-            .save-template-btn,
-            .save-btn,
-            .save-all-templates-btn,
-            .add-btn,
-            .delete-btn,
-            .remove-phrase-btn,
-            .add-phrase-btn,
-            .add-question-btn,
-            .remove-question-btn {
-                margin-bottom: 1rem;
-            }
-            .primary-btn:hover, .secondary-btn:hover, .save-btn:hover, .save-all-templates-btn:hover, .add-btn:hover, .save-template-btn:hover {
-                opacity: 0.85;
-            }
-            .footer-content {
-                background: var(--bg-alt);
-                color: var(--text-secondary);
-            }
-            .tab-panel, .template-group, .edit-item, .section-item {
-                background: var(--bg-main);
-                color: var(--text-main);
-                box-shadow: var(--shadow);
-                border-radius: 8px;
-                margin-bottom: 1.5rem;
-                padding: 1rem;
-            }
-            .tab-buttons {
-                background: var(--bg-alt);
-                border-radius: 8px;
-                margin-bottom: 1rem;
-            }
-            .tab-btn.active {
-                background: var(--secondary-color);
-                color: #fff;
-            }
-            .tab-btn {
-                background: var(--bg-main);
-                color: var(--text-main);
-                border: none;
-                padding: 0.75rem 1.5rem;
-                border-radius: 8px 8px 0 0;
-                margin-right: 0.5rem;
-                cursor: pointer;
-                transition: background 0.2s, color 0.2s;
-            }
-            .tab-btn:not(.active):hover {
-                background: var(--primary-color);
-                color: #fff;
-            }
-            .template-input, .content-input, .key-input, .section-input, .question-input, .phrase-input {
-                background: var(--bg-alt);
-                color: var(--text-main);
-                border: 1px solid var(--secondary-color);
-                border-radius: 4px;
-                padding: 0.5rem;
-                width: 100%;
-                margin-bottom: 0.5rem;
-                transition: background 0.2s, color 0.2s;
-            }
-            .success-toast {
-                background: var(--success-color);
-                color: #fff;
-            }
-            .success-toast.error {
-                background: #e74c3c;
-            }
-            .theme-toggle {
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: var(--bg-alt);
-                color: var(--text-main);
-                border: 1px solid var(--secondary-color);
-                border-radius: 50px;
-                padding: 0.5rem 1rem;
-                cursor: pointer;
-                font-size: 0.9rem;
-                z-index: 1000;
-                display: flex;
-                align-items: center;
+
+            .tab-navigation {
+                flex-wrap: wrap;
                 gap: 0.5rem;
-                transition: background 0.2s, color 0.2s;
             }
-            .theme-toggle:hover {
-                background: var(--secondary-color);
-                color: #fff;
+
+            .edit-header,
+            .section-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.75rem;
             }
-            @media (max-width: 768px) {
-                .theme-toggle {
-                    position: relative;
-                    top: auto;
-                    right: auto;
-                    margin-bottom: 1rem;
-                }
-                .tab-panel, .template-group, .edit-item, .section-item {
-                    padding: 0.75rem;
-                }
+
+            .phrase-item,
+            .question-item {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.5rem;
             }
+        }
     </style>
 </head>
 <body>
+    <!-- Theme Toggle Button -->
     <div class="theme-toggle" onclick="toggleTheme()">
-        <span id="theme-icon"></span>
         <span id="theme-text">Dark Mode</span>
     </div>
-    <div class="container">
+
+    <div class="template-editor-container">
         <header>
-            <h1>DMP Template Editor</h1>
-            <p>Customize all aspects of the DMP review system</p>
-            <div class="nav-links">
-                <a href="/" class="nav-link">Home</a>
-            </div>
+            <h1>Template Editor</h1>
+            <p class="subtitle">Customize feedback templates, comments, and DMP structure</p>
         </header>
-        
-        <main class="template-editor">
-            <div class="tab-container">
-                <div class="tab-buttons">
-                    <button class="tab-btn active" data-tab="templates">Feedback Templates</button>
-                    <button class="tab-btn" data-tab="comments">Common Comments</button>
-                    <button class="tab-btn" data-tab="keywords">Keywords</button>
-                    <button class="tab-btn" data-tab="structure">DMP Structure</button>
+
+        <!-- Tab Navigation -->
+        <div class="tab-navigation">
+            <button class="tab-btn active" data-target="templates-panel">Templates</button>
+            <button class="tab-btn" data-target="comments-panel">Comments</button>
+            <button class="tab-btn" data-target="keywords-panel">Keywords</button>
+            <button class="tab-btn" data-target="structure-panel">Structure</button>
+        </div>
+
+        <!-- Templates Tab -->
+        <div class="tab-panel active" id="templates-panel">
+            <h2>Edit Feedback Templates</h2>
+            <p>Customize the default feedback templates for each DMP section.</p>
+            
+            <div id="templates-container">
+                {% for section, questions in templates_by_section.items() %}
+                <div class="template-group">
+                    <h2>{{ section }}</h2>
+                    
+                    {% for id, item in questions.items() %}
+                    <div class="template-item" data-id="{{ id }}">
+                        <h3>{{ item.question }}</h3>
+                        <textarea class="template-input" id="template-{{ id }}">{{ item.template }}</textarea>
+                        <button class="save-template-btn" data-id="{{ id }}">Save Template</button>
+                    </div>
+                    {% endfor %}
                 </div>
-                
-                <div class="tab-content">
-                    <!-- Templates Tab -->
-                    <div class="tab-panel active" id="templates-panel">
-                        <div class="section-header">
-                            <h2>Edit Feedback Templates</h2>
-                            <p>These templates will be available when reviewing DMPs</p>
-                        </div>
-                        
-                        <div id="templates-container">
-                            {% for section, questions in templates_by_section.items() %}
-                            <div class="template-group">
-                                <h2>{{ section }}</h2>
-                                
-                                {% for id, item in questions.items() %}
-                                <div class="template-item" data-id="{{ id }}">
-                                    <h3>{{ item.question }}</h3>
-                                    <textarea class="template-input" id="template-{{ id }}">{{ item.template }}</textarea>
-                                    <button class="save-template-btn" data-id="{{ id }}">Save Template</button>
-                                </div>
-                                {% endfor %}
-                            </div>
-                            {% endfor %}
-                        </div>
-                        
-                        <button id="save-all-templates" class="save-all-templates-btn">Save All Templates</button>
-                    </div>
-                    
-                    <!-- Comments Tab -->
-                    <div class="tab-panel" id="comments-panel">
-                        <h2>Edit Common Comments</h2>
-                        <button id="add-comment-btn" class="add-btn">Add New Comment</button>
-                        <div id="comments-container">
-                            {% for key, comment in comments.items() %}
-                            <div class="edit-item" data-id="{{ key }}">
-                                <div class="edit-header">
-                                    <input type="text" class="key-input" value="{{ key }}" placeholder="Comment key">
-                                    <button class="delete-btn" data-type="comment" data-id="{{ key }}">Delete</button>
-                                </div>
-                                <textarea class="content-input">{{ comment }}</textarea>
-                            </div>
-                            {% endfor %}
-                        </div>
-                        <button id="save-comments-btn" class="save-btn">Save All Comments</button>
-                    </div>
-                    
-                    <!-- Keywords Tab -->
-                    <div class="tab-panel" id="keywords-panel">
-                        <h2>Edit Keywords for Tagging</h2>
-                        <button id="add-keyword-group-btn" class="add-btn">Add New Keyword Group</button>
-                        <div id="keywords-container">
-                            {% for category, phrases in key_phrases.items() %}
-                            <div class="edit-item" data-id="{{ category }}">
-                                <div class="edit-header">
-                                    <input type="text" class="key-input" value="{{ category }}" placeholder="Category name">
-                                    <button class="delete-btn" data-type="keyword" data-id="{{ category }}">Delete</button>
-                                </div>
-                                <div class="phrases-container">
-                                    {% for phrase in phrases %}
-                                    <div class="phrase-item">
-                                        <input type="text" class="phrase-input" value="{{ phrase }}">
-                                        <button class="delete-btn">Delete</button>
-                                    </div>
-                                    {% endfor %}
-                                    <button class="add-phrase-btn">Add Phrase</button>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                        <button id="save-keywords-btn" class="save-btn">Save All Keywords</button>
-                    </div>
-                    
-                    <!-- Structure Tab -->
-                    <div class="tab-panel" id="structure-panel">
-                        <h2>Edit DMP Structure</h2>
-                        <button id="add-section-btn" class="add-btn">Add New Section</button>
-                        <div id="structure-container">
-                            {% for section, questions in dmp_structure.items() %}
-                            <div class="section-item" data-section="{{ section }}">
-                                <div class="section-header">
-                                    <input type="text" class="section-input" value="{{ section }}" placeholder="Section title">
-                                    <button class="delete-btn" data-type="section" data-id="{{ section }}">Delete Section</button>
-                                </div>
-                                <div class="questions-container">
-                                    {% for question in questions %}
-                                    <div class="question-item">
-                                        <input type="text" class="question-input" value="{{ question }}">
-                                        <button class="delete-btn">Delete</button>
-                                    </div>
-                                    {% endfor %}
-                                    <button class="add-question-btn">Add Question</button>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                        <button id="save-structure-btn" class="save-btn">Save Structure</button>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
             
-            <div class="navigation-links">
-                <a href="/" class="secondary-btn">Return to Home</a>
-            </div>
-        </main>
+            <button id="save-all-templates" class="save-all-templates-btn">Save All Templates</button>
+        </div>
         
-        <div id="success-toast" class="success-toast">Changes saved successfully!</div>
-        
-        <footer>
-            <div class="footer-content">
-                <div class="footer-main">
-                    <p>DMP ART &copy; 2025</p>
+        <!-- Comments Tab -->
+        <div class="tab-panel" id="comments-panel">
+            <h2>Edit Common Comments</h2>
+            <button id="add-comment-btn" class="add-btn">Add New Comment</button>
+            <div id="comments-container">
+                {% for key, comment in comments.items() %}
+                <div class="edit-item" data-id="{{ key }}">
+                    <div class="edit-header">
+                        <input type="text" class="key-input" value="{{ key }}" placeholder="Comment key">
+                        <button class="delete-btn" data-type="comment" data-id="{{ key }}">Delete</button>
+                    </div>
+                    <textarea class="content-input">{{ comment }}</textarea>
                 </div>
-                <div class="footer-links">
-                    <a href="/documentation" class="footer-link secondary-btn" style="margin: 0;">Documentation</a>
-                </div>
+                {% endfor %}
             </div>
-        </footer>
+            <button id="save-comments-btn" class="save-btn">Save All Comments</button>
+        </div>
+        
+        <!-- Keywords Tab -->
+        <div class="tab-panel" id="keywords-panel">
+            <h2>Edit Key Phrases</h2>
+            <button id="add-keyword-btn" class="add-btn">Add New Keyword</button>
+            <div id="keywords-container">
+                {% for keyword, phrases in key_phrases.items() %}
+                <div class="edit-item" data-id="{{ keyword }}">
+                    <div class="edit-header">
+                        <input type="text" class="key-input" value="{{ keyword }}" placeholder="Keyword">
+                        <button class="delete-btn" data-type="keyword" data-id="{{ keyword }}">Delete</button>
+                    </div>
+                    <div class="phrases-container">
+                        {% for phrase in phrases %}
+                        <div class="phrase-item">
+                            <input type="text" class="phrase-input" value="{{ phrase }}" placeholder="Phrase">
+                            <button class="remove-phrase-btn">Remove</button>
+                        </div>
+                        {% endfor %}
+                        <button class="add-phrase-btn">Add Phrase</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <button id="save-keywords-btn" class="save-btn">Save All Keywords</button>
+        </div>
+        
+        <!-- Structure Tab -->
+        <div class="tab-panel" id="structure-panel">
+            <h2>Edit DMP Structure</h2>
+            <button id="add-section-btn" class="add-btn">Add New Section</button>
+            <div id="structure-container">
+                {% for section, questions in dmp_structure.items() %}
+                <div class="section-item" data-section="{{ section }}">
+                    <div class="section-header">
+                        <input type="text" class="section-input" value="{{ section }}" placeholder="Section title">
+                        <button class="delete-btn" data-type="section" data-id="{{ section }}">Delete Section</button>
+                    </div>
+                    <div class="questions-container">
+                        {% for question in questions %}
+                        <div class="question-item">
+                            <input type="text" class="question-input" value="{{ question }}">
+                            <button class="remove-question-btn">Remove</button>
+                        </div>
+                        {% endfor %}
+                        <button class="add-question-btn">Add Question</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <button id="save-structure-btn" class="save-btn">Save Structure</button>
+        </div>
     </div>
-    
+
+    <!-- Success Toast -->
+    <div id="success-toast" class="success-toast"></div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-main">
+                <p>DMP ART &copy; 2025. All rights reserved.</p>
+            </div>
+            <div class="footer-links">
+                <a href="/" class="footer-link secondary-btn" style="margin: 0;">Home</a>
+                <span class="footer-link current-page secondary-btn" style="margin: 0; cursor: default;">Template Editor</span>
+            </div>
+        </div>
+    </footer>
+
     <script>
-        // Theme toggle logic
         (function() {
             const root = document.documentElement;
-            const themeToggle = () => {
-                const current = root.getAttribute('data-theme');
+            const themeToggle = function() {
+                const current = root.getAttribute('data-theme') || 'light';
                 const next = current === 'dark' ? 'light' : 'dark';
                 root.setAttribute('data-theme', next);
                 localStorage.setItem('dmp-art-theme', next);
@@ -304,16 +429,9 @@
             };
             window.toggleTheme = themeToggle;
             function updateThemeToggle(isDark) {
-                const icon = document.getElementById('theme-icon');
                 const text = document.getElementById('theme-text');
-                if (icon && text) {
-                    if (isDark) {
-                        icon.textContent = '';
-                        text.textContent = 'Light Mode';
-                    } else {
-                        icon.textContent = '';
-                        text.textContent = 'Dark Mode';
-                    }
+                if (text) {
+                    text.textContent = isDark ? 'Light Mode' : 'Dark Mode';
                 }
             }
             // Set theme on load

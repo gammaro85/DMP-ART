@@ -36,8 +36,6 @@
             this.setTheme(newTheme);
             this.updateToggleButton(newTheme === this.DARK_THEME);
             localStorage.setItem(this.STORAGE_KEY, newTheme);
-
-            this.showNotification(newTheme);
         },
 
         createToggleButton() {
@@ -48,7 +46,6 @@
             button.className = 'theme-toggle';
             button.setAttribute('aria-label', 'Toggle dark mode');
             button.innerHTML = `
-                <span class="icon" id="theme-icon">🌙</span>
                 <span id="theme-text">Dark</span>
             `;
 
@@ -57,12 +54,10 @@
         },
 
         updateToggleButton(isDark) {
-            const icon = document.getElementById('theme-icon');
             const text = document.getElementById('theme-text');
 
-            if (icon && text) {
-                icon.textContent = isDark ? '☀️' : '🌙';
-                text.textContent = isDark ? 'Light' : 'Dark';
+            if (text) {
+                text.textContent = isDark ? 'Light Mode' : 'Dark Mode';
             }
         },
 
@@ -96,36 +91,6 @@
                     this.toggleTheme();
                 }
             });
-        },
-
-        showNotification(theme) {
-            const message = theme === this.DARK_THEME ? '🌙 Dark mode enabled' : '☀️ Light mode enabled';
-
-            // Try to use existing toast system
-            if (typeof window.showToast === 'function') {
-                window.showToast(message);
-            } else {
-                // Fallback notification
-                const notification = document.createElement('div');
-                notification.className = 'theme-notification';
-                notification.textContent = message;
-                notification.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    background: var(--bg-card);
-                    color: var(--text-primary);
-                    padding: 10px 20px;
-                    border-radius: 5px;
-                    box-shadow: var(--shadow);
-                    z-index: 10000;
-                    border: 1px solid var(--border-medium);
-                `;
-
-                document.body.appendChild(notification);
-                setTimeout(() => notification.remove(), 2000);
-            }
         }
     };
 

@@ -18,7 +18,7 @@
         })();
     </script>
     <style>
-        /* ...existing code... */
+        /* Enhanced Results Page Styles */
         .results-container {
             background-color: var(--bg-card);
             color: var(--text-primary);
@@ -39,22 +39,191 @@
             background-color: var(--bg-secondary);
             border-color: var(--border-light);
         }
-        /* ...existing code... */
+        
+        .results-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .results-title {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .results-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .processing-summary {
+            background: var(--status-info);
+            border: 1px solid var(--border-medium);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .processing-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .download-section {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-light);
+        }
+        
+        .download-options {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .next-steps {
+            background: var(--bg-card);
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-light);
+        }
+        
+        .next-steps h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .step-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .step-list li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            padding: 0.5rem;
+            background: var(--bg-secondary);
+            border-radius: 6px;
+        }
+        
+        .step-list li::before {
+            content: "✓";
+            color: var(--success-color);
+            font-weight: bold;
+            margin-right: 0.75rem;
+            font-size: 1.2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .results-container {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+            
+            .results-title {
+                font-size: 2rem;
+            }
+            
+            .download-options {
+                flex-direction: column;
+            }
+            
+            .processing-stats {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- content -->
+    <!-- Theme Toggle Button -->
     <div class="theme-toggle" onclick="toggleTheme()">
-        <span id="theme-icon"></span>
         <span id="theme-text">Dark Mode</span>
     </div>
+    
     <div class="container">
-        <header>
-            <h1>DMP ART: Processing Results</h1>
-            <!-- ...existing code... -->
-        </header>
-        <!-- ...existing code... -->
+        <div class="results-container">
+            <header class="results-header">
+                <h1 class="results-title">Processing Results</h1>
+                <p class="results-subtitle">Your DMP has been successfully processed</p>
+            </header>
+            
+            <!-- Processing Summary -->
+            <div class="processing-summary">
+                <h3>Processing Summary</h3>
+                <p>The document has been analyzed and content has been extracted for review.</p>
+                
+                <div class="processing-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">6</span>
+                        <span class="stat-label">DMP Sections</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">Multiple</span>
+                        <span class="stat-label">Content Areas</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">Ready</span>
+                        <span class="stat-label">For Review</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Download Section -->
+            <div class="download-section">
+                <h3>Download Options</h3>
+                <p>Access your processed document and extracted content:</p>
+                
+                <div class="download-options">
+                    <a href="#" class="primary-btn" id="download-btn">
+                        📄 Download Original
+                    </a>
+                    <a href="#" class="secondary-btn" id="download-extracted-btn">
+                        📋 Download Extracted Content
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Next Steps -->
+            <div class="next-steps">
+                <h3>What's Next?</h3>
+                <ul class="step-list">
+                    <li>Review the extracted content for accuracy</li>
+                    <li>Provide feedback using the structured templates</li>
+                    <li>Add custom comments where needed</li>
+                    <li>Compile and export your final feedback report</li>
+                </ul>
+                
+                <div class="action-buttons" style="margin-top: 1.5rem; text-align: center;">
+                    <a href="#" class="primary-btn" id="review-btn">
+                        🔍 Start Review Process
+                    </a>
+                    <a href="/" class="secondary-btn">
+                        🏠 Process Another File
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
+    
+    <footer>
+        <div class="footer-content">
+            <div class="footer-main">
+                <p>&copy; 2025 DMP ART. All rights reserved.</p>
+            </div>
+            <div class="footer-links">
+                <a href="/template_editor" class="footer-link">Customize Templates</a>
+                <a href="/documentation" class="footer-link">Documentation</a>
+            </div>
+        </div>
+    </footer>
+    
     <!-- Load dark mode script before other scripts -->
     <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
