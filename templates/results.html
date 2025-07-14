@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#ffffff">
     <title>{% block title %}DMP ART{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/dmp-art-favicon (Niestandardowe).png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <!-- Prevent flash of wrong theme -->
     <script>
@@ -24,10 +25,10 @@
             color: var(--text-primary);
             max-width: 800px;
             margin: 0 auto;
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--border-medium);
+            border-radius: 16px;
+            padding: clamp(1.5rem, 4vw, 2rem);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-light);
             transition: all 0.3s ease;
         }
         .result-card {
@@ -42,42 +43,62 @@
         
         .results-header {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: clamp(1rem, 3vw, 1.5rem);
         }
         
         .results-title {
             color: var(--primary-color);
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
+            font-size: clamp(1.8rem, 4vw, 2.2rem);
+            margin-bottom: 0.5rem;
         }
         
         .results-subtitle {
             color: var(--text-secondary);
-            font-size: 1.2rem;
-            margin-bottom: 1.5rem;
+            font-size: clamp(1rem, 2.5vw, 1.1rem);
+            margin-bottom: 1rem;
         }
         
         .processing-summary {
-            background: var(--status-info);
-            border: 1px solid var(--border-medium);
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
+            background: var(--bg-hover);
+            border: 1px solid var(--accent-color);
+            border-radius: 12px;
+            padding: clamp(1rem, 3vw, 1.5rem);
+            margin-bottom: clamp(1rem, 3vw, 1.5rem);
         }
         
-        .processing-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
+        .processing-summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.7rem;
+        }
+        
+        .processing-summary-table td {
+            padding: 0.25rem 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .processing-summary-table td:first-child {
+            font-weight: 500;
+            color: var(--text-secondary);
+            width: 45%;
+        }
+        
+        .processing-summary-table td:last-child {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .processing-summary-table tr:last-child td {
+            border-bottom: none;
         }
         
         .download-section {
             background: var(--bg-secondary);
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
+            border-radius: 12px;
+            padding: clamp(1rem, 3vw, 1.5rem);
+            margin-bottom: clamp(1rem, 3vw, 1.5rem);
             border: 1px solid var(--border-light);
+            box-shadow: var(--shadow);
         }
         
         .download-options {
@@ -89,9 +110,10 @@
         
         .next-steps {
             background: var(--bg-card);
-            border-radius: 8px;
-            padding: 1.5rem;
+            border-radius: 12px;
+            padding: clamp(1rem, 3vw, 1.5rem);
             border: 1px solid var(--border-light);
+            box-shadow: var(--shadow);
         }
         
         .next-steps h3 {
@@ -123,56 +145,78 @@
         
         @media (max-width: 768px) {
             .results-container {
-                padding: 1.5rem;
-                margin: 1rem;
-            }
-            
-            .results-title {
-                font-size: 2rem;
+                padding: clamp(1rem, 3vw, 1.5rem);
+                margin: clamp(0.5rem, 2vw, 1rem);
             }
             
             .download-options {
                 flex-direction: column;
+                gap: 0.75rem;
             }
             
-            .processing-stats {
-                grid-template-columns: 1fr;
+            .processing-summary-table {
+                font-size: 0.65rem;
+            }
+            
+            .processing-summary-table td {
+                padding: 0.2rem 0.4rem;
             }
         }
     </style>
 </head>
-<body>
-    <!-- Theme Toggle Button -->
-    <div class="theme-toggle" onclick="toggleTheme()">
-        <span id="theme-text">Dark Mode</span>
-    </div>
+<body data-page="results">
+    <!-- Fixed Header Navigation -->
+    <header class="fixed-header">
+        <nav class="header-nav">
+            <a href="/template_editor" class="nav-item">Customize Templates</a>
+            <a href="/documentation" class="nav-item">Documentation</a>
+            <div class="theme-toggle" onclick="toggleTheme()">
+                <span id="theme-text">Light Mode</span>
+            </div>
+        </nav>
+    </header>
     
     <div class="container">
         <div class="results-container">
             <header class="results-header">
+                <div class="logo-container">
+                    <img src="{{ url_for('static', filename='images/dmp-art-logo-main-light.png') }}" 
+                         alt="DMP ART Logo" 
+                         class="logo light-logo">
+                    <img src="{{ url_for('static', filename='images/dmp-art-logo-main-dark.png') }}" 
+                         alt="DMP ART Logo" 
+                         class="logo dark-logo">
+                </div>
                 <h1 class="results-title">Processing Results</h1>
                 <p class="results-subtitle">Your DMP has been successfully processed</p>
             </header>
             
             <!-- Processing Summary -->
             <div class="processing-summary">
-                <h3>Processing Summary</h3>
-                <p>The document has been analyzed and content has been extracted for review.</p>
-                
-                <div class="processing-stats">
-                    <div class="stat-item">
-                        <span class="stat-number">6</span>
-                        <span class="stat-label">DMP Sections</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">Multiple</span>
-                        <span class="stat-label">Content Areas</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">Ready</span>
-                        <span class="stat-label">For Review</span>
-                    </div>
-                </div>
+                <table class="processing-summary-table">
+                    <tbody>
+                        <tr>
+                            <td>Document</td>
+                            <td>Successfully processed</td>
+                        </tr>
+                        <tr>
+                            <td>DMP Sections</td>
+                            <td>6</td>
+                        </tr>
+                        <tr>
+                            <td>Content Areas</td>
+                            <td>Multiple</td>
+                        </tr>
+                        <tr>
+                            <td>Status</td>
+                            <td>Ready for Review</td>
+                        </tr>
+                        <tr>
+                            <td>Processing Time</td>
+                            <td>2.3 seconds</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
             
             <!-- Download Section -->
@@ -200,14 +244,6 @@
                     <li>Compile and export your final feedback report</li>
                 </ul>
                 
-                <div class="action-buttons" style="margin-top: 1.5rem; text-align: center;">
-                    <a href="#" class="primary-btn" id="review-btn">
-                        🔍 Start Review Process
-                    </a>
-                    <a href="/" class="secondary-btn">
-                        🏠 Process Another File
-                    </a>
-                </div>
             </div>
         </div>
     </div>
@@ -216,10 +252,6 @@
         <div class="footer-content">
             <div class="footer-main">
                 <p>&copy; 2025 DMP ART. All rights reserved.</p>
-            </div>
-            <div class="footer-links">
-                <a href="/template_editor" class="footer-link">Customize Templates</a>
-                <a href="/documentation" class="footer-link">Documentation</a>
             </div>
         </div>
     </footer>
