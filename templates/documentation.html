@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#ffffff">
     <title>{% block title %}DMP ART{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/dmp-art-favicon (Niestandardowe).png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <!-- Prevent flash of wrong theme -->
     <script>
@@ -126,14 +127,28 @@
         }
     </style>
 </head>
-<body>
-    <!-- content -->
-    <div class="theme-toggle" onclick="toggleTheme()">
-        <span id="theme-icon"></span>
-        <span id="theme-text">Dark Mode</span>
-    </div>
+<body data-page="documentation">
+    <!-- Fixed Header Navigation -->
+    <header class="fixed-header">
+        <nav class="header-nav">
+            <a href="/" class="nav-item">Home</a>
+            <a href="/template_editor" class="nav-item">Customize Templates</a>
+            <div class="theme-toggle" onclick="toggleTheme()">
+                <span id="theme-text">Light Mode</span>
+            </div>
+        </nav>
+    </header>
+    
     <div class="container">
-        <header>
+        <header class="doc-header">
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='images/dmp-art-logo-main-light.png') }}" 
+                     alt="DMP ART Logo" 
+                     class="logo light-logo">
+                <img src="{{ url_for('static', filename='images/dmp-art-logo-main-dark.png') }}" 
+                     alt="DMP ART Logo" 
+                     class="logo dark-logo">
+            </div>
             <h1>DMP ART Documentation</h1>
             <p style="font-size: 1rem; margin-top: 0.5rem;">Data Management Plan Assessment and Response Tool</p>
         </header>
@@ -185,7 +200,7 @@
                         <ul>
                             <li><strong>Section Recognition:</strong> Automatic identification of DMP sections (1.1, 1.2, 2.1, etc.) using pattern matching</li>
                             <li><strong>Key Phrase Detection:</strong> Identifies methodology, data formats, storage, security, and other DMP-related concepts</li>
-                            <li><strong>Content Tagging:</strong> Tags paragraphs with relevant categories for streamlined review</li>
+                            <li><strong>Content Tagging:</strong> Tags content sections with relevant categories for streamlined review</li>
                         </ul>
 
                         <h3>Review Interface</h3>
@@ -203,7 +218,7 @@
                     
                     <h3>From DOCX Files:</h3>
                     <ul>
-                        <li><strong>Document Paragraphs:</strong> Text content with formatting detection (lines 89-95 in extractor.py)</li>
+                        <li><strong>Document Sections:</strong> Text content with formatting detection (lines 89-95 in extractor.py)</li>
                         <li><strong>Table Cells:</strong> Content extracted from table structures (lines 97-125 in extractor.py)</li>
                         <li><strong>Text Runs:</strong> Formatting information including bold and underlined text (lines 243-265 in extractor.py)</li>
                         <li><strong>Document Metadata:</strong> Author extraction using patterns from lines 195-205 in extractor.py</li>
@@ -268,10 +283,6 @@
                 </section>
             </div>
             
-            <div class="action-buttons">
-                <a href="/" class="primary-btn">Start Using DMP ART</a>
-                <a href="/template_editor" class="secondary-btn">Customize Templates</a>
-            </div>
         </main>
         
         <footer>

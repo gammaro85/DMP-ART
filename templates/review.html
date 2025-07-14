@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#ffffff">
     <title>Review DMP - DMP ART</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/dmp-art-favicon (Niestandardowe).png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <!-- Prevent flash of wrong theme -->
     <script>
@@ -41,14 +42,28 @@
         }
     </style>
 </head>
-<body>
-    <!-- Theme Toggle Button -->
-    <div class="theme-toggle" onclick="toggleTheme()">
-        <span id="theme-text">Dark Mode</span>
-    </div>
+<body data-page="review">
+    <!-- Fixed Header Navigation -->
+    <header class="fixed-header">
+        <nav class="header-nav">
+            <a href="/template_editor" class="nav-item">Customize Templates</a>
+            <a href="/documentation" class="nav-item">Documentation</a>
+            <div class="theme-toggle" onclick="toggleTheme()">
+                <span id="theme-text">Light Mode</span>
+            </div>
+        </nav>
+    </header>
     
     <div class="review-container">
         <header class="review-header">
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='images/dmp-art-logo-main-light.png') }}" 
+                     alt="DMP ART Logo" 
+                     class="logo light-logo">
+                <img src="{{ url_for('static', filename='images/dmp-art-logo-main-dark.png') }}" 
+                     alt="DMP ART Logo" 
+                     class="logo dark-logo">
+            </div>
             <h1 class="review-title">DMP Review & Feedback</h1>
             <p class="review-subtitle">Review extracted content and provide structured feedback</p>
             
@@ -112,7 +127,7 @@
                             {% for paragraph in content.paragraphs %}
                             <div class="enhanced-paragraph">
                                 <div class="paragraph-metadata">
-                                    <span><strong>Paragraph {{ loop.index }}</strong></span>
+                                    <span><strong>{{ loop.index }}</strong></span>
                                 </div>
                                 
                                 <p>{{ paragraph }}</p>
@@ -182,6 +197,50 @@
             </div>
         </main>
         
+        <!-- Unconnected Text Assignment Modal -->
+        {% if unconnected_text and unconnected_text|length > 0 %}
+        <div id="unconnected-text-modal" class="compiled-feedback-container">
+            <div class="compiled-feedback-modal">
+                <div class="modal-header">
+                    <h2>Unconnected Text Assignment</h2>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0.5rem 0 0 0;">
+                        The following text was found but could not be automatically assigned to any DMP section. Please assign it manually.
+                    </p>
+                    <button id="close-unconnected-btn" class="close-btn" title="Close modal">×</button>
+                </div>
+                
+                <div class="modal-content">
+                    <div id="unconnected-items">
+                        {% for item in unconnected_text %}
+                        <div class="unconnected-item" data-index="{{ loop.index0 }}">
+                            <div class="unconnected-text-preview">
+                                <h4>Text {{ loop.index }}:</h4>
+                                <div class="text-content">{{ item.text }}</div>
+                            </div>
+                            <div class="assignment-controls">
+                                <label for="section-select-{{ loop.index0 }}">Assign to section:</label>
+                                <select id="section-select-{{ loop.index0 }}" class="section-select">
+                                    <option value="">-- Select Section --</option>
+                                    {% for section_id, content in extracted_content.items() %}
+                                    <option value="{{ section_id }}">{{ section_id }}. {{ content.question }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button class="assign-btn" data-index="{{ loop.index0 }}" data-text="{{ item.text }}">Assign</button>
+                                <button class="skip-btn" data-index="{{ loop.index0 }}">Skip</button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button id="assign-all-btn" class="action-btn">Assign All</button>
+                    <button id="skip-all-btn" class="secondary-btn">Skip All</button>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
         <!-- Compiled feedback modal -->
         <div id="compiled-feedback-container" class="compiled-feedback-container hidden">
             <div class="compiled-feedback-modal">
@@ -206,10 +265,6 @@
         <div class="footer-content">
             <div class="footer-main">
                 <p>&copy; 2025 DMP ART. All rights reserved.</p>
-            </div>
-            <div class="footer-links">
-                <a href="#" class="footer-link">Help</a>
-                <a href="#" class="footer-link">About</a>
             </div>
         </div>
     </footer>
@@ -261,7 +316,201 @@
                 // Update counter on input
                 textarea.addEventListener('input', updateCounter);
             });
+
+            // Initialize unconnected text modal functionality
+            initializeUnconnectedTextModal();
         });
+
+        // Unconnected Text Modal Functionality
+        function initializeUnconnectedTextModal() {
+            const modal = document.getElementById('unconnected-text-modal');
+            if (!modal) return; // Exit if no unconnected text modal exists
+
+            const closeBtn = document.getElementById('close-unconnected-btn');
+            const assignAllBtn = document.getElementById('assign-all-btn');
+            const skipAllBtn = document.getElementById('skip-all-btn');
+
+            // Close modal handlers
+            if (closeBtn) {
+                closeBtn.addEventListener('click', closeUnconnectedModal);
+            }
+
+            // Close modal when clicking outside
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeUnconnectedModal();
+                }
+            });
+
+            // Individual assign buttons
+            document.querySelectorAll('.assign-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = this.getAttribute('data-index');
+                    const text = this.getAttribute('data-text');
+                    const select = document.getElementById(`section-select-${index}`);
+                    const selectedSection = select.value;
+
+                    if (!selectedSection) {
+                        alert('Please select a section first.');
+                        return;
+                    }
+
+                    assignTextToSection(index, text, selectedSection);
+                });
+            });
+
+            // Individual skip buttons
+            document.querySelectorAll('.skip-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = this.getAttribute('data-index');
+                    skipText(index);
+                });
+            });
+
+            // Assign all button
+            if (assignAllBtn) {
+                assignAllBtn.addEventListener('click', function() {
+                    const items = document.querySelectorAll('.unconnected-item:not(.assigned):not(.skipped)');
+                    let hasUnassigned = false;
+
+                    items.forEach(item => {
+                        const index = item.getAttribute('data-index');
+                        const select = document.getElementById(`section-select-${index}`);
+                        
+                        if (!select.value) {
+                            hasUnassigned = true;
+                        }
+                    });
+
+                    if (hasUnassigned) {
+                        alert('Please assign all text items to sections first.');
+                        return;
+                    }
+
+                    items.forEach(item => {
+                        const index = item.getAttribute('data-index');
+                        const text = item.querySelector('.assign-btn').getAttribute('data-text');
+                        const select = document.getElementById(`section-select-${index}`);
+                        assignTextToSection(index, text, select.value);
+                    });
+                });
+            }
+
+            // Skip all button
+            if (skipAllBtn) {
+                skipAllBtn.addEventListener('click', function() {
+                    if (confirm('Are you sure you want to skip all unassigned text items?')) {
+                        document.querySelectorAll('.unconnected-item:not(.assigned):not(.skipped)').forEach(item => {
+                            const index = item.getAttribute('data-index');
+                            skipText(index);
+                        });
+                    }
+                });
+            }
+
+            // Enable section select validation
+            document.querySelectorAll('.section-select').forEach(select => {
+                select.addEventListener('change', function() {
+                    const index = this.id.split('-').pop();
+                    const assignBtn = document.querySelector(`.assign-btn[data-index="${index}"]`);
+                    assignBtn.disabled = !this.value;
+                });
+            });
+        }
+
+        function assignTextToSection(index, text, sectionId) {
+            // Find the target section's textarea
+            const targetTextarea = document.getElementById(`feedback-${sectionId}`);
+            
+            if (targetTextarea) {
+                // Add the text to the target section
+                const currentContent = targetTextarea.value;
+                const separator = currentContent.trim() ? '\n\n' : '';
+                targetTextarea.value = currentContent + separator + `[Manually assigned text]: ${text}`;
+                
+                // Trigger input event to update character counter
+                targetTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+                
+                // Mark item as assigned
+                const item = document.querySelector(`.unconnected-item[data-index="${index}"]`);
+                item.classList.add('assigned');
+                
+                // Disable controls
+                const controls = item.querySelectorAll('select, button');
+                controls.forEach(control => control.disabled = true);
+                
+                // Show success feedback
+                showNotification(`Text assigned to section ${sectionId}`, 'success');
+                
+                checkIfAllItemsProcessed();
+            }
+        }
+
+        function skipText(index) {
+            const item = document.querySelector(`.unconnected-item[data-index="${index}"]`);
+            item.classList.add('skipped');
+            
+            // Disable controls
+            const controls = item.querySelectorAll('select, button');
+            controls.forEach(control => control.disabled = true);
+            
+            showNotification('Text skipped', 'info');
+            
+            checkIfAllItemsProcessed();
+        }
+
+        function checkIfAllItemsProcessed() {
+            const allItems = document.querySelectorAll('.unconnected-item');
+            const processedItems = document.querySelectorAll('.unconnected-item.assigned, .unconnected-item.skipped');
+            
+            if (allItems.length === processedItems.length) {
+                setTimeout(() => {
+                    if (confirm('All text items have been processed. Close the assignment window?')) {
+                        closeUnconnectedModal();
+                    }
+                }, 500);
+            }
+        }
+
+        function closeUnconnectedModal() {
+            const modal = document.getElementById('unconnected-text-modal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            // Create a simple notification
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                border-radius: 6px;
+                color: white;
+                font-weight: 500;
+                z-index: 10000;
+                transition: all 0.3s ease;
+                ${type === 'success' ? 'background: var(--success-color);' : 
+                  type === 'error' ? 'background: var(--error-color);' : 
+                  'background: var(--primary-color);'}
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => notification.style.transform = 'translateX(0)', 10);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
     </script>
 </body>
 </html>

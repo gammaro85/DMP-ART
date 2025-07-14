@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#ffffff">
     <title>{% block title %}DMP ART{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/dmp-art-favicon (Niestandardowe).png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <!-- Prevent flash of wrong theme -->
     <script>
@@ -18,38 +19,47 @@
         })();
     </script>
 </head>
-<body>
-    <!-- Theme Toggle Button -->
-    <div class="theme-toggle" onclick="toggleTheme()">
-        <span id="theme-text">Dark Mode</span>
-    </div>
+<body data-page="index">
+    <!-- Fixed Header Navigation -->
+    <header class="fixed-header">
+        <nav class="header-nav">
+            <a href="/template_editor" class="nav-item">Customize Templates</a>
+            <a href="/documentation" class="nav-item">Documentation</a>
+            <div class="theme-toggle" onclick="toggleTheme()">
+                <span id="theme-text">Light Mode</span>
+            </div>
+        </nav>
+    </header>
 
     <div class="container">
-        <header>
-            <h1>DMP ART</h1>
+        <div class="main-logo-section">
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='images/dmp-art-logo-main-light.png') }}" 
+                     alt="DMP ART Logo" 
+                     class="logo light-logo">
+                <img src="{{ url_for('static', filename='images/dmp-art-logo-main-dark.png') }}" 
+                     alt="DMP ART" 
+                     class="logo dark-logo">
+            </div>
             <p class="subtitle">Data Management Plan Analysis & Review Tool</p>
-            <p>Upload your DMP document to extract content and generate structured feedback</p>
-        </header>
-
+            
         <main class="main-content">
             <!-- Upload Area -->
             <div class="upload-area" id="drop-area">
-                <div class="upload-icon">📄</div>
                 <div class="upload-text">Drag & Drop Your DMP File Here</div>
                 <div class="upload-hint">or click to select a file</div>
                 
                 <input type="file" id="file-input" class="file-input" accept=".pdf,.docx">
-                <button type="button" id="select-file-btn" class="secondary-btn select-file-btn">
-                    Select File
-                </button>
-                
                 <!-- File Info Display -->
                 <div id="file-info" class="file-info">
                     <div class="file-name" id="file-name"></div>
                 </div>
                 
-                <!-- Action Buttons -->
+                <!-- Action Buttons - All in one line -->
                 <div class="upload-actions">
+                    <button type="button" id="select-file-btn" class="secondary-btn select-file-btn">
+                        Select File
+                    </button>
                     <button type="button" id="upload-btn" class="primary-btn" disabled>
                         Extract & Review DMP
                     </button>
@@ -67,46 +77,13 @@
                     This may take a few moments for large files
                 </div>
             </div>
-
-            <!-- Results Area -->
-            <div id="result" class="result">
-                <!-- Success Message -->
-                <div id="success-message" class="success-message">
-                    <h3>✅ Success!</h3>
-                    <p>Your DMP has been processed successfully. Redirecting to review page...</p>
-                </div>
-
-                <!-- Error Message -->
-                <div id="error-message" class="error-message">
-                    <h3>❌ Processing Error</h3>
-                    <p id="error-text">An error occurred while processing your file.</p>
-                    <div style="margin-top: 1rem;">
-                        <strong>Troubleshooting Tips:</strong>
-                        <ul style="text-align: left; margin-top: 0.5rem;">
-                            <li>Ensure your file is a valid PDF or DOCX document</li>
-                            <li>Check that the file size is under 16MB</li>
-                            <li>Try refreshing the page and uploading again</li>
-                            <li>For DOCX files, ensure they contain readable text (not just images)</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="action-buttons">
-                <a href="/template_editor" class="secondary-btn">Customize Templates</a>
-                <a href="/documentation" class="secondary-btn">View Documentation</a>
-            </div>
-        </main>
+                    </main>
     </div>
 
     <footer>
         <div class="footer-content">
             <div class="footer-main">
                 <p>DMP ART &copy; 2025</p>
-            </div>
-            <div class="footer-links">
-                <a href="/template_editor" class="footer-link secondary-btn" style="margin: 0;">Customize Templates</a>
-                <a href="/documentation" class="footer-link secondary-btn" style="margin: 0;">Documentation</a>
             </div>
         </div>
     </footer>

@@ -259,6 +259,7 @@ function handleFileSelection(file, elements) {
 
     // Store file and update UI
     elements.selectedFile = file;
+    updateButtonStates(elements, 'file-selected');
 
     if (fileName) {
         fileName.textContent = file.name;
@@ -281,13 +282,17 @@ function setupUploadButton(elements) {
 
     if (uploadBtn) {
         uploadBtn.addEventListener('click', () => {
-            if (elements.selectedFile) {
+            if (elements.selectedFile && !uploadBtn.disabled) {
+                updateButtonStates(elements, 'analyzing');
                 uploadFile(elements.selectedFile, elements);
-            } else {
+            } else if (!elements.selectedFile) {
                 showToast('Please select a file first', 'error');
             }
         });
     }
+
+    // Initialize button states
+    updateButtonStates(elements, 'initial');
 }
 
 function setupClearButton(elements) {
@@ -296,17 +301,50 @@ function setupClearButton(elements) {
     if (clearBtn) {
         clearBtn.addEventListener('click', () => {
             elements.selectedFile = null;
+            updateButtonStates(elements, 'initial');
 
             if (fileInput) fileInput.value = '';
             if (fileInfo) fileInfo.style.display = 'none';
             if (fileName) fileName.textContent = '';
-            if (uploadBtn) {
-                uploadBtn.disabled = true;
-                uploadBtn.style.opacity = '0.6';
-            }
 
             showToast('File cleared');
         });
+    }
+}
+
+// Button state management
+function updateButtonStates(elements, state) {
+    const { selectFileBtn, uploadBtn, clearBtn } = elements;
+    
+    // Remove all state classes
+    [selectFileBtn, uploadBtn, clearBtn].forEach(btn => {
+        if (btn) {
+            btn.disabled = false;
+            btn.classList.remove('btn-active');
+        }
+    });
+    
+    switch (state) {
+        case 'initial':
+            // Only select button active
+            if (selectFileBtn) selectFileBtn.classList.add('btn-active');
+            if (uploadBtn) uploadBtn.disabled = true;
+            if (clearBtn) clearBtn.disabled = true;
+            break;
+            
+        case 'file-selected':
+            // Select inactive, upload and clear active
+            if (selectFileBtn) selectFileBtn.disabled = true;
+            if (uploadBtn) uploadBtn.classList.add('btn-active');
+            if (clearBtn) clearBtn.classList.add('btn-active');
+            break;
+            
+        case 'analyzing':
+            // Only clear active
+            if (selectFileBtn) selectFileBtn.disabled = true;
+            if (uploadBtn) uploadBtn.disabled = true;
+            if (clearBtn) clearBtn.classList.add('btn-active');
+            break;
     }
 }
 

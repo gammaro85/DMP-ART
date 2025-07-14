@@ -327,6 +327,7 @@ def review_dmp(filename):
     # Load extracted content if available
     extracted_content = {}
     extraction_info = {}
+    unconnected_text = []
     
     if cache_id:
         cache_path = os.path.join(app.config['OUTPUT_FOLDER'], f"cache_{cache_id}.json")
@@ -334,6 +335,12 @@ def review_dmp(filename):
             try:
                 with open(cache_path, 'r', encoding='utf-8') as f:
                     cache_data = json.load(f)
+                    
+                    # Extract unconnected text if present
+                    if "_unconnected_text" in cache_data:
+                        unconnected_text = cache_data["_unconnected_text"]
+                        del cache_data["_unconnected_text"]  # Remove from extracted_content
+                    
                     extracted_content = cache_data
                     
                     # Add extraction info for display
@@ -346,13 +353,14 @@ def review_dmp(filename):
             except Exception as e:
                 print(f"Error loading extracted content: {str(e)}")
     
-    # Pass the templates, common comments, and extracted content to the template
+    # Pass the templates, common comments, extracted content, and unconnected text to the template
     return render_template('review.html', 
                            filename=filename,
                            templates=DMP_TEMPLATES,
                            comments=COMMON_COMMENTS,
                            extracted_content=extracted_content,
                            extraction_info=extraction_info,
+                           unconnected_text=unconnected_text,
                            cache_id=cache_id)
 
 @app.route('/save_templates', methods=['POST'])

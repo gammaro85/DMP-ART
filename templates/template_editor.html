@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#ffffff">
     <title>Template Editor - DMP ART</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/dmp-art-favicon (Niestandardowe).png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <!-- Prevent flash of wrong theme -->
     <script>
@@ -287,14 +288,28 @@
         }
     </style>
 </head>
-<body>
-    <!-- Theme Toggle Button -->
-    <div class="theme-toggle" onclick="toggleTheme()">
-        <span id="theme-text">Dark Mode</span>
-    </div>
+<body data-page="template-editor">
+    <!-- Fixed Header Navigation -->
+    <header class="fixed-header">
+        <nav class="header-nav">
+            <a href="/" class="nav-item">Home</a>
+            <a href="/documentation" class="nav-item">Documentation</a>
+            <div class="theme-toggle" onclick="toggleTheme()">
+                <span id="theme-text">Light Mode</span>
+            </div>
+        </nav>
+    </header>
 
     <div class="template-editor-container">
         <header>
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='images/dmp-art-logo-main-light.png') }}" 
+                     alt="DMP ART Logo" 
+                     class="logo light-logo">
+                <img src="{{ url_for('static', filename='images/dmp-art-logo-main-dark.png') }}" 
+                     alt="DMP ART Logo" 
+                     class="logo dark-logo">
+            </div>
             <h1>Template Editor</h1>
             <p class="subtitle">Customize feedback templates, comments, and DMP structure</p>
         </header>
@@ -409,10 +424,6 @@
         <div class="footer-content">
             <div class="footer-main">
                 <p>DMP ART &copy; 2025. All rights reserved.</p>
-            </div>
-            <div class="footer-links">
-                <a href="/" class="footer-link secondary-btn" style="margin: 0;">Home</a>
-                <span class="footer-link current-page secondary-btn" style="margin: 0; cursor: default;">Template Editor</span>
             </div>
         </div>
     </footer>

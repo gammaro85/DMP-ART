@@ -620,6 +620,7 @@ class DMPExtractor:
             current_subsection = None
             first_section_content = []  # Content before any section is identified
             pending_content = []  # Content after section but before subsection
+            unconnected_text = []  # Content that couldn't be assigned to any section
             
             # Second pass: process paragraphs and identify sections/subsections
             for para in dmp_paragraphs:
@@ -698,35 +699,18 @@ class DMPExtractor:
                         pending_content.append(clean_para)
             
             # Handle content collected before any section was identified
-            if first_section_content and len(self.dmp_structure) > 0:
-                # Get the first section and subsection
-                first_section = list(self.dmp_structure.keys())[0]
-                if len(self.dmp_structure[first_section]) > 0:
-                    first_subsection = self.dmp_structure[first_section][0]
-                    for p in first_section_content:
-                        section_content[first_section][first_subsection].append(p)
-                        tagged_content[first_section][first_subsection].append(self.process_paragraph(p))
-                    print(f"Added {len(first_section_content)} paragraphs of content before first section to {first_section} - {first_subsection}")
+            if first_section_content:
+                print(f"Found {len(first_section_content)} paragraphs of content before any section")
+                # Instead of forcing into first section, add to unconnected text
+                for p in first_section_content:
+                    unconnected_text.append({"text": p, "type": "pre_section"})
             
-            # Flush any remaining pending content
-            if current_section and current_subsection and pending_content:
+            # Handle any remaining pending content
+            if pending_content:
+                print(f"Found {len(pending_content)} paragraphs of unassigned pending content")
+                # Instead of forcing into a section, add to unconnected text
                 for p in pending_content:
-                    try:
-                        section_content[current_section][current_subsection].append(p)
-                        tagged_content[current_section][current_subsection].append(self.process_paragraph(p))
-                    except KeyError:
-                        print(f"Warning: Could not add final content to {current_section} - {current_subsection}")
-            elif current_section and pending_content:
-                # If we have content for a section but no subsection was identified,
-                # assign to the first subsection of that section
-                if len(self.dmp_structure[current_section]) > 0:
-                    first_subsection = self.dmp_structure[current_section][0]
-                    for p in pending_content:
-                        try:
-                            section_content[current_section][first_subsection].append(p)
-                            tagged_content[current_section][first_subsection].append(self.process_paragraph(p))
-                        except KeyError:
-                            print(f"Warning: Could not add content to {current_section} - {first_subsection}")
+                    unconnected_text.append({"text": p, "type": "pending"})
             
             # Add content to document
             for section in self.dmp_structure:
@@ -795,6 +779,11 @@ class DMPExtractor:
             # Save the document
             output_path = os.path.join(output_dir, output_filename)
             output_doc.save(output_path)
+            
+            # Add unconnected text to review structure
+            if unconnected_text:
+                review_structure["_unconnected_text"] = unconnected_text
+                print(f"Added {len(unconnected_text)} unconnected text items to review structure")
             
             # Save review structure as JSON
             cache_id = str(uuid.uuid4())
