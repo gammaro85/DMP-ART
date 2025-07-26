@@ -46,6 +46,7 @@
     <!-- Fixed Header Navigation -->
     <header class="fixed-header">
         <nav class="header-nav">
+            <a href="/" class="nav-item">Home</a>
             <a href="/template_editor" class="nav-item">Customize Templates</a>
             <a href="/documentation" class="nav-item">Documentation</a>
             <div class="theme-toggle" onclick="toggleTheme()">
@@ -64,12 +65,11 @@
                      alt="DMP ART Logo" 
                      class="logo dark-logo">
             </div>
-            <h1 class="review-title">DMP Review & Feedback</h1>
-            <p class="review-subtitle">Review extracted content and provide structured feedback</p>
+            <p class="review-subtitle">Review extracted content and provide feedback</p>
             
             {% if extraction_info %}
             <div class="extraction-info">
-                <h3>Extraction Summary</h3>
+                <p>Extraction Summary</p>
                 <div class="extraction-stats">
                     <div class="stat-item">
                         <span class="stat-number">{{ extraction_info.total_sections }}</span>
