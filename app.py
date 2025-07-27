@@ -7,6 +7,11 @@ import zipfile
 from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for
 from werkzeug.utils import secure_filename
 from utils.extractor import DMPExtractor
+from utils.dmp_comments import (
+    get_quick_comments,
+    get_category_comments,
+    get_all_categories
+)
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -100,6 +105,8 @@ COMMON_COMMENTS = {
     "formatting_preserved": "Original formatting (bold/underlined) has been preserved where possible.",
     "simulation_data": "For simulation data, ensure reproducibility by documenting all parameters and software versions."
 }
+
+# Template categories will be managed through template editor
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -231,8 +238,7 @@ def upload_file():
             filename = secure_filename(file.filename)
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(file_path)
-     
-        
+            
             # Enhanced file validation based on type
             if filename.lower().endswith('.docx'):
                 is_valid, validation_message = validate_docx_file(file_path)
@@ -505,6 +511,7 @@ def template_editor():
     }
     
     return render_template('template_editor.html', 
+                           templates=DMP_TEMPLATES,
                            templates_by_section=templates_by_section,
                            comments=COMMON_COMMENTS,
                            key_phrases=key_phrases,
@@ -542,6 +549,123 @@ def save_feedback():
         return jsonify({
             'success': False,
             'message': f'Error saving feedback: {str(e)}'
+        })
+
+@app.route('/save_category', methods=['POST'])
+def save_category():
+    """Save category with its comments"""
+    try:
+        data = request.json
+        category_name = data.get('category_name')
+        category_data = data.get('category_data', {})
+        
+        if not category_name:
+            return jsonify({
+                'success': False,
+                'message': 'Category name is required'
+            })
+        
+        # Save to a JSON file in config directory
+        categories_path = os.path.join('config', 'categories.json')
+        
+        # Load existing categories
+        categories = {}
+        if os.path.exists(categories_path):
+            with open(categories_path, 'r', encoding='utf-8') as f:
+                categories = json.load(f)
+        
+        # Update with new category data
+        categories[category_name] = category_data
+        
+        # Save back to file
+        with open(categories_path, 'w', encoding='utf-8') as f:
+            json.dump(categories, f, indent=2, ensure_ascii=False)
+        
+        return jsonify({
+            'success': True,
+            'message': f'Category "{category_name}" saved successfully'
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error saving category: {str(e)}'
+        })
+
+@app.route('/load_categories', methods=['GET'])
+def load_categories():
+    """Load all categories and their comments"""
+    try:
+        categories_path = os.path.join('config', 'categories.json')
+        
+        if not os.path.exists(categories_path):
+            return jsonify({
+                'success': True,
+                'categories': {}
+            })
+        
+        with open(categories_path, 'r', encoding='utf-8') as f:
+            categories = json.load(f)
+        
+        return jsonify({
+            'success': True,
+            'categories': categories
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error loading categories: {str(e)}'
+        })
+
+@app.route('/save_quick_comments', methods=['POST'])
+def save_quick_comments():
+    """Save quick comments"""
+    try:
+        data = request.json
+        quick_comments = data.get('quick_comments', [])
+        
+        # Save to a JSON file in config directory
+        quick_comments_path = os.path.join('config', 'quick_comments.json')
+        
+        with open(quick_comments_path, 'w', encoding='utf-8') as f:
+            json.dump(quick_comments, f, indent=2, ensure_ascii=False)
+        
+        return jsonify({
+            'success': True,
+            'message': 'Quick comments saved successfully'
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error saving quick comments: {str(e)}'
+        })
+
+@app.route('/load_quick_comments', methods=['GET'])
+def load_quick_comments():
+    """Load quick comments"""
+    try:
+        quick_comments_path = os.path.join('config', 'quick_comments.json')
+        
+        if not os.path.exists(quick_comments_path):
+            return jsonify({
+                'success': True,
+                'quick_comments': []
+            })
+        
+        with open(quick_comments_path, 'r', encoding='utf-8') as f:
+            quick_comments = json.load(f)
+        
+        return jsonify({
+            'success': True,
+            'quick_comments': quick_comments
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error loading quick comments: {str(e)}'
         })
 
 @app.route('/health')
