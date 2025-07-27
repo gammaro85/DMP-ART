@@ -9,54 +9,54 @@
 [![Flask](https://img.shields.io/badge/Flask-3.1.0-green.svg)](https://flask.palletsprojects.com/)
 [![Version](https://img.shields.io/badge/version-1.0-brightgreen.svg)](https://github.com/your-repo/dmp-art)
 
-## 🎯 Purpose
+ Purpose
 
 This tool supports research administrators, grant officers, and academic institutions in Poland by:
 
-- **🤖 Automated Extraction**: Processing PDF and DOCX documents exported from OSF system
-- **📊 Content Analysis**: Identifying and structuring DMP sections according to NCN requirements  
-- **📝 Standardized Review**: Providing consistent feedback templates and assessment frameworks
-- **⚡ Efficient Workflow**: Reducing manual work and improving review quality
+- Automated Extraction**: Processing PDF and DOCX documents exported from OSF system
+- Content Analysis**: Identifying and structuring DMP sections according to NCN requirements  
+- Standardized Review**: Providing consistent feedback templates and assessment frameworks
+- Efficient Workflow**: Reducing manual work and improving review quality
 
-## ✨ Key Features
+## Key Features
 
-### 📄 Document Processing
+###  Document Processing
 - **Multi-format Support**: PDF and DOCX files (up to 16MB)
 - **Table Extraction**: Advanced table content recognition
 - **Formatting Preservation**: Bold, underlined text detection
 - **Bilingual Processing**: Polish and English content
 
-### 🔍 Content Analysis  
+###  Content Analysis  
 - **Section Recognition**: Automatic DMP section identification (1.1-6.2)
 - **Key Phrase Detection**: 165+ DMP-related terms
 - **Author Extraction**: Document metadata recognition
 - **Content Tagging**: Methodology, data formats, security tags
 
-### 💬 Review Interface
+###  Review Interface
 - **Structured Feedback**: Section-by-section review system
 - **Quick Comments**: Customizable quick-insert comments
 - **Progress Tracking**: Visual progress indicators
 - **Category System**: Multiple feedback categories (Ready, Missing, Newcomer)
 
-### ⚙️ Template Editor
+###  Template Editor
 - **DMP Structure Management**: Configure section hierarchy
 - **Quick Comments Editor**: Add/edit/delete quick comments
 - **Dynamic Categories**: Create custom feedback categories
 - **Real-time Preview**: See changes immediately
 
-### 📤 Export & Reports
+###  Export & Reports
 - **Feedback Compilation**: Generate comprehensive feedback reports
 - **Multiple Formats**: TXT, HTML export options
 - **Progress Saving**: Save and resume review sessions
 - **Document Comparison**: Original vs. extracted content
 
-### 🎨 User Experience
+###  User Experience
 - **Dark/Light Theme**: Automatic system detection with toggle button
 - **Responsive Design**: Works on desktop, tablet, mobile
 - **Keyboard Shortcuts**: Ctrl+Shift+D for theme toggle
 - **Accessibility**: Screen reader friendly, proper ARIA labels
 
-## 🛠️ Technical Stack
+##  Technical Stack
 
 ### Backend
 - **Python 3.8+**: Core application logic
@@ -79,7 +79,7 @@ This tool supports research administrators, grant officers, and academic institu
 - **In-Memory Processing**: Real-time document analysis
 - **Cache System**: Extracted content caching with unique identifiers
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 - Python 3.8 or higher
@@ -120,7 +120,7 @@ This tool supports research administrators, grant officers, and academic institu
    Open your browser and navigate to: http://localhost:5000
    ```
 
-## 📋 Usage Guide
+##  Usage Guide
 
 ### Step 1: Upload Document
 - Drag & drop or click to select your NCN grant proposal file
@@ -149,7 +149,7 @@ This tool supports research administrators, grant officers, and academic institu
 - Export in preferred format (TXT, HTML)
 - Download for submission
 
-## 🏗️ Project Structure
+##  Project Structure
 
 ```
 dmp-extractor/
@@ -177,7 +177,7 @@ dmp-extractor/
 └── outputs/                 # Generated reports and cache
 ```
 
-## ⚙️ Configuration
+##  Configuration
 
 ### DMP Structure
 Edit `config/dmp_structure.json` to customize:
@@ -197,7 +197,7 @@ Create custom category files in `config/` directory:
 - Categories appear as tabs in Template Editor
 - Used for organized feedback in review interface
 
-## 🔧 Customization
+##  Customization
 
 ### Themes
 - Customize CSS variables in `static/css/style.css`
@@ -214,7 +214,7 @@ Create custom category files in `config/` directory:
 - Direct file editing available for advanced users
 - JSON structure allows flexible configuration
 
-## ⚠️ Limitations
+##  Limitations
 
 ### Document Processing
 - **NCN/OSF Specific**: Optimized for Polish NCN proposals via OSF system
@@ -234,7 +234,7 @@ Create custom category files in `config/` directory:
 - Section detection may miss non-standard formats
 - Manual verification always recommended
 
-## 🛠️ Development
+##  Development
 
 ### Running in Development Mode
 ```bash
@@ -256,7 +256,7 @@ python app.py
 - Check responsive design on mobile devices
 - Validate extraction accuracy with known documents
 
-## 📄 License
+##  License
 
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
@@ -267,8 +267,8 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 - ✅ Private use
 
 ### Requirements
-- 📋 Include copyright notice
-- 📋 Include license text
+-  Include copyright notice
+-  Include license text
 
 ### Third-Party Licenses
 - **Flask**: BSD-3-Clause License
@@ -278,7 +278,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 - **Pillow**: HPND License
 - **Font Awesome**: Font Awesome Free License
 
-## 🙏 Attribution
+##  Attribution
 
 When using or redistributing DMP ART, please include:
 
@@ -288,25 +288,25 @@ Copyright (c) 2025 DMP ART Contributors
 Licensed under the MIT License
 ```
 
-## 📞 Support
+##  Support
 
 ### Documentation
-- 📖 Complete documentation available at `/documentation` route
-- 🎯 Step-by-step user guide included
-- 🔧 Technical architecture details provided
+-  Complete documentation available at `/documentation` route
+- Step-by-step user guide included
+-  Technical architecture details provided
 
 ### Issues
-- 🐛 Report bugs via GitHub Issues
-- 💡 Request features via GitHub Issues
-- ❓ Ask questions in GitHub Discussions
+-  Report bugs via GitHub Issues
+-  Request features via GitHub Issues
+-  Ask questions in GitHub Discussions
 
 ### Best Practices
-- 📄 Use high-quality PDF exports from OSF
-- 🔍 Always verify extracted content manually
-- 💾 Save progress frequently during reviews
-- 🌐 Use updated browsers for best compatibility
+-  Use high-quality PDF exports from OSF
+-  Always verify extracted content manually
+-  Save progress frequently during reviews
+-  Use updated browsers for best compatibility
 
-## 🚀 Recent Updates
+##  Recent Updates
 
 ### Version 1.0 Features
 - **Enhanced Template Editor**: Dynamic category management with real-time editing
@@ -332,5 +332,3 @@ Licensed under the MIT License
 ---
 
 **DMP ART** - Making DMP assessment efficient, consistent, and comprehensive.
-
-*Built with ❤️ for the Polish research community*
