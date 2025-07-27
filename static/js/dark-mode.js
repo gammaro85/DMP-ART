@@ -59,6 +59,8 @@
             if (icon) {
                 // Sun for dark mode (to switch to light), moon for light mode (to switch to dark)
                 icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+            } else {
+                console.warn('updateToggleButton: Element with ID "theme-icon" not found. Ensure the toggle button is created properly.');
             }
         },
 
