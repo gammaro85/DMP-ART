@@ -7,6 +7,7 @@
     <title>Template Editor - DMP ART</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/dmp-art-favicon (Niestandardowe).png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Prevent flash of wrong theme -->
     <script>
         (function() {
@@ -18,449 +19,529 @@
             if (meta) meta.content = theme === 'dark' ? '#121212' : '#ffffff';
         })();
     </script>
-    <style>
-        /* Template Editor Specific Styles */
-        .primary-btn, .secondary-btn, .add-btn, 
-        .tab-btn.active, .tab-btn:not(.active):hover, .delete-btn, .remove-phrase-btn, .add-question-btn, .remove-question-btn {
-            background: #375D78 !important;
-            color: #fff !important;
-            transition: background 0.2s, color 0.2s;
-        }
-
-        .save-template-btn, .save-btn, .save-all-templates-btn, .add-phrase-btn {
-            background: #408A8B !important;
-            color: #fff !important;
-            margin-bottom: 1rem;
-        }
-
-        .add-phrase-btn,
-        .add-btn,
-        .add-question-btn {
-            background: #408A8B !important;
-            color: #fff !important;
-        }
-
-        .template-editor-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .tab-navigation {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            border-bottom: 2px solid var(--border-light);
-        }
-
-        .tab-btn {
-            background: none;
-            border: none;
-            padding: 12px 20px;
-            cursor: pointer;
-            font-size: 1rem;
-            color: var(--text-secondary);
-            border-bottom: 3px solid transparent;
-            transition: all 0.2s ease;
-        }
-
-        .tab-btn.active,
-        .tab-btn:hover {
-            color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
-        }
-
-        .tab-panel {
-            display: none;
-        }
-
-        .tab-panel.active {
-            display: block;
-        }
-
-        .template-group {
-            margin-bottom: 2rem;
-            background: var(--bg-card);
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-light);
-        }
-
-        .template-group h2 {
-            color: var(--primary-color);
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid var(--border-light);
-        }
-
-        .template-item {
-            margin-bottom: 1.5rem;
-            padding: 1rem;
-            background: var(--bg-secondary);
-            border-radius: 8px;
-            border: 1px solid var(--border-light);
-        }
-
-        .template-item h3 {
-            color: var(--text-primary);
-            margin-bottom: 0.75rem;
-            font-size: 1rem;
-        }
-
-        .template-input {
-            width: 100%;
-            min-height: 80px;
-            padding: 10px;
-            border: 2px solid var(--border-medium);
-            border-radius: 6px;
-            background: var(--bg-card);
-            color: var(--text-primary);
-            font-family: inherit;
-            font-size: 0.9rem;
-            line-height: 1.4;
-            resize: vertical;
-            margin-bottom: 0.75rem;
-        }
-
-        .template-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-
-        .edit-item {
-            margin-bottom: 1.5rem;
-            padding: 1rem;
-            background: var(--bg-secondary);
-            border-radius: 8px;
-            border: 1px solid var(--border-light);
-        }
-
-        .edit-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.75rem;
-            gap: 1rem;
-        }
-
-        .key-input {
-            flex: 1;
-            padding: 8px 12px;
-            border: 2px solid var(--border-medium);
-            border-radius: 6px;
-            background: var(--bg-card);
-            color: var(--text-primary);
-            font-size: 0.9rem;
-        }
-
-        .content-input {
-            width: 100%;
-            min-height: 60px;
-            padding: 10px;
-            border: 2px solid var(--border-medium);
-            border-radius: 6px;
-            background: var(--bg-card);
-            color: var(--text-primary);
-            font-family: inherit;
-            font-size: 0.9rem;
-            line-height: 1.4;
-            resize: vertical;
-        }
-
-        .phrases-container {
-            margin-top: 0.75rem;
-        }
-
-        .phrase-item {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
-            align-items: center;
-        }
-
-        .phrase-input {
-            flex: 1;
-            padding: 6px 10px;
-            border: 1px solid var(--border-medium);
-            border-radius: 4px;
-            background: var(--bg-card);
-            color: var(--text-primary);
-            font-size: 0.85rem;
-        }
-
-        .section-item {
-            margin-bottom: 2rem;
-            padding: 1.5rem;
-            background: var(--bg-card);
-            border-radius: 8px;
-            border: 1px solid var(--border-light);
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            gap: 1rem;
-        }
-
-        .section-input {
-            flex: 1;
-            padding: 10px 12px;
-            border: 2px solid var(--border-medium);
-            border-radius: 6px;
-            background: var(--bg-card);
-            color: var(--text-primary);
-            font-size: 1rem;
-            font-weight: 600;
-        }
-
-        .questions-container {
-            background: var(--bg-secondary);
-            border-radius: 6px;
-            padding: 1rem;
-        }
-
-        .question-item {
-            display: flex;
-            gap: 0.75rem;
-            margin-bottom: 0.75rem;
-            align-items: center;
-        }
-
-        .question-input {
-            flex: 1;
-            padding: 8px 12px;
-            border: 1px solid var(--border-medium);
-            border-radius: 4px;
-            background: var(--bg-card);
-            color: var(--text-primary);
-            font-size: 0.9rem;
-        }
-
-        .success-toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--success-color);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 6px;
-            z-index: 1000;
-            opacity: 0;
-            transform: translateX(100%);
-            transition: all 0.3s ease;
-        }
-
-        .success-toast.show {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .success-toast.error {
-            background: var(--error-color);
-        }
-
-        @media (max-width: 768px) {
-            .template-editor-container {
-                padding: 15px;
-            }
-
-            .tab-navigation {
-                flex-wrap: wrap;
-                gap: 0.5rem;
-            }
-
-            .edit-header,
-            .section-header {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 0.75rem;
-            }
-
-            .phrase-item,
-            .question-item {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 0.5rem;
-            }
-        }
-    </style>
 </head>
 <body data-page="template-editor">
     <!-- Fixed Header Navigation -->
     <header class="fixed-header">
         <nav class="header-nav">
             <a href="/" class="nav-item">Home</a>
-            <a href="/documentation" class="nav-item">Documentation</a>
-            <div class="theme-toggle" onclick="toggleTheme()">
-                <span id="theme-text">Light Mode</span>
-            </div>
+            <a href="#" class="nav-item" onclick="alert('Please upload and process a document first to access review')">Review</a>
+            <a href="/template_editor" class="nav-item active">Template Editor</a>
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                <i class="fas fa-moon" id="theme-icon"></i>
+            </button>
         </nav>
     </header>
 
-    <div class="template-editor-container">
-        <header>
-            <div class="logo-container">
-                <img src="{{ url_for('static', filename='images/dmp-art-logo-main-light.png') }}" 
-                     alt="DMP ART Logo" 
-                     class="logo light-logo">
-                <img src="{{ url_for('static', filename='images/dmp-art-logo-main-dark.png') }}" 
-                     alt="DMP ART Logo" 
-                     class="logo dark-logo">
-            </div>
+    <!-- Main Content -->
+    <main class="template-editor-container">
+        <div class="page-header">
             <h1>Template Editor</h1>
-            <p class="subtitle">Customize feedback templates, comments, and DMP structure</p>
-        </header>
+            <p>Manage comment templates and categories for DMP review</p>
+        </div>
 
         <!-- Tab Navigation -->
         <div class="tab-navigation">
-            <button class="tab-btn active" data-target="templates-panel">Templates</button>
-            <button class="tab-btn" data-target="comments-panel">Comments</button>
-            <button class="tab-btn" data-target="keywords-panel">Keywords</button>
-            <button class="tab-btn" data-target="structure-panel">Structure</button>
+            <button class="tab-btn active" data-tab="quick-comments">
+                <i class="fas fa-comment"></i> Quick Comments
+            </button>
+            <button class="tab-btn" data-tab="dmp-structure">
+                <i class="fas fa-list"></i> DMP Structure
+            </button>
+            <button class="add-category-btn">
+                <i class="fas fa-plus"></i> Add Category
+            </button>
         </div>
 
-        <!-- Templates Tab -->
-        <div class="tab-panel active" id="templates-panel">
-            <h2>Edit Feedback Templates</h2>
-            <p>Customize the default feedback templates for each DMP section.</p>
-            
-            <div id="templates-container">
-                {% for section, questions in templates_by_section.items() %}
-                <div class="template-group">
-                    <h2>{{ section }}</h2>
-                    
-                    {% for id, item in questions.items() %}
-                    <div class="template-item" data-id="{{ id }}">
-                        <h3>{{ item.question }}</h3>
-                        <textarea class="template-input" id="template-{{ id }}">{{ item.template }}</textarea>
-                        <button class="save-template-btn" data-id="{{ id }}">Save Template</button>
-                    </div>
-                    {% endfor %}
+        <!-- Tab Contents -->
+        <div class="tab-content">
+            <!-- Quick Comments Tab -->
+            <div class="tab-panel active" id="quick-comments-panel">
+                <div class="panel-header">
+                    <h2>Quick Comments</h2>
+                    <p>These comments appear in a floating window on the review page as quick phrases</p>
                 </div>
-                {% endfor %}
-            </div>
-            
-            <button id="save-all-templates" class="save-all-templates-btn">Save All Templates</button>
-        </div>
-        
-        <!-- Comments Tab -->
-        <div class="tab-panel" id="comments-panel">
-            <h2>Edit Common Comments</h2>
-            <button id="add-comment-btn" class="add-btn">Add New Comment</button>
-            <div id="comments-container">
-                {% for key, comment in comments.items() %}
-                <div class="edit-item" data-id="{{ key }}">
-                    <div class="edit-header">
-                        <input type="text" class="key-input" value="{{ key }}" placeholder="Comment key">
-                        <button class="delete-btn" data-type="comment" data-id="{{ key }}">Delete</button>
-                    </div>
-                    <textarea class="content-input">{{ comment }}</textarea>
+                
+                <div class="comments-list" id="quick-comments-list">
+                    <!-- Quick comments will be dynamically loaded here -->
                 </div>
-                {% endfor %}
+                
+                <div class="action-row">
+                    <button class="btn btn-primary" id="add-quick-comment">
+                        <i class="fas fa-plus"></i> Add Quick Comment
+                    </button>
+                    <button class="btn btn-success" id="save-quick-comments">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
             </div>
-            <button id="save-comments-btn" class="save-btn">Save All Comments</button>
-        </div>
-        
-        <!-- Keywords Tab -->
-        <div class="tab-panel" id="keywords-panel">
-            <h2>Edit Key Phrases</h2>
-            <button id="add-keyword-btn" class="add-btn">Add New Keyword</button>
-            <div id="keywords-container">
-                {% for keyword, phrases in key_phrases.items() %}
-                <div class="edit-item" data-id="{{ keyword }}">
-                    <div class="edit-header">
-                        <input type="text" class="key-input" value="{{ keyword }}" placeholder="Keyword">
-                        <button class="delete-btn" data-type="keyword" data-id="{{ keyword }}">Delete</button>
-                    </div>
-                    <div class="phrases-container">
-                        {% for phrase in phrases %}
-                        <div class="phrase-item">
-                            <input type="text" class="phrase-input" value="{{ phrase }}" placeholder="Phrase">
-                            <button class="remove-phrase-btn">Remove</button>
+
+            <!-- DMP Structure Tab -->
+            <div class="tab-panel" id="dmp-structure-panel">
+                <div class="panel-header">
+                    <h2>DMP Structure</h2>
+                    <p>Manage the structure of DMP questions and sections</p>
+                </div>
+                
+                <div class="structure-content">
+                    <div class="structure-list" id="dmp-structure-list">
+                        {% for section_id, content in templates.items() %}
+                        <div class="structure-item" data-section-id="{{ section_id }}">
+                            <div class="structure-header">
+                                <span class="section-id">{{ section_id }}</span>
+                                <span class="section-question">{{ content.question }}</span>
+                            </div>
                         </div>
                         {% endfor %}
-                        <button class="add-phrase-btn">Add Phrase</button>
                     </div>
                 </div>
-                {% endfor %}
+                
+                <div class="action-row">
+                    <button class="btn btn-secondary" id="edit-structure">
+                        <i class="fas fa-edit"></i> Edit Structure
+                    </button>
+                </div>
             </div>
-            <button id="save-keywords-btn" class="save-btn">Save All Keywords</button>
         </div>
-        
-        <!-- Structure Tab -->
-        <div class="tab-panel" id="structure-panel">
-            <h2>Edit DMP Structure</h2>
-            <button id="add-section-btn" class="add-btn">Add New Section</button>
-            <div id="structure-container">
-                {% for section, questions in dmp_structure.items() %}
-                <div class="section-item" data-section="{{ section }}">
-                    <div class="section-header">
-                        <input type="text" class="section-input" value="{{ section }}" placeholder="Section title">
-                        <button class="delete-btn" data-type="section" data-id="{{ section }}">Delete Section</button>
-                    </div>
-                    <div class="questions-container">
-                        {% for question in questions %}
-                        <div class="question-item">
-                            <input type="text" class="question-input" value="{{ question }}">
-                            <button class="remove-question-btn">Remove</button>
-                        </div>
-                        {% endfor %}
-                        <button class="add-question-btn">Add Question</button>
-                    </div>
-                </div>
-                {% endfor %}
+    </main>
+
+    <!-- Add Category Modal -->
+    <div class="modal" id="add-category-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Category</h3>
+                <button class="close-btn" id="close-category-modal">×</button>
             </div>
-            <button id="save-structure-btn" class="save-btn">Save Structure</button>
+            <div class="modal-body">
+                <label for="category-name">Category Name:</label>
+                <input type="text" id="category-name" placeholder="Enter category name" maxlength="50">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="cancel-category">Cancel</button>
+                <button class="btn btn-primary" id="create-category">Create Category</button>
+            </div>
         </div>
     </div>
 
-    <!-- Success Toast -->
-    <div id="success-toast" class="success-toast"></div>
-
-    <footer>
-        <div class="footer-content">
-            <div class="footer-main">
-                <p>DMP ART &copy; 2025. All rights reserved.</p>
+    <!-- Add Comment Modal -->
+    <div class="modal" id="add-comment-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Comment</h3>
+                <button class="close-btn" id="close-comment-modal">×</button>
+            </div>
+            <div class="modal-body">
+                <label for="comment-name">Short Name:</label>
+                <input type="text" id="comment-name" placeholder="Enter short name" maxlength="50">
+                
+                <label for="comment-text">Comment Text:</label>
+                <textarea id="comment-text" placeholder="Enter the full comment text" rows="4"></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="cancel-comment">Cancel</button>
+                <button class="btn btn-primary" id="save-comment">Save Comment</button>
             </div>
         </div>
-    </footer>
+    </div>
 
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/template_editor.js') }}"></script>
     <script>
-        (function() {
-            const root = document.documentElement;
-            const themeToggle = function() {
-                const current = root.getAttribute('data-theme') || 'light';
-                const next = current === 'dark' ? 'light' : 'dark';
-                root.setAttribute('data-theme', next);
-                localStorage.setItem('dmp-art-theme', next);
-                updateThemeToggle(next === 'dark');
-            };
-            window.toggleTheme = themeToggle;
-            function updateThemeToggle(isDark) {
-                const text = document.getElementById('theme-text');
-                if (text) {
-                    text.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+        // Template editor initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTemplateEditor();
+        });
+
+        function initializeTemplateEditor() {
+            // Tab switching
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    switchTab(tabId);
+                });
+            });
+
+            // Add category button
+            document.querySelector('.add-category-btn').addEventListener('click', function() {
+                document.getElementById('add-category-modal').style.display = 'flex';
+            });
+
+            // Modal functionality
+            setupModals();
+            
+            // Load initial quick comments
+            loadQuickComments();
+        }
+
+        function switchTab(tabId) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+
+            // Update tab panels
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            document.getElementById(`${tabId}-panel`).classList.add('active');
+        }
+
+        function setupModals() {
+            // Close modals
+            document.querySelectorAll('.close-btn, .btn-secondary').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.modal').forEach(modal => {
+                        modal.style.display = 'none';
+                    });
+                });
+            });
+
+            // Add quick comment
+            document.getElementById('add-quick-comment').addEventListener('click', function() {
+                document.getElementById('add-comment-modal').style.display = 'flex';
+            });
+
+            // Save comment
+            document.getElementById('save-comment').addEventListener('click', saveComment);
+            
+            // Create category
+            document.getElementById('create-category').addEventListener('click', createCategory);
+            
+            // Save quick comments
+            document.getElementById('save-quick-comments').addEventListener('click', saveQuickComments);
+        }
+
+        function loadQuickComments() {
+            // For now, show empty state
+            const list = document.getElementById('quick-comments-list');
+            list.innerHTML = '<div class="empty-state">No quick comments yet. Click "Add Quick Comment" to get started.</div>';
+        }
+
+        function saveComment() {
+            const name = document.getElementById('comment-name').value.trim();
+            const text = document.getElementById('comment-text').value.trim();
+            
+            if (!name || !text) {
+                alert('Please fill in both fields');
+                return;
+            }
+
+            // Add comment to the list (for now just add to UI)
+            addCommentToUI(name, text);
+            
+            // Clear modal
+            document.getElementById('comment-name').value = '';
+            document.getElementById('comment-text').value = '';
+            document.getElementById('add-comment-modal').style.display = 'none';
+        }
+
+        function addCommentToUI(name, text) {
+            const list = document.getElementById('quick-comments-list');
+            
+            // Remove empty state if it exists
+            const emptyState = list.querySelector('.empty-state');
+            if (emptyState) {
+                emptyState.remove();
+            }
+
+            const commentItem = document.createElement('div');
+            commentItem.className = 'comment-row';
+            commentItem.innerHTML = `
+                <div class="comment-info">
+                    <div class="comment-name">${name}</div>
+                    <div class="comment-text">${text}</div>
+                </div>
+                <div class="comment-actions">
+                    <button class="btn btn-sm btn-danger" onclick="removeComment(this)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+            
+            list.appendChild(commentItem);
+        }
+
+        function removeComment(button) {
+            if (confirm('Are you sure you want to remove this comment?')) {
+                button.closest('.comment-row').remove();
+                
+                // Show empty state if no comments left
+                const list = document.getElementById('quick-comments-list');
+                if (list.children.length === 0) {
+                    list.innerHTML = '<div class="empty-state">No quick comments yet. Click "Add Quick Comment" to get started.</div>';
                 }
             }
-            // Set theme on load
-            const saved = localStorage.getItem('dmp-art-theme');
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const theme = saved || (prefersDark ? 'dark' : 'light');
-            root.setAttribute('data-theme', theme);
-            updateThemeToggle(theme === 'dark');
-            // Listen for system changes if no saved theme
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-                if (!localStorage.getItem('dmp-art-theme')) {
-                    const newTheme = e.matches ? 'dark' : 'light';
-                    root.setAttribute('data-theme', newTheme);
-                    updateThemeToggle(newTheme === 'dark');
+        }
+
+        function createCategory() {
+            const name = document.getElementById('category-name').value.trim();
+            
+            if (!name) {
+                alert('Please enter a category name');
+                return;
+            }
+
+            // Add new tab
+            addCategoryTab(name);
+            
+            // Clear modal
+            document.getElementById('category-name').value = '';
+            document.getElementById('add-category-modal').style.display = 'none';
+        }
+
+        function addCategoryTab(name) {
+            const tabNav = document.querySelector('.tab-navigation');
+            const addBtn = tabNav.querySelector('.add-category-btn');
+            
+            // Create new tab button
+            const newTab = document.createElement('button');
+            newTab.className = 'tab-btn';
+            newTab.setAttribute('data-tab', name.toLowerCase().replace(/\s+/g, '-'));
+            newTab.innerHTML = `
+                <i class="fas fa-folder"></i> ${name}
+                <button class="remove-tab-btn" onclick="removeTab(event, '${name}')">×</button>
+            `;
+            
+            tabNav.insertBefore(newTab, addBtn);
+            
+            // Create corresponding panel
+            createCategoryPanel(name);
+            
+            // Add click listener
+            newTab.addEventListener('click', function(e) {
+                if (!e.target.classList.contains('remove-tab-btn')) {
+                    switchTab(name.toLowerCase().replace(/\s+/g, '-'));
                 }
             });
-        })();
+        }
+
+        function createCategoryPanel(name) {
+            const tabContent = document.querySelector('.tab-content');
+            const panelId = name.toLowerCase().replace(/\s+/g, '-');
+            
+            const panel = document.createElement('div');
+            panel.className = 'tab-panel';
+            panel.id = `${panelId}-panel`;
+            panel.innerHTML = `
+                <div class="panel-header">
+                    <h2>${name} Category</h2>
+                    <p>Comments for DMP questions in the ${name} category</p>
+                </div>
+                
+                <div class="category-questions" id="${panelId}-questions">
+                    <!-- DMP structure will be populated here -->
+                </div>
+            `;
+            
+            tabContent.appendChild(panel);
+            
+            // Populate with DMP structure
+            populateCategoryWithDMPStructure(panelId, name);
+        }
+
+        function populateCategoryWithDMPStructure(panelId, categoryName) {
+            const questionsContainer = document.getElementById(`${panelId}-questions`);
+            if (!questionsContainer) return;
+
+            // DMP structure - this should come from the backend but we'll use the existing structure
+            const dmpStructure = [
+                { id: '1.1', question: 'How will new data be collected or produced and/or how will existing data be re-used?' },
+                { id: '1.2', question: 'What data (for example the types, formats, and volumes) will be collected or produced?' },
+                { id: '2.1', question: 'What metadata and documentation will accompany data?' },
+                { id: '2.2', question: 'What data quality control measures will be used?' },
+                { id: '3.1', question: 'How will data and metadata be stored and backed up during the research process?' },
+                { id: '3.2', question: 'How will data security and protection of sensitive data be taken care of during the research?' },
+                { id: '4.1', question: 'If personal data are processed, how will compliance with legislation be ensured?' },
+                { id: '4.2', question: 'How will other legal issues, such as intellectual property rights and ownership, be managed?' },
+                { id: '5.1', question: 'How and when will data be shared? Are there possible restrictions?' },
+                { id: '5.2', question: 'How will data for preservation be selected, and where will data be preserved long-term?' },
+                { id: '5.3', question: 'What methods or software tools will be needed to access and use the data?' },
+                { id: '5.4', question: 'How will the application of a unique and persistent identifier to each data set be ensured?' },
+                { id: '6.1', question: 'Who will be responsible for data management?' },
+                { id: '6.2', question: 'What resources will be dedicated to data management and ensuring the data will be FAIR?' }
+            ];
+
+            questionsContainer.innerHTML = '';
+
+            dmpStructure.forEach(item => {
+                const questionBlock = document.createElement('div');
+                questionBlock.className = 'question-block';
+                questionBlock.innerHTML = `
+                    <div class="question-header">
+                        <h4>Section ${item.id}</h4>
+                        <p class="question-text">${item.question}</p>
+                    </div>
+                    
+                    <div class="question-comments">
+                        <div class="comments-list" id="comments-${panelId}-${item.id}">
+                            <!-- Comments for this question will be added here -->
+                        </div>
+                        
+                        <div class="comment-actions">
+                            <button class="btn btn-sm btn-success" onclick="addQuestionComment('${panelId}', '${item.id}')">
+                                <i class="fas fa-plus"></i> Add Comment
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                questionsContainer.appendChild(questionBlock);
+            });
+        }
+
+        function addQuestionComment(categoryId, questionId) {
+            const commentText = prompt('Enter comment for this question:');
+            if (!commentText || !commentText.trim()) return;
+
+            const commentsList = document.getElementById(`comments-${categoryId}-${questionId}`);
+            if (!commentsList) return;
+
+            const commentItem = document.createElement('div');
+            commentItem.className = 'comment-item';
+            commentItem.innerHTML = `
+                <div class="comment-content">${commentText.trim()}</div>
+                <div class="comment-item-actions">
+                    <button class="btn btn-sm btn-danger" onclick="removeQuestionComment(this)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+
+            commentsList.appendChild(commentItem);
+        }
+
+        function removeQuestionComment(button) {
+            if (confirm('Are you sure you want to remove this comment?')) {
+                button.closest('.comment-item').remove();
+            }
+        }
+
+        function saveQuickComments() {
+            const commentItems = document.querySelectorAll('#quick-comments-list .comment-row');
+            const quickComments = [];
+            
+            commentItems.forEach(item => {
+                const name = item.querySelector('.comment-name').textContent;
+                const text = item.querySelector('.comment-text').textContent;
+                quickComments.push({ name, text });
+            });
+
+            fetch('/save_quick_comments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    quick_comments: quickComments
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Quick comments saved successfully!');
+                } else {
+                    alert('Error saving quick comments: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error saving quick comments');
+            });
+        }
+
+        function saveCategoryData(categoryName) {
+            const panelId = categoryName.toLowerCase().replace(/\s+/g, '-');
+            const categoryData = {};
+
+            // Get all question blocks for this category
+            const questionBlocks = document.querySelectorAll(`#${panelId}-questions .question-block`);
+            
+            questionBlocks.forEach(block => {
+                const questionId = block.querySelector('h4').textContent.replace('Section ', '');
+                const comments = [];
+                
+                const commentItems = block.querySelectorAll('.comment-item');
+                commentItems.forEach(item => {
+                    comments.push(item.querySelector('.comment-content').textContent);
+                });
+                
+                if (comments.length > 0) {
+                    categoryData[questionId] = comments;
+                }
+            });
+
+            fetch('/save_category', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    category_name: categoryName,
+                    category_data: categoryData
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log(`Category "${categoryName}" saved successfully`);
+                } else {
+                    console.error('Error saving category:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        // Auto-save category data when comments are added
+        function addQuestionComment(categoryId, questionId) {
+            const commentText = prompt('Enter comment for this question:');
+            if (!commentText || !commentText.trim()) return;
+
+            const commentsList = document.getElementById(`comments-${categoryId}-${questionId}`);
+            if (!commentsList) return;
+
+            const commentItem = document.createElement('div');
+            commentItem.className = 'comment-item';
+            commentItem.innerHTML = `
+                <div class="comment-content">${commentText.trim()}</div>
+                <div class="comment-item-actions">
+                    <button class="btn btn-sm btn-danger" onclick="removeQuestionComment(this)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+
+            commentsList.appendChild(commentItem);
+            
+            // Auto-save category data
+            const categoryName = categoryId.split('-').map(word => 
+                word.charAt(0).toUpperCase() + word.slice(1)
+            ).join(' ');
+            saveCategoryData(categoryName);
+        }
+
+        function removeTab(event, name) {
+            event.stopPropagation();
+            
+            if (confirm(`Are you sure you want to remove the "${name}" category?`)) {
+                const panelId = name.toLowerCase().replace(/\s+/g, '-');
+                
+                // Remove tab button
+                event.target.closest('.tab-btn').remove();
+                
+                // Remove panel
+                document.getElementById(`${panelId}-panel`).remove();
+                
+                // Switch to first tab if current tab was removed
+                const firstTab = document.querySelector('.tab-btn');
+                if (firstTab) {
+                    firstTab.click();
+                }
+            }
+        }
     </script>
-    <script src="{{ url_for('static', filename='js/template_editor.js') }}"></script>
 </body>
 </html>

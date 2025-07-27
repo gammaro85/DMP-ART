@@ -7,6 +7,7 @@
     <title>Review DMP - DMP ART</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/dmp-art-favicon (Niestandardowe).png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Prevent flash of wrong theme -->
     <script>
         (function() {
@@ -39,6 +40,159 @@
         .stat-item {
             background-color: var(--bg-secondary);
             border-color: var(--border-light);
+        }
+        
+        /* Fixed Right Sidebar Styles - Override main CSS */
+        .review-layout {
+            display: flex !important;
+            flex-direction: row !important;
+            gap: 20px !important;
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 20px !important;
+        }
+        
+        .main-content {
+            flex: 1 !important;
+            margin-right: 0 !important;
+            min-width: 0 !important;
+            order: 1 !important;
+        }
+        
+        .right-sidebar {
+            position: sticky !important;
+            top: 80px !important;
+            width: 210px !important; /* Reduced by 30% from 300px */
+            min-width: 210px !important;
+            max-width: 210px !important;
+            height: calc(100vh - 100px) !important;
+            background-color: var(--bg-card) !important;
+            border: 1px solid var(--border-light) !important;
+            border-radius: 8px !important;
+            padding: 15px !important;
+            overflow-y: auto !important;
+            z-index: 100 !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+            display: block !important;
+            visibility: visible !important;
+            order: 2 !important;
+            flex-shrink: 0 !important;
+        }
+        
+        .navigation-pane, .category-comments-pane {
+            margin-bottom: 2rem;
+        }
+        
+        .navigation-pane h3, .category-comments-pane h3 {
+            color: var(--text-primary) !important;
+            font-size: 0.9rem !important;
+            margin-bottom: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
+            border-bottom: 1px solid var(--border-light) !important;
+        }
+        
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+            gap: 4px;
+        }
+        
+        .nav-grid-btn {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-light);
+            color: var(--text-primary);
+            padding: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-grid-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .category-btn {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-light);
+            color: var(--text-primary);
+            padding: 6px 12px;
+            border-radius: 4px;
+            margin: 2px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }
+        
+        .category-btn:hover, .category-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .category-comment-item {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-light);
+            padding: 8px;
+            margin: 4px 0;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }
+        
+        .category-comment-item:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .category-comment-section {
+            font-weight: bold;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+        
+        .no-comments {
+            color: var(--text-secondary);
+            font-style: italic;
+            font-size: 0.8rem;
+            text-align: center;
+            padding: 1rem;
+        }
+        
+        .quick-comments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .quick-comment-item {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-light);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+        
+        .quick-comment-item:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 1200px) {
+            .main-content {
+                margin-right: 0;
+            }
+            
+            .right-sidebar {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -88,15 +242,9 @@
             {% endif %}
         </header>
         
-        <!-- Section Navigation -->
-        <div class="section-navigation">
-            <h3 class="nav-title">Quick Navigation</h3>
-            <div class="nav-buttons" id="section-nav">
-                <!-- Navigation buttons will be generated by JavaScript -->
-            </div>
-        </div>
-        
-        <main class="main-content">
+        <div class="review-layout">
+            <!-- Main Content Area -->
+            <main class="main-content">
             <!-- Action Buttons -->
             <div class="action-buttons" style="text-align: center; margin-bottom: 2rem;">
                 <button id="compile-feedback-btn" class="primary-btn">Compile Feedback Report</button>
@@ -151,20 +299,6 @@
                         {% endif %}
                     </div>
                     
-                    <!-- Enhanced comment buttons -->
-                    <div class="comment-buttons">
-                        <h3>Quick Comments</h3>
-                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                            {% for tag, comment in comments.items() %}
-                            <button class="comment-btn" 
-                                    data-id="{{ section_id }}" 
-                                    data-comment="{{ comment }}" 
-                                    title="Click to add: {{ tag }} comment">
-                                    {{ tag }}
-                            </button>
-                            {% endfor %}
-                        </div>
-                    </div>
                     
                     <!-- Enhanced feedback section -->
                     <div class="enhanced-feedback-section">
@@ -175,12 +309,13 @@
                             {% endif %}
                         </div>
                         
+                        
                         <textarea class="feedback-text" 
                                   id="feedback-{{ section_id }}" 
                                   data-section-id="{{ section_id }}"
                                   {% if content.get('type') %}data-section-type="{{ content.get('type') }}"{% endif %}
                                   placeholder="Enter your feedback for this section..."
-                                  rows="8">{{ templates.get(section_id, '') }}</textarea>
+                                  rows="8"></textarea>
                         
                         <div class="action-row">
                             <div class="left-actions">
@@ -196,6 +331,28 @@
                 {% endfor %}
             </div>
         </main>
+        
+        <!-- Right Sidebar -->
+        <aside class="right-sidebar">
+            <!-- Navigation Grid -->
+            <div class="navigation-pane">
+                <h3>Quick Navigation</h3>
+                <div class="nav-grid" id="section-nav-grid">
+                    <!-- Navigation buttons will be generated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Quick Comments -->
+            <div class="quick-comments-pane">
+                <h3>Quick Comments</h3>
+                <div class="quick-comments-list" id="quick-comments-list">
+                    <!-- Quick comments will be loaded here -->
+                    <div class="no-comments">No quick comments available. Add them in Template Editor.</div>
+                </div>
+            </div>
+        </aside>
+        
+        </div> <!-- End review-layout -->
         
         <!-- Unconnected Text Assignment Modal -->
         {% if unconnected_text and unconnected_text|length > 0 %}
@@ -295,7 +452,10 @@
             }
         }
 
-        // Auto-update character counters
+        // Global variable to track the last focused textarea
+        let lastFocusedTextarea = null;
+
+        // Auto-update character counters and track focused textarea
         document.addEventListener('DOMContentLoaded', function() {
             const textareas = document.querySelectorAll('.feedback-text');
             textareas.forEach(textarea => {
@@ -315,10 +475,24 @@
                 
                 // Update counter on input
                 textarea.addEventListener('input', updateCounter);
+                
+                // Track when textarea receives focus
+                textarea.addEventListener('focus', function() {
+                    lastFocusedTextarea = this;
+                });
+                
+                // Track when textarea is clicked
+                textarea.addEventListener('click', function() {
+                    lastFocusedTextarea = this;
+                });
             });
 
             // Initialize unconnected text modal functionality
             initializeUnconnectedTextModal();
+            
+            // Initialize sidebar functionality
+            initializeSidebar();
+            
         });
 
         // Unconnected Text Modal Functionality
@@ -476,6 +650,199 @@
             const modal = document.getElementById('unconnected-text-modal');
             if (modal) {
                 modal.style.display = 'none';
+            }
+        }
+
+        // Sidebar functionality
+        function initializeSidebar() {
+            // Generate navigation grid
+            generateNavigationGrid();
+            
+            // Load quick comments
+            loadQuickComments();
+            
+            // Initialize category selector
+            initializeCategorySelector();
+        }
+
+        function generateNavigationGrid() {
+            const navGrid = document.getElementById('section-nav-grid');
+            if (!navGrid) return;
+
+            // Get all section containers
+            const sections = document.querySelectorAll('[id^="section-"]');
+            
+            sections.forEach(section => {
+                const sectionId = section.id.replace('section-', '');
+                const btn = document.createElement('button');
+                btn.className = 'nav-grid-btn';
+                btn.textContent = sectionId;
+                btn.addEventListener('click', () => scrollToSection(sectionId));
+                navGrid.appendChild(btn);
+            });
+        }
+
+        function loadQuickComments() {
+            const quickCommentsList = document.getElementById('quick-comments-list');
+            if (!quickCommentsList) return;
+
+            fetch('/load_quick_comments')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.quick_comments.length > 0) {
+                    quickCommentsList.innerHTML = '';
+                    data.quick_comments.forEach(commentData => {
+                        const item = document.createElement('div');
+                        item.className = 'quick-comment-item';
+                        item.textContent = commentData.name || commentData.text || commentData;
+                        item.title = commentData.text || commentData;
+                        item.addEventListener('click', () => insertQuickComment(commentData.text || commentData));
+                        quickCommentsList.appendChild(item);
+                    });
+                } else {
+                    quickCommentsList.innerHTML = '<div class="no-comments">No quick comments available. Add them in Template Editor.</div>';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading quick comments:', error);
+                quickCommentsList.innerHTML = '<div class="no-comments">Error loading quick comments.</div>';
+            });
+        }
+
+        function insertQuickComment(comment) {
+            // Use the last focused textarea, or fall back to currently active element
+            let targetTextarea = lastFocusedTextarea;
+            
+            // If no tracked textarea, try to get the currently focused one
+            if (!targetTextarea || !document.body.contains(targetTextarea)) {
+                const activeElement = document.activeElement;
+                if (activeElement && activeElement.tagName === 'TEXTAREA' && activeElement.classList.contains('feedback-text')) {
+                    targetTextarea = activeElement;
+                } else {
+                    // Final fallback to first textarea
+                    targetTextarea = document.querySelector('.feedback-text');
+                }
+            }
+            
+            if (targetTextarea) {
+                // Focus the textarea first to ensure it's active
+                targetTextarea.focus();
+                
+                // Get current cursor position
+                const cursorPosition = targetTextarea.selectionStart;
+                const textBefore = targetTextarea.value.substring(0, cursorPosition);
+                const textAfter = targetTextarea.value.substring(targetTextarea.selectionEnd);
+                
+                // Insert comment at cursor position with appropriate spacing
+                let separator = '';
+                if (textBefore.length > 0 && !textBefore.endsWith('\n')) {
+                    separator = textBefore.endsWith(' ') ? '' : ' ';
+                }
+                
+                const newValue = textBefore + separator + comment + textAfter;
+                targetTextarea.value = newValue;
+                
+                // Set cursor position after the inserted comment
+                const newCursorPosition = cursorPosition + separator.length + comment.length;
+                targetTextarea.setSelectionRange(newCursorPosition, newCursorPosition);
+                
+                // Update character counter
+                const event = new Event('input', { bubbles: true });
+                targetTextarea.dispatchEvent(event);
+                
+                // Get section ID for notification
+                const sectionId = targetTextarea.getAttribute('data-section-id');
+                showNotification(`Quick comment inserted in section ${sectionId}!`, 'success');
+            }
+        }
+
+        function initializeCategorySelector() {
+            const categoryButtons = document.getElementById('category-buttons');
+            const categoryCommentsList = document.getElementById('category-comments-list');
+            
+            if (!categoryButtons || !categoryCommentsList) return;
+            
+            // Load categories from backend
+            fetch('/load_categories')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const categories = data.categories;
+                    
+                    // Clear existing buttons
+                    categoryButtons.innerHTML = '';
+                    
+                    Object.keys(categories).forEach(categoryName => {
+                        const button = document.createElement('button');
+                        button.className = 'category-btn';
+                        button.textContent = categoryName;
+                        button.addEventListener('click', function() {
+                            // Remove active class from all buttons
+                            document.querySelectorAll('.category-btn').forEach(btn => {
+                                btn.classList.remove('active');
+                            });
+                            // Add active class to clicked button
+                            this.classList.add('active');
+                            // Load comments for this category
+                            loadCategoryComments(categoryName, categories);
+                        });
+                        categoryButtons.appendChild(button);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error loading categories:', error);
+            });
+        }
+
+        function loadCategoryComments(categoryName, allCategories) {
+            const categoryCommentsList = document.getElementById('category-comments-list');
+            if (!categoryCommentsList || !categoryName) {
+                categoryCommentsList.innerHTML = '<div class="no-comments">Select a category to view comments.</div>';
+                return;
+            }
+            
+            const categoryData = allCategories[categoryName];
+            if (!categoryData || Object.keys(categoryData).length === 0) {
+                categoryCommentsList.innerHTML = '<div class="no-comments">No comments available for this category.</div>';
+                return;
+            }
+            
+            categoryCommentsList.innerHTML = '';
+            
+            Object.keys(categoryData).forEach(sectionId => {
+                const comments = categoryData[sectionId];
+                
+                comments.forEach(comment => {
+                    const item = document.createElement('div');
+                    item.className = 'category-comment-item';
+                    item.innerHTML = `
+                        <div class="category-comment-section">Section ${sectionId}</div>
+                        <div>${comment}</div>
+                    `;
+                    item.addEventListener('click', () => insertCategoryComment(sectionId, comment));
+                    categoryCommentsList.appendChild(item);
+                });
+            });
+        }
+
+        function insertCategoryComment(sectionId, comment) {
+            const targetTextarea = document.getElementById(`feedback-${sectionId}`);
+            
+            if (targetTextarea) {
+                const currentValue = targetTextarea.value;
+                const newValue = currentValue ? currentValue + '\n\n' + comment : comment;
+                targetTextarea.value = newValue;
+                
+                // Update character counter
+                const event = new Event('input', { bubbles: true });
+                targetTextarea.dispatchEvent(event);
+                
+                // Scroll to section and focus
+                scrollToSection(sectionId);
+                setTimeout(() => targetTextarea.focus(), 500);
+                
+                showNotification(`Comment inserted into section ${sectionId}!`, 'success');
             }
         }
 
