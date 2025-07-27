@@ -6,7 +6,9 @@
       "Bash(\"C:\\Users\\kraje\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe\" app.py)",
       "Bash(pip --version)",
       "Bash(pip install:*)",
-      "Bash(C:UserskrajeOneDrivePulpitdmp-extractor.venvScriptsactivate)"
+      "Bash(C:UserskrajeOneDrivePulpitdmp-extractor.venvScriptsactivate)",
+      "Bash(rm:*)",
+      "Bash(git add:*)"
     ],
     "deny": []
   }

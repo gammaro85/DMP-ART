@@ -1,0 +1,102 @@
+{
+     "missing": {
+          "1.1": [
+               "The methodology section lacks specific details about data collection procedures.",
+               "Please specify the exact sources and collection methods.",
+               "More information needed about data validation and quality checks.",
+               "Timeline for data collection is not specified.",
+               "Missing information about data collection tools and instruments."
+          ],
+          "1.2": [
+               "Please provide more specific information about data formats and expected volumes.",
+               "The data types description is too vague - be more specific.",
+               "Volume estimates are missing or unrealistic.",
+               "File formats are not specified for different data types.",
+               "Missing information about data structure and organization."
+          ],
+          "2.1": [
+               "Metadata standards are not specified for this field of research.",
+               "Documentation plans are incomplete or missing.",
+               "No mention of data dictionary or codebook creation.",
+               "Missing information about variable definitions and units.",
+               "Provenance tracking is not addressed."
+          ],
+          "2.2": [
+               "Quality control procedures are not adequately described.",
+               "Missing information about validation methods and criteria.",
+               "No mention of error handling and correction procedures.",
+               "Quality metrics and thresholds are not defined.",
+               "Missing details about calibration and standardization procedures."
+          ],
+          "3.1": [
+               "Backup strategy lacks detail about frequency and verification procedures.",
+               "Storage locations and access controls are not specified.",
+               "Missing information about disaster recovery plans.",
+               "No mention of data synchronization between storage locations.",
+               "Retention policies are not clearly defined."
+          ],
+          "3.2": [
+               "Security measures are inadequately described.",
+               "Access control mechanisms are not specified.",
+               "Missing information about encryption methods.",
+               "No mention of security monitoring and incident response.",
+               "Physical security measures are not addressed."
+          ],
+          "4.1": [
+               "GDPR compliance procedures are not adequately described.",
+               "Missing information about consent management.",
+               "Data subject rights and procedures are not addressed.",
+               "Privacy impact assessment is not mentioned.",
+               "Cross-border data transfer issues are not considered."
+          ],
+          "4.2": [
+               "Intellectual property arrangements are not clearly defined.",
+               "Licensing terms for data sharing are missing.",
+               "Ownership of derived data products is not addressed.",
+               "Third-party IP considerations are not mentioned.",
+               "Commercial exploitation rights are not defined."
+          ],
+          "5.1": [
+               "Data sharing timeline is too vague or missing.",
+               "Specific repositories for data sharing are not identified.",
+               "Access restrictions and embargo periods are not defined.",
+               "Missing information about data sharing agreements.",
+               "No mention of data sharing costs and responsibilities."
+          ],
+          "5.2": [
+               "Long-term preservation strategy lacks specific details.",
+               "Repository selection criteria are not provided.",
+               "Preservation period is not specified.",
+               "Missing information about format migration strategies.",
+               "No mention of preservation costs and funding."
+          ],
+          "5.3": [
+               "Software requirements are not adequately specified.",
+               "Missing information about data access tools and interfaces.",
+               "Documentation for data processing workflows is incomplete.",
+               "No mention of software preservation strategies.",
+               "User training and support plans are missing."
+          ],
+          "5.4": [
+               "DOI assignment procedures are not described.",
+               "Missing information about identifier registration authority.",
+               "No mention of metadata requirements for persistent identifiers.",
+               "Identifier assignment timeline is not specified.",
+               "Missing details about identifier maintenance and updates."
+          ],
+          "6.1": [
+               "Data management roles and responsibilities are not clearly assigned.",
+               "Missing information about data stewardship training.",
+               "No mention of succession planning for key personnel.",
+               "Data management oversight and governance are not addressed.",
+               "Missing details about coordination between team members."
+          ],
+          "6.2": [
+               "Resource requirements for data management are not adequately budgeted.",
+               "Missing information about ongoing operational costs.",
+               "No mention of resource allocation for different project phases.",
+               "Staff time allocation for data management is not specified.",
+               "Missing details about infrastructure and tool costs."
+          ]
+          }
+     }

@@ -46,7 +46,7 @@
             button.className = 'theme-toggle';
             button.setAttribute('aria-label', 'Toggle dark mode');
             button.innerHTML = `
-                <span id="theme-text">Dark</span>
+                <i id="theme-icon" class="fas fa-moon"></i>
             `;
 
             button.addEventListener('click', () => this.toggleTheme());
@@ -54,10 +54,11 @@
         },
 
         updateToggleButton(isDark) {
-            const text = document.getElementById('theme-text');
+            const icon = document.getElementById('theme-icon');
 
-            if (text) {
-                text.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+            if (icon) {
+                // Sun for dark mode (to switch to light), moon for light mode (to switch to dark)
+                icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
             }
         },
 

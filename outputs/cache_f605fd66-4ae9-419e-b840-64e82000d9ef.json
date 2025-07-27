@@ -1,0 +1,954 @@
+{
+  "1.1": {
+    "section": "1. Data description and collection or re-use of existing data",
+    "question": "How will new data be collected or produced and/or how will existing data be re-used?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "1.2": {
+    "section": "1. Data description and collection or re-use of existing data",
+    "question": "What data (for example the types, formats, and volumes) will be collected or produced?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "2.1": {
+    "section": "2. Documentation and data quality",
+    "question": "What metadata and documentation (for example methodology or data collection and way of organising data) will accompany data?",
+    "paragraphs": [
+      "Metadane będą zawierać identyfikator pliku i wersję każdego dokumentu. Źródło pochodzenia będzie oznaczone",
+      "poprzez URL OECD lub kod wywiadu. Każdy plik będzie posiadał datę pozyskania lub utworzenia. Autor lub osoba",
+      "odpowiedzialna będzie identyfikowana poprzez ORCID 0000-0003-1181-669X. Metodologia przetwarzania będzie",
+      "opisana poprzez parametry BERTopic i HDBSCAN. Metadane będą zawierać definicje zmiennych i jednostki pomiarowe",
+      "oraz format i kodowanie pliku.",
+      "Organizacja danych będzie oparta na zdefiniowanej strukturze folderów obejmującej katalogi raw_data,",
+      "processed_data, results i documentation. Książka kodowa w formacie Excel będzie zawierać definicje wszystkich",
+      "zmiennych. Standardem metadanych dla repozytoriów będzie Dublin Core.",
+      "Projekt wykorzystuje głównie wtórne źródła danych z publicznie dostępnych repozytoriów i dokumentów",
+      "strategicznych, w szczególności z OECD AI Policy Observatory w formie eksportu CSV i plików PDF. Dane jakościowe",
+      "będą pozyskane z transkrypcji wywiadów eksperckich przeprowadzonych w ramach działania. Nagrania audio będą",
+      "digitalizowane do formatu MP3. Pochodzenie danych będzie dokumentowane poprzez systematyczne oznaczanie",
+      "źródeł, dat pozyskania i wersji. W projekcie wykorzystywane będą też standardy BERTopic w wersji 1.16, Python 3.9+,",
+      "HDBSCAN oraz UMAP.",
+      "Dane pierwotne obejmują korpus dokumentów strategicznych AI składający się z około 800 dokumentów w formatach",
+      "PDF i CSV o łącznej wielkości około 1 GB. Ponadto zostanie utworzonych 5 transkrypcji wywiadów eksperckich w",
+      "formatach TXT i DOCX o łącznej objętości około 50 stron. Nagrania audio wywiadów będą przechowywane w formacie",
+      "MP3 (około 5 godzin) i usuwane po zakończeniu transkrypcji.",
+      "Dane przetworzone będą składać się z wyników analiz BERTopic obejmujących około 30 tematów w formatach CSV i",
+      "JSON o wielkości około 100MB oraz analizy wywiadów w formatach DOCX/PDF.. Metadane instrumentów polityki",
+      "publicznej będą przechowywane w formatach CSV i Excel o wielkości około 10MB. Mapa klastrów krajów będzie",
+      "dostępna w formatach CSV i JSON o wielkości około 5MB. Słownik pojęć otwartej innowacji zostanie utworzony w",
+      "formatach DOCX i PDF o objętości około 20 stron. Formatami priorytetowymi są CSV, JSON i TXT jako formaty otwarte",
+      "oraz DOCX i PDF dla dokumentacji."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Metadane będą zawierać identyfikator pliku i wersję każdego dokumentu. Źródło pochodzenia będzie oznaczone",
+        "tags": [],
+        "title": "Metadane będą zawierać identyfikator pliku i wersję każdego dokumentu."
+      },
+      {
+        "text": "poprzez URL OECD lub kod wywiadu. Każdy plik będzie posiadał datę pozyskania lub utworzenia. Autor lub osoba",
+        "tags": [],
+        "title": "poprzez URL OECD lub kod wywiadu."
+      },
+      {
+        "text": "odpowiedzialna będzie identyfikowana poprzez ORCID 0000-0003-1181-669X. Metodologia przetwarzania będzie",
+        "tags": [
+          "identifier"
+        ],
+        "title": "odpowiedzialna będzie identyfikowana poprzez ORCID 0000-0003-1181-669X."
+      },
+      {
+        "text": "opisana poprzez parametry BERTopic i HDBSCAN. Metadane będą zawierać definicje zmiennych i jednostki pomiarowe",
+        "tags": [
+          "responsibility"
+        ],
+        "title": "opisana poprzez parametry BERTopic i HDBSCAN."
+      },
+      {
+        "text": "oraz format i kodowanie pliku.",
+        "tags": [
+          "data_format"
+        ],
+        "title": "oraz format i kodowanie pliku."
+      },
+      {
+        "text": "Organizacja danych będzie oparta na zdefiniowanej strukturze folderów obejmującej katalogi raw_data,",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "processed_data, results i documentation. Książka kodowa w formacie Excel będzie zawierać definicje wszystkich",
+        "tags": [
+          "methodology",
+          "metadata"
+        ],
+        "title": "processed_data, results i documentation."
+      },
+      {
+        "text": "zmiennych. Standardem metadanych dla repozytoriów będzie Dublin Core.",
+        "tags": [],
+        "title": "zmiennych."
+      },
+      {
+        "text": "Projekt wykorzystuje głównie wtórne źródła danych z publicznie dostępnych repozytoriów i dokumentów",
+        "tags": [],
+        "title": "Projekt wykorzystuje głównie wtórne źródła danych z publicznie dostępnych repozytoriów i dokumentów"
+      },
+      {
+        "text": "strategicznych, w szczególności z OECD AI Policy Observatory w formie eksportu CSV i plików PDF. Dane jakościowe",
+        "tags": [
+          "data_format"
+        ],
+        "title": "strategicznych, w szczególności z OECD AI Policy Observatory w formie eksportu CSV i plików PDF."
+      },
+      {
+        "text": "będą pozyskane z transkrypcji wywiadów eksperckich przeprowadzonych w ramach działania. Nagrania audio będą",
+        "tags": [],
+        "title": "będą pozyskane z transkrypcji wywiadów eksperckich przeprowadzonych w ramach działania."
+      },
+      {
+        "text": "digitalizowane do formatu MP3. Pochodzenie danych będzie dokumentowane poprzez systematyczne oznaczanie",
+        "tags": [
+          "data_format"
+        ],
+        "title": "digitalizowane do formatu MP3."
+      },
+      {
+        "text": "źródeł, dat pozyskania i wersji. W projekcie wykorzystywane będą też standardy BERTopic w wersji 1.16, Python 3.9+,",
+        "tags": [
+          "responsibility"
+        ],
+        "title": "źródeł, dat pozyskania i wersji."
+      },
+      {
+        "text": "HDBSCAN oraz UMAP.",
+        "tags": [],
+        "title": "HDBSCAN oraz UMAP."
+      },
+      {
+        "text": "Dane pierwotne obejmują korpus dokumentów strategicznych AI składający się z około 800 dokumentów w formatach",
+        "tags": [
+          "data_format",
+          "responsibility"
+        ],
+        "title": null
+      },
+      {
+        "text": "PDF i CSV o łącznej wielkości około 1 GB. Ponadto zostanie utworzonych 5 transkrypcji wywiadów eksperckich w",
+        "tags": [
+          "data_format",
+          "data_volume"
+        ],
+        "title": "PDF i CSV o łącznej wielkości około 1 GB."
+      },
+      {
+        "text": "formatach TXT i DOCX o łącznej objętości około 50 stron. Nagrania audio wywiadów będą przechowywane w formacie",
+        "tags": [
+          "data_format"
+        ],
+        "title": "formatach TXT i DOCX o łącznej objętości około 50 stron."
+      },
+      {
+        "text": "MP3 (około 5 godzin) i usuwane po zakończeniu transkrypcji.",
+        "tags": [],
+        "title": "MP3 (około 5 godzin) i usuwane po zakończeniu transkrypcji."
+      },
+      {
+        "text": "Dane przetworzone będą składać się z wyników analiz BERTopic obejmujących około 30 tematów w formatach CSV i",
+        "tags": [
+          "data_format",
+          "responsibility"
+        ],
+        "title": null
+      },
+      {
+        "text": "JSON o wielkości około 100MB oraz analizy wywiadów w formatach DOCX/PDF.. Metadane instrumentów polityki",
+        "tags": [
+          "data_format",
+          "data_volume"
+        ],
+        "title": "JSON o wielkości około 100MB oraz analizy wywiadów w formatach DOCX/PDF.."
+      },
+      {
+        "text": "publicznej będą przechowywane w formatach CSV i Excel o wielkości około 10MB. Mapa klastrów krajów będzie",
+        "tags": [
+          "data_format",
+          "data_volume"
+        ],
+        "title": "publicznej będą przechowywane w formatach CSV i Excel o wielkości około 10MB."
+      },
+      {
+        "text": "dostępna w formatach CSV i JSON o wielkości około 5MB. Słownik pojęć otwartej innowacji zostanie utworzony w",
+        "tags": [
+          "data_format",
+          "data_volume"
+        ],
+        "title": "dostępna w formatach CSV i JSON o wielkości około 5MB."
+      },
+      {
+        "text": "formatach DOCX i PDF o objętości około 20 stron. Formatami priorytetowymi są CSV, JSON i TXT jako formaty otwarte",
+        "tags": [
+          "data_format"
+        ],
+        "title": "formatach DOCX i PDF o objętości około 20 stron."
+      },
+      {
+        "text": "oraz DOCX i PDF dla dokumentacji.",
+        "tags": [
+          "data_format"
+        ],
+        "title": "oraz DOCX i PDF dla dokumentacji."
+      }
+    ]
+  },
+  "2.2": {
+    "section": "2. Documentation and data quality",
+    "question": "What data quality control measures will be used?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "3.1": {
+    "section": "3. Storage and backup during the research process",
+    "question": "How will data and metadata be stored and backed up during the research process?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "3.2": {
+    "section": "3. Storage and backup during the research process",
+    "question": "How will data security and protection of sensitive data be taken care of during the research?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "4.1": {
+    "section": "4. Legal requirements, codes of conduct",
+    "question": "If personal data are processed, how will compliance with legislation on personal data and on data security be ensured?",
+    "paragraphs": [
+      "Wywiady będą anonimizowane poprzez usunięcie danych identyfikujących. Respondenci wyrażą świadomą zgodę na",
+      "udział w badaniu. Przetwarzanie danych będzie zgodne z polityką ochrony danych Politechniki Gdańskiej oraz",
+      "wymogami RODO.",
+      "Kontrola jakości będzie obejmować weryfikację kompletności danych z OECD poprzez automatyczne sprawdzenie",
+      "brakujących pól. Transkrypcje będą walidowane poprzez kontrolę 20% materiału. Parametry BERTopic będą",
+      "kalibrowane poprzez testy z różnymi ustawieniami. Wyniki będą porównywane z literaturą przedmiotu w ramach",
+      "triangulacji metodologicznej. Wszystkie wersje plików będą oznaczane czasowo. Błędy systematyczne będą",
+      "eliminowane poprzez standaryzację procedur. Wszystkie decyzje metodologiczne będą dokumentowane. Dane",
+      "ilościowe będą czyszczone z wartości odstających.",
+      "Głównym repozytorium będzie zabezpieczony serwer uczelniany Politechniki Gdańskiej. Pojemność 10GB przestrzeni",
+      "dyskowej będzie wystarczająca dla całego projektu. Struktura będzie obejmować dedykowane katalogi dla każdego",
+      "typu danych.",
+      "Kopie zapasowe będą tworzone automatycznie codziennie na szyfrowanym dysku zewnętrznym. Kopie tygodniowe",
+      "będą przechowywane w chmurze uczelnianej. Kopie miesięczne będą tworzone na drugim dysku zewnętrznym",
+      "przechowywanym w innej lokalizacji. Odpowiedzialnością dr inż. Marita Mcphillips będzie zarządzanie głównym",
+      "systemem, natomiast wsparcie IT uczelni będzie odpowiedzialne za infrastrukturę serwerową.",
+      "Dane jakościowe będą szyfrowane. Dostęp do wszystkich danych będzie ograniczony wyłącznie do osoby realizującej",
+      "działanie poprzez autoryzację dwuskładnikową. Nagrania wywiadów będą automatycznie usuwane po zakończeniu",
+      "transkrypcji."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Wywiady będą anonimizowane poprzez usunięcie danych identyfikujących. Respondenci wyrażą świadomą zgodę na",
+        "tags": [],
+        "title": "Wywiady będą anonimizowane poprzez usunięcie danych identyfikujących."
+      },
+      {
+        "text": "udział w badaniu. Przetwarzanie danych będzie zgodne z polityką ochrony danych Politechniki Gdańskiej oraz",
+        "tags": [],
+        "title": "udział w badaniu."
+      },
+      {
+        "text": "wymogami RODO.",
+        "tags": [],
+        "title": "wymogami RODO."
+      },
+      {
+        "text": "Kontrola jakości będzie obejmować weryfikację kompletności danych z OECD poprzez automatyczne sprawdzenie",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "brakujących pól. Transkrypcje będą walidowane poprzez kontrolę 20% materiału. Parametry BERTopic będą",
+        "tags": [
+          "responsibility"
+        ],
+        "title": "brakujących pól."
+      },
+      {
+        "text": "kalibrowane poprzez testy z różnymi ustawieniami. Wyniki będą porównywane z literaturą przedmiotu w ramach",
+        "tags": [],
+        "title": "kalibrowane poprzez testy z różnymi ustawieniami."
+      },
+      {
+        "text": "triangulacji metodologicznej. Wszystkie wersje plików będą oznaczane czasowo. Błędy systematyczne będą",
+        "tags": [],
+        "title": "triangulacji metodologicznej."
+      },
+      {
+        "text": "eliminowane poprzez standaryzację procedur. Wszystkie decyzje metodologiczne będą dokumentowane. Dane",
+        "tags": [],
+        "title": "eliminowane poprzez standaryzację procedur."
+      },
+      {
+        "text": "ilościowe będą czyszczone z wartości odstających.",
+        "tags": [],
+        "title": "ilościowe będą czyszczone z wartości odstających."
+      },
+      {
+        "text": "Głównym repozytorium będzie zabezpieczony serwer uczelniany Politechniki Gdańskiej. Pojemność 10GB przestrzeni",
+        "tags": [
+          "data_volume",
+          "responsibility"
+        ],
+        "title": "Głównym repozytorium będzie zabezpieczony serwer uczelniany Politechniki Gdańskiej."
+      },
+      {
+        "text": "dyskowej będzie wystarczająca dla całego projektu. Struktura będzie obejmować dedykowane katalogi dla każdego",
+        "tags": [],
+        "title": "dyskowej będzie wystarczająca dla całego projektu."
+      },
+      {
+        "text": "typu danych.",
+        "tags": [],
+        "title": "typu danych."
+      },
+      {
+        "text": "Kopie zapasowe będą tworzone automatycznie codziennie na szyfrowanym dysku zewnętrznym. Kopie tygodniowe",
+        "tags": [
+          "responsibility"
+        ],
+        "title": "Kopie zapasowe będą tworzone automatycznie codziennie na szyfrowanym dysku zewnętrznym."
+      },
+      {
+        "text": "będą przechowywane w chmurze uczelnianej. Kopie miesięczne będą tworzone na drugim dysku zewnętrznym",
+        "tags": [
+          "responsibility"
+        ],
+        "title": "będą przechowywane w chmurze uczelnianej."
+      },
+      {
+        "text": "przechowywanym w innej lokalizacji. Odpowiedzialnością dr inż. Marita Mcphillips będzie zarządzanie głównym",
+        "tags": [],
+        "title": "przechowywanym w innej lokalizacji."
+      },
+      {
+        "text": "systemem, natomiast wsparcie IT uczelni będzie odpowiedzialne za infrastrukturę serwerową.",
+        "tags": [],
+        "title": "systemem, natomiast wsparcie IT uczelni będzie odpowiedzialne za infrastrukturę serwerową."
+      },
+      {
+        "text": "Dane jakościowe będą szyfrowane. Dostęp do wszystkich danych będzie ograniczony wyłącznie do osoby realizującej",
+        "tags": [],
+        "title": "Dane jakościowe będą szyfrowane."
+      },
+      {
+        "text": "działanie poprzez autoryzację dwuskładnikową. Nagrania wywiadów będą automatycznie usuwane po zakończeniu",
+        "tags": [],
+        "title": "działanie poprzez autoryzację dwuskładnikową."
+      },
+      {
+        "text": "transkrypcji.",
+        "tags": [],
+        "title": "transkrypcji."
+      }
+    ]
+  },
+  "4.2": {
+    "section": "4. Legal requirements, codes of conduct",
+    "question": "How will other legal issues, such as intelectual property rights and ownership, be managed? What legislation is applicable?",
+    "paragraphs": [
+      "Wykorzystywane dane z OECD AI Policy Observatory są publicznie dostępne na licencji otwartej. Transkrypcje",
+      "wywiadów będą własnością intelektualną projektu. Wszystkie procedury będą zgodne z założeniami etyki projektów"
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Wykorzystywane dane z OECD AI Policy Observatory są publicznie dostępne na licencji otwartej. Transkrypcje",
+        "tags": [],
+        "title": "Wykorzystywane dane z OECD AI Policy Observatory są publicznie dostępne na licencji otwartej."
+      },
+      {
+        "text": "wywiadów będą własnością intelektualną projektu. Wszystkie procedury będą zgodne z założeniami etyki projektów",
+        "tags": [],
+        "title": "wywiadów będą własnością intelektualną projektu."
+      }
+    ]
+  },
+  "5.1": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How and when will data be shared? Are there possible restrictions to data sharing or embargo reasons?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "5.2": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How will data for preservation be selected, and where will data be preserved long-term (for example a data repository or archive)?",
+    "paragraphs": [
+      "Do długotrwałego przechowywania przeznaczone będą korpus dokumentów z metadanymi, wyniki analiz BERTopic",
+      "oraz zanonimizowane transkrypcje. Dane będą zarchiwizowane w repozytorium MOST Wiedzy Politechniki Gdańskiej.",
+      "Zanonimizowany korpus danych z adnotacjami otwartej innowacji oraz mapa polityk AI zostaną udostępnione",
+      "publicznie w repozytorium MOST Wiedzy Politechniki Gdańskiej najpóźniej w ciągu 6 miesięcy od zakończenia projektu",
+      "pod licencją Creative Commons BY 4.0."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Do długotrwałego przechowywania przeznaczone będą korpus dokumentów z metadanymi, wyniki analiz BERTopic",
+        "tags": [
+          "responsibility"
+        ],
+        "title": null
+      },
+      {
+        "text": "oraz zanonimizowane transkrypcje. Dane będą zarchiwizowane w repozytorium MOST Wiedzy Politechniki Gdańskiej.",
+        "tags": [],
+        "title": "oraz zanonimizowane transkrypcje."
+      },
+      {
+        "text": "Zanonimizowany korpus danych z adnotacjami otwartej innowacji oraz mapa polityk AI zostaną udostępnione",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "publicznie w repozytorium MOST Wiedzy Politechniki Gdańskiej najpóźniej w ciągu 6 miesięcy od zakończenia projektu",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "pod licencją Creative Commons BY 4.0.",
+        "tags": [
+          "license"
+        ],
+        "title": "pod licencją Creative Commons BY 4.0."
+      }
+    ]
+  },
+  "5.3": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "What methods or software tools will be needed to access and use the data?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "5.4": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How will the application of a unique and persistent identifier (such us a Digital Object Identifier (DOI)) to each data set be ensured?",
+    "paragraphs": [
+      "Każdy zestaw danych otrzyma unikalny identyfikator DOI poprzez system MOST Wiedzy Politechniki Gdańskiej. Dane",
+      "będą zatem oznaczone stałymi identyfikatorami zgodnie ze standardami FAIR.",
+      "Dostęp do danych będzie zapewniony poprzez interfejs repozytorium MOST Wiedzy umożliwiający przeglądanie i",
+      "pobieranie (formaty CSV/JSON). Standardowymi narzędziami będą Python z bibliotekami pandas i numpy oraz Excel.",
+      "Oprogramowanie do konwersji nie będzie wymagane dla danych w formatach otwartych. Narzędzia BERTopic będą",
+      "dostępne jako pakiet Python w formie open source.",
+      "Mechanizm udostępniania będzie obejmować bezpośrednie pobieranie z repozytorium. Na żądanie będzie możliwa",
+      "wysyłka większych zestawów danych poprzez e-mail. Długoterminowa dostępność będzie zapewniona przez minimum",
+      "10 lat zgodnie ze standardami NCN."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Każdy zestaw danych otrzyma unikalny identyfikator DOI poprzez system MOST Wiedzy Politechniki Gdańskiej. Dane",
+        "tags": [
+          "identifier"
+        ],
+        "title": null
+      },
+      {
+        "text": "będą zatem oznaczone stałymi identyfikatorami zgodnie ze standardami FAIR.",
+        "tags": [],
+        "title": "będą zatem oznaczone stałymi identyfikatorami zgodnie ze standardami FAIR."
+      },
+      {
+        "text": "Dostęp do danych będzie zapewniony poprzez interfejs repozytorium MOST Wiedzy umożliwiający przeglądanie i",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "pobieranie (formaty CSV/JSON). Standardowymi narzędziami będą Python z bibliotekami pandas i numpy oraz Excel.",
+        "tags": [
+          "data_format"
+        ],
+        "title": "pobieranie (formaty CSV/JSON)."
+      },
+      {
+        "text": "Oprogramowanie do konwersji nie będzie wymagane dla danych w formatach otwartych. Narzędzia BERTopic będą",
+        "tags": [
+          "data_format",
+          "tools",
+          "responsibility"
+        ],
+        "title": "Oprogramowanie do konwersji nie będzie wymagane dla danych w formatach otwartych."
+      },
+      {
+        "text": "dostępne jako pakiet Python w formie open source.",
+        "tags": [],
+        "title": "dostępne jako pakiet Python w formie open source."
+      },
+      {
+        "text": "Mechanizm udostępniania będzie obejmować bezpośrednie pobieranie z repozytorium. Na żądanie będzie możliwa",
+        "tags": [],
+        "title": "Mechanizm udostępniania będzie obejmować bezpośrednie pobieranie z repozytorium."
+      },
+      {
+        "text": "wysyłka większych zestawów danych poprzez e-mail. Długoterminowa dostępność będzie zapewniona przez minimum",
+        "tags": [],
+        "title": "wysyłka większych zestawów danych poprzez e-mail."
+      },
+      {
+        "text": "10 lat zgodnie ze standardami NCN.",
+        "tags": [],
+        "title": "10 lat zgodnie ze standardami NCN."
+      }
+    ]
+  },
+  "6.1": {
+    "section": "6. Data management responsibilities and resources",
+    "question": "Who (for example role, position, and institution) will be responsible for data management (i.e the data steward)?",
+    "paragraphs": [
+      "Dr inż. Marita Mcphillips z Politechniki Gdańskiej, Wydziału Zarządzania i Ekonomii, będzie pełnić funkcję data steward",
+      "odpowiadając za wszystkie aspekty zarządzania danymi zgodnie z niniejszym planem.",
+      "dostępu, interoperacyjności i ponownego wykorzystania danychMarita Mcphillips, Politechnika Gdańska 655050",
+      "Zasoby ludzkie będą obejmować pracę dr inż. Marity Mcphillips w wymiarze 1 godziny tygodniowo na zarządzanie",
+      "danymi. Wsparcie IT uczelni będzie dostępne w formie konsultacji w razie potrzeby bez dodatkowych kosztów.",
+      "Zasoby techniczne i finansowe w ramach projektu będą obejmować szyfrowane dyski zewnętrzne w kwocie 800 złotych",
+      "jako materiały. Licencja ATLAS.ti Web będzie kosztować 560 złotych jako materiały. Usługi transkrypcji będą kosztować",
+      "1500 złotych jako usługi obce. Oprogramowanie Python będzie wykorzystywane jako bezpłatne rozwiązanie open",
+      "source.",
+      "Standardy FAIR będą zapewnione dla aspektu wyszukiwalności poprzez identyfikatory DOI i metadane w standardzie",
+      "Dublin Core. Dostępność będzie zapewniona poprzez repozytorium MOST Wiedzy i otwarte licencje. Interoperacyjność",
+      "będzie realizowana poprzez formaty CSV/JSON/PDF. Możliwość ponownego wykorzystania będzie zapewniona poprzez",
+      "kompletną dokumentację.Marita Mcphillips, Politechnika Gdańska 655050",
+      "ZBLIŻONE DZIAŁANIA NAUKOWE",
+      "Politechnika Gdańska",
+      "Czy podmiot ubiega się o finansowanie wskazanego we wniosku działania naukowego również z innych",
+      "źródeł?NIE",
+      "dr inż. Marita Mcphillips",
+      "Czy osoba wskazana jako realizująca działanie naukowe ubiega się o finansowanie wskazanego we wniosku",
+      "działania naukowego również z innych źródeł?NIE",
+      "Czy osoba wskazana jako realizująca działanie naukowe realizuje/realizowała działania zbliżone do działania",
+      "naukowego objętego tym wnioskiem?NIE",
+      "Osoba realizująca działanie naukowe jest AUTOREM OPISU DZIAŁANIAMarita Mcphillips, Politechnika Gdańska 655050",
+      "OŚWIADCZENIA KIEROWNIKA PODMIOTU / OSOBY UPRAWNIONEJ DO REPREZENTACJI",
+      "Działając w imieniu podmiotu, który reprezentuję, oświadczam, że:",
+      "innego źródła niż NCN:",
+      "a)w razie uzyskania finansowania z NCN, podmiot, który reprezentuję:",
+      "-zrezygnuje z ubiegania się o finansowanie z innego źródła",
+      "-zrezygnuje ze środków przyznanych na realizację działania naukowego przez Dyrektora NCN",
+      "b)w razie uzyskania finansowania z innego źródła, podmiot, który reprezentuję:",
+      "-zrezygnuje z ubiegania się o finansowanie w tym konkursie NCN",
+      "-zrezygnuje z przyjęcia finansowania z innego źródła;",
+      "zakwalifikowania do finansowania zgadza się na jego realizację;",
+      "a)włączenia go do planu zadaniowo-finansowego podmiotu;",
+      "b)zatrudnianiawykonawcówzbiorowychniezbędnychdorealizacjidziałanianaukowegonapodstawieuzgodnionej",
+      "z wykonawcami formy zatrudnienia (umowa o pracę, umowa o dzieło, umowa zlecenie);",
+      "c)zapewnienia warunkówdorealizacjidziałanianaukowego, wtymudostępnienia przestrzeni",
+      "biurowej/laboratoryjnej oraz aparatury naukowo-badawczej niezbędnej do jego realizacji;",
+      "d)zapewnienie obsługi administracyjno-finansowej realizacji działania naukowego;",
+      "e)sprawowanianadzorunadrealizacjądziałanianaukowegoiprawidłowością wydatkowanych natencelśrodków",
+      "finansowych;",
+      "7.zapoznałem/am się z zasadami doręczania decyzji Dyrektora NCN;",
+      "8.wyrażamzgodęnadokonanieweryfikacjiwnioskuprzypomocyoprogramowania antyplagiatowego oraz",
+      "umieszczenie treści wniosku w bazie danych oprogramowania;",
+      "9.zapoznałem/am sięztreściąKodeksuNarodowegoCentrumNaukidotyczącegorzetelnościbadańnaukowychi",
+      "starania o fundusze na badania i zobowiązuję się do jego stosowania;",
+      "10.świadomy/aodpowiedzialności prawnejwynikającejzprzekazanianieprawdziwych informacjizapewniam,że",
+      "informacjezawarteweniniejszymwnioskuofinansowaniedziałanianaukowegoorazdokumentach doniego",
+      "dołączonychzłożonymzapośrednictwem systemuOSF(ObsługaStrumieniFinansowania), sązgodnezestanem",
+      "faktycznym i prawnym;",
+      "11.akceptujęogólnewarunkiumowynafinansowanieirealizacjędziałanianaukowego(treśćogólnychwarunków",
+      "umowy);",
+      "12.jestemświadomy/a,że–wprzypadkuzakwalifikowania wnioskudofinansowania–dniemrozpoczęciarealizacji",
+      "działanianaukowegojestdzień,wktórymdecyzjaDyrektoraNarodowegoCentrumNaukiprzyznającafinansowanie",
+      "stała się ostateczna;",
+      "13.podmiot,któryreprezentuję,niepozostajepodzarządemkomisarycznym aninieznajdujesięwtokulikwidacjilub",
+      "postępowania upadłościowego.",
+      "Akceptacja oświadczenia: tak Marita Mcphillips, Politechnika Gdańska 655050",
+      "OCHRONA DANYCH OSOBOWYCH",
+      "INFORMACJA O ZASADACH PRZETWARZANIA DANYCH OSOBOWYCH",
+      "Administratorem Pani/Pana danych osobowych jest Narodowe Centrum Nauki z siedzibą w Krakowie przy ul.",
+      "Twardowskiego 16, 30-312 Kraków.",
+      "Kontakt do Inspektora Ochrony Danych: iod@ncn.gov.pl. Pani/Pana dane będą przetwarzane w celach:",
+      "dokonania oceny wniosku o finansowanie działania naukowego,a.",
+      "nadzoru, obsługi finansowo-księgowej, kontroli w trakcie jak i po zakończeniu działania naukowego, oceny jegob.",
+      "realizacji i rozliczenia umów o finansowanie,",
+      "przeprowadzania ewaluacji realizacji zadań Centrum, sprawozdawczości, upowszechniania w środowiskuc.",
+      "naukowym informacji o ogłaszanych przez Centrum konkursach, realizacji innych czynności regulowanych",
+      "przepisami prawa powszechnie obowiązującego oraz w celach archiwalnych.",
+      "Pełna treść klauzuli informacyjnej odnośnie przetwarzania Pani/Pana danych znajduje się na stronie internetowej: https:/",
+      "/www.ncn.gov.pl/dane-osobowe .Marita Mcphillips, Politechnika Gdańska 655050"
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Dr inż. Marita Mcphillips z Politechniki Gdańskiej, Wydziału Zarządzania i Ekonomii, będzie pełnić funkcję data steward",
+        "tags": [
+          "responsibility"
+        ],
+        "title": "Dr inż."
+      },
+      {
+        "text": "odpowiadając za wszystkie aspekty zarządzania danymi zgodnie z niniejszym planem.",
+        "tags": [],
+        "title": "odpowiadając za wszystkie aspekty zarządzania danymi zgodnie z niniejszym planem."
+      },
+      {
+        "text": "dostępu, interoperacyjności i ponownego wykorzystania danychMarita Mcphillips, Politechnika Gdańska 655050",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "Zasoby ludzkie będą obejmować pracę dr inż. Marity Mcphillips w wymiarze 1 godziny tygodniowo na zarządzanie",
+        "tags": [],
+        "title": "Zasoby ludzkie będą obejmować pracę dr inż."
+      },
+      {
+        "text": "danymi. Wsparcie IT uczelni będzie dostępne w formie konsultacji w razie potrzeby bez dodatkowych kosztów.",
+        "tags": [],
+        "title": "danymi."
+      },
+      {
+        "text": "Zasoby techniczne i finansowe w ramach projektu będą obejmować szyfrowane dyski zewnętrzne w kwocie 800 złotych",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "jako materiały. Licencja ATLAS.ti Web będzie kosztować 560 złotych jako materiały. Usługi transkrypcji będą kosztować",
+        "tags": [],
+        "title": "jako materiały."
+      },
+      {
+        "text": "1500 złotych jako usługi obce. Oprogramowanie Python będzie wykorzystywane jako bezpłatne rozwiązanie open",
+        "tags": [
+          "tools"
+        ],
+        "title": "1500 złotych jako usługi obce."
+      },
+      {
+        "text": "source.",
+        "tags": [],
+        "title": "source."
+      },
+      {
+        "text": "Standardy FAIR będą zapewnione dla aspektu wyszukiwalności poprzez identyfikatory DOI i metadane w standardzie",
+        "tags": [
+          "identifier"
+        ],
+        "title": null
+      },
+      {
+        "text": "Dublin Core. Dostępność będzie zapewniona poprzez repozytorium MOST Wiedzy i otwarte licencje. Interoperacyjność",
+        "tags": [],
+        "title": "Dublin Core."
+      },
+      {
+        "text": "będzie realizowana poprzez formaty CSV/JSON/PDF. Możliwość ponownego wykorzystania będzie zapewniona poprzez",
+        "tags": [
+          "data_format"
+        ],
+        "title": "będzie realizowana poprzez formaty CSV/JSON/PDF."
+      },
+      {
+        "text": "kompletną dokumentację.Marita Mcphillips, Politechnika Gdańska 655050",
+        "tags": [],
+        "title": "kompletną dokumentację.Marita Mcphillips, Politechnika Gdańska 655050"
+      },
+      {
+        "text": "ZBLIŻONE DZIAŁANIA NAUKOWE",
+        "tags": [],
+        "title": "ZBLIŻONE DZIAŁANIA NAUKOWE"
+      },
+      {
+        "text": "Politechnika Gdańska",
+        "tags": [],
+        "title": "Politechnika Gdańska"
+      },
+      {
+        "text": "Czy podmiot ubiega się o finansowanie wskazanego we wniosku działania naukowego również z innych",
+        "tags": [],
+        "title": "Czy podmiot ubiega się o finansowanie wskazanego we wniosku działania naukowego również z innych"
+      },
+      {
+        "text": "źródeł?NIE",
+        "tags": [],
+        "title": "źródeł?NIE"
+      },
+      {
+        "text": "dr inż. Marita Mcphillips",
+        "tags": [],
+        "title": "dr inż."
+      },
+      {
+        "text": "Czy osoba wskazana jako realizująca działanie naukowe ubiega się o finansowanie wskazanego we wniosku",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "działania naukowego również z innych źródeł?NIE",
+        "tags": [],
+        "title": "działania naukowego również z innych źródeł?NIE"
+      },
+      {
+        "text": "Czy osoba wskazana jako realizująca działanie naukowe realizuje/realizowała działania zbliżone do działania",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "naukowego objętego tym wnioskiem?NIE",
+        "tags": [],
+        "title": "naukowego objętego tym wnioskiem?NIE"
+      },
+      {
+        "text": "Osoba realizująca działanie naukowe jest AUTOREM OPISU DZIAŁANIAMarita Mcphillips, Politechnika Gdańska 655050",
+        "tags": [
+          "responsibility"
+        ],
+        "title": null
+      },
+      {
+        "text": "OŚWIADCZENIA KIEROWNIKA PODMIOTU / OSOBY UPRAWNIONEJ DO REPREZENTACJI",
+        "tags": [],
+        "title": "OŚWIADCZENIA KIEROWNIKA PODMIOTU / OSOBY UPRAWNIONEJ DO REPREZENTACJI"
+      },
+      {
+        "text": "Działając w imieniu podmiotu, który reprezentuję, oświadczam, że:",
+        "tags": [],
+        "title": "Działając w imieniu podmiotu, który reprezentuję, oświadczam, że:"
+      },
+      {
+        "text": "innego źródła niż NCN:",
+        "tags": [],
+        "title": "innego źródła niż NCN:"
+      },
+      {
+        "text": "a)w razie uzyskania finansowania z NCN, podmiot, który reprezentuję:",
+        "tags": [],
+        "title": "a)w razie uzyskania finansowania z NCN, podmiot, który reprezentuję:"
+      },
+      {
+        "text": "-zrezygnuje z ubiegania się o finansowanie z innego źródła",
+        "tags": [],
+        "title": "-zrezygnuje z ubiegania się o finansowanie z innego źródła"
+      },
+      {
+        "text": "-zrezygnuje ze środków przyznanych na realizację działania naukowego przez Dyrektora NCN",
+        "tags": [],
+        "title": "-zrezygnuje ze środków przyznanych na realizację działania naukowego przez Dyrektora NCN"
+      },
+      {
+        "text": "b)w razie uzyskania finansowania z innego źródła, podmiot, który reprezentuję:",
+        "tags": [],
+        "title": "b)w razie uzyskania finansowania z innego źródła, podmiot, który reprezentuję:"
+      },
+      {
+        "text": "-zrezygnuje z ubiegania się o finansowanie w tym konkursie NCN",
+        "tags": [],
+        "title": "-zrezygnuje z ubiegania się o finansowanie w tym konkursie NCN"
+      },
+      {
+        "text": "-zrezygnuje z przyjęcia finansowania z innego źródła;",
+        "tags": [],
+        "title": "-zrezygnuje z przyjęcia finansowania z innego źródła;"
+      },
+      {
+        "text": "zakwalifikowania do finansowania zgadza się na jego realizację;",
+        "tags": [],
+        "title": "zakwalifikowania do finansowania zgadza się na jego realizację;"
+      },
+      {
+        "text": "a)włączenia go do planu zadaniowo-finansowego podmiotu;",
+        "tags": [],
+        "title": "a)włączenia go do planu zadaniowo-finansowego podmiotu;"
+      },
+      {
+        "text": "b)zatrudnianiawykonawcówzbiorowychniezbędnychdorealizacjidziałanianaukowegonapodstawieuzgodnionej",
+        "tags": [],
+        "title": "b)zatrudnianiawykonawcówzbiorowychniezbędnychdorealizacjidziałanianaukowegonapodstawieuzgodnionej"
+      },
+      {
+        "text": "z wykonawcami formy zatrudnienia (umowa o pracę, umowa o dzieło, umowa zlecenie);",
+        "tags": [],
+        "title": "z wykonawcami formy zatrudnienia (umowa o pracę, umowa o dzieło, umowa zlecenie);"
+      },
+      {
+        "text": "c)zapewnienia warunkówdorealizacjidziałanianaukowego, wtymudostępnienia przestrzeni",
+        "tags": [],
+        "title": "c)zapewnienia warunkówdorealizacjidziałanianaukowego, wtymudostępnienia przestrzeni"
+      },
+      {
+        "text": "biurowej/laboratoryjnej oraz aparatury naukowo-badawczej niezbędnej do jego realizacji;",
+        "tags": [],
+        "title": "biurowej/laboratoryjnej oraz aparatury naukowo-badawczej niezbędnej do jego realizacji;"
+      },
+      {
+        "text": "d)zapewnienie obsługi administracyjno-finansowej realizacji działania naukowego;",
+        "tags": [],
+        "title": "d)zapewnienie obsługi administracyjno-finansowej realizacji działania naukowego;"
+      },
+      {
+        "text": "e)sprawowanianadzorunadrealizacjądziałanianaukowegoiprawidłowością wydatkowanych natencelśrodków",
+        "tags": [],
+        "title": "e)sprawowanianadzorunadrealizacjądziałanianaukowegoiprawidłowością wydatkowanych natencelśrodków"
+      },
+      {
+        "text": "finansowych;",
+        "tags": [],
+        "title": "finansowych;"
+      },
+      {
+        "text": "7.zapoznałem/am się z zasadami doręczania decyzji Dyrektora NCN;",
+        "tags": [],
+        "title": "7.zapoznałem/am się z zasadami doręczania decyzji Dyrektora NCN;"
+      },
+      {
+        "text": "8.wyrażamzgodęnadokonanieweryfikacjiwnioskuprzypomocyoprogramowania antyplagiatowego oraz",
+        "tags": [
+          "tools"
+        ],
+        "title": "8.wyrażamzgodęnadokonanieweryfikacjiwnioskuprzypomocyoprogramowania antyplagiatowego oraz"
+      },
+      {
+        "text": "umieszczenie treści wniosku w bazie danych oprogramowania;",
+        "tags": [
+          "tools"
+        ],
+        "title": "umieszczenie treści wniosku w bazie danych oprogramowania;"
+      },
+      {
+        "text": "9.zapoznałem/am sięztreściąKodeksuNarodowegoCentrumNaukidotyczącegorzetelnościbadańnaukowychi",
+        "tags": [],
+        "title": "9.zapoznałem/am sięztreściąKodeksuNarodowegoCentrumNaukidotyczącegorzetelnościbadańnaukowychi"
+      },
+      {
+        "text": "starania o fundusze na badania i zobowiązuję się do jego stosowania;",
+        "tags": [],
+        "title": "starania o fundusze na badania i zobowiązuję się do jego stosowania;"
+      },
+      {
+        "text": "10.świadomy/aodpowiedzialności prawnejwynikającejzprzekazanianieprawdziwych informacjizapewniam,że",
+        "tags": [],
+        "title": "10.świadomy/aodpowiedzialności prawnejwynikającejzprzekazanianieprawdziwych informacjizapewniam,że"
+      },
+      {
+        "text": "informacjezawarteweniniejszymwnioskuofinansowaniedziałanianaukowegoorazdokumentach doniego",
+        "tags": [],
+        "title": "informacjezawarteweniniejszymwnioskuofinansowaniedziałanianaukowegoorazdokumentach doniego"
+      },
+      {
+        "text": "dołączonychzłożonymzapośrednictwem systemuOSF(ObsługaStrumieniFinansowania), sązgodnezestanem",
+        "tags": [],
+        "title": "dołączonychzłożonymzapośrednictwem systemuOSF(ObsługaStrumieniFinansowania), sązgodnezestanem"
+      },
+      {
+        "text": "faktycznym i prawnym;",
+        "tags": [],
+        "title": "faktycznym i prawnym;"
+      },
+      {
+        "text": "11.akceptujęogólnewarunkiumowynafinansowanieirealizacjędziałanianaukowego(treśćogólnychwarunków",
+        "tags": [],
+        "title": "11.akceptujęogólnewarunkiumowynafinansowanieirealizacjędziałanianaukowego(treśćogólnychwarunków"
+      },
+      {
+        "text": "umowy);",
+        "tags": [],
+        "title": "umowy);"
+      },
+      {
+        "text": "12.jestemświadomy/a,że–wprzypadkuzakwalifikowania wnioskudofinansowania–dniemrozpoczęciarealizacji",
+        "tags": [],
+        "title": "12.jestemświadomy/a,że–wprzypadkuzakwalifikowania wnioskudofinansowania–dniemrozpoczęciarealizacji"
+      },
+      {
+        "text": "działanianaukowegojestdzień,wktórymdecyzjaDyrektoraNarodowegoCentrumNaukiprzyznającafinansowanie",
+        "tags": [],
+        "title": "działanianaukowegojestdzień,wktórymdecyzjaDyrektoraNarodowegoCentrumNaukiprzyznającafinansowanie"
+      },
+      {
+        "text": "stała się ostateczna;",
+        "tags": [],
+        "title": "stała się ostateczna;"
+      },
+      {
+        "text": "13.podmiot,któryreprezentuję,niepozostajepodzarządemkomisarycznym aninieznajdujesięwtokulikwidacjilub",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "postępowania upadłościowego.",
+        "tags": [],
+        "title": "postępowania upadłościowego."
+      },
+      {
+        "text": "Akceptacja oświadczenia: tak Marita Mcphillips, Politechnika Gdańska 655050",
+        "tags": [],
+        "title": "Akceptacja oświadczenia: tak Marita Mcphillips, Politechnika Gdańska 655050"
+      },
+      {
+        "text": "OCHRONA DANYCH OSOBOWYCH",
+        "tags": [],
+        "title": "OCHRONA DANYCH OSOBOWYCH"
+      },
+      {
+        "text": "INFORMACJA O ZASADACH PRZETWARZANIA DANYCH OSOBOWYCH",
+        "tags": [],
+        "title": "INFORMACJA O ZASADACH PRZETWARZANIA DANYCH OSOBOWYCH"
+      },
+      {
+        "text": "Administratorem Pani/Pana danych osobowych jest Narodowe Centrum Nauki z siedzibą w Krakowie przy ul.",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "Twardowskiego 16, 30-312 Kraków.",
+        "tags": [],
+        "title": "Twardowskiego 16, 30-312 Kraków."
+      },
+      {
+        "text": "Kontakt do Inspektora Ochrony Danych: iod@ncn.gov.pl. Pani/Pana dane będą przetwarzane w celach:",
+        "tags": [],
+        "title": "Kontakt do Inspektora Ochrony Danych: iod@ncn.gov.pl."
+      },
+      {
+        "text": "dokonania oceny wniosku o finansowanie działania naukowego,a.",
+        "tags": [],
+        "title": "dokonania oceny wniosku o finansowanie działania naukowego,a."
+      },
+      {
+        "text": "nadzoru, obsługi finansowo-księgowej, kontroli w trakcie jak i po zakończeniu działania naukowego, oceny jegob.",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "realizacji i rozliczenia umów o finansowanie,",
+        "tags": [],
+        "title": "realizacji i rozliczenia umów o finansowanie,"
+      },
+      {
+        "text": "przeprowadzania ewaluacji realizacji zadań Centrum, sprawozdawczości, upowszechniania w środowiskuc.",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "naukowym informacji o ogłaszanych przez Centrum konkursach, realizacji innych czynności regulowanych",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "przepisami prawa powszechnie obowiązującego oraz w celach archiwalnych.",
+        "tags": [
+          "responsibility"
+        ],
+        "title": "przepisami prawa powszechnie obowiązującego oraz w celach archiwalnych."
+      },
+      {
+        "text": "Pełna treść klauzuli informacyjnej odnośnie przetwarzania Pani/Pana danych znajduje się na stronie internetowej: https:/",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "/www.ncn.gov.pl/dane-osobowe .Marita Mcphillips, Politechnika Gdańska 655050",
+        "tags": [],
+        "title": "/www.ncn.gov.pl/dane-osobowe .Marita Mcphillips, Politechnika Gdańska 655050"
+      }
+    ]
+  },
+  "6.2": {
+    "section": "6. Data management responsibilities and resources",
+    "question": "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  }
+}

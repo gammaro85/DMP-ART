@@ -556,34 +556,24 @@ def save_category():
     """Save category with its comments"""
     try:
         data = request.json
-        category_name = data.get('category_name')
-        category_data = data.get('category_data', {})
+        file = data.get('file')
+        category_data = data.get('data', {})
         
-        if not category_name:
+        if not file:
             return jsonify({
                 'success': False,
-                'message': 'Category name is required'
+                'message': 'File name is required'
             })
         
-        # Save to a JSON file in config directory
-        categories_path = os.path.join('config', 'categories.json')
+        # Save to individual JSON file in config directory
+        category_path = os.path.join('config', f'{file}.json')
         
-        # Load existing categories
-        categories = {}
-        if os.path.exists(categories_path):
-            with open(categories_path, 'r', encoding='utf-8') as f:
-                categories = json.load(f)
-        
-        # Update with new category data
-        categories[category_name] = category_data
-        
-        # Save back to file
-        with open(categories_path, 'w', encoding='utf-8') as f:
-            json.dump(categories, f, indent=2, ensure_ascii=False)
+        with open(category_path, 'w', encoding='utf-8') as f:
+            json.dump(category_data, f, indent=2, ensure_ascii=False)
         
         return jsonify({
             'success': True,
-            'message': f'Category "{category_name}" saved successfully'
+            'message': f'Category "{file}" saved successfully'
         })
         
     except Exception as e:
@@ -618,6 +608,57 @@ def load_categories():
             'message': f'Error loading categories: {str(e)}'
         })
 
+@app.route('/load_category_comments', methods=['GET'])
+def load_category_comments():
+    """Load category-specific comments for feedback sections"""
+    try:
+        category_comments_path = os.path.join('config', 'category_comments.json')
+        
+        if not os.path.exists(category_comments_path):
+            return jsonify({
+                'success': True,
+                'category_comments': {}
+            })
+        
+        with open(category_comments_path, 'r', encoding='utf-8') as f:
+            category_comments = json.load(f)
+        
+        return jsonify({
+            'success': True,
+            'category_comments': category_comments
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error loading category comments: {str(e)}'
+        })
+
+@app.route('/save_category_comments', methods=['POST'])
+def save_category_comments():
+    """Save category-specific comments for feedback sections"""
+    try:
+        data = request.json
+        category_comments = data.get('category_comments', {})
+        
+        # Save to a JSON file in config directory
+        category_comments_path = os.path.join('config', 'category_comments.json')
+        os.makedirs(os.path.dirname(category_comments_path), exist_ok=True)
+        
+        with open(category_comments_path, 'w', encoding='utf-8') as f:
+            json.dump(category_comments, f, indent=2, ensure_ascii=False)
+        
+        return jsonify({
+            'success': True,
+            'message': 'Category comments saved successfully'
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error saving category comments: {str(e)}'
+        })
+
 @app.route('/save_quick_comments', methods=['POST'])
 def save_quick_comments():
     """Save quick comments"""
@@ -629,7 +670,9 @@ def save_quick_comments():
         quick_comments_path = os.path.join('config', 'quick_comments.json')
         
         with open(quick_comments_path, 'w', encoding='utf-8') as f:
-            json.dump(quick_comments, f, indent=2, ensure_ascii=False)
+            json.dump({
+                "quick_comments": quick_comments
+            }, f, indent=2, ensure_ascii=False)
         
         return jsonify({
             'success': True,
@@ -667,6 +710,124 @@ def load_quick_comments():
             'success': False,
             'message': f'Error loading quick comments: {str(e)}'
         })
+
+@app.route('/list_categories', methods=['GET'])
+def list_categories():
+    """List all available category files"""
+    try:
+        config_dir = 'config'
+        categories = []
+        
+        # Scan config directory for JSON files
+        if os.path.exists(config_dir):
+            for filename in os.listdir(config_dir):
+                if filename.endswith('.json') and filename not in ['dmp_structure.json', 'quick_comments.json']:
+                    file_base = filename[:-5]  # Remove .json extension
+                    category_name = file_base.replace('_', ' ').title()
+                    categories.append({
+                        'file': file_base,
+                        'name': category_name
+                    })
+        
+        return jsonify({
+            'success': True,
+            'categories': categories
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error listing categories: {str(e)}'
+        })
+
+@app.route('/create_category', methods=['POST'])
+def create_category():
+    """Create a new category file"""
+    try:
+        data = request.json
+        name = data.get('name', '').strip()
+        
+        if not name:
+            return jsonify({
+                'success': False,
+                'message': 'Category name is required'
+            })
+        
+        # Create file name from category name
+        file_name = name.lower().replace(' ', '_')
+        category_path = os.path.join('config', f'{file_name}.json')
+        
+        # Check if file already exists
+        if os.path.exists(category_path):
+            return jsonify({
+                'success': False,
+                'message': 'Category with this name already exists'
+            })
+        
+        # Create empty category structure
+        category_data = {}
+        
+        with open(category_path, 'w', encoding='utf-8') as f:
+            json.dump(category_data, f, indent=2, ensure_ascii=False)
+        
+        return jsonify({
+            'success': True,
+            'message': f'Category "{name}" created successfully',
+            'file': file_name
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error creating category: {str(e)}'
+        })
+
+@app.route('/delete_category', methods=['POST'])
+def delete_category():
+    """Delete a category file"""
+    try:
+        data = request.json
+        file = data.get('file', '').strip()
+        
+        if not file:
+            return jsonify({
+                'success': False,
+                'message': 'File name is required'
+            })
+        
+        category_path = os.path.join('config', f'{file}.json')
+        
+        if not os.path.exists(category_path):
+            return jsonify({
+                'success': False,
+                'message': 'Category file does not exist'
+            })
+        
+        os.remove(category_path)
+        
+        return jsonify({
+            'success': True,
+            'message': f'Category "{file}" deleted successfully'
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error deleting category: {str(e)}'
+        })
+
+@app.route('/config/<filename>')
+def serve_config(filename):
+    """Serve config files"""
+    try:
+        config_path = os.path.join('config', filename)
+        if not os.path.exists(config_path):
+            return jsonify({'error': 'File not found'}), 404
+        
+        with open(config_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/health')
 def health_check():
