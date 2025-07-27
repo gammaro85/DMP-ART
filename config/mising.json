@@ -1,5 +1,22 @@
 {
+     "_comment": "Critical feedback comments for incomplete or missing DMP elements that require attention.",
      "missing": {
+          "general": [
+               "Personal Dropbox or Google Drive free accounts are not appropriate for research data during the project. Use the institutional Office 365 A1 for faculty license which provides OneDrive storage with proper versioning, EU data residency compliance, and institutional backup.",
+               "Missing storage volume estimates - this is required information. Provide specific estimates like '49.5 GB' rather than vague terms like 'several GB' or 'large amounts of data'. Even rough estimates (50-100 GB) are better than nothing.",
+               "Future tense in descriptions should be changed to present tense for ongoing activities. Write 'The project generates...' not 'The project will generate...'",
+               "Generic websites, personal pages, or ResearchGate are not appropriate for long-term preservation. Always mention MOST Wiedzy (Bridge of Data) as the primary repository option for Gdańsk Tech researchers.",
+               "NCN does not accept CC BY-SA license. Use CC BY 4.0 instead for maximum compliance with funder requirements.",
+               "License information from section 4.2 is missing in section 5.1. You must repeat the license details in both sections for consistency.",
+               "Missing mention of institutional Office 365 A1 for faculty license. This should be included when describing storage and backup solutions in section 3.1.",
+               "FAIR implementation details belong in section 6.1 (responsibilities), not in section 6.2 (resources). Move any text about PI ensuring FAIRness to section 6.1.",
+               "Section 6.2 should focus on resources (time, money), not responsibilities. The standard text should be: 'The only additional resource required is time for FAIR procedures assessment and data quality assurance.'",
+               "No information about data volume provided. Section 1.2 requires specific estimates of storage space needed.",
+               "Metadata standards not specified. Mention at least DataCite as a general standard, plus any discipline-specific standards.",
+               "Software versions missing. Always include version numbers (e.g., 'Python 3.8+' not just 'Python').",
+               "Backup frequency not specified. State 'daily for active data, weekly for archived data' or similar specific schedule.",
+               "Timeline for data sharing is too vague. Specify exact triggers like 'upon publication' or dates like 'December 2025'."
+          ],
           "1.1": [
                "The methodology section lacks specific details about data collection procedures.",
                "Please specify the exact sources and collection methods.",
