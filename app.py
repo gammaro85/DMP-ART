@@ -1,32 +1,30 @@
-
-# app.py
+# app.py - Enhanced Flask application with About page
 import os
 import json
 import time
 import threading
+import zipfile
 from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for
 from werkzeug.utils import secure_filename
 from utils.extractor import DMPExtractor
+from utils.dmp_comments import (
+    get_quick_comments,
+    get_category_comments,
+    get_all_categories
+)
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['OUTPUT_FOLDER'] = 'outputs'
-app.config['ALLOWED_EXTENSIONS'] = {'pdf'}
+app.config['ALLOWED_EXTENSIONS'] = {'pdf', 'docx'}
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB max upload
 
-# Configuration directory and files
-CONFIG_DIR = 'config'
-os.makedirs(CONFIG_DIR, exist_ok=True)
+# Create necessary directories
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['OUTPUT_FOLDER'], exist_ok=True)
 
-TEMPLATES_FILE = os.path.join(CONFIG_DIR, 'templates.json')
-COMMENTS_FILE = os.path.join(CONFIG_DIR, 'comments.json')
-KEY_PHRASES_FILE = os.path.join(CONFIG_DIR, 'key_phrases.json')
-DMP_STRUCTURE_FILE = os.path.join(CONFIG_DIR, 'dmp_structure.json')
-
-# Default DMP question templates with default text
-DEFAULT_DMP_TEMPLATES = {
+# DMP question templates with default text
+DMP_TEMPLATES = {
     "1.1": {
         "question": "How will new data be collected or produced and/or how will existing data be re-used?",
         "template": "The data collection methodology needs more detail. Please specify the exact sources and collection methods."
@@ -85,51 +83,139 @@ DEFAULT_DMP_TEMPLATES = {
     }
 }
 
-# Default common feedback comments that can be inserted
-DEFAULT_COMMON_COMMENTS = {
+# Common feedback comments that can be inserted
+COMMON_COMMENTS = {
     "methodology": "The methodology needs more detail on how data will be collected.",
-    "data_format": "Please specify all data formats (CSV, JSON, etc.) with examples.",
+    "data_format": "Please specify all data formats (CSV, JSON, TIFF, etc.) with examples.",
     "data_volume": "Estimate the total volume of data expected (in GB/TB).",
-    "metadata": "Consider using established metadata standards in your field.",
-    "quality": "Implement validation procedures to ensure data quality.",
-    "storage": "Specify the exact storage solutions you'll be using.",
-    "backup": "Your backup strategy should include off-site copies.",
+    "metadata": "Consider using established metadata standards like DataCite in your field.",
+    "quality": "Implement validation procedures to ensure data quality and reproducibility.",
+    "storage": "Specify the exact storage solutions and backup procedures you'll be using.",
+    "backup": "Your backup strategy should include off-site copies and regular testing.",
     "security": "Detail encryption methods and access controls for sensitive data.",
     "personal_data": "Clarify compliance with GDPR and data minimization strategies.",
-    "license": "Specify the exact licensing arrangements for your data.",
-    "sharing": "Provide specific milestones for data publication.",
-    "preservation": "Detail your long-term preservation strategy and repository selection.",
-    "tools": "List all required software tools with specific versions.",
+    "license": "Specify the exact licensing arrangements (e.g., Creative Commons) for your data.",
+    "sharing": "Provide specific milestones and timelines for data publication.",
+    "preservation": "Detail your long-term preservation strategy and repository selection criteria.",
+    "tools": "List all required software tools with specific versions and accessibility.",
     "identifier": "Explain how and when DOIs will be assigned to datasets.",
-    "responsibility": "Designate specific roles and responsibilities for data management.",
-    "resources": "Budget for dedicated staff time for data management."
+    "responsibility": "Designate specific roles and responsibilities for data management tasks.",
+    "resources": "Budget for dedicated staff time and resources for data management activities.",
+    "table_extracted": "This content was extracted from a table structure - please verify accuracy.",
+    "formatting_preserved": "Original formatting (bold/underlined) has been preserved where possible.",
+    "simulation_data": "For simulation data, ensure reproducibility by documenting all parameters and software versions."
 }
 
-# Load or initialize configurations
-def load_config(file_path, default_value):
-    if os.path.exists(file_path):
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        except Exception as e:
-            print(f"Error loading {file_path}: {str(e)}")
-            return default_value
-    else:
-        with open(file_path, 'w', encoding='utf-8') as f:
-            json.dump(default_value, f, ensure_ascii=False, indent=2)
-        return default_value
-
-# Load configurations
-DMP_TEMPLATES = load_config(TEMPLATES_FILE, DEFAULT_DMP_TEMPLATES)
-COMMON_COMMENTS = load_config(COMMENTS_FILE, DEFAULT_COMMON_COMMENTS)
+# Template categories will be managed through template editor
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
+def validate_docx_file(file_path):
+    """Enhanced DOCX file validation"""
+    try:
+        if not os.path.exists(file_path):
+            return False, "File does not exist"
+        
+        if not file_path.lower().endswith('.docx'):
+            return False, "File is not a DOCX file"
+        
+        # Check file size
+        file_size = os.path.getsize(file_path)
+        if file_size == 0:
+            return False, "File is empty"
+        
+        if file_size > 16 * 1024 * 1024:  # 16MB limit
+            return False, "File is too large (max 16MB)"
+        
+        # Check if it's a valid ZIP file (DOCX is ZIP-based)
+        try:
+            with zipfile.ZipFile(file_path, 'r') as zip_file:
+                file_list = zip_file.namelist()
+                required_files = ['word/document.xml', '[Content_Types].xml']
+                
+                for required_file in required_files:
+                    if required_file not in file_list:
+                        return False, f"Invalid DOCX structure: missing {required_file}"
+                        
+        except zipfile.BadZipFile:
+            return False, "File is not a valid ZIP archive"
+        except Exception as e:
+            return False, f"ZIP validation error: {str(e)}"
+        
+        # Try to load with python-docx
+        try:
+            from docx import Document
+            doc = Document(file_path)
+            paragraph_count = len(doc.paragraphs)
+            table_count = len(doc.tables)
+            
+            # Check for minimum content
+            has_content = any(p.text.strip() for p in doc.paragraphs) or table_count > 0
+            
+            if not has_content:
+                return False, "Document appears to be empty or contains no readable content"
+                
+        except Exception as e:
+            return False, f"Document processing error: {str(e)}"
+        
+        return True, "File is valid"
+        
+    except Exception as e:
+        return False, f"Validation error: {str(e)}"
+
+def validate_pdf_file(file_path):
+    """Enhanced PDF file validation"""
+    try:
+        if not os.path.exists(file_path):
+            return False, "File does not exist"
+        
+        if not file_path.lower().endswith('.pdf'):
+            return False, "File is not a PDF file"
+        
+        # Check file size
+        file_size = os.path.getsize(file_path)
+        if file_size == 0:
+            return False, "File is empty"
+        
+        if file_size > 16 * 1024 * 1024:  # 16MB limit
+            return False, "File is too large (max 16MB)"
+        
+        # Try to read with PyPDF2
+        try:
+            import PyPDF2
+            with open(file_path, 'rb') as file:
+                reader = PyPDF2.PdfReader(file)
+                page_count = len(reader.pages)
+                
+                if page_count == 0:
+                    return False, "PDF contains no pages"
+                
+                # Try to extract text from first page
+                try:
+                    first_page_text = reader.pages[0].extract_text()
+                    if not first_page_text.strip():
+                        return False, "PDF appears to contain no readable text"
+                except Exception:
+                    return False, "Cannot extract text from PDF"
+                    
+        except Exception as e:
+            return False, f"PDF processing error: {str(e)}"
+        
+        return True, "File is valid"
+        
+    except Exception as e:
+        return False, f"Validation error: {str(e)}"
+
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/documentation')
+def documentation():
+    """Documentation page with features and technical information"""
+    return render_template('documentation.html')
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -153,9 +239,33 @@ def upload_file():
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(file_path)
             
-            # Process the PDF
+            # Enhanced file validation based on type
+            if filename.lower().endswith('.docx'):
+                is_valid, validation_message = validate_docx_file(file_path)
+                if not is_valid:
+                    try:
+                        os.remove(file_path)
+                    except:
+                        pass
+                    return jsonify({
+                        'success': False,
+                        'message': f'DOCX validation failed: {validation_message}'
+                    })
+            elif filename.lower().endswith('.pdf'):
+                is_valid, validation_message = validate_pdf_file(file_path)
+                if not is_valid:
+                    try:
+                        os.remove(file_path)
+                    except:
+                        pass
+                    return jsonify({
+                        'success': False,
+                        'message': f'PDF validation failed: {validation_message}'
+                    })
+            
+            # Process the file
             extractor = DMPExtractor()
-            result = extractor.process_pdf(file_path, app.config['OUTPUT_FOLDER'])
+            result = extractor.process_file(file_path, app.config['OUTPUT_FOLDER'])
             
             # Clean up the uploaded file
             try:
@@ -168,15 +278,25 @@ def upload_file():
                 cache_id = result.get('cache_id', '')
                 return jsonify({
                     'success': True,
-                    'redirect': url_for('review_dmp', filename=result['filename'], cache_id=cache_id)
+                    'redirect': url_for('review_dmp', filename=result['filename'], cache_id=cache_id),
+                    'message': result.get('message', 'File processed successfully')
                 })
             else:
                 return jsonify(result)
+                
         except Exception as e:
             import traceback
             traceback_str = traceback.format_exc()
             print(f"Error processing file: {str(e)}")
             print(traceback_str)
+            
+            # Clean up uploaded file in case of error
+            try:
+                if 'file_path' in locals():
+                    os.remove(file_path)
+            except:
+                pass
+                
             return jsonify({
                 'success': False,
                 'message': f'Error processing file: {str(e)}'
@@ -184,7 +304,7 @@ def upload_file():
     
     return jsonify({
         'success': False,
-        'message': 'Invalid file format. Only PDF files are allowed.'
+        'message': 'Invalid file format. Only PDF and DOCX files are allowed.'
     })
 
 @app.route('/download/<filename>')
@@ -212,21 +332,41 @@ def review_dmp(filename):
     
     # Load extracted content if available
     extracted_content = {}
+    extraction_info = {}
+    unconnected_text = []
+    
     if cache_id:
         cache_path = os.path.join(app.config['OUTPUT_FOLDER'], f"cache_{cache_id}.json")
         if os.path.exists(cache_path):
             try:
                 with open(cache_path, 'r', encoding='utf-8') as f:
-                    extracted_content = json.load(f)
+                    cache_data = json.load(f)
+                    
+                    # Extract unconnected text if present
+                    if "_unconnected_text" in cache_data:
+                        unconnected_text = cache_data["_unconnected_text"]
+                        del cache_data["_unconnected_text"]  # Remove from extracted_content
+                    
+                    extracted_content = cache_data
+                    
+                    # Add extraction info for display
+                    extraction_info = {
+                        'total_sections': len([k for k in extracted_content.keys() if k.startswith(('1.', '2.', '3.', '4.', '5.', '6.'))]),
+                        'sections_with_content': len([k for k, v in extracted_content.items() if v.get('paragraphs') and len(v['paragraphs']) > 0]),
+                        'extraction_method': 'Enhanced DOCX processing with table support' if filename.lower().endswith('.docx') else 'PDF text extraction'
+                    }
+                    
             except Exception as e:
                 print(f"Error loading extracted content: {str(e)}")
     
-    # Pass the templates, common comments, and extracted content to the template
+    # Pass the templates, common comments, extracted content, and unconnected text to the template
     return render_template('review.html', 
                            filename=filename,
                            templates=DMP_TEMPLATES,
                            comments=COMMON_COMMENTS,
                            extracted_content=extracted_content,
+                           extraction_info=extraction_info,
+                           unconnected_text=unconnected_text,
                            cache_id=cache_id)
 
 @app.route('/save_templates', methods=['POST'])
@@ -239,10 +379,6 @@ def save_templates():
         for key, value in data.items():
             if key in DMP_TEMPLATES:
                 DMP_TEMPLATES[key]['template'] = value
-        
-        # Save to file
-        with open(TEMPLATES_FILE, 'w', encoding='utf-8') as f:
-            json.dump(DMP_TEMPLATES, f, ensure_ascii=False, indent=2)
         
         return jsonify({
             'success': True,
@@ -260,12 +396,8 @@ def save_comments():
         data = request.json
         global COMMON_COMMENTS
         
-        # Replace entire comments dictionary
-        COMMON_COMMENTS = data
-        
-        # Save to file
-        with open(COMMENTS_FILE, 'w', encoding='utf-8') as f:
-            json.dump(COMMON_COMMENTS, f, ensure_ascii=False, indent=2)
+        # Update the comments with the new data
+        COMMON_COMMENTS.update(data)
         
         return jsonify({
             'success': True,
@@ -282,13 +414,12 @@ def save_key_phrases():
     try:
         data = request.json
         
-        # Save to file
-        with open(KEY_PHRASES_FILE, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
+        # Save key phrases to a file (in a real application, you'd save to database)
+        key_phrases_path = os.path.join('config', 'key_phrases.json')
+        os.makedirs(os.path.dirname(key_phrases_path), exist_ok=True)
         
-        # Update the extractor instance
-        extractor = DMPExtractor()
-        extractor.key_phrases = data
+        with open(key_phrases_path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
         
         return jsonify({
             'success': True,
@@ -305,48 +436,12 @@ def save_dmp_structure():
     try:
         data = request.json
         
-        # Save to file
-        with open(DMP_STRUCTURE_FILE, 'w', encoding='utf-8') as f:
+        # Save DMP structure to a file
+        structure_path = os.path.join('config', 'dmp_structure.json')
+        os.makedirs(os.path.dirname(structure_path), exist_ok=True)
+        
+        with open(structure_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
-        
-        # Update the extractor instance
-        extractor = DMPExtractor()
-        extractor.dmp_structure = data
-        
-        # Update section_ids mapping
-        section_ids = {}
-        section_num = 1
-        
-        for section, questions in data.items():
-            for i, question in enumerate(questions, 1):
-                section_id = f"{section_num}.{i}"
-                section_ids[section_id] = question
-            
-            section_num += 1
-        
-        extractor.section_ids = section_ids
-        
-        # Also update templates to match structure
-        global DMP_TEMPLATES
-        updated_templates = {}
-        
-        for section_id, question in section_ids.items():
-            # Keep existing template if available, or create default
-            if section_id in DMP_TEMPLATES:
-                template_text = DMP_TEMPLATES[section_id]['template']
-            else:
-                template_text = f"Please provide more information about {question.lower()}"
-            
-            updated_templates[section_id] = {
-                "question": question,
-                "template": template_text
-            }
-        
-        DMP_TEMPLATES = updated_templates
-        
-        # Save updated templates
-        with open(TEMPLATES_FILE, 'w', encoding='utf-8') as f:
-            json.dump(DMP_TEMPLATES, f, ensure_ascii=False, indent=2)
         
         return jsonify({
             'success': True,
@@ -364,17 +459,34 @@ def results():
 
 @app.route('/template_editor')
 def template_editor():
-    # Load configurations
-    key_phrases = {}
-    dmp_structure = {}
-    
-    # Try to load from extractor instance
+    # Load configuration files
     try:
-        extractor = DMPExtractor()
-        key_phrases = extractor.key_phrases
-        dmp_structure = extractor.dmp_structure
+        # Load key phrases
+        key_phrases_path = os.path.join('config', 'key_phrases.json')
+        if os.path.exists(key_phrases_path):
+            with open(key_phrases_path, 'r', encoding='utf-8') as f:
+                key_phrases = json.load(f)
+        else:
+            # Default key phrases from extractor
+            extractor = DMPExtractor()
+            key_phrases = extractor.get_key_phrases()
+        
+        # Load DMP structure
+        structure_path = os.path.join('config', 'dmp_structure.json')
+        if os.path.exists(structure_path):
+            with open(structure_path, 'r', encoding='utf-8') as f:
+                dmp_structure = json.load(f)
+        else:
+            # Default structure from extractor
+            extractor = DMPExtractor()
+            dmp_structure = extractor.dmp_structure
+            
     except Exception as e:
-        print(f"Error loading extractor configurations: {str(e)}")
+        print(f"Error loading configuration: {str(e)}")
+        # Use defaults
+        extractor = DMPExtractor()
+        key_phrases = extractor.get_key_phrases()
+        dmp_structure = extractor.dmp_structure
     
     # Organize templates by section for better display
     templates_by_section = {
@@ -398,13 +510,12 @@ def template_editor():
         }
     }
     
-    return render_template(
-        'template_editor.html',
-        templates_by_section=templates_by_section,
-        comments=COMMON_COMMENTS,
-        key_phrases=key_phrases,
-        dmp_structure=dmp_structure
-    )
+    return render_template('template_editor.html', 
+                           templates=DMP_TEMPLATES,
+                           templates_by_section=templates_by_section,
+                           comments=COMMON_COMMENTS,
+                           key_phrases=key_phrases,
+                           dmp_structure=dmp_structure)
 
 @app.route('/save_feedback', methods=['POST'])
 def save_feedback():
@@ -440,5 +551,315 @@ def save_feedback():
             'message': f'Error saving feedback: {str(e)}'
         })
 
+@app.route('/save_category', methods=['POST'])
+def save_category():
+    """Save category with its comments"""
+    try:
+        data = request.json
+        file = data.get('file')
+        category_data = data.get('data', {})
+        
+        if not file:
+            return jsonify({
+                'success': False,
+                'message': 'File name is required'
+            })
+        
+        # Save to individual JSON file in config directory
+        category_path = os.path.join('config', f'{file}.json')
+        
+        with open(category_path, 'w', encoding='utf-8') as f:
+            json.dump(category_data, f, indent=2, ensure_ascii=False)
+        
+        return jsonify({
+            'success': True,
+            'message': f'Category "{file}" saved successfully'
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error saving category: {str(e)}'
+        })
+
+@app.route('/load_categories', methods=['GET'])
+def load_categories():
+    """Load all categories and their comments"""
+    try:
+        categories_path = os.path.join('config', 'categories.json')
+        
+        if not os.path.exists(categories_path):
+            return jsonify({
+                'success': True,
+                'categories': {}
+            })
+        
+        with open(categories_path, 'r', encoding='utf-8') as f:
+            categories = json.load(f)
+        
+        return jsonify({
+            'success': True,
+            'categories': categories
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error loading categories: {str(e)}'
+        })
+
+@app.route('/load_category_comments', methods=['GET'])
+def load_category_comments():
+    """Load category-specific comments for feedback sections"""
+    try:
+        category_comments_path = os.path.join('config', 'category_comments.json')
+        
+        if not os.path.exists(category_comments_path):
+            return jsonify({
+                'success': True,
+                'category_comments': {}
+            })
+        
+        with open(category_comments_path, 'r', encoding='utf-8') as f:
+            category_comments = json.load(f)
+        
+        return jsonify({
+            'success': True,
+            'category_comments': category_comments
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error loading category comments: {str(e)}'
+        })
+
+@app.route('/save_category_comments', methods=['POST'])
+def save_category_comments():
+    """Save category-specific comments for feedback sections"""
+    try:
+        data = request.json
+        category_comments = data.get('category_comments', {})
+        
+        # Save to a JSON file in config directory
+        category_comments_path = os.path.join('config', 'category_comments.json')
+        os.makedirs(os.path.dirname(category_comments_path), exist_ok=True)
+        
+        with open(category_comments_path, 'w', encoding='utf-8') as f:
+            json.dump(category_comments, f, indent=2, ensure_ascii=False)
+        
+        return jsonify({
+            'success': True,
+            'message': 'Category comments saved successfully'
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error saving category comments: {str(e)}'
+        })
+
+@app.route('/save_quick_comments', methods=['POST'])
+def save_quick_comments():
+    """Save quick comments"""
+    try:
+        data = request.json
+        quick_comments = data.get('quick_comments', [])
+        
+        # Save to a JSON file in config directory
+        quick_comments_path = os.path.join('config', 'quick_comments.json')
+        
+        with open(quick_comments_path, 'w', encoding='utf-8') as f:
+            json.dump({
+                "quick_comments": quick_comments
+            }, f, indent=2, ensure_ascii=False)
+        
+        return jsonify({
+            'success': True,
+            'message': 'Quick comments saved successfully'
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error saving quick comments: {str(e)}'
+        })
+
+@app.route('/load_quick_comments', methods=['GET'])
+def load_quick_comments():
+    """Load quick comments"""
+    try:
+        quick_comments_path = os.path.join('config', 'quick_comments.json')
+        
+        if not os.path.exists(quick_comments_path):
+            return jsonify({
+                'success': True,
+                'quick_comments': []
+            })
+        
+        with open(quick_comments_path, 'r', encoding='utf-8') as f:
+            quick_comments = json.load(f)
+        
+        return jsonify({
+            'success': True,
+            'quick_comments': quick_comments
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error loading quick comments: {str(e)}'
+        })
+
+@app.route('/list_categories', methods=['GET'])
+def list_categories():
+    """List all available category files"""
+    try:
+        config_dir = 'config'
+        categories = []
+        
+        # Scan config directory for JSON files
+        if os.path.exists(config_dir):
+            for filename in os.listdir(config_dir):
+                if filename.endswith('.json') and filename not in ['dmp_structure.json', 'quick_comments.json']:
+                    file_base = filename[:-5]  # Remove .json extension
+                    category_name = file_base.replace('_', ' ').title()
+                    categories.append({
+                        'file': file_base,
+                        'name': category_name
+                    })
+        
+        return jsonify({
+            'success': True,
+            'categories': categories
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error listing categories: {str(e)}'
+        })
+
+@app.route('/create_category', methods=['POST'])
+def create_category():
+    """Create a new category file"""
+    try:
+        data = request.json
+        name = data.get('name', '').strip()
+        
+        if not name:
+            return jsonify({
+                'success': False,
+                'message': 'Category name is required'
+            })
+        
+        # Create file name from category name
+        file_name = name.lower().replace(' ', '_')
+        category_path = os.path.join('config', f'{file_name}.json')
+        
+        # Check if file already exists
+        if os.path.exists(category_path):
+            return jsonify({
+                'success': False,
+                'message': 'Category with this name already exists'
+            })
+        
+        # Create empty category structure
+        category_data = {}
+        
+        with open(category_path, 'w', encoding='utf-8') as f:
+            json.dump(category_data, f, indent=2, ensure_ascii=False)
+        
+        return jsonify({
+            'success': True,
+            'message': f'Category "{name}" created successfully',
+            'file': file_name
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error creating category: {str(e)}'
+        })
+
+@app.route('/delete_category', methods=['POST'])
+def delete_category():
+    """Delete a category file"""
+    try:
+        data = request.json
+        file = data.get('file', '').strip()
+        
+        if not file:
+            return jsonify({
+                'success': False,
+                'message': 'File name is required'
+            })
+        
+        category_path = os.path.join('config', f'{file}.json')
+        
+        if not os.path.exists(category_path):
+            return jsonify({
+                'success': False,
+                'message': 'Category file does not exist'
+            })
+        
+        os.remove(category_path)
+        
+        return jsonify({
+            'success': True,
+            'message': f'Category "{file}" deleted successfully'
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error deleting category: {str(e)}'
+        })
+
+@app.route('/config/<filename>')
+def serve_config(filename):
+    """Serve config files"""
+    try:
+        config_path = os.path.join('config', filename)
+        if not os.path.exists(config_path):
+            return jsonify({'error': 'File not found'}), 404
+        
+        with open(config_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/health')
+def health_check():
+    """Health check endpoint"""
+    return jsonify({
+        'status': 'healthy',
+        'upload_folder': app.config['UPLOAD_FOLDER'],
+        'output_folder': app.config['OUTPUT_FOLDER'],
+        'allowed_extensions': list(app.config['ALLOWED_EXTENSIONS']),
+        'max_content_length': app.config['MAX_CONTENT_LENGTH']
+    })
+
+@app.errorhandler(413)
+def too_large(e):
+    return jsonify({
+        'success': False,
+        'message': 'File too large. Maximum size is 16MB.'
+    }), 413
+
+@app.errorhandler(404)
+def not_found(e):
+    return jsonify({
+        'success': False,
+        'message': 'Resource not found.'
+    }), 404
+
+@app.errorhandler(500)
+def internal_error(e):
+    return jsonify({
+        'success': False,
+        'message': 'Internal server error. Please try again.'
+    }), 500
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)
