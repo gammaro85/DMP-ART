@@ -1,7 +1,6 @@
 # DMP ART - Data Management Plan Assessment and Response Tool
 <img width="8534" height="4572" alt="dmp-art-logo-main-dark" src="https://github.com/user-attachments/assets/c0d95fcd-9a2a-42a0-b9b0-9538fe7d49b8" />
 
-![DMP ART Logo]
 
 **DMP ART** is a specialized web application designed to streamline the assessment process of Data Management Plans (DMPs) from grant proposals submitted to the National Science Centre (NCN) through the OSF (Otwarta Nauka) system.
 
