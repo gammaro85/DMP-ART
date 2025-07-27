@@ -1,6 +1,7 @@
 # DMP ART - Data Management Plan Assessment and Response Tool
+<img width="8534" height="4572" alt="dmp-art-logo-main-dark" src="https://github.com/user-attachments/assets/c0d95fcd-9a2a-42a0-b9b0-9538fe7d49b8" />
 
-![DMP ART Logo](static/images/dmp-art-logo-main-light.png)
+![DMP ART Logo]
 
 **DMP ART** is a specialized web application designed to streamline the assessment process of Data Management Plans (DMPs) from grant proposals submitted to the National Science Centre (NCN) through the OSF (Otwarta Nauka) system.
 
@@ -14,7 +15,7 @@ Purpose
 This tool supports research administrators, grant officers, and academic institutions in Poland by:
 
 - Automated Extraction\*\*: Processing PDF and DOCX documents exported from OSF system
-- Content Analysis\*\*: Identifying and structuring DMP sections according to NCN requirements
+- Content Analysis\*\*: Identifying and structuring DMP sections according to NCN requirements (Science Europe dmp template on default)
 - Standardized Review\*\*: Providing consistent feedback templates and assessment frameworks
 - Efficient Workflow\*\*: Reducing manual work and improving review quality
 
@@ -24,22 +25,13 @@ This tool supports research administrators, grant officers, and academic institu
 
 - **Multi-format Support**: PDF and DOCX files (up to 16MB)
 - **Table Extraction**: Advanced table content recognition
-- **Formatting Preservation**: Bold, underlined text detection
-- **Bilingual Processing**: Polish and English content
-
-### Content Analysis
-
 - **Section Recognition**: Automatic DMP section identification (1.1-6.2)
-- **Key Phrase Detection**: 165+ DMP-related terms
-- **Author Extraction**: Document metadata recognition
-- **Content Tagging**: Methodology, data formats, security tags
 
 ### Review Interface
 
 - **Structured Feedback**: Section-by-section review system
 - **Quick Comments**: Customizable quick-insert comments
-- **Progress Tracking**: Visual progress indicators
-- **Category System**: Multiple feedback categories (Ready, Missing, Newcomer)
+- **Category System**: Multiple feedback categories 
 
 ### Template Editor
 
@@ -53,14 +45,12 @@ This tool supports research administrators, grant officers, and academic institu
 - **Feedback Compilation**: Generate comprehensive feedback reports
 - **Multiple Formats**: TXT, HTML export options
 - **Progress Saving**: Save and resume review sessions
-- **Document Comparison**: Original vs. extracted content
+
 
 ### User Experience
 
 - **Dark/Light Theme**: Automatic system detection with toggle button
 - **Responsive Design**: Works on desktop, tablet, mobile
-- **Keyboard Shortcuts**: Ctrl+Shift+D for theme toggle
-- **Accessibility**: Screen reader friendly, proper ARIA labels
 
 ## Technical Stack
 
@@ -78,7 +68,6 @@ This tool supports research administrators, grant officers, and academic institu
 - **HTML5**: Semantic markup
 - **CSS3**: Modern styling with CSS Grid/Flexbox
 - **JavaScript ES6+**: Interactive functionality
-- **Font Awesome 6.0**: Icon library
 - **Responsive Design**: Mobile-first approach
 
 ### Data Storage
@@ -349,7 +338,7 @@ Licensed under the MIT License
 
 ## Recent Updates
 
-### Version 1.0 Features
+### Version 0.8 Features
 
 - **Enhanced Template Editor**: Dynamic category management with real-time editing
 - **Improved Theme System**: Fixed theme toggle with proper sun/moon icons in top-left corner
