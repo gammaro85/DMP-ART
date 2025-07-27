@@ -31,5 +31,8 @@
      "workbench.tree.expandMode": "doubleClick",
      "workbench.tree.enableStickyScroll": false,
      "workbench.editor.limit.value": 20,
-     "workbench.editor.limit.perEditorGroup": true
+     "workbench.editor.limit.perEditorGroup": true,
+     "[markdown]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+     }
 }
