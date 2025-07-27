@@ -184,6 +184,216 @@
             color: white;
         }
         
+        /* Paragraph Layout Improvements */
+        .extracted-content {
+            background-color: var(--bg-secondary) !important;
+            border-radius: 8px !important;
+            padding: 20px !important;
+            margin: 15px 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+        
+        .enhanced-paragraph {
+            margin-bottom: 0 !important;
+            border: none !important;
+            background: transparent !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+        }
+        
+        .enhanced-paragraph:not(:last-child) {
+            margin-bottom: 15px !important;
+        }
+        
+        .paragraph-metadata {
+            display: none !important;
+        }
+        
+        .enhanced-paragraph p {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            line-height: 1.6 !important;
+            color: var(--text-primary) !important;
+        }
+        
+        /* Category Selection Styles */
+        .category-selection {
+            margin: 15px 0;
+            padding: 10px;
+            background-color: var(--bg-tertiary);
+            border-radius: 6px;
+            border: 1px solid var(--border-light);
+        }
+        
+        .category-selection label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+        
+        .category-buttons-inline {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .category-btn-inline {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-medium);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+        
+        .category-btn-inline:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .category-btn-inline.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        /* Category Comments Dropdown */
+        .category-comments-dropdown {
+            margin: 10px 0;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            background-color: var(--bg-card);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .category-comments-container {
+            padding: 10px;
+        }
+        
+        .category-comments-list-inline {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .category-comment-item-inline {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            padding: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            transition: all 0.2s ease;
+        }
+        
+        .category-comment-item-inline:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        /* Header Navigation Layout */
+        .header-nav {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            width: 100% !important;
+        }
+        
+        .nav-left {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .nav-right {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        /* Header Action Buttons - Distinguished Style */
+        .header-action-buttons-nav {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            padding: 4px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .action-btn {
+            padding: 8px 14px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            white-space: nowrap;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .action-btn.primary {
+            background-color: #10b981;
+            color: white;
+            box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+        }
+        
+        .action-btn.primary:hover {
+            background-color: #059669;
+            box-shadow: 0 4px 8px rgba(16, 185, 129, 0.4);
+            transform: translateY(-1px);
+        }
+        
+        .action-btn.secondary {
+            background-color: #6366f1;
+            color: white;
+            box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+        }
+        
+        .action-btn.secondary:hover {
+            background-color: #4f46e5;
+            box-shadow: 0 4px 8px rgba(99, 102, 241, 0.4);
+            transform: translateY(-1px);
+        }
+
+        /* Highlighted citation style */
+        .citation-highlight {
+            background-color: #ffe066 !important;
+            border-radius: 3px;
+            padding: 0 2px;
+            transition: background 0.3s;
+        }
+        /* Floating cite button */
+        #cite-btn-float {
+            position: absolute;
+            z-index: 9999;
+            display: none;
+            padding: 6px 12px;
+            background: #6366f1;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(99,102,241,0.15);
+            transition: opacity 0.2s;
+        }
+        
         /* Responsive adjustments */
         @media (max-width: 1200px) {
             .main-content {
@@ -200,11 +410,18 @@
     <!-- Fixed Header Navigation -->
     <header class="fixed-header">
         <nav class="header-nav">
-            <a href="/" class="nav-item">Home</a>
-            <a href="/template_editor" class="nav-item">Customize Templates</a>
-            <a href="/documentation" class="nav-item">Documentation</a>
-            <div class="theme-toggle" onclick="toggleTheme()">
-                <span id="theme-text">Light Mode</span>
+            <div class="nav-left">
+                <a href="/" class="nav-item">Home</a>
+                <a href="/template_editor" class="nav-item">Customize Templates</a>
+                <a href="/documentation" class="nav-item">Documentation</a>
+            </div>
+            
+            <div class="nav-right">
+                <!-- Action Buttons in Header -->
+                <div class="header-action-buttons-nav">
+                    <button id="compile-feedback-btn" class="action-btn primary">Compile Feedback Report</button>
+                    <button id="save-feedback-btn" class="action-btn secondary">Save Progress</button>
+                </div>
             </div>
         </nav>
     </header>
@@ -245,12 +462,6 @@
         <div class="review-layout">
             <!-- Main Content Area -->
             <main class="main-content">
-            <!-- Action Buttons -->
-            <div class="action-buttons" style="text-align: center; margin-bottom: 2rem;">
-                <button id="compile-feedback-btn" class="primary-btn">Compile Feedback Report</button>
-                <button id="save-feedback-btn" class="secondary-btn">Save Progress</button>
-            </div>
-            
             <!-- Questions Container -->
             <div class="questions-container">
                 {% for section_id, content in extracted_content.items() %}
@@ -309,6 +520,24 @@
                             {% endif %}
                         </div>
                         
+                        <!-- Category Selection -->
+                        <div class="category-selection" id="category-selection-{{ section_id }}">
+                            <label>Choose feedback category:</label>
+                            <div class="category-buttons-inline">
+                                <button class="category-btn-inline" data-category="newcomer" data-section="{{ section_id }}">Newcomer Guidance</button>
+                                <button class="category-btn-inline" data-category="missing" data-section="{{ section_id }}">Missing Info</button>
+                                <button class="category-btn-inline" data-category="ready" data-section="{{ section_id }}">Ready to Use</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Category Comments Dropdown -->
+                        <div class="category-comments-dropdown" id="category-dropdown-{{ section_id }}" style="display: none;">
+                            <div class="category-comments-container">
+                                <div class="category-comments-list-inline" id="category-comments-{{ section_id }}">
+                                    <!-- Comments will be populated here -->
+                                </div>
+                            </div>
+                        </div>
                         
                         <textarea class="feedback-text" 
                                   id="feedback-{{ section_id }}" 
@@ -426,6 +655,8 @@
         </div>
     </footer>
 
+    <button id="cite-btn-float">Cite</button>
+
     <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <script>
@@ -493,7 +724,157 @@
             // Initialize sidebar functionality
             initializeSidebar();
             
+            // Initialize category functionality
+            initializeCategoryButtons();
+            
         });
+        
+        // Category comments will be loaded from server
+        let CATEGORY_COMMENTS = {};
+
+        // Load category comments from backend on page load
+        function fetchCategoryComments() {
+            fetch('/load_categories')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.categories) {
+                        CATEGORY_COMMENTS = data.categories;
+                    } else {
+                        CATEGORY_COMMENTS = {};
+                    }
+                })
+                .catch(() => {
+                    CATEGORY_COMMENTS = {};
+                });
+        }
+
+        // Load quick comments from backend on page load
+        function loadQuickComments() {
+            const quickCommentsList = document.getElementById('quick-comments-list');
+            if (!quickCommentsList) return;
+
+            fetch('/load_quick_comments')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && Array.isArray(data.quick_comments) && data.quick_comments.length > 0) {
+                        quickCommentsList.innerHTML = '';
+                        data.quick_comments.forEach(commentData => {
+                            const item = document.createElement('div');
+                            item.className = 'quick-comment-item';
+                            item.textContent = commentData.name || commentData.text || commentData;
+                            item.title = commentData.text || commentData;
+                            item.addEventListener('click', () => insertQuickComment(commentData.text || commentData));
+                            quickCommentsList.appendChild(item);
+                        });
+                    } else {
+                        quickCommentsList.innerHTML = '<div class="no-comments">No quick comments available. Add them in Template Editor.</div>';
+                    }
+                })
+                .catch(() => {
+                    quickCommentsList.innerHTML = '<div class="no-comments">Error loading quick comments.</div>';
+                });
+        }
+
+        // Fetch category comments on DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // ...existing code...
+            fetchCategoryComments();
+            loadQuickComments();
+            // ...existing code...
+        });
+        
+        // Category buttons and comments functionality
+        function initializeCategoryButtons() {
+            // Add event listeners to all category buttons
+            document.querySelectorAll('.category-btn-inline').forEach(button => {
+                button.addEventListener('click', function() {
+                    const category = this.getAttribute('data-category');
+                    const section = this.getAttribute('data-section');
+                    
+                    // Toggle active state
+                    const sectionButtons = document.querySelectorAll(`[data-section="${section}"].category-btn-inline`);
+                    sectionButtons.forEach(btn => btn.classList.remove('active'));
+                    
+                    if (this.classList.contains('active')) {
+                        // If clicking active button, hide dropdown
+                        hideDropdown(section);
+                    } else {
+                        // Show dropdown with category comments
+                        this.classList.add('active');
+                        showCategoryComments(category, section);
+                    }
+                });
+            });
+        }
+        
+        function showCategoryComments(category, section) {
+            const dropdown = document.getElementById(`category-dropdown-${section}`);
+            const commentsList = document.getElementById(`category-comments-${section}`);
+
+            if (!dropdown || !commentsList) return;
+
+            // Get comments array for this category and section
+            let comments = [];
+            if (CATEGORY_COMMENTS[category] && CATEGORY_COMMENTS[category][section]) {
+                comments = CATEGORY_COMMENTS[category][section];
+            }
+
+            commentsList.innerHTML = '';
+
+            if (!comments || comments.length === 0) {
+                commentsList.innerHTML = '<div class="no-comments">No comment available for this category and section.</div>';
+            } else {
+                comments.forEach(comment => {
+                    const commentDiv = document.createElement('div');
+                    commentDiv.className = 'category-comment-item-inline';
+                    commentDiv.textContent = comment;
+                    commentDiv.addEventListener('click', () => {
+                        insertCommentIntoTextarea(comment, section);
+                    });
+                    commentsList.appendChild(commentDiv);
+                });
+            }
+
+            // Show dropdown
+            dropdown.style.display = 'block';
+        }
+        
+        function hideDropdown(section) {
+            const dropdown = document.getElementById(`category-dropdown-${section}`);
+            if (dropdown) {
+                dropdown.style.display = 'none';
+            }
+        }
+        
+        function insertCommentIntoTextarea(comment, section) {
+            const textarea = document.getElementById(`feedback-${section}`);
+            if (!textarea) return;
+            
+            // Focus the textarea and get cursor position
+            textarea.focus();
+            const cursorPosition = textarea.selectionStart;
+            const textBefore = textarea.value.substring(0, cursorPosition);
+            const textAfter = textarea.value.substring(textarea.selectionEnd);
+            
+            // Insert comment at cursor position with appropriate spacing
+            let separator = '';
+            if (textBefore.length > 0 && !textBefore.endsWith('\n')) {
+                separator = textBefore.endsWith(' ') ? '\n\n' : '\n\n';
+            }
+            
+            const newValue = textBefore + separator + comment + textAfter;
+            textarea.value = newValue;
+            
+            // Set cursor position after the inserted comment
+            const newCursorPosition = cursorPosition + separator.length + comment.length;
+            textarea.setSelectionRange(newCursorPosition, newCursorPosition);
+            
+            // Update character counter
+            const event = new Event('input', { bubbles: true });
+            textarea.dispatchEvent(event);
+            
+            showNotification(`Comment inserted into section ${section}!`, 'success');
+        }
 
         // Unconnected Text Modal Functionality
         function initializeUnconnectedTextModal() {
@@ -689,7 +1070,7 @@
             fetch('/load_quick_comments')
             .then(response => response.json())
             .then(data => {
-                if (data.success && data.quick_comments.length > 0) {
+                if (data.success && Array.isArray(data.quick_comments) && data.quick_comments.length > 0) {
                     quickCommentsList.innerHTML = '';
                     data.quick_comments.forEach(commentData => {
                         const item = document.createElement('div');
@@ -703,8 +1084,7 @@
                     quickCommentsList.innerHTML = '<div class="no-comments">No quick comments available. Add them in Template Editor.</div>';
                 }
             })
-            .catch(error => {
-                console.error('Error loading quick comments:', error);
+            .catch(() => {
                 quickCommentsList.innerHTML = '<div class="no-comments">Error loading quick comments.</div>';
             });
         }
@@ -878,6 +1258,85 @@
                 setTimeout(() => notification.remove(), 300);
             }, 3000);
         }
+
+        (function() {
+            let citeBtn = document.getElementById('cite-btn-float');
+            let currentSelection = null;
+            let currentSectionId = null;
+
+            // Helper: Find parent .question-card and section id
+            function getSectionIdFromNode(node) {
+                while (node && node !== document.body) {
+                    if (node.classList && node.classList.contains('question-card')) {
+                        return node.getAttribute('data-id');
+                    }
+                    node = node.parentNode;
+                }
+                return null;
+            }
+
+            // Show cite button on text selection in extracted-content
+            document.addEventListener('mouseup', function(e) {
+                setTimeout(() => { // Wait for selection to update
+                    let sel = window.getSelection();
+                    if (sel.rangeCount === 0 || sel.isCollapsed) {
+                        citeBtn.style.display = 'none';
+                        return;
+                    }
+                    let range = sel.getRangeAt(0);
+                    let container = range.commonAncestorContainer;
+                    let extractedDiv = container.nodeType === 1 ? container.closest('.extracted-content') : container.parentElement?.closest('.extracted-content');
+                    if (extractedDiv) {
+                        // Only allow selection inside extracted-content
+                        let rect = range.getBoundingClientRect();
+                        citeBtn.style.top = (window.scrollY + rect.bottom + 5) + 'px';
+                        citeBtn.style.left = (window.scrollX + rect.left) + 'px';
+                        citeBtn.style.display = 'block';
+                        currentSelection = sel;
+                        currentSectionId = getSectionIdFromNode(extractedDiv);
+                    } else {
+                        citeBtn.style.display = 'none';
+                    }
+                }, 10);
+            });
+
+            // Hide cite button on click elsewhere
+            document.addEventListener('mousedown', function(e) {
+                if (!citeBtn.contains(e.target)) {
+                    citeBtn.style.display = 'none';
+                }
+            });
+
+            // Handle cite button click
+            citeBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (!currentSelection || !currentSectionId) return;
+                let selText = currentSelection.toString().trim();
+                if (!selText) return;
+
+                // Highlight in extracted-content
+                let range = currentSelection.getRangeAt(0);
+                let span = document.createElement('span');
+                span.className = 'citation-highlight';
+                span.textContent = selText;
+                range.deleteContents();
+                range.insertNode(span);
+
+                // Insert citation into feedback textarea
+                let textarea = document.getElementById('feedback-' + currentSectionId);
+                if (textarea) {
+                    let citation = `❝ ${selText} ❞`;
+                    let value = textarea.value;
+                    let sep = value && !value.endsWith('\n') ? '\n\n' : '';
+                    textarea.value = value + sep + citation;
+                    textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+
+                // Hide cite button and clear selection
+                citeBtn.style.display = 'none';
+                window.getSelection().removeAllRanges();
+            });
+        })();
     </script>
 </body>
 </html>

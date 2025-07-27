@@ -1,0 +1,102 @@
+{
+     "ready": {
+          "1.1": [
+               "The data collection methodology is well described and comprehensive.",
+               "Good specification of sources and collection methods.",
+               "Appropriate quality control measures are in place.",
+               "Clear timeline and procedures for data collection.",
+               "Excellent consideration of data validation approaches."
+          ],
+          "1.2": [
+               "Data types, formats, and volumes are clearly specified.",
+               "Good consideration of long-term data accessibility.",
+               "Realistic volume estimates provided.",
+               "Comprehensive coverage of different data categories.",
+               "Excellent planning for data organization and structure."
+          ],
+          "2.1": [
+               "Metadata standards are appropriately selected for the field.",
+               "Comprehensive documentation plan is in place.",
+               "Good consideration of data dictionary and variable definitions.",
+               "Excellent planning for data provenance tracking.",
+               "Metadata creation workflow is well designed."
+          ],
+          "2.2": [
+               "Quality control procedures are comprehensive and appropriate.",
+               "Good specification of validation methods and criteria.",
+               "Excellent planning for error detection and correction.",
+               "Quality metrics are clearly defined and measurable.",
+               "Good consideration of ongoing quality monitoring."
+          ],
+          "3.1": [
+               "Backup strategy is comprehensive and follows best practices.",
+               "Storage solutions are appropriate and well planned.",
+               "Good consideration of disaster recovery procedures.",
+               "Excellent planning for data access and synchronization.",
+               "Clear retention and disposal policies are defined."
+          ],
+          "3.2": [
+               "Security measures are comprehensive and appropriate for the data sensitivity.",
+               "Access controls are well designed and implemented.",
+               "Good use of encryption and other security technologies.",
+               "Excellent consideration of security monitoring and response.",
+               "Physical security measures are appropriately addressed."
+          ],
+          "4.1": [
+               "GDPR compliance procedures are comprehensive and well planned.",
+               "Excellent consideration of consent management and data subject rights.",
+               "Privacy impact assessment has been conducted appropriately.",
+               "Good planning for cross-border data transfers.",
+               "Data minimization principles are well implemented."
+          ],
+          "4.2": [
+               "Intellectual property arrangements are clearly defined and appropriate.",
+               "Licensing terms for data sharing are well specified.",
+               "Good consideration of ownership and derived works.",
+               "Excellent handling of third-party IP considerations.",
+               "Commercial rights and restrictions are clearly addressed."
+          ],
+          "5.1": [
+               "Data sharing plans are comprehensive with clear timelines.",
+               "Appropriate repositories have been identified for data sharing.",
+               "Good consideration of access controls and embargo periods.",
+               "Excellent planning for data sharing agreements and responsibilities.",
+               "Cost considerations for data sharing are well addressed."
+          ],
+          "5.2": [
+               "Long-term preservation strategy is comprehensive and well planned.",
+               "Repository selection is appropriate with clear criteria.",
+               "Good specification of preservation periods and policies.",
+               "Excellent consideration of format migration and technology changes.",
+               "Preservation costs and sustainability are well addressed."
+          ],
+          "5.3": [
+               "Software requirements and dependencies are clearly specified.",
+               "Good provision of data access tools and user interfaces.",
+               "Excellent documentation of data processing workflows.",
+               "Software preservation and versioning are well planned.",
+               "User support and training plans are comprehensive."
+          ],
+          "5.4": [
+               "DOI assignment procedures are well planned and documented.",
+               "Appropriate identifier registration authority has been selected.",
+               "Good consideration of metadata requirements for identifiers.",
+               "Excellent planning for identifier lifecycle management.",
+               "Identifier assignment timeline is realistic and well coordinated."
+          ],
+          "6.1": [
+               "Data management roles and responsibilities are clearly defined.",
+               "Good planning for data stewardship training and capacity building.",
+               "Excellent consideration of succession planning and knowledge transfer.",
+               "Data governance and oversight mechanisms are well established.",
+               "Team coordination and communication plans are comprehensive."
+          ],
+          "6.2": [
+               "Resource requirements for data management are realistically budgeted.",
+               "Good consideration of both initial and ongoing operational costs.",
+               "Excellent planning for resource allocation across project phases.",
+               "Staff time and expertise requirements are well specified.",
+               "Infrastructure and tool costs are appropriately budgeted."
+          ]
+     }
+}

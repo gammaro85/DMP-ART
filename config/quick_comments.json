@@ -1,6 +1,8 @@
-[
-  {
-    "name": "efee",
-    "text": "fefrfrv"
-  }
-]
+{
+  "quick_comments": [
+    {
+      "name": "Sample Comment",
+      "text": "This is a sample quick comment that can be used in reviews."
+    }
+  ]
+}

@@ -7,6 +7,7 @@
     <title>{% block title %}DMP ART{% endblock %}</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/dmp-art-favicon (Niestandardowe).png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Prevent flash of wrong theme -->
     <script>
         (function() {
@@ -25,9 +26,6 @@
         <nav class="header-nav">
             <a href="/template_editor" class="nav-item">Customize Templates</a>
             <a href="/documentation" class="nav-item">Documentation</a>
-            <div class="theme-toggle" onclick="toggleTheme()">
-                <span id="theme-text">Light Mode</span>
-            </div>
         </nav>
     </header>
 
