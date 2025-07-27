@@ -1,110 +1,1342 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DMP ART</title>
+    <meta name="theme-color" content="#ffffff">
+    <title>Review DMP - DMP ART</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/dmp-art-favicon (Niestandardowe).png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>DMP ART</h1>
-            <p>Review and provide feedback on the Data Management Plan</p>
-        </header>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Prevent flash of wrong theme -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('dmp-art-theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = saved || (prefersDark ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+            const meta = document.querySelector('meta[name="theme-color"]');
+            if (meta) meta.content = theme === 'dark' ? '#121212' : '#ffffff';
+        })();
+    </script>
+    <style>
+        /* Enhanced Review Page Styles */
+        .results-container {
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-medium);
+            transition: all 0.3s ease;
+        }
+        .result-card {
+            background-color: var(--bg-tertiary);
+            border-color: var(--border-medium);
+        }
+        .feature-card,
+        .stat-item {
+            background-color: var(--bg-secondary);
+            border-color: var(--border-light);
+        }
         
-        <main class="review-container">
-            <div class="control-panel">
-                <h2>Review DMP</h2>
-                <div class="action-btns">
-                    <a href="{{ url_for('download_file', filename=filename) }}" class="download-btn">Download Original</a>
-                    <button id="save-feedback-btn" class="save-all-btn">Save Feedback</button>
-                    <button id="compile-btn" class="compile-btn">Compile All Feedback</button>
-                </div>
+        /* Fixed Right Sidebar Styles - Override main CSS */
+        .review-layout {
+            display: flex !important;
+            flex-direction: row !important;
+            gap: 20px !important;
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 20px !important;
+        }
+        
+        .main-content {
+            flex: 1 !important;
+            margin-right: 0 !important;
+            min-width: 0 !important;
+            order: 1 !important;
+        }
+        
+        .right-sidebar {
+            position: sticky !important;
+            top: 80px !important;
+            width: 210px !important; /* Reduced by 30% from 300px */
+            min-width: 210px !important;
+            max-width: 210px !important;
+            height: calc(100vh - 100px) !important;
+            background-color: var(--bg-card) !important;
+            border: 1px solid var(--border-light) !important;
+            border-radius: 8px !important;
+            padding: 15px !important;
+            overflow-y: auto !important;
+            z-index: 100 !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+            display: block !important;
+            visibility: visible !important;
+            order: 2 !important;
+            flex-shrink: 0 !important;
+        }
+        
+        .navigation-pane, .category-comments-pane {
+            margin-bottom: 2rem;
+        }
+        
+        .navigation-pane h3, .category-comments-pane h3 {
+            color: var(--text-primary) !important;
+            font-size: 0.9rem !important;
+            margin-bottom: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
+            border-bottom: 1px solid var(--border-light) !important;
+        }
+        
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+            gap: 4px;
+        }
+        
+        .nav-grid-btn {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-light);
+            color: var(--text-primary);
+            padding: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-grid-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .category-btn {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-light);
+            color: var(--text-primary);
+            padding: 6px 12px;
+            border-radius: 4px;
+            margin: 2px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }
+        
+        .category-btn:hover, .category-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .category-comment-item {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-light);
+            padding: 8px;
+            margin: 4px 0;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }
+        
+        .category-comment-item:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .category-comment-section {
+            font-weight: bold;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+        
+        .no-comments {
+            color: var(--text-secondary);
+            font-style: italic;
+            font-size: 0.8rem;
+            text-align: center;
+            padding: 1rem;
+        }
+        
+        .quick-comments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .quick-comment-item {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-light);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+        
+        .quick-comment-item:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        /* Paragraph Layout Improvements */
+        .extracted-content {
+            background-color: var(--bg-secondary) !important;
+            border-radius: 8px !important;
+            padding: 20px !important;
+            margin: 15px 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+        
+        .enhanced-paragraph {
+            margin-bottom: 0 !important;
+            border: none !important;
+            background: transparent !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+        }
+        
+        .enhanced-paragraph:not(:last-child) {
+            margin-bottom: 15px !important;
+        }
+        
+        .paragraph-metadata {
+            display: none !important;
+        }
+        
+        .enhanced-paragraph p {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            line-height: 1.6 !important;
+            color: var(--text-primary) !important;
+        }
+        
+        /* Category Selection Styles */
+        .category-selection {
+            margin: 15px 0;
+            padding: 10px;
+            background-color: var(--bg-tertiary);
+            border-radius: 6px;
+            border: 1px solid var(--border-light);
+        }
+        
+        .category-selection label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+        
+        .category-buttons-inline {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .category-btn-inline {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-medium);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+        
+        .category-btn-inline:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .category-btn-inline.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        /* Category Comments Dropdown */
+        .category-comments-dropdown {
+            margin: 10px 0;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            background-color: var(--bg-card);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .category-comments-container {
+            padding: 10px;
+        }
+        
+        .category-comments-list-inline {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .category-comment-item-inline {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            padding: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            transition: all 0.2s ease;
+        }
+        
+        .category-comment-item-inline:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        /* Header Navigation Layout */
+        .header-nav {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            width: 100% !important;
+        }
+        
+        .nav-left {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .nav-right {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        /* Header Action Buttons - Distinguished Style */
+        .header-action-buttons-nav {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            padding: 4px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .action-btn {
+            padding: 8px 14px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            white-space: nowrap;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .action-btn.primary {
+            background-color: #10b981;
+            color: white;
+            box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+        }
+        
+        .action-btn.primary:hover {
+            background-color: #059669;
+            box-shadow: 0 4px 8px rgba(16, 185, 129, 0.4);
+            transform: translateY(-1px);
+        }
+        
+        .action-btn.secondary {
+            background-color: #6366f1;
+            color: white;
+            box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+        }
+        
+        .action-btn.secondary:hover {
+            background-color: #4f46e5;
+            box-shadow: 0 4px 8px rgba(99, 102, 241, 0.4);
+            transform: translateY(-1px);
+        }
+
+        /* Highlighted citation style */
+        .citation-highlight {
+            background-color: #ffe066 !important;
+            border-radius: 3px;
+            padding: 0 2px;
+            transition: background 0.3s;
+        }
+        /* Floating cite button */
+        #cite-btn-float {
+            position: absolute;
+            z-index: 9999;
+            display: none;
+            padding: 6px 12px;
+            background: #6366f1;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(99,102,241,0.15);
+            transition: opacity 0.2s;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 1200px) {
+            .main-content {
+                margin-right: 0;
+            }
+            
+            .right-sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body data-page="review">
+    <!-- Fixed Header Navigation -->
+    <header class="fixed-header">
+        <nav class="header-nav">
+            <div class="nav-left">
+                <a href="/" class="nav-item">Home</a>
+                <a href="/template_editor" class="nav-item">Customize Templates</a>
+                <a href="/documentation" class="nav-item">Documentation</a>
             </div>
             
-            <div id="questions-container">
+            <div class="nav-right">
+                <!-- Action Buttons in Header -->
+                <div class="header-action-buttons-nav">
+                    <button id="compile-feedback-btn" class="action-btn primary">Compile Feedback Report</button>
+                    <button id="save-feedback-btn" class="action-btn secondary">Save Progress</button>
+                </div>
+            </div>
+        </nav>
+    </header>
+    
+    <div class="review-container">
+        <header class="review-header">
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='images/dmp-art-logo-main-light.png') }}" 
+                     alt="DMP ART Logo" 
+                     class="logo light-logo">
+                <img src="{{ url_for('static', filename='images/dmp-art-logo-main-dark.png') }}" 
+                     alt="DMP ART Logo" 
+                     class="logo dark-logo">
+            </div>
+            <p class="review-subtitle">Review extracted content and provide feedback</p>
+            
+            {% if extraction_info %}
+            <div class="extraction-info">
+                <p>Extraction Summary</p>
+                <div class="extraction-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">{{ extraction_info.total_sections }}</span>
+                        <span class="stat-label">Total Sections</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">{{ extraction_info.sections_with_content }}</span>
+                        <span class="stat-label">Sections with Content</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">{{ extraction_info.extraction_method }}</span>
+                        <span class="stat-label">Processing Method</span>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </header>
+        
+        <div class="review-layout">
+            <!-- Main Content Area -->
+            <main class="main-content">
+            <!-- Questions Container -->
+            <div class="questions-container">
                 {% for section_id, content in extracted_content.items() %}
-                <div class="question-card" data-id="{{ section_id }}">
+                <div class="question-card" id="section-{{ section_id }}" data-id="{{ section_id }}">
                     <div class="question-header">
-                        <div class="question-title">{{ content.question }}</div>
-                        <div class="section-label">{{ content.section }}</div>
+                        <div class="section-title-only">
+                            {% set section_parts = content.section.split('.', 1) %}
+                            {% if section_parts|length > 1 %}
+                                {{ section_parts[1].strip() }}
+                            {% else %}
+                                {{ content.section }}
+                            {% endif %}
+                        </div>
+                        <div class="question-section-combined">
+                            <strong>{{ section_id }}. {{ content.question }}</strong>
+                        </div>
                     </div>
                     
                     <!-- Extracted DMP content -->
                     <div class="extracted-content">
-                        <h3>Extracted Content:</h3>
                         {% if content.paragraphs|length > 0 %}
                             {% for paragraph in content.paragraphs %}
-                            <div class="dmp-paragraph">
-                                <p>{{ paragraph }}</p>
+                            <div class="enhanced-paragraph">
+                                <div class="paragraph-metadata">
+                                    <span><strong>{{ loop.index }}</strong></span>
+                                </div>
                                 
-                                <!-- Tag buttons for this paragraph if available -->
-                                {% if content.tagged_paragraphs and loop.index0 < content.tagged_paragraphs|length %}
-                                    {% if content.tagged_paragraphs[loop.index0].tags|length > 0 %}
-                                    <div class="paragraph-tags">
-                                        {% for tag in content.tagged_paragraphs[loop.index0].tags %}
-                                        <button class="tag-btn" data-comment="{{ comments[tag] }}">{{ tag }}</button>
-                                        {% endfor %}
-                                    </div>
-                                    {% endif %}
-                                {% endif %}
+                                <p>{{ paragraph }}</p>
                             </div>
                             {% endfor %}
                         {% else %}
-                            <p class="no-content">No content found for this section.</p>
+                            <div class="no-content-warning">
+                                <div style="font-size: 2rem; margin-bottom: 10px;"></div>
+                                <strong>No content found for this section</strong>
+                                <p>This may indicate that the extraction process couldn't identify content for this specific subsection, or the content may be in a format that wasn't recognized.</p>
+                                <details style="margin-top: 10px;">
+                                    <summary>Possible reasons</summary>
+                                    <ul style="text-align: left; display: inline-block; margin-top: 5px;">
+                                        <li>Content was in a different format than expected</li>
+                                        <li>Section headers weren't recognized</li>
+                                        <li>Content was in tables or complex layouts</li>
+                                        <li>Text was part of images or non-extractable elements</li>
+                                    </ul>
+                                </details>
+                            </div>
                         {% endif %}
                     </div>
                     
-                    <!-- Common comment buttons -->
-                    <div class="comment-buttons">
-                        <h3>Common Comments:</h3>
-                        {% for tag, comment in comments.items() %}
-                        <button class="comment-btn" data-id="{{ section_id }}" data-comment="{{ comment }}">{{ tag }}</button>
-                        {% endfor %}
-                    </div>
                     
-                    <!-- Feedback textarea -->
-                    <div class="feedback-section">
-                        <h3>Your Feedback:</h3>
-                        <textarea class="feedback-text" id="feedback-{{ section_id }}">{{ templates[section_id].template if section_id in templates else "" }}</textarea>
+                    <!-- Enhanced feedback section -->
+                    <div class="enhanced-feedback-section">
+                        <div class="feedback-toolbar">
+                            <h3>Feedback for Section {{ section_id }}</h3>
+                            {% if content.get('type') in ['question', 'original_text', 'text_insertion'] %}
+                            <div class="char-counter" id="char-counter-{{ section_id }}">0 characters</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Category Selection -->
+                        <div class="category-selection" id="category-selection-{{ section_id }}">
+                            <label>Choose feedback category:</label>
+                            <div class="category-buttons-inline">
+                                <button class="category-btn-inline" data-category="newcomer" data-section="{{ section_id }}">Newcomer Guidance</button>
+                                <button class="category-btn-inline" data-category="missing" data-section="{{ section_id }}">Missing Info</button>
+                                <button class="category-btn-inline" data-category="ready" data-section="{{ section_id }}">Ready to Use</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Category Comments Dropdown -->
+                        <div class="category-comments-dropdown" id="category-dropdown-{{ section_id }}" style="display: none;">
+                            <div class="category-comments-container">
+                                <div class="category-comments-list-inline" id="category-comments-{{ section_id }}">
+                                    <!-- Comments will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <textarea class="feedback-text" 
+                                  id="feedback-{{ section_id }}" 
+                                  data-section-id="{{ section_id }}"
+                                  {% if content.get('type') %}data-section-type="{{ content.get('type') }}"{% endif %}
+                                  placeholder="Enter your feedback for this section..."
+                                  rows="8"></textarea>
+                        
                         <div class="action-row">
-                            <button class="copy-btn" data-id="{{ section_id }}">Copy to Clipboard</button>
-                            <button class="reset-btn" data-id="{{ section_id }}">Reset to Template</button>
+                            <div class="left-actions">
+                                <button class="copy-btn" data-id="{{ section_id }}" title="Copy feedback to clipboard">Copy</button>
+                                <button class="reset-btn" data-id="{{ section_id }}" title="Reset to original template">Reset</button>
+                            </div>
+                            <div class="completion-indicator" id="completion-{{ section_id }}">
+                                <span class="status-text">Draft</span>
+                            </div>
                         </div>
                     </div>
                 </div>
                 {% endfor %}
             </div>
-            
-            <!-- Compiled feedback section -->
-            <div id="compiled-feedback-container" class="compiled-feedback-container hidden">
-                <h2>Compiled Feedback</h2>
-                <textarea id="compiled-feedback" readonly></textarea>
-                <div class="compiled-actions">
-                    <button id="copy-compiled-btn">Copy All</button>
-                    <button id="download-feedback-btn">Download as Text</button>
-                    <button id="close-compiled-btn">Close</button>
+        </main>
+        
+        <!-- Right Sidebar -->
+        <aside class="right-sidebar">
+            <!-- Navigation Grid -->
+            <div class="navigation-pane">
+                <h3>Quick Navigation</h3>
+                <div class="nav-grid" id="section-nav-grid">
+                    <!-- Navigation buttons will be generated by JavaScript -->
                 </div>
             </div>
             
-            <div class="action-buttons">
-                <a href="/" class="secondary-btn">Process Another PDF</a>
+            <!-- Quick Comments -->
+            <div class="quick-comments-pane">
+                <h3>Quick Comments</h3>
+                <div class="quick-comments-list" id="quick-comments-list">
+                    <!-- Quick comments will be loaded here -->
+                    <div class="no-comments">No quick comments available. Add them in Template Editor.</div>
+                </div>
             </div>
-        </main>
+        </aside>
         
-        <div id="success-toast" class="success-toast">Templates saved successfully!</div>
+        </div> <!-- End review-layout -->
         
-        <footer>
-            <p>DMP ART &copy; 2025</p>
-        </footer>
+        <!-- Unconnected Text Assignment Modal -->
+        {% if unconnected_text and unconnected_text|length > 0 %}
+        <div id="unconnected-text-modal" class="compiled-feedback-container">
+            <div class="compiled-feedback-modal">
+                <div class="modal-header">
+                    <h2>Unconnected Text Assignment</h2>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0.5rem 0 0 0;">
+                        The following text was found but could not be automatically assigned to any DMP section. Please assign it manually.
+                    </p>
+                    <button id="close-unconnected-btn" class="close-btn" title="Close modal">×</button>
+                </div>
+                
+                <div class="modal-content">
+                    <div id="unconnected-items">
+                        {% for item in unconnected_text %}
+                        <div class="unconnected-item" data-index="{{ loop.index0 }}">
+                            <div class="unconnected-text-preview">
+                                <h4>Text {{ loop.index }}:</h4>
+                                <div class="text-content">{{ item.text }}</div>
+                            </div>
+                            <div class="assignment-controls">
+                                <label for="section-select-{{ loop.index0 }}">Assign to section:</label>
+                                <select id="section-select-{{ loop.index0 }}" class="section-select">
+                                    <option value="">-- Select Section --</option>
+                                    {% for section_id, content in extracted_content.items() %}
+                                    <option value="{{ section_id }}">{{ section_id }}. {{ content.question }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button class="assign-btn" data-index="{{ loop.index0 }}" data-text="{{ item.text }}">Assign</button>
+                                <button class="skip-btn" data-index="{{ loop.index0 }}">Skip</button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button id="assign-all-btn" class="action-btn">Assign All</button>
+                    <button id="skip-all-btn" class="secondary-btn">Skip All</button>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Compiled feedback modal -->
+        <div id="compiled-feedback-container" class="compiled-feedback-container hidden">
+            <div class="compiled-feedback-modal">
+                <div class="modal-header">
+                    <h2>Compiled Feedback Report</h2>
+                    <button id="close-compiled-btn" class="close-btn" title="Close report">×</button>
+                </div>
+                
+                <div class="modal-content">
+                    <textarea id="compiled-feedback" readonly></textarea>
+                </div>
+                
+                <div class="modal-actions">
+                    <button id="copy-compiled-btn" class="action-btn" title="Copy report to clipboard">Copy Report</button>
+                    <button id="download-feedback-btn" class="action-btn" title="Download as text file">Download TXT</button>
+                </div>
+            </div>
+        </div>
     </div>
     
-    <script>
-        // Store the filename and cache_id for use in JavaScript
-        const dmpFilename = "{{ filename }}";
-        const cacheId = "{{ cache_id }}";
-    </script>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-main">
+                <p>&copy; 2025 DMP ART. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <button id="cite-btn-float">Cite</button>
+
+    <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        // Enhanced navigation functionality
+        function scrollToSection(sectionId) {
+            const element = document.getElementById('section-' + sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // Highlight the section temporarily
+                element.style.border = '2px solid var(--accent-color)';
+                element.style.borderRadius = '8px';
+                setTimeout(() => {
+                    element.style.border = '';
+                    element.style.borderRadius = '';
+                }, 2000);
+                
+                // Focus on the feedback textarea for this section
+                const textarea = element.querySelector('.feedback-text');
+                if (textarea) {
+                    setTimeout(() => {
+                        textarea.focus();
+                    }, 500);
+                }
+            }
+        }
+
+        // Global variable to track the last focused textarea
+        let lastFocusedTextarea = null;
+
+        // Auto-update character counters and track focused textarea
+        document.addEventListener('DOMContentLoaded', function() {
+            const textareas = document.querySelectorAll('.feedback-text');
+            textareas.forEach(textarea => {
+                const sectionId = textarea.getAttribute('data-section-id');
+                const counter = document.getElementById('char-counter-' + sectionId);
+                
+                function updateCounter() {
+                    if (counter) {
+                        const charCount = textarea.value.length;
+                        const wordCount = textarea.value.trim() ? textarea.value.trim().split(/\s+/).length : 0;
+                        counter.textContent = `${charCount} characters, ${wordCount} words`;
+                    }
+                }
+                
+                // Update counter initially
+                updateCounter();
+                
+                // Update counter on input
+                textarea.addEventListener('input', updateCounter);
+                
+                // Track when textarea receives focus
+                textarea.addEventListener('focus', function() {
+                    lastFocusedTextarea = this;
+                });
+                
+                // Track when textarea is clicked
+                textarea.addEventListener('click', function() {
+                    lastFocusedTextarea = this;
+                });
+            });
+
+            // Initialize unconnected text modal functionality
+            initializeUnconnectedTextModal();
+            
+            // Initialize sidebar functionality
+            initializeSidebar();
+            
+            // Initialize category functionality
+            initializeCategoryButtons();
+            
+        });
+        
+        // Category comments will be loaded from server
+        let CATEGORY_COMMENTS = {};
+
+        // Load category comments from backend on page load
+        function fetchCategoryComments() {
+            fetch('/load_categories')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.categories) {
+                        CATEGORY_COMMENTS = data.categories;
+                    } else {
+                        CATEGORY_COMMENTS = {};
+                    }
+                })
+                .catch(() => {
+                    CATEGORY_COMMENTS = {};
+                });
+        }
+
+        // Load quick comments from backend on page load
+        function loadQuickComments() {
+            const quickCommentsList = document.getElementById('quick-comments-list');
+            if (!quickCommentsList) return;
+
+            fetch('/load_quick_comments')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && Array.isArray(data.quick_comments) && data.quick_comments.length > 0) {
+                        quickCommentsList.innerHTML = '';
+                        data.quick_comments.forEach(commentData => {
+                            const item = document.createElement('div');
+                            item.className = 'quick-comment-item';
+                            item.textContent = commentData.name || commentData.text || commentData;
+                            item.title = commentData.text || commentData;
+                            item.addEventListener('click', () => insertQuickComment(commentData.text || commentData));
+                            quickCommentsList.appendChild(item);
+                        });
+                    } else {
+                        quickCommentsList.innerHTML = '<div class="no-comments">No quick comments available. Add them in Template Editor.</div>';
+                    }
+                })
+                .catch(() => {
+                    quickCommentsList.innerHTML = '<div class="no-comments">Error loading quick comments.</div>';
+                });
+        }
+
+        // Fetch category comments on DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // ...existing code...
+            fetchCategoryComments();
+            loadQuickComments();
+            // ...existing code...
+        });
+        
+        // Category buttons and comments functionality
+        function initializeCategoryButtons() {
+            // Add event listeners to all category buttons
+            document.querySelectorAll('.category-btn-inline').forEach(button => {
+                button.addEventListener('click', function() {
+                    const category = this.getAttribute('data-category');
+                    const section = this.getAttribute('data-section');
+                    
+                    // Toggle active state
+                    const sectionButtons = document.querySelectorAll(`[data-section="${section}"].category-btn-inline`);
+                    sectionButtons.forEach(btn => btn.classList.remove('active'));
+                    
+                    if (this.classList.contains('active')) {
+                        // If clicking active button, hide dropdown
+                        hideDropdown(section);
+                    } else {
+                        // Show dropdown with category comments
+                        this.classList.add('active');
+                        showCategoryComments(category, section);
+                    }
+                });
+            });
+        }
+        
+        function showCategoryComments(category, section) {
+            const dropdown = document.getElementById(`category-dropdown-${section}`);
+            const commentsList = document.getElementById(`category-comments-${section}`);
+
+            if (!dropdown || !commentsList) return;
+
+            // Get comments array for this category and section
+            let comments = [];
+            if (CATEGORY_COMMENTS[category] && CATEGORY_COMMENTS[category][section]) {
+                comments = CATEGORY_COMMENTS[category][section];
+            }
+
+            commentsList.innerHTML = '';
+
+            if (!comments || comments.length === 0) {
+                commentsList.innerHTML = '<div class="no-comments">No comment available for this category and section.</div>';
+            } else {
+                comments.forEach(comment => {
+                    const commentDiv = document.createElement('div');
+                    commentDiv.className = 'category-comment-item-inline';
+                    commentDiv.textContent = comment;
+                    commentDiv.addEventListener('click', () => {
+                        insertCommentIntoTextarea(comment, section);
+                    });
+                    commentsList.appendChild(commentDiv);
+                });
+            }
+
+            // Show dropdown
+            dropdown.style.display = 'block';
+        }
+        
+        function hideDropdown(section) {
+            const dropdown = document.getElementById(`category-dropdown-${section}`);
+            if (dropdown) {
+                dropdown.style.display = 'none';
+            }
+        }
+        
+        function insertCommentIntoTextarea(comment, section) {
+            const textarea = document.getElementById(`feedback-${section}`);
+            if (!textarea) return;
+            
+            // Focus the textarea and get cursor position
+            textarea.focus();
+            const cursorPosition = textarea.selectionStart;
+            const textBefore = textarea.value.substring(0, cursorPosition);
+            const textAfter = textarea.value.substring(textarea.selectionEnd);
+            
+            // Insert comment at cursor position with appropriate spacing
+            let separator = '';
+            if (textBefore.length > 0 && !textBefore.endsWith('\n')) {
+                separator = textBefore.endsWith(' ') ? '\n\n' : '\n\n';
+            }
+            
+            const newValue = textBefore + separator + comment + textAfter;
+            textarea.value = newValue;
+            
+            // Set cursor position after the inserted comment
+            const newCursorPosition = cursorPosition + separator.length + comment.length;
+            textarea.setSelectionRange(newCursorPosition, newCursorPosition);
+            
+            // Update character counter
+            const event = new Event('input', { bubbles: true });
+            textarea.dispatchEvent(event);
+            
+            showNotification(`Comment inserted into section ${section}!`, 'success');
+        }
+
+        // Unconnected Text Modal Functionality
+        function initializeUnconnectedTextModal() {
+            const modal = document.getElementById('unconnected-text-modal');
+            if (!modal) return; // Exit if no unconnected text modal exists
+
+            const closeBtn = document.getElementById('close-unconnected-btn');
+            const assignAllBtn = document.getElementById('assign-all-btn');
+            const skipAllBtn = document.getElementById('skip-all-btn');
+
+            // Close modal handlers
+            if (closeBtn) {
+                closeBtn.addEventListener('click', closeUnconnectedModal);
+            }
+
+            // Close modal when clicking outside
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeUnconnectedModal();
+                }
+            });
+
+            // Individual assign buttons
+            document.querySelectorAll('.assign-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = this.getAttribute('data-index');
+                    const text = this.getAttribute('data-text');
+                    const select = document.getElementById(`section-select-${index}`);
+                    const selectedSection = select.value;
+
+                    if (!selectedSection) {
+                        alert('Please select a section first.');
+                        return;
+                    }
+
+                    assignTextToSection(index, text, selectedSection);
+                });
+            });
+
+            // Individual skip buttons
+            document.querySelectorAll('.skip-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = this.getAttribute('data-index');
+                    skipText(index);
+                });
+            });
+
+            // Assign all button
+            if (assignAllBtn) {
+                assignAllBtn.addEventListener('click', function() {
+                    const items = document.querySelectorAll('.unconnected-item:not(.assigned):not(.skipped)');
+                    let hasUnassigned = false;
+
+                    items.forEach(item => {
+                        const index = item.getAttribute('data-index');
+                        const select = document.getElementById(`section-select-${index}`);
+                        
+                        if (!select.value) {
+                            hasUnassigned = true;
+                        }
+                    });
+
+                    if (hasUnassigned) {
+                        alert('Please assign all text items to sections first.');
+                        return;
+                    }
+
+                    items.forEach(item => {
+                        const index = item.getAttribute('data-index');
+                        const text = item.querySelector('.assign-btn').getAttribute('data-text');
+                        const select = document.getElementById(`section-select-${index}`);
+                        assignTextToSection(index, text, select.value);
+                    });
+                });
+            }
+
+            // Skip all button
+            if (skipAllBtn) {
+                skipAllBtn.addEventListener('click', function() {
+                    if (confirm('Are you sure you want to skip all unassigned text items?')) {
+                        document.querySelectorAll('.unconnected-item:not(.assigned):not(.skipped)').forEach(item => {
+                            const index = item.getAttribute('data-index');
+                            skipText(index);
+                        });
+                    }
+                });
+            }
+
+            // Enable section select validation
+            document.querySelectorAll('.section-select').forEach(select => {
+                select.addEventListener('change', function() {
+                    const index = this.id.split('-').pop();
+                    const assignBtn = document.querySelector(`.assign-btn[data-index="${index}"]`);
+                    assignBtn.disabled = !this.value;
+                });
+            });
+        }
+
+        function assignTextToSection(index, text, sectionId) {
+            // Find the target section's textarea
+            const targetTextarea = document.getElementById(`feedback-${sectionId}`);
+            
+            if (targetTextarea) {
+                // Add the text to the target section
+                const currentContent = targetTextarea.value;
+                const separator = currentContent.trim() ? '\n\n' : '';
+                targetTextarea.value = currentContent + separator + `[Manually assigned text]: ${text}`;
+                
+                // Trigger input event to update character counter
+                targetTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+                
+                // Mark item as assigned
+                const item = document.querySelector(`.unconnected-item[data-index="${index}"]`);
+                item.classList.add('assigned');
+                
+                // Disable controls
+                const controls = item.querySelectorAll('select, button');
+                controls.forEach(control => control.disabled = true);
+                
+                // Show success feedback
+                showNotification(`Text assigned to section ${sectionId}`, 'success');
+                
+                checkIfAllItemsProcessed();
+            }
+        }
+
+        function skipText(index) {
+            const item = document.querySelector(`.unconnected-item[data-index="${index}"]`);
+            item.classList.add('skipped');
+            
+            // Disable controls
+            const controls = item.querySelectorAll('select, button');
+            controls.forEach(control => control.disabled = true);
+            
+            showNotification('Text skipped', 'info');
+            
+            checkIfAllItemsProcessed();
+        }
+
+        function checkIfAllItemsProcessed() {
+            const allItems = document.querySelectorAll('.unconnected-item');
+            const processedItems = document.querySelectorAll('.unconnected-item.assigned, .unconnected-item.skipped');
+            
+            if (allItems.length === processedItems.length) {
+                setTimeout(() => {
+                    if (confirm('All text items have been processed. Close the assignment window?')) {
+                        closeUnconnectedModal();
+                    }
+                }, 500);
+            }
+        }
+
+        function closeUnconnectedModal() {
+            const modal = document.getElementById('unconnected-text-modal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Sidebar functionality
+        function initializeSidebar() {
+            // Generate navigation grid
+            generateNavigationGrid();
+            
+            // Load quick comments
+            loadQuickComments();
+            
+            // Initialize category selector
+            initializeCategorySelector();
+        }
+
+        function generateNavigationGrid() {
+            const navGrid = document.getElementById('section-nav-grid');
+            if (!navGrid) return;
+
+            // Get all section containers
+            const sections = document.querySelectorAll('[id^="section-"]');
+            
+            sections.forEach(section => {
+                const sectionId = section.id.replace('section-', '');
+                const btn = document.createElement('button');
+                btn.className = 'nav-grid-btn';
+                btn.textContent = sectionId;
+                btn.addEventListener('click', () => scrollToSection(sectionId));
+                navGrid.appendChild(btn);
+            });
+        }
+
+        function loadQuickComments() {
+            const quickCommentsList = document.getElementById('quick-comments-list');
+            if (!quickCommentsList) return;
+
+            fetch('/load_quick_comments')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && Array.isArray(data.quick_comments) && data.quick_comments.length > 0) {
+                    quickCommentsList.innerHTML = '';
+                    data.quick_comments.forEach(commentData => {
+                        const item = document.createElement('div');
+                        item.className = 'quick-comment-item';
+                        item.textContent = commentData.name || commentData.text || commentData;
+                        item.title = commentData.text || commentData;
+                        item.addEventListener('click', () => insertQuickComment(commentData.text || commentData));
+                        quickCommentsList.appendChild(item);
+                    });
+                } else {
+                    quickCommentsList.innerHTML = '<div class="no-comments">No quick comments available. Add them in Template Editor.</div>';
+                }
+            })
+            .catch(() => {
+                quickCommentsList.innerHTML = '<div class="no-comments">Error loading quick comments.</div>';
+            });
+        }
+
+        function insertQuickComment(comment) {
+            // Use the last focused textarea, or fall back to currently active element
+            let targetTextarea = lastFocusedTextarea;
+            
+            // If no tracked textarea, try to get the currently focused one
+            if (!targetTextarea || !document.body.contains(targetTextarea)) {
+                const activeElement = document.activeElement;
+                if (activeElement && activeElement.tagName === 'TEXTAREA' && activeElement.classList.contains('feedback-text')) {
+                    targetTextarea = activeElement;
+                } else {
+                    // Final fallback to first textarea
+                    targetTextarea = document.querySelector('.feedback-text');
+                }
+            }
+            
+            if (targetTextarea) {
+                // Focus the textarea first to ensure it's active
+                targetTextarea.focus();
+                
+                // Get current cursor position
+                const cursorPosition = targetTextarea.selectionStart;
+                const textBefore = targetTextarea.value.substring(0, cursorPosition);
+                const textAfter = targetTextarea.value.substring(targetTextarea.selectionEnd);
+                
+                // Insert comment at cursor position with appropriate spacing
+                let separator = '';
+                if (textBefore.length > 0 && !textBefore.endsWith('\n')) {
+                    separator = textBefore.endsWith(' ') ? '' : ' ';
+                }
+                
+                const newValue = textBefore + separator + comment + textAfter;
+                targetTextarea.value = newValue;
+                
+                // Set cursor position after the inserted comment
+                const newCursorPosition = cursorPosition + separator.length + comment.length;
+                targetTextarea.setSelectionRange(newCursorPosition, newCursorPosition);
+                
+                // Update character counter
+                const event = new Event('input', { bubbles: true });
+                targetTextarea.dispatchEvent(event);
+                
+                // Get section ID for notification
+                const sectionId = targetTextarea.getAttribute('data-section-id');
+                showNotification(`Quick comment inserted in section ${sectionId}!`, 'success');
+            }
+        }
+
+        function initializeCategorySelector() {
+            const categoryButtons = document.getElementById('category-buttons');
+            const categoryCommentsList = document.getElementById('category-comments-list');
+            
+            if (!categoryButtons || !categoryCommentsList) return;
+            
+            // Load categories from backend
+            fetch('/load_categories')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const categories = data.categories;
+                    
+                    // Clear existing buttons
+                    categoryButtons.innerHTML = '';
+                    
+                    Object.keys(categories).forEach(categoryName => {
+                        const button = document.createElement('button');
+                        button.className = 'category-btn';
+                        button.textContent = categoryName;
+                        button.addEventListener('click', function() {
+                            // Remove active class from all buttons
+                            document.querySelectorAll('.category-btn').forEach(btn => {
+                                btn.classList.remove('active');
+                            });
+                            // Add active class to clicked button
+                            this.classList.add('active');
+                            // Load comments for this category
+                            loadCategoryComments(categoryName, categories);
+                        });
+                        categoryButtons.appendChild(button);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error loading categories:', error);
+            });
+        }
+
+        function loadCategoryComments(categoryName, allCategories) {
+            const categoryCommentsList = document.getElementById('category-comments-list');
+            if (!categoryCommentsList || !categoryName) {
+                categoryCommentsList.innerHTML = '<div class="no-comments">Select a category to view comments.</div>';
+                return;
+            }
+            
+            const categoryData = allCategories[categoryName];
+            if (!categoryData || Object.keys(categoryData).length === 0) {
+                categoryCommentsList.innerHTML = '<div class="no-comments">No comments available for this category.</div>';
+                return;
+            }
+            
+            categoryCommentsList.innerHTML = '';
+            
+            Object.keys(categoryData).forEach(sectionId => {
+                const comments = categoryData[sectionId];
+                
+                comments.forEach(comment => {
+                    const item = document.createElement('div');
+                    item.className = 'category-comment-item';
+                    item.innerHTML = `
+                        <div class="category-comment-section">Section ${sectionId}</div>
+                        <div>${comment}</div>
+                    `;
+                    item.addEventListener('click', () => insertCategoryComment(sectionId, comment));
+                    categoryCommentsList.appendChild(item);
+                });
+            });
+        }
+
+        function insertCategoryComment(sectionId, comment) {
+            const targetTextarea = document.getElementById(`feedback-${sectionId}`);
+            
+            if (targetTextarea) {
+                const currentValue = targetTextarea.value;
+                const newValue = currentValue ? currentValue + '\n\n' + comment : comment;
+                targetTextarea.value = newValue;
+                
+                // Update character counter
+                const event = new Event('input', { bubbles: true });
+                targetTextarea.dispatchEvent(event);
+                
+                // Scroll to section and focus
+                scrollToSection(sectionId);
+                setTimeout(() => targetTextarea.focus(), 500);
+                
+                showNotification(`Comment inserted into section ${sectionId}!`, 'success');
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            // Create a simple notification
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                border-radius: 6px;
+                color: white;
+                font-weight: 500;
+                z-index: 10000;
+                transition: all 0.3s ease;
+                ${type === 'success' ? 'background: var(--success-color);' : 
+                  type === 'error' ? 'background: var(--error-color);' : 
+                  'background: var(--primary-color);'}
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => notification.style.transform = 'translateX(0)', 10);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        (function() {
+            let citeBtn = document.getElementById('cite-btn-float');
+            let currentSelection = null;
+            let currentSectionId = null;
+
+            // Helper: Find parent .question-card and section id
+            function getSectionIdFromNode(node) {
+                while (node && node !== document.body) {
+                    if (node.classList && node.classList.contains('question-card')) {
+                        return node.getAttribute('data-id');
+                    }
+                    node = node.parentNode;
+                }
+                return null;
+            }
+
+            // Show cite button on text selection in extracted-content
+            document.addEventListener('mouseup', function(e) {
+                setTimeout(() => { // Wait for selection to update
+                    let sel = window.getSelection();
+                    if (sel.rangeCount === 0 || sel.isCollapsed) {
+                        citeBtn.style.display = 'none';
+                        return;
+                    }
+                    let range = sel.getRangeAt(0);
+                    let container = range.commonAncestorContainer;
+                    let extractedDiv = container.nodeType === 1 ? container.closest('.extracted-content') : container.parentElement?.closest('.extracted-content');
+                    if (extractedDiv) {
+                        // Only allow selection inside extracted-content
+                        let rect = range.getBoundingClientRect();
+                        citeBtn.style.top = (window.scrollY + rect.bottom + 5) + 'px';
+                        citeBtn.style.left = (window.scrollX + rect.left) + 'px';
+                        citeBtn.style.display = 'block';
+                        currentSelection = sel;
+                        currentSectionId = getSectionIdFromNode(extractedDiv);
+                    } else {
+                        citeBtn.style.display = 'none';
+                    }
+                }, 10);
+            });
+
+            // Hide cite button on click elsewhere
+            document.addEventListener('mousedown', function(e) {
+                if (!citeBtn.contains(e.target)) {
+                    citeBtn.style.display = 'none';
+                }
+            });
+
+            // Handle cite button click
+            citeBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (!currentSelection || !currentSectionId) return;
+                let selText = currentSelection.toString().trim();
+                if (!selText) return;
+
+                // Highlight in extracted-content
+                let range = currentSelection.getRangeAt(0);
+                let span = document.createElement('span');
+                span.className = 'citation-highlight';
+                span.textContent = selText;
+                range.deleteContents();
+                range.insertNode(span);
+
+                // Insert citation into feedback textarea
+                let textarea = document.getElementById('feedback-' + currentSectionId);
+                if (textarea) {
+                    let citation = `❝ ${selText} ❞`;
+                    let value = textarea.value;
+                    let sep = value && !value.endsWith('\n') ? '\n\n' : '';
+                    textarea.value = value + sep + citation;
+                    textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+
+                // Hide cite button and clear selection
+                citeBtn.style.display = 'none';
+                window.getSelection().removeAllRanges();
+            });
+        })();
+    </script>
 </body>
 </html>

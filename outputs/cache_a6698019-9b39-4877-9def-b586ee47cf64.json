@@ -1,0 +1,634 @@
+{
+  "1.1": {
+    "section": "1. Data description and collection or re-use of existing data",
+    "question": "How will new data be collected or produced and/or how will existing data be re-used?",
+    "paragraphs": [
+      "This project aims to develop a new isolated multilevel inverter topology and the development of an optimized",
+      "modulation technique to produce 15 levels of output voltage using fewer components semiconductor elements. The",
+      "data in this project is divided into the following categories:",
+      "Simulation files",
+      "The data from experimental research",
+      "[in English]"
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "This project aims to develop a new isolated multilevel inverter topology and the development of an optimized",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "modulation technique to produce 15 levels of output voltage using fewer components semiconductor elements. The",
+        "tags": [
+          "methodology"
+        ],
+        "title": null
+      },
+      {
+        "text": "data in this project is divided into the following categories:",
+        "tags": [],
+        "title": "data in this project is divided into the following categories:"
+      },
+      {
+        "text": "Simulation files",
+        "tags": [],
+        "title": "Simulation files"
+      },
+      {
+        "text": "The data from experimental research",
+        "tags": [],
+        "title": "The data from experimental research"
+      },
+      {
+        "text": "[in English]",
+        "tags": [],
+        "title": "[in English]"
+      }
+    ]
+  },
+  "1.2": {
+    "section": "1. Data description and collection or re-use of existing data",
+    "question": "What data (for example the types, formats, and volumes) will be collected or produced?",
+    "paragraphs": [
+      "Simulation files (using PLECS or MATLAB) in (.mdl) format, and graphics, diagrams, and other visual",
+      "representations of the proposed converter in (.png) format.",
+      "The data from experimental research will be recorded in the form of oscilloscope screenshots and text files",
+      "(*.csv or *.txt) format.",
+      "The expected size of data is approximately 50 GB."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Simulation files (using PLECS or MATLAB) in (.mdl) format, and graphics, diagrams, and other visual",
+        "tags": [
+          "data_format",
+          "tools"
+        ],
+        "title": "Simulation files (using PLECS or MATLAB) in (.mdl) format, and graphics, diagrams, and other visual"
+      },
+      {
+        "text": "representations of the proposed converter in (.png) format.",
+        "tags": [
+          "data_format"
+        ],
+        "title": "representations of the proposed converter in (.png) format."
+      },
+      {
+        "text": "The data from experimental research will be recorded in the form of oscilloscope screenshots and text files",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "(*.csv or *.txt) format.",
+        "tags": [
+          "data_format"
+        ],
+        "title": "(*.csv or *.txt) format."
+      },
+      {
+        "text": "The expected size of data is approximately 50 GB.",
+        "tags": [
+          "data_volume"
+        ],
+        "title": "The expected size of data is approximately 50 GB."
+      }
+    ]
+  },
+  "2.1": {
+    "section": "2. Documentation and data quality",
+    "question": "What metadata and documentation (for example methodology or data collection and way of organising data) will accompany data?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "2.2": {
+    "section": "2. Documentation and data quality",
+    "question": "What data quality control measures will be used?",
+    "paragraphs": [
+      "Measurements will be made according to standard procedure and proven calibration by trained personnel. Several",
+      "data quality control measures can be implemented to ensure the accuracy and reliability of the research findings such",
+      "Simulation Validation: The proposed inverter will be simulated accurately for various conditions to ensure the",
+      "stability and reliability of the inverter.",
+      "Calibration and Testing: The proposed inverter prototype will be constructed in an efficient structure to reduce",
+      "the losses and experimental tests will be performed to verify the affectedness of the inverter and control",
+      "technique under various operating conditions.",
+      "Peer Review: The analysis of the obtained results will be submitted to a high-quality journal and presented at",
+      "international conferences to receive feedback and peer review from experts to validate the research",
+      "methodology and data analysis technique.",
+      "What metadata and documentation (for example methodology or data collection and way of organising data) will",
+      "accompany data?",
+      "All the measured files will be developed and described after finished work (measurements). They will be prepared in",
+      "text format. Selected data will be facilitated by an open research data repository system (The Bridge of Data from",
+      "Gdańsk University of Technology). Metadata descriptions will be stored in JSON-LD format and will be compatible with",
+      "the metadata standards, especially DataCite."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Measurements will be made according to standard procedure and proven calibration by trained personnel. Several",
+        "tags": [
+          "methodology"
+        ],
+        "title": null
+      },
+      {
+        "text": "data quality control measures can be implemented to ensure the accuracy and reliability of the research findings such",
+        "tags": [
+          "quality"
+        ],
+        "title": null
+      },
+      {
+        "text": "Simulation Validation: The proposed inverter will be simulated accurately for various conditions to ensure the",
+        "tags": [
+          "quality"
+        ],
+        "title": null
+      },
+      {
+        "text": "stability and reliability of the inverter.",
+        "tags": [],
+        "title": "stability and reliability of the inverter."
+      },
+      {
+        "text": "Calibration and Testing: The proposed inverter prototype will be constructed in an efficient structure to reduce",
+        "tags": [
+          "data_format"
+        ],
+        "title": null
+      },
+      {
+        "text": "the losses and experimental tests will be performed to verify the affectedness of the inverter and control",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "technique under various operating conditions.",
+        "tags": [
+          "methodology"
+        ],
+        "title": "technique under various operating conditions."
+      },
+      {
+        "text": "Peer Review: The analysis of the obtained results will be submitted to a high-quality journal and presented at",
+        "tags": [
+          "quality"
+        ],
+        "title": null
+      },
+      {
+        "text": "international conferences to receive feedback and peer review from experts to validate the research",
+        "tags": [],
+        "title": "international conferences to receive feedback and peer review from experts to validate the research"
+      },
+      {
+        "text": "methodology and data analysis technique.",
+        "tags": [
+          "methodology"
+        ],
+        "title": "methodology and data analysis technique."
+      },
+      {
+        "text": "What metadata and documentation (for example methodology or data collection and way of organising data) will",
+        "tags": [
+          "methodology",
+          "metadata"
+        ],
+        "title": null
+      },
+      {
+        "text": "accompany data?",
+        "tags": [],
+        "title": "accompany data?"
+      },
+      {
+        "text": "All the measured files will be developed and described after finished work (measurements). They will be prepared in",
+        "tags": [],
+        "title": "All the measured files will be developed and described after finished work (measurements)."
+      },
+      {
+        "text": "text format. Selected data will be facilitated by an open research data repository system (The Bridge of Data from",
+        "tags": [
+          "data_format",
+          "storage",
+          "sharing"
+        ],
+        "title": "text format."
+      },
+      {
+        "text": "Gdańsk University of Technology). Metadata descriptions will be stored in JSON-LD format and will be compatible with",
+        "tags": [
+          "data_format",
+          "metadata",
+          "storage"
+        ],
+        "title": "Gdańsk University of Technology)."
+      },
+      {
+        "text": "the metadata standards, especially DataCite.",
+        "tags": [
+          "metadata"
+        ],
+        "title": "the metadata standards, especially DataCite."
+      }
+    ]
+  },
+  "3.1": {
+    "section": "3. Storage and backup during the research process",
+    "question": "How will data and metadata be stored and backed up during the research process?",
+    "paragraphs": [
+      "Data will be stored on the computers connected to the measurement devices. The backup will be performed at the end",
+      "of the measurement on the external hard disk (50 GB)."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Data will be stored on the computers connected to the measurement devices. The backup will be performed at the end",
+        "tags": [
+          "storage",
+          "backup"
+        ],
+        "title": "Data will be stored on the computers connected to the measurement devices."
+      },
+      {
+        "text": "of the measurement on the external hard disk (50 GB).",
+        "tags": [
+          "data_volume"
+        ],
+        "title": "of the measurement on the external hard disk (50 GB)."
+      }
+    ]
+  },
+  "3.2": {
+    "section": "3. Storage and backup during the research process",
+    "question": "How will data security and protection of sensitive data be taken care of during the research?",
+    "paragraphs": [
+      "During the research, no sensitive data will be gathered. To ensure data security all computers will be password",
+      "protected and the external hard drive will be stored in the locker. Only authorized research team members will have",
+      "access to the data.Ahmed Awadelseed, Gdansk University of Technology 618316",
+      "[draft]"
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "During the research, no sensitive data will be gathered. To ensure data security all computers will be password",
+        "tags": [
+          "security"
+        ],
+        "title": "During the research, no sensitive data will be gathered."
+      },
+      {
+        "text": "protected and the external hard drive will be stored in the locker. Only authorized research team members will have",
+        "tags": [
+          "data_volume",
+          "storage",
+          "security"
+        ],
+        "title": "protected and the external hard drive will be stored in the locker."
+      },
+      {
+        "text": "access to the data.Ahmed Awadelseed, Gdansk University of Technology 618316",
+        "tags": [
+          "sharing"
+        ],
+        "title": "access to the data.Ahmed Awadelseed, Gdansk University of Technology 618316"
+      },
+      {
+        "text": "[draft]",
+        "tags": [],
+        "title": "[draft]"
+      }
+    ]
+  },
+  "4.1": {
+    "section": "4. Legal requirements, codes of conduct",
+    "question": "If personal data are processed, how will compliance with legislation on personal data and on data security be ensured?",
+    "paragraphs": [
+      "Personal data will not be collected on any computers in the project. Accounting work will be performed by",
+      "administrative staff at Gdańsk University of Technology",
+      "How will other legal issues, such as intelectual property rights and ownership, be managed? What legislation is",
+      "applicable?",
+      "The ownership and management of any intellectual property relating to the Project remain in the rights of the",
+      "University and researchers, according to the copyright law and institutional regulations (Resolution of the Senate of the",
+      "Gdańsk University of Technology No. 117/2021/XXV of 19 May 2021 https://link.pg.edu.pl/GdańskTech_intprop). The",
+      "data and results will be published in an open-access model under one of the Creative Commons licenses. The data",
+      "shared in the open research data repository will have a CCBY or CC0 license assigned. Metadata descriptions for these",
+      "datasets will be always available without any restrictions (CC0). No embargo or any other restrictions are necessary.5.",
+      "Data sharing and long-term preservation"
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Personal data will not be collected on any computers in the project. Accounting work will be performed by",
+        "tags": [
+          "personal_data"
+        ],
+        "title": "Personal data will not be collected on any computers in the project."
+      },
+      {
+        "text": "administrative staff at Gdańsk University of Technology",
+        "tags": [],
+        "title": "administrative staff at Gdańsk University of Technology"
+      },
+      {
+        "text": "How will other legal issues, such as intelectual property rights and ownership, be managed? What legislation is",
+        "tags": [
+          "license"
+        ],
+        "title": "How will other legal issues, such as intelectual property rights and ownership, be managed?"
+      },
+      {
+        "text": "applicable?",
+        "tags": [],
+        "title": "applicable?"
+      },
+      {
+        "text": "The ownership and management of any intellectual property relating to the Project remain in the rights of the",
+        "tags": [
+          "license"
+        ],
+        "title": null
+      },
+      {
+        "text": "University and researchers, according to the copyright law and institutional regulations (Resolution of the Senate of the",
+        "tags": [
+          "backup",
+          "license"
+        ],
+        "title": null
+      },
+      {
+        "text": "Gdańsk University of Technology No. 117/2021/XXV of 19 May 2021 https://link.pg.edu.pl/GdańskTech_intprop). The",
+        "tags": [],
+        "title": "Gdańsk University of Technology No."
+      },
+      {
+        "text": "data and results will be published in an open-access model under one of the Creative Commons licenses. The data",
+        "tags": [
+          "license",
+          "sharing"
+        ],
+        "title": null
+      },
+      {
+        "text": "shared in the open research data repository will have a CCBY or CC0 license assigned. Metadata descriptions for these",
+        "tags": [
+          "metadata",
+          "storage",
+          "license",
+          "sharing"
+        ],
+        "title": "shared in the open research data repository will have a CCBY or CC0 license assigned."
+      },
+      {
+        "text": "datasets will be always available without any restrictions (CC0). No embargo or any other restrictions are necessary.5.",
+        "tags": [
+          "data_volume"
+        ],
+        "title": "datasets will be always available without any restrictions (CC0)."
+      },
+      {
+        "text": "Data sharing and long-term preservation",
+        "tags": [
+          "sharing",
+          "preservation"
+        ],
+        "title": "Data sharing and long-term preservation"
+      }
+    ]
+  },
+  "4.2": {
+    "section": "4. Legal requirements, codes of conduct",
+    "question": "How will other legal issues, such as intelectual property rights and ownership, be managed? What legislation is applicable?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "5.1": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How and when will data be shared? Are there possible restrictions to data sharing or embargo reasons?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "5.2": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How will data for preservation be selected, and where will data be preserved long-term (for example a data repository or archive)?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "5.3": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "What methods or software tools will be needed to access and use the data?",
+    "paragraphs": [
+      "Plan s for data and publications, Free software to open the txt/csv files.",
+      "How will the application of a unique and persistent identifier (such us a Digital Object Identifier (DOI)) to each data set",
+      "be ensured?",
+      "The datasets provided in the repository will have the DOI assigned.",
+      "How and when will data be shared ? Are there possible restrictions to data sharing or embargo reasons?",
+      "Selected data will be systematically uploaded to the Bridge of Data repository in accordance with the publication dates",
+      "of the articles that are derived from this data. Some part of the data will be published in scientific journals which may",
+      "also require raw data publication.",
+      "How will data for preservation be selected, and where will data be preserved long-term (for example a data repository",
+      "or archive)?",
+      "The data used in the articles will be deposited in the Bridge of Data repository, which will also be the main place for",
+      "data preservation. The repository has a CoreTrustSeal certificate that confirms its trustworthiness and sustainability.",
+      "Data deposited there will be automatically categorized for long-term storage without an expiration date. The main",
+      "criteria for selecting data will be its completeness and quality. Nevertheless, all data not selected for sharing and",
+      "preservation in the Bridge of Data repository will also be stored for at least 10 years after the project is finished, and",
+      "access to them will be possible only with the PI's consent."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Plan s for data and publications, Free software to open the txt/csv files.",
+        "tags": [
+          "data_format",
+          "tools"
+        ],
+        "title": "Plan s for data and publications, Free software to open the txt/csv files."
+      },
+      {
+        "text": "How will the application of a unique and persistent identifier (such us a Digital Object Identifier (DOI)) to each data set",
+        "tags": [
+          "tools",
+          "identifier"
+        ],
+        "title": null
+      },
+      {
+        "text": "be ensured?",
+        "tags": [],
+        "title": "be ensured?"
+      },
+      {
+        "text": "The datasets provided in the repository will have the DOI assigned.",
+        "tags": [
+          "storage",
+          "identifier"
+        ],
+        "title": "The datasets provided in the repository will have the DOI assigned."
+      },
+      {
+        "text": "How and when will data be shared ? Are there possible restrictions to data sharing or embargo reasons?",
+        "tags": [
+          "data_volume",
+          "sharing"
+        ],
+        "title": "How and when will data be shared ?"
+      },
+      {
+        "text": "Selected data will be systematically uploaded to the Bridge of Data repository in accordance with the publication dates",
+        "tags": [
+          "storage"
+        ],
+        "title": null
+      },
+      {
+        "text": "of the articles that are derived from this data. Some part of the data will be published in scientific journals which may",
+        "tags": [],
+        "title": "of the articles that are derived from this data."
+      },
+      {
+        "text": "also require raw data publication.",
+        "tags": [],
+        "title": "also require raw data publication."
+      },
+      {
+        "text": "How will data for preservation be selected, and where will data be preserved long-term (for example a data repository",
+        "tags": [
+          "storage",
+          "preservation"
+        ],
+        "title": null
+      },
+      {
+        "text": "or archive)?",
+        "tags": [],
+        "title": "or archive)?"
+      },
+      {
+        "text": "The data used in the articles will be deposited in the Bridge of Data repository, which will also be the main place for",
+        "tags": [
+          "storage"
+        ],
+        "title": null
+      },
+      {
+        "text": "data preservation. The repository has a CoreTrustSeal certificate that confirms its trustworthiness and sustainability.",
+        "tags": [
+          "storage",
+          "preservation"
+        ],
+        "title": "data preservation."
+      },
+      {
+        "text": "Data deposited there will be automatically categorized for long-term storage without an expiration date. The main",
+        "tags": [
+          "storage",
+          "preservation",
+          "responsibility"
+        ],
+        "title": null
+      },
+      {
+        "text": "criteria for selecting data will be its completeness and quality. Nevertheless, all data not selected for sharing and",
+        "tags": [
+          "quality",
+          "sharing"
+        ],
+        "title": "criteria for selecting data will be its completeness and quality."
+      },
+      {
+        "text": "preservation in the Bridge of Data repository will also be stored for at least 10 years after the project is finished, and",
+        "tags": [
+          "storage",
+          "preservation"
+        ],
+        "title": null
+      },
+      {
+        "text": "access to them will be possible only with the PI's consent.",
+        "tags": [
+          "personal_data",
+          "sharing",
+          "responsibility"
+        ],
+        "title": "access to them will be possible only with the PI's consent."
+      }
+    ]
+  },
+  "5.4": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How will the application of a unique and persistent identifier (such us a Digital Object Identifier (DOI)) to each data set be ensured?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "6.1": {
+    "section": "6. Data management responsibilities and resources",
+    "question": "Who (for example role, position, and institution) will be responsible for data management (i.e the data steward)?",
+    "paragraphs": [
+      "Who (for example role, position, and institution) will be responsible for data mangement (i.e the data steward)?",
+      "Open Science Competence Center (pg.edu.pl/open science) - established by Gdańsk University of Technology will be",
+      "responsible for DMP and quality of metadata descriptions of datasets deposited in the Bridge of Data repository.",
+      "Project PI will be responsible for the procedures assessment and overall data quality.",
+      "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be",
+      "FAIR (Findable, Accessible, Interoperable, Re-usable)?",
+      "Not applicableAhmed Awadelseed, Gdansk University of Technology 618316",
+      "[draft]"
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Who (for example role, position, and institution) will be responsible for data mangement (i.e the data steward)?",
+        "tags": [
+          "responsibility"
+        ],
+        "title": null
+      },
+      {
+        "text": "Open Science Competence Center (pg.edu.pl/open science) - established by Gdańsk University of Technology will be",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "responsible for DMP and quality of metadata descriptions of datasets deposited in the Bridge of Data repository.",
+        "tags": [
+          "metadata",
+          "quality",
+          "storage",
+          "responsibility"
+        ],
+        "title": null
+      },
+      {
+        "text": "Project PI will be responsible for the procedures assessment and overall data quality.",
+        "tags": [
+          "methodology",
+          "quality",
+          "responsibility"
+        ],
+        "title": "Project PI will be responsible for the procedures assessment and overall data quality."
+      },
+      {
+        "text": "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be",
+        "tags": [
+          "resources"
+        ],
+        "title": null
+      },
+      {
+        "text": "FAIR (Findable, Accessible, Interoperable, Re-usable)?",
+        "tags": [
+          "sharing"
+        ],
+        "title": "FAIR (Findable, Accessible, Interoperable, Re-usable)?"
+      },
+      {
+        "text": "Not applicableAhmed Awadelseed, Gdansk University of Technology 618316",
+        "tags": [],
+        "title": "Not applicableAhmed Awadelseed, Gdansk University of Technology 618316"
+      },
+      {
+        "text": "[draft]",
+        "tags": [],
+        "title": "[draft]"
+      }
+    ]
+  },
+  "6.2": {
+    "section": "6. Data management responsibilities and resources",
+    "question": "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  }
+}

@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+    <title>DMP ART Documentation</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/dmp-art-favicon (Niestandardowe).png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Prevent flash of wrong theme -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('dmp-art-theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = saved || (prefersDark ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+            const meta = document.querySelector('meta[name="theme-color"]');
+            if (meta) meta.content = theme === 'dark' ? '#121212' : '#ffffff';
+        })();
+    </script>
+    <style>
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background 0.2s, color 0.2s;
+        }
+        
+        .doc-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            padding-top: 100px;
+        }
+        
+        .doc-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: var(--bg-card);
+            border-radius: 12px;
+            box-shadow: var(--shadow-light);
+        }
+        
+        .doc-section {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-light);
+        }
+        
+        .doc-section h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .doc-section h3 {
+            color: var(--navy-medium);
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .feature-card {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            transition: transform 0.2s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+        
+        .feature-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .tech-item {
+            background: var(--bg-tertiary);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--border-light);
+        }
+        
+        .tech-item h5 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .step-card {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: 8px;
+            position: relative;
+            border: 1px solid var(--border-light);
+        }
+        
+        .step-number {
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: var(--primary-color);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .step-card h4 {
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .workflow-diagram {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            text-align: center;
+            border: 1px solid var(--border-light);
+        }
+        
+        .workflow-step {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem 1.5rem;
+            margin: 0.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            position: relative;
+        }
+        
+        .workflow-step:not(:last-child)::after {
+            content: '→';
+            position: absolute;
+            right: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .limitation-card {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        
+        [data-theme="dark"] .limitation-card {
+            background: #3d3a1e;
+            color: #ffeaa7;
+            border-color: #ffeaa7;
+        }
+        
+        .warning-icon {
+            color: #f39c12;
+            margin-right: 0.5rem;
+        }
+        
+        .code-block {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin: 0.25rem;
+        }
+        
+        .badge.version {
+            background: var(--success-color);
+        }
+        
+        .badge.status {
+            background: var(--warning-color);
+        }
+        
+        .toc {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-light);
+        }
+        
+        .toc h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .toc li {
+            margin: 0.5rem 0;
+        }
+        
+        .toc a {
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+        
+        .toc a:hover {
+            background: var(--bg-hover);
+            color: var(--primary-color);
+        }
+        
+        @media (max-width: 768px) {
+            .doc-container {
+                padding: 1rem;
+                padding-top: 80px;
+            }
+            
+            .features-grid,
+            .steps-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .tech-stack {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .workflow-step {
+                display: block;
+                margin: 1rem 0;
+            }
+            
+            .workflow-step::after {
+                content: '↓';
+                position: static;
+                display: block;
+                text-align: center;
+                margin: 0.5rem 0;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .tech-stack {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body data-page="documentation">
+    <!-- Fixed Header Navigation -->
+    <header class="fixed-header">
+        <nav class="header-nav">
+            <a href="/" class="nav-item">Home</a>
+            <a href="/template_editor" class="nav-item">Customize Templates</a>
+        </nav>
+    </header>
+    
+    <div class="doc-container">
+        <header class="doc-header">
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='images/dmp-art-logo-main-light.png') }}" 
+                     alt="DMP ART Logo" 
+                     class="logo light-logo">
+                <img src="{{ url_for('static', filename='images/dmp-art-logo-main-dark.png') }}" 
+                     alt="DMP ART Logo" 
+                     class="logo dark-logo">
+            </div>
+            <h1>DMP ART Documentation</h1>
+            <p>Data Management Plan Assessment and Response Tool</p>
+            <div>
+                <span class="badge version">Version 1.0</span>
+                <span class="badge status">Active Development</span>
+                <span class="badge">Web Application</span>
+            </div>
+        </header>
+        
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h3><i class="fas fa-list"></i> Table of Contents</h3>
+            <ul>
+                <li><a href="#overview">1. Program Overview</a></li>
+                <li><a href="#technical-stack">2. Technical Stack</a></li>
+                <li><a href="#features">3. Features & Functionalities</a></li>
+                <li><a href="#workflow">4. How It Works</a></li>
+                <li><a href="#step-by-step">5. Step-by-Step Guide</a></li>
+                <li><a href="#limitations">6. Limitations & Known Issues</a></li>
+                <li><a href="#architecture">7. System Architecture</a></li>
+                <li><a href="#license">8. License & Legal Information</a></li>
+                <li><a href="#configuration">9. Configuration & Setup</a></li>
+            </ul>
+        </div>
+        
+        <main>
+            <!-- Program Overview -->
+            <section id="overview" class="doc-section">
+                <h2><i class="fas fa-info-circle"></i> Program Overview</h2>
+                <p><strong>DMP ART (Data Management Plan Assessment and Response Tool)</strong> is a specialized web application designed to streamline the assessment process of Data Management Plans (DMPs) from grant proposals submitted to the National Science Centre (NCN) through the OSF (Otwarta Nauka) system.</p>
+                
+                <h3>Purpose & Scope</h3>
+                <p>This tool supports research administrators, grant officers, and academic institutions in Poland by:</p>
+                <ul>
+                    <li><strong>Automated Extraction:</strong> Processing PDF and DOCX documents exported from OSF system</li>
+                    <li><strong>Content Analysis:</strong> Identifying and structuring DMP sections according to NCN requirements</li>
+                    <li><strong>Standardized Review:</strong> Providing consistent feedback templates and assessment frameworks</li>
+                    <li><strong>Efficient Workflow:</strong> Reducing manual work and improving review quality</li>
+                </ul>
+                
+                <h3>Target Users</h3>
+                <ul>
+                    <li>Grant administrators at Polish research institutions</li>
+                    <li>Academic office staff processing NCN applications</li>
+                    <li>Research support personnel</li>
+                    <li>Quality assurance teams for grant proposals</li>
+                </ul>
+            </section>
+
+            <!-- Technical Stack -->
+            <section id="technical-stack" class="doc-section">
+                <h2><i class="fas fa-code"></i> Technical Stack & Programming Languages</h2>
+                
+                <h3>Backend Technologies</h3>
+                <div class="tech-stack">
+                    <div class="tech-item">
+                        <h5><i class="fab fa-python"></i> Python 3.8+</h5>
+                        <p>Core application logic</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5><i class="fas fa-server"></i> Flask 3.1.0</h5>
+                        <p>Web framework</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5><i class="fas fa-file-pdf"></i> PyPDF2 3.0.1</h5>
+                        <p>PDF processing</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5><i class="fas fa-file-word"></i> python-docx 1.1.2</h5>
+                        <p>DOCX processing</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5><i class="fas fa-tools"></i> Werkzeug 3.1.3</h5>
+                        <p>WSGI utilities</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5><i class="fas fa-image"></i> Pillow 11.0.0</h5>
+                        <p>Image processing</p>
+                    </div>
+                </div>
+                
+                <h3>Frontend Technologies</h3>
+                <div class="tech-stack">
+                    <div class="tech-item">
+                        <h5><i class="fab fa-html5"></i> HTML5</h5>
+                        <p>Semantic markup</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5><i class="fab fa-css3-alt"></i> CSS3</h5>
+                        <p>Modern styling with CSS Grid/Flexbox</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5><i class="fab fa-js"></i> JavaScript ES6+</h5>
+                        <p>Interactive functionality</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5><i class="fas fa-palette"></i> CSS Variables</h5>
+                        <p>Dark/Light theme system</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5><i class="fas fa-icons"></i> Font Awesome 6.0</h5>
+                        <p>Icon library</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5><i class="fas fa-mobile-alt"></i> Responsive Design</h5>
+                        <p>Mobile-first approach</p>
+                    </div>
+                </div>
+                
+                <h3>Data Formats & Storage</h3>
+                <ul>
+                    <li><strong>JSON:</strong> Configuration files, templates, and data storage</li>
+                    <li><strong>Local File System:</strong> Uploaded documents and generated reports</li>
+                    <li><strong>In-Memory Processing:</strong> Real-time document analysis</li>
+                    <li><strong>Cache System:</strong> Extracted content caching with unique identifiers</li>
+                </ul>
+            </section>
+
+            <!-- Features & Functionalities -->
+            <section id="features" class="doc-section">
+                <h2><i class="fas fa-star"></i> Features & Functionalities</h2>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <h4><i class="fas fa-file-upload"></i> Document Processing</h4>
+                        <ul>
+                            <li><strong>Multi-format Support:</strong> PDF and DOCX files (up to 16MB)</li>
+                            <li><strong>Table Extraction:</strong> Advanced table content recognition</li>
+                            <li><strong>Formatting Preservation:</strong> Bold, underlined text detection</li>
+                            <li><strong>Bilingual Processing:</strong> Polish and English content</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4><i class="fas fa-search"></i> Content Analysis</h4>
+                        <ul>
+                            <li><strong>Section Recognition:</strong> Automatic DMP section identification (1.1-6.2)</li>
+                            <li><strong>Key Phrase Detection:</strong> 165+ DMP-related terms</li>
+                            <li><strong>Author Extraction:</strong> Document metadata recognition</li>
+                            <li><strong>Content Tagging:</strong> Methodology, data formats, security tags</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4><i class="fas fa-comments"></i> Review Interface</h4>
+                        <ul>
+                            <li><strong>Structured Feedback:</strong> Section-by-section review system</li>
+                            <li><strong>Quick Comments:</strong> Customizable quick-insert comments</li>
+                            <li><strong>Progress Tracking:</strong> Visual progress indicators</li>
+                            <li><strong>Category System:</strong> Multiple feedback categories (Ready, Missing, Newcomer)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4><i class="fas fa-edit"></i> Template Editor</h4>
+                        <ul>
+                            <li><strong>DMP Structure Management:</strong> Configure section hierarchy</li>
+                            <li><strong>Quick Comments Editor:</strong> Add/edit/delete quick comments</li>
+                            <li><strong>Dynamic Categories:</strong> Create custom feedback categories</li>
+                            <li><strong>Real-time Preview:</strong> See changes immediately</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4><i class="fas fa-download"></i> Export & Reports</h4>
+                        <ul>
+                            <li><strong>Feedback Compilation:</strong> Generate comprehensive feedback reports</li>
+                            <li><strong>Multiple Formats:</strong> TXT, HTML export options</li>
+                            <li><strong>Progress Saving:</strong> Save and resume review sessions</li>
+                            <li><strong>Document Comparison:</strong> Original vs. extracted content</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4><i class="fas fa-palette"></i> User Experience</h4>
+                        <ul>
+                            <li><strong>Dark/Light Theme:</strong> Automatic system detection</li>
+                            <li><strong>Responsive Design:</strong> Works on desktop, tablet, mobile</li>
+                            <li><strong>Keyboard Shortcuts:</strong> Ctrl+Shift+D for theme toggle</li>
+                            <li><strong>Accessibility:</strong> Screen reader friendly, proper ARIA labels</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- How It Works -->
+            <section id="workflow" class="doc-section">
+                <h2><i class="fas fa-cogs"></i> How DMP ART Works</h2>
+                
+                <h3>System Workflow</h3>
+                <div class="workflow-diagram">
+                    <div class="workflow-step">Document Upload</div>
+                    <div class="workflow-step">File Validation</div>
+                    <div class="workflow-step">Content Extraction</div>
+                    <div class="workflow-step">Section Analysis</div>
+                    <div class="workflow-step">Review Interface</div>
+                    <div class="workflow-step">Feedback Generation</div>
+                    <div class="workflow-step">Report Export</div>
+                </div>
+                
+                <h3>Processing Pipeline</h3>
+                <div class="code-block">
+1. Upload Validation
+   ├── File type check (PDF/DOCX)
+   ├── Size validation (max 16MB)
+   ├── Structure verification
+   └── Security scanning
+
+2. Content Extraction
+   ├── DOCX: python-docx library
+   │   ├── Text paragraphs
+   │   ├── Table structures
+   │   └── Formatting preservation
+   └── PDF: PyPDF2 library
+       ├── Multi-page text extraction
+       └── Section identification
+
+3. Content Analysis
+   ├── DMP section recognition (regex patterns)
+   ├── Key phrase tagging (165+ terms)
+   ├── Bilingual content mapping
+   └── Author/metadata extraction
+
+4. Review Processing
+   ├── Section-based interface generation
+   ├── Template loading (customizable)
+   ├── Quick comment integration
+   └── Progress tracking
+
+5. Output Generation
+   ├── Feedback compilation
+   ├── Multiple export formats
+   └── Download preparation
+                </div>
+            </section>
+
+            <!-- Step-by-Step Guide -->
+            <section id="step-by-step" class="doc-section">
+                <h2><i class="fas fa-list-ol"></i> Step-by-Step User Guide</h2>
+                
+                <div class="steps-container">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <h4>Access DMP ART</h4>
+                        <p><strong>Open the application</strong> in your web browser. The system works best in Chrome, Firefox, or Edge.</p>
+                        <ul>
+                            <li>Navigate to the DMP ART homepage</li>
+                            <li>System automatically detects your theme preference</li>
+                            <li>Use the theme toggle (top-left) to switch between light/dark modes</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <h4>Upload Document</h4>
+                        <p><strong>Upload your NCN grant proposal</strong> document from the OSF system.</p>
+                        <ul>
+                            <li>Drag & drop or click to select file</li>
+                            <li>Supported formats: PDF, DOCX (max 16MB)</li>
+                            <li>System validates file integrity automatically</li>
+                            <li>Wait for processing completion (usually 10-30 seconds)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <h4>Review Extracted Content</h4>
+                        <p><strong>Examine the automatically extracted</strong> DMP sections and content.</p>
+                        <ul>
+                            <li>Check extracted sections (1.1, 1.2, 2.1, etc.)</li>
+                            <li>Review identified key phrases and tags</li>
+                            <li>Compare with original document if needed</li>
+                            <li>Note any extraction issues in the "Unconnected Text" section</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">4</div>
+                        <h4>Customize Templates (Optional)</h4>
+                        <p><strong>Configure feedback templates</strong> before starting review.</p>
+                        <ul>
+                            <li>Click "Customize Templates" in navigation</li>
+                            <li>Edit DMP structure if needed</li>
+                            <li>Add/edit quick comments</li>
+                            <li>Create custom feedback categories</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">5</div>
+                        <h4>Provide Feedback</h4>
+                        <p><strong>Use the review interface</strong> to provide structured feedback.</p>
+                        <ul>
+                            <li>Navigate between sections using quick navigation</li>
+                            <li>Select appropriate feedback category (Ready/Missing/Newcomer)</li>
+                            <li>Use quick comments from sidebar</li>
+                            <li>Add custom feedback text as needed</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">6</div>
+                        <h4>Track Progress</h4>
+                        <p><strong>Monitor your review progress</strong> as you work.</p>
+                        <ul>
+                            <li>Use section navigation grid to jump between sections</li>
+                            <li>Save progress regularly using "Save Progress" button</li>
+                            <li>Visual indicators show completed sections</li>
+                            <li>Resume work later from saved state</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">7</div>
+                        <h4>Generate Report</h4>
+                        <p><strong>Compile and export</strong> your complete feedback report.</p>
+                        <ul>
+                            <li>Click "Compile Feedback Report" when review is complete</li>
+                            <li>Review the generated summary</li>
+                            <li>Export in preferred format (TXT, HTML)</li>
+                            <li>Download the feedback file for submission</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">8</div>
+                        <h4>Quality Check</h4>
+                        <p><strong>Perform final quality assurance</strong> before submission.</p>
+                        <ul>
+                            <li>Review all feedback comments for clarity</li>
+                            <li>Check that all sections have been addressed</li>
+                            <li>Verify feedback aligns with NCN requirements</li>
+                            <li>Submit feedback through appropriate channels</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Limitations & Issues -->
+            <section id="limitations" class="doc-section">
+                <h2><i class="fas fa-exclamation-triangle"></i> Limitations & Known Issues</h2>
+                
+                <div class="limitation-card">
+                    <h3><i class="fas fa-exclamation-triangle warning-icon"></i> Current Limitations</h3>
+                    <h4>Document Processing Limitations</h4>
+                    <ul>
+                        <li><strong>NCN/OSF Specific:</strong> Optimized for Polish NCN proposals via OSF system</li>
+                        <li><strong>File Size Limit:</strong> Maximum 16MB upload size</li>
+                        <li><strong>Format Dependencies:</strong> Best results with standard OSF-exported documents</li>
+                        <li><strong>Complex Layouts:</strong> May struggle with heavily formatted or non-standard layouts</li>
+                        <li><strong>Language Constraints:</strong> Optimized for Polish/English bilingual content</li>
+                    </ul>
+                    
+                    <h4>Extraction Accuracy Issues</h4>
+                    <ul>
+                        <li><strong>Table Recognition:</strong> Complex table structures may not extract perfectly</li>
+                        <li><strong>Formatting Loss:</strong> Some original formatting may be lost during extraction</li>
+                        <li><strong>Section Boundaries:</strong> Automatic section detection may miss edge cases</li>
+                        <li><strong>Author Detection:</strong> Author extraction relies on standard patterns</li>
+                        <li><strong>Image Content:</strong> Text within images cannot be extracted</li>
+                    </ul>
+                    
+                    <h4>Technical Limitations</h4>
+                    <ul>
+                        <li><strong>Single User:</strong> No multi-user collaboration features</li>
+                        <li><strong>Local Storage:</strong> Files stored locally on server (not cloud-based)</li>
+                        <li><strong>Session Based:</strong> No user accounts or persistent login</li>
+                        <li><strong>Browser Compatibility:</strong> Requires modern browser with JavaScript enabled</li>
+                        <li><strong>Offline Mode:</strong> Requires internet connection for full functionality</li>
+                    </ul>
+                </div>
+                
+                <h3>Known Issues & Workarounds</h3>
+                <div class="feature-card">
+                    <h4><i class="fas fa-bug"></i> Common Issues</h4>
+                    <ul>
+                        <li><strong>Issue:</strong> Some text appears in "Unconnected Text" section
+                            <br><strong>Cause:</strong> Content structure doesn't match expected DMP patterns
+                            <br><strong>Workaround:</strong> Manually assign unconnected text to appropriate sections</li>
+                        
+                        <li><strong>Issue:</strong> Table content appears fragmented
+                            <br><strong>Cause:</strong> Complex table layouts with merged cells
+                            <br><strong>Workaround:</strong> Reference original document for complete table data</li>
+                        
+                        <li><strong>Issue:</strong> Section numbers not recognized
+                            <br><strong>Cause:</strong> Non-standard numbering format
+                            <br><strong>Workaround:</strong> Use Template Editor to adjust section structure</li>
+                        
+                        <li><strong>Issue:</strong> Theme toggle not working
+                            <br><strong>Cause:</strong> JavaScript disabled or browser compatibility
+                            <br><strong>Workaround:</strong> Refresh page, enable JavaScript, or use different browser</li>
+                    </ul>
+                </div>
+                
+                <h3>Best Practices for Optimal Results</h3>
+                <ul>
+                    <li><strong>Document Quality:</strong> Use high-quality PDF exports from OSF</li>
+                    <li><strong>Standard Formats:</strong> Ensure documents follow NCN DMP structure guidelines</li>
+                    <li><strong>Manual Verification:</strong> Always cross-check extracted content with original</li>
+                    <li><strong>Regular Saves:</strong> Save progress frequently during long review sessions</li>
+                    <li><strong>Browser Updates:</strong> Use updated browsers for best compatibility</li>
+                </ul>
+            </section>
+
+            <!-- System Architecture -->
+            <section id="architecture" class="doc-section">
+                <h2><i class="fas fa-sitemap"></i> System Architecture</h2>
+                
+                <h3>Application Structure</h3>
+                <div class="code-block">
+dmp-extractor/
+├── app.py                     # Main Flask application
+├── requirements.txt           # Python dependencies
+├── config/                    # Configuration files
+│   ├── dmp_structure.json    # DMP section definitions
+│   ├── quick_comments.json   # Quick comment templates
+│   └── *.json               # Category-specific templates
+├── templates/                # HTML templates
+│   ├── index.html           # Main upload page
+│   ├── review.html          # Review interface
+│   ├── template_editor.html # Template management
+│   └── documentation.html   # This documentation
+├── static/                   # Static assets
+│   ├── css/style.css        # Main stylesheet
+│   ├── js/dark-mode.js     # Theme functionality
+│   └── images/             # Logos and icons
+├── utils/                    # Core processing modules
+│   ├── extractor.py         # Document processing logic
+│   └── dmp_comments.py     # Comment management
+├── uploads/                  # Temporary upload storage
+└── outputs/                  # Generated reports and cache
+                </div>
+                
+                <h3>Data Flow Architecture</h3>
+                <div class="workflow-diagram">
+                    <div style="text-align: left; max-width: 600px; margin: 0 auto;">
+                        <strong>1. Request Handling (Flask)</strong><br>
+                        ↓ HTTP requests, file uploads, routing<br><br>
+                        
+                        <strong>2. Document Processing (utils/extractor.py)</strong><br>
+                        ↓ PDF/DOCX parsing, content extraction<br><br>
+                        
+                        <strong>3. Content Analysis</strong><br>
+                        ↓ Section identification, key phrase tagging<br><br>
+                        
+                        <strong>4. Template System (config/*.json)</strong><br>
+                        ↓ Feedback templates, structure definitions<br><br>
+                        
+                        <strong>5. Review Interface (templates/review.html)</strong><br>
+                        ↓ User interaction, feedback collection<br><br>
+                        
+                        <strong>6. Output Generation</strong><br>
+                        ↓ Report compilation, file download
+                    </div>
+                </div>
+                
+                <h3>Key Components</h3>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <h4>DMPExtractor Class</h4>
+                        <p>Core document processing engine handling PDF and DOCX files with advanced content recognition.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Template System</h4>
+                        <p>JSON-based configuration allowing customization of DMP structure and feedback templates.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Theme Manager</h4>
+                        <p>CSS variable-based theming system with local storage persistence and system detection.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Cache System</h4>
+                        <p>UUID-based caching of extracted content to improve performance and enable session recovery.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- License & Legal -->
+            <section id="license" class="doc-section">
+                <h2><i class="fas fa-balance-scale"></i> License & Legal Information</h2>
+                
+                <h3>MIT License</h3>
+                <p>DMP ART is released under the <strong>MIT License</strong>, which provides broad permissions for use, modification, and distribution.</p>
+                
+                <div class="feature-card">
+                    <h4><i class="fas fa-check-circle"></i> What You Can Do</h4>
+                    <ul>
+                        <li><strong>Commercial Use:</strong> Use DMP ART for commercial purposes</li>
+                        <li><strong>Modification:</strong> Modify the source code to fit your needs</li>
+                        <li><strong>Distribution:</strong> Distribute original or modified versions</li>
+                        <li><strong>Private Use:</strong> Use DMP ART for personal or internal purposes</li>
+                    </ul>
+                </div>
+                
+                <div class="limitation-card">
+                    <h4><i class="fas fa-info-circle warning-icon"></i> License Requirements</h4>
+                    <ul>
+                        <li><strong>Include Copyright:</strong> Include the original copyright notice</li>
+                        <li><strong>Include License:</strong> Include the MIT license text</li>
+                        <li><strong>No Warranty:</strong> Software is provided "as is" without warranty</li>
+                        <li><strong>No Liability:</strong> Authors are not liable for any damages</li>
+                    </ul>
+                </div>
+                
+                <h3>Full License Text</h3>
+                <div class="code-block">
+MIT License
+
+Copyright (c) 2025 DMP ART Contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+                </div>
+                
+                <h3>Third-Party Dependencies</h3>
+                <p>DMP ART uses several open-source libraries, each with their own licenses:</p>
+                <div class="tech-stack">
+                    <div class="tech-item">
+                        <h5>Flask 3.1.0</h5>
+                        <p>BSD-3-Clause License</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5>PyPDF2 3.0.1</h5>
+                        <p>BSD License</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5>python-docx 1.1.2</h5>
+                        <p>MIT License</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5>Werkzeug 3.1.3</h5>
+                        <p>BSD-3-Clause License</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5>Pillow 11.0.0</h5>
+                        <p>HPND License</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5>Font Awesome 6.0</h5>
+                        <p>Font Awesome Free License</p>
+                    </div>
+                </div>
+                
+                <h3>Attribution</h3>
+                <p>When using or redistributing DMP ART, please include appropriate attribution:</p>
+                <div class="code-block">
+DMP ART - Data Management Plan Assessment and Response Tool
+Copyright (c) 2025 DMP ART Contributors
+Licensed under the MIT License
+                </div>
+            </section>
+
+            <!-- Configuration & Setup -->
+            <section id="configuration" class="doc-section">
+                <h2><i class="fas fa-cog"></i> Configuration & Setup</h2>
+                
+                <h3>System Requirements</h3>
+                <ul>
+                    <li><strong>Python:</strong> 3.8 or higher</li>
+                    <li><strong>RAM:</strong> Minimum 512MB, recommended 1GB+</li>
+                    <li><strong>Storage:</strong> 100MB for application + space for uploaded files</li>
+                    <li><strong>Browser:</strong> Chrome 90+, Firefox 88+, Safari 14+, Edge 90+</li>
+                    <li><strong>Network:</strong> Internet connection for Font Awesome icons</li>
+                </ul>
+                
+                <h3>Installation & Deployment</h3>
+                <div class="code-block">
+# 1. Clone or download the application
+git clone [repository-url]
+cd dmp-extractor
+
+# 2. Install Python dependencies
+pip install -r requirements.txt
+
+# 3. Verify configuration files exist
+ls config/  # Should show JSON configuration files
+
+# 4. Create necessary directories
+mkdir -p uploads outputs
+
+# 5. Start the application
+python app.py
+
+# 6. Access via browser
+# http://localhost:5000
+                </div>
+                
+                <h3>Configuration Files</h3>
+                <div class="tech-stack">
+                    <div class="tech-item">
+                        <h5>dmp_structure.json</h5>
+                        <p>Defines DMP section hierarchy and questions</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5>quick_comments.json</h5>
+                        <p>Stores reusable quick comment templates</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5>Category Files</h5>
+                        <p>Individual JSON files for feedback categories</p>
+                    </div>
+                </div>
+                
+                <h3>Customization Options</h3>
+                <ul>
+                    <li><strong>DMP Structure:</strong> Modify section numbering and questions via Template Editor</li>
+                    <li><strong>Feedback Categories:</strong> Create custom categories for different review types</li>
+                    <li><strong>Quick Comments:</strong> Add institution-specific quick comment templates</li>
+                    <li><strong>Styling:</strong> Customize CSS variables in style.css for institutional branding</li>
+                    <li><strong>Language:</strong> Extend bilingual support by modifying section mapping in extractor.py</li>
+                </ul>
+            </section>
+            
+        </main>
+        
+        <footer>
+            <div class="doc-section" style="text-align: center; margin-top: 3rem;">
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                    <strong>DMP ART</strong> - Data Management Plan Assessment and Response Tool
+                </p>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                    Version 1.0 | Active Development | © 2025 DMP ART Contributors
+                </p>
+                <p style="color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.5rem;">
+                    <i class="fas fa-balance-scale"></i> Released under the MIT License | 
+                    <i class="fas fa-code"></i> Open Source Software
+                </p>
+                <div style="margin-top: 1rem;">
+                    <a href="/" class="nav-item" style="margin: 0 1rem;">← Back to Home</a>
+                    <a href="/template_editor" class="nav-item" style="margin: 0 1rem;">Template Editor →</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Load dark mode script -->
+    <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
+    <script>
+        // Smooth scrolling for table of contents links
+        document.querySelectorAll('.toc a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Highlight current section in TOC while scrolling
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('section[id]');
+            const scrollPos = window.scrollY + 150; // Offset for header
+            
+            sections.forEach(section => {
+                const top = section.offsetTop;
+                const bottom = top + section.offsetHeight;
+                const id = section.getAttribute('id');
+                
+                if (scrollPos >= top && scrollPos <= bottom) {
+                    document.querySelectorAll('.toc a').forEach(a => a.classList.remove('active'));
+                    const activeLink = document.querySelector(`.toc a[href="#${id}"]`);
+                    if (activeLink) activeLink.classList.add('active');
+                }
+            });
+        });
+    </script>
+    <style>
+        .toc a.active {
+            background: var(--primary-color) !important;
+            color: white !important;
+            font-weight: bold;
+        }
+    </style>
+</body>
+</html>
