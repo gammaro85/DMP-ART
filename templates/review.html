@@ -734,46 +734,26 @@
 
         // Load category comments from backend on page load
         function fetchCategoryComments() {
+            console.log('Fetching category comments...');
             fetch('/load_categories')
                 .then(response => response.json())
                 .then(data => {
+                    console.log('Category comments loaded:', data);
                     if (data.success && data.categories) {
                         CATEGORY_COMMENTS = data.categories;
+                        console.log('CATEGORY_COMMENTS set to:', CATEGORY_COMMENTS);
                     } else {
                         CATEGORY_COMMENTS = {};
+                        console.log('No category data found');
                     }
                 })
-                .catch(() => {
+                .catch((error) => {
+                    console.error('Error loading category comments:', error);
                     CATEGORY_COMMENTS = {};
                 });
         }
 
-        // Load quick comments from backend on page load
-        function loadQuickComments() {
-            const quickCommentsList = document.getElementById('quick-comments-list');
-            if (!quickCommentsList) return;
-
-            fetch('/load_quick_comments')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success && Array.isArray(data.quick_comments) && data.quick_comments.length > 0) {
-                        quickCommentsList.innerHTML = '';
-                        data.quick_comments.forEach(commentData => {
-                            const item = document.createElement('div');
-                            item.className = 'quick-comment-item';
-                            item.textContent = commentData.name || commentData.text || commentData;
-                            item.title = commentData.text || commentData;
-                            item.addEventListener('click', () => insertQuickComment(commentData.text || commentData));
-                            quickCommentsList.appendChild(item);
-                        });
-                    } else {
-                        quickCommentsList.innerHTML = '<div class="no-comments">No quick comments available. Add them in Template Editor.</div>';
-                    }
-                })
-                .catch(() => {
-                    quickCommentsList.innerHTML = '<div class="no-comments">Error loading quick comments.</div>';
-                });
-        }
+        // Load quick comments from backend on page load (function moved below)
 
         // Fetch category comments on DOMContentLoaded
         document.addEventListener('DOMContentLoaded', function() {
@@ -808,15 +788,28 @@
         }
         
         function showCategoryComments(category, section) {
+            console.log(`Showing comments for category: ${category}, section: ${section}`);
+            console.log('Available CATEGORY_COMMENTS:', Object.keys(CATEGORY_COMMENTS));
+            
             const dropdown = document.getElementById(`category-dropdown-${section}`);
             const commentsList = document.getElementById(`category-comments-${section}`);
 
-            if (!dropdown || !commentsList) return;
+            if (!dropdown || !commentsList) {
+                console.log('Dropdown or comments list not found');
+                return;
+            }
 
             // Get comments array for this category and section
             let comments = [];
             if (CATEGORY_COMMENTS[category] && CATEGORY_COMMENTS[category][section]) {
                 comments = CATEGORY_COMMENTS[category][section];
+                console.log(`Found ${comments.length} comments for ${category}.${section}`);
+            } else {
+                console.log(`No comments found for ${category}.${section}`);
+                console.log('Available categories:', Object.keys(CATEGORY_COMMENTS));
+                if (CATEGORY_COMMENTS[category]) {
+                    console.log(`Available sections for ${category}:`, Object.keys(CATEGORY_COMMENTS[category]));
+                }
             }
 
             commentsList.innerHTML = '';

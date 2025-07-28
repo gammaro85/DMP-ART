@@ -388,6 +388,17 @@
         
         container.innerHTML = '';
         
+        // Find the main category data (skip _comment and other metadata)
+        let categoryData = {};
+        for (const [key, value] of Object.entries(catData)) {
+            if (!key.startsWith('_') && typeof value === 'object' && value !== null) {
+                categoryData = value;
+                break;
+            }
+        }
+        
+        console.log(`Loading category data for ${file}:`, categoryData);
+        
         // Flatten DMP structure for rendering
         let flatStructure = [];
         dmpStructure.forEach(section => {
@@ -402,7 +413,7 @@
             block.className = 'cat-question-block';
             block.setAttribute('data-section-id', item.id);
             
-            const comments = catData[item.id] || [];
+            const comments = categoryData[item.id] || [];
             
             block.innerHTML = `
                 <div class="question-header">
@@ -452,7 +463,7 @@
 
     function saveCategory(file) {
         const questionsDiv = document.getElementById(`catq-${file}`);
-        const data = {};
+        const sectionData = {};
         
         questionsDiv.querySelectorAll('.cat-question-block').forEach(block => {
             const sectionId = block.getAttribute('data-section-id');
@@ -463,10 +474,17 @@
                 if (comment) comments.push(comment);
             });
             
-            if (comments.length > 0) {
-                data[sectionId] = comments;
-            }
+            // Always save the section, even if empty, to maintain structure
+            sectionData[sectionId] = comments;
         });
+        
+        // Create the nested structure that matches our JSON files
+        // Find the category name from the file mapping
+        const categoryName = file; // Use file name as category name for now
+        const data = {};
+        data[categoryName] = sectionData;
+        
+        console.log(`Saving category ${file}:`, data);
         
         postJSON('/save_category', { file, data })
             .then(resp => {

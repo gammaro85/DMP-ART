@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Review Comments Integration Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background: #d4edda; border-color: #c3e6cb; }
+        .error { background: #f8d7da; border-color: #f5c6cb; }
+        .info { background: #d1ecf1; border-color: #bee5eb; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto; }
+        button { background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin: 5px; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>Review Page Comments Integration Test</h1>
+    
+    <div class="test-section info">
+        <h3>Test Controls</h3>
+        <button onclick="testLoadCategories()">Test /load_categories Endpoint</button>
+        <button onclick="simulateReviewFlow()">Simulate Review Flow</button>
+        <button onclick="clearResults()">Clear Results</button>
+    </div>
+    
+    <div id="results"></div>
+    
+    <script>
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+        
+        async function testLoadCategories() {
+            const results = document.getElementById('results');
+            
+            try {
+                const response = await fetch('/load_categories');
+                const data = await response.json();
+                
+                let html = `
+                    <div class="test-section ${data.success ? 'success' : 'error'}">
+                        <h3>${data.success ? '✓' : '✗'} /load_categories Response</h3>
+                        <p>Status: ${response.status}</p>
+                        <p>Success: ${data.success}</p>
+                        ${data.success ? 
+                            `<p>Categories found: ${Object.keys(data.categories).join(', ')}</p>` : 
+                            `<p>Error: ${data.message || 'Unknown error'}</p>`
+                        }
+                        <details>
+                            <summary>Raw Response</summary>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </details>
+                    </div>
+                `;
+                
+                if (data.success && data.categories) {
+                    // Test specific category structure
+                    const categoryName = 'missing';
+                    const sectionId = '1.1';
+                    
+                    if (data.categories[categoryName] && data.categories[categoryName][sectionId]) {
+                        const comments = data.categories[categoryName][sectionId];
+                        html += `
+                            <div class="test-section success">
+                                <h3>✓ Sample Category Data Structure</h3>
+                                <p>Category: ${categoryName}</p>
+                                <p>Section: ${sectionId}</p>
+                                <p>Comments found: ${comments.length}</p>
+                                <p>First comment: "${comments[0] ? comments[0].substring(0, 100) + '...' : 'None'}"</p>
+                            </div>
+                        `;
+                    } else {
+                        html += `
+                            <div class="test-section error">
+                                <h3>✗ Category Structure Issue</h3>
+                                <p>Could not find comments for ${categoryName}.${sectionId}</p>
+                                <p>Available categories: ${Object.keys(data.categories).join(', ')}</p>
+                            </div>
+                        `;
+                    }
+                }
+                
+                results.innerHTML = html;
+                
+            } catch (error) {
+                results.innerHTML = `
+                    <div class="test-section error">
+                        <h3>✗ Error Testing /load_categories</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        async function simulateReviewFlow() {
+            const results = document.getElementById('results');
+            let html = '<h2>Review Flow Simulation</h2>';
+            
+            try {
+                // Step 1: Load categories (like the review page does)
+                console.log('Step 1: Loading categories...');
+                const response = await fetch('/load_categories');
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error('Failed to load categories');
+                }
+                
+                const CATEGORY_COMMENTS = data.categories;
+                
+                html += `
+                    <div class="test-section success">
+                        <h3>✓ Step 1: Categories Loaded</h3>
+                        <p>Categories: ${Object.keys(CATEGORY_COMMENTS).join(', ')}</p>
+                    </div>
+                `;
+                
+                // Step 2: Test category button functionality
+                const testCategory = 'missing';
+                const testSection = '1.1';
+                
+                let comments = [];
+                if (CATEGORY_COMMENTS[testCategory] && CATEGORY_COMMENTS[testCategory][testSection]) {
+                    comments = CATEGORY_COMMENTS[testCategory][testSection];
+                }
+                
+                html += `
+                    <div class="test-section ${comments.length > 0 ? 'success' : 'error'}">
+                        <h3>${comments.length > 0 ? '✓' : '✗'} Step 2: Comment Retrieval Test</h3>
+                        <p>Testing: ${testCategory} category, section ${testSection}</p>
+                        <p>Comments found: ${comments.length}</p>
+                        ${comments.length > 0 ? `
+                            <div>
+                                <h4>Sample Comments:</h4>
+                                <ul>
+                                    ${comments.slice(0, 3).map(c => `<li>${c.substring(0, 100)}...</li>`).join('')}
+                                </ul>
+                            </div>
+                        ` : '<p>No comments found - this indicates an issue with data structure</p>'}
+                    </div>
+                `;
+                
+                // Step 3: Test the complete data structure
+                html += `
+                    <div class="test-section info">
+                        <h3>Step 3: Complete Data Structure Analysis</h3>
+                `;
+                
+                Object.keys(CATEGORY_COMMENTS).forEach(catName => {
+                    const catData = CATEGORY_COMMENTS[catName];
+                    const sectionCount = Object.keys(catData).length;
+                    const totalComments = Object.values(catData).reduce((sum, arr) => sum + arr.length, 0);
+                    
+                    html += `
+                        <p><strong>${catName}:</strong> ${sectionCount} sections, ${totalComments} total comments</p>
+                    `;
+                });
+                
+                html += '</div>';
+                
+                results.innerHTML = html;
+                
+            } catch (error) {
+                results.innerHTML = html + `
+                    <div class="test-section error">
+                        <h3>✗ Error in Review Flow Simulation</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Auto-run basic test on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            testLoadCategories();
+        });
+    </script>
+</body>
+</html>

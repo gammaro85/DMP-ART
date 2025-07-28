@@ -1,0 +1,574 @@
+{
+  "1.1": {
+    "section": "1. Data description and collection or re-use of existing data",
+    "question": "How will new data be collected or produced and/or how will existing data be re-used?",
+    "paragraphs": [
+      "The project will generate data including experimental numerical, textual, and graphic data. All data will",
+      "begeneratedand processed by qualified and trained person, taking advantage on their expertise and experience. The",
+      "datawill becollected by appropriate apparatus, software, and procedures depending on the type of analytical",
+      "techniqueused (e.g.IGC, FTIR, GC, Raman spectroscopy). Structure, type and units of the data will be detailed in a",
+      "README fileassociatedwith data-set. Existing data will only be used for purpose of comparison. It will be extracted",
+      "from literature,mainly scientific papers and available databases. It will not be a part of data-sets shared in open-access",
+      "repository."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The project will generate data including experimental numerical, textual, and graphic data. All data will",
+        "tags": [],
+        "title": "The project will generate data including experimental numerical, textual, and graphic data."
+      },
+      {
+        "text": "begeneratedand processed by qualified and trained person, taking advantage on their expertise and experience. The",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "datawill becollected by appropriate apparatus, software, and procedures depending on the type of analytical",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "techniqueused (e.g.IGC, FTIR, GC, Raman spectroscopy). Structure, type and units of the data will be detailed in a",
+        "tags": [],
+        "title": "techniqueused (e.g.IGC, FTIR, GC, Raman spectroscopy)."
+      },
+      {
+        "text": "README fileassociatedwith data-set. Existing data will only be used for purpose of comparison. It will be extracted",
+        "tags": [],
+        "title": "README fileassociatedwith data-set."
+      },
+      {
+        "text": "from literature,mainly scientific papers and available databases. It will not be a part of data-sets shared in open-access",
+        "tags": [],
+        "title": "from literature,mainly scientific papers and available databases."
+      },
+      {
+        "text": "repository.",
+        "tags": [],
+        "title": "repository."
+      }
+    ]
+  },
+  "1.2": {
+    "section": "1. Data description and collection or re-use of existing data",
+    "question": "What data (for example the types, formats, and volumes) will be collected or produced?",
+    "paragraphs": [
+      "Most data files will not exceed 1024 KB. Three main types of the data will be generated: numerical data (records",
+      "ofmeasured output signal from detectors), textual data (instructions, procedures, reports etc.), graphic data (charts,",
+      "photographs, posters etc.). Most of the data will be processed on dedicated software attached to the analytical",
+      "instrument. The primary format for the data will be the native format of instrument software. To ensure accessibility",
+      "and interoperability of the data, it will be converted to ASCII type file if needed. No more than 100 GB of data is",
+      "anticipated to be collected during realisation of research project. Part of collected data will be textual and will be saved",
+      "as text, MS Word, pdf documents, graphic presentations. Numerical analog data will be captured in spreadsheets or",
+      "data tables and saved as .csv or .txt files."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Most data files will not exceed 1024 KB. Three main types of the data will be generated: numerical data (records",
+        "tags": [],
+        "title": "Most data files will not exceed 1024 KB."
+      },
+      {
+        "text": "ofmeasured output signal from detectors), textual data (instructions, procedures, reports etc.), graphic data (charts,",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "photographs, posters etc.). Most of the data will be processed on dedicated software attached to the analytical",
+        "tags": [],
+        "title": "photographs, posters etc.)."
+      },
+      {
+        "text": "instrument. The primary format for the data will be the native format of instrument software. To ensure accessibility",
+        "tags": [],
+        "title": "instrument."
+      },
+      {
+        "text": "and interoperability of the data, it will be converted to ASCII type file if needed. No more than 100 GB of data is",
+        "tags": [],
+        "title": "and interoperability of the data, it will be converted to ASCII type file if needed."
+      },
+      {
+        "text": "anticipated to be collected during realisation of research project. Part of collected data will be textual and will be saved",
+        "tags": [],
+        "title": "anticipated to be collected during realisation of research project."
+      },
+      {
+        "text": "as text, MS Word, pdf documents, graphic presentations. Numerical analog data will be captured in spreadsheets or",
+        "tags": [],
+        "title": "as text, MS Word, pdf documents, graphic presentations."
+      },
+      {
+        "text": "data tables and saved as .csv or .txt files.",
+        "tags": [],
+        "title": "data tables and saved as .csv or .txt files."
+      }
+    ]
+  },
+  "2.1": {
+    "section": "2. Documentation and data quality",
+    "question": "What metadata and documentation (for example methodology or data collection and way of organising data) will accompany data?",
+    "paragraphs": [
+      "Data acquisition equipment will be operated according to manufacturer’s manual, by qualified operator. For",
+      "experiments, procedures available in scientific literature or self-developed procedures will be used. Files and folders",
+      "will be named according to convention established by project’s researchers. Metadata (REDAME file) will be generated",
+      "to describe data-sets. Data may be accompanied by the contextual documentation e.g. text files which detail the",
+      "experimental procedures and conditions. Selected data will be facilitated by open research data repository (The Bridge",
+      "of Data from Gdańsk University of Technology, certified by Core Trust Seal) with metadata standards DataCite.",
+      "Metadata description will bestored in JSON format. Author will be identified and authorized by ORCID number."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Data acquisition equipment will be operated according to manufacturer’s manual, by qualified operator. For",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "experiments, procedures available in scientific literature or self-developed procedures will be used. Files and folders",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "will be named according to convention established by project’s researchers. Metadata (REDAME file) will be generated",
+        "tags": [],
+        "title": "will be named according to convention established by project’s researchers."
+      },
+      {
+        "text": "to describe data-sets. Data may be accompanied by the contextual documentation e.g. text files which detail the",
+        "tags": [],
+        "title": "to describe data-sets."
+      },
+      {
+        "text": "experimental procedures and conditions. Selected data will be facilitated by open research data repository (The Bridge",
+        "tags": [],
+        "title": "experimental procedures and conditions."
+      },
+      {
+        "text": "of Data from Gdańsk University of Technology, certified by Core Trust Seal) with metadata standards DataCite.",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "Metadata description will bestored in JSON format. Author will be identified and authorized by ORCID number.",
+        "tags": [],
+        "title": "Metadata description will bestored in JSON format."
+      }
+    ]
+  },
+  "2.2": {
+    "section": "2. Documentation and data quality",
+    "question": "What data quality control measures will be used?",
+    "paragraphs": [
+      "Data will be obtained by trained personnel using fully functional equipment (ensured by analysis of standard samples)",
+      "and accompanied by metadata file. For quantitative and qualitative analysis high quality standard materials and",
+      "procedures will be used. Experiments will be performed, at least, in duplicate. Technical problems with the data files",
+      "will be indicated by the instrument’s software and corrective actions will be taken. To ensure quality and",
+      "interoperability of the data, instrument native format will be converted to .txt or/and .csv. For reports and graphics",
+      ".pdf and .tiff or .png format will be preferred. Collected data will be controlled by researchers and if data will be invalid,",
+      "corrective actions will be performed according to established scientific standards. The data will be catalogued in a",
+      "standardized way fulfilling the requirements of FAIR standards"
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Data will be obtained by trained personnel using fully functional equipment (ensured by analysis of standard samples)",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "and accompanied by metadata file. For quantitative and qualitative analysis high quality standard materials and",
+        "tags": [],
+        "title": "and accompanied by metadata file."
+      },
+      {
+        "text": "procedures will be used. Experiments will be performed, at least, in duplicate. Technical problems with the data files",
+        "tags": [],
+        "title": "procedures will be used."
+      },
+      {
+        "text": "will be indicated by the instrument’s software and corrective actions will be taken. To ensure quality and",
+        "tags": [],
+        "title": "will be indicated by the instrument’s software and corrective actions will be taken."
+      },
+      {
+        "text": "interoperability of the data, instrument native format will be converted to .txt or/and .csv. For reports and graphics",
+        "tags": [],
+        "title": "interoperability of the data, instrument native format will be converted to .txt or/and .csv."
+      },
+      {
+        "text": ".pdf and .tiff or .png format will be preferred. Collected data will be controlled by researchers and if data will be invalid,",
+        "tags": [],
+        "title": ".pdf and .tiff or .png format will be preferred."
+      },
+      {
+        "text": "corrective actions will be performed according to established scientific standards. The data will be catalogued in a",
+        "tags": [],
+        "title": "corrective actions will be performed according to established scientific standards."
+      },
+      {
+        "text": "standardized way fulfilling the requirements of FAIR standards",
+        "tags": [],
+        "title": "standardized way fulfilling the requirements of FAIR standards"
+      }
+    ]
+  },
+  "3.1": {
+    "section": "3. Storage and backup during the research process",
+    "question": "How will data and metadata be stored and backed up during the research process?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "3.2": {
+    "section": "3. Storage and backup during the research process",
+    "question": "How will data security and protection of sensitive data be taken care of during the research?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "4.1": {
+    "section": "4. Legal requirements, codes of conduct",
+    "question": "If personal data are processed, how will compliance with legislation on personal data and on data security be ensured?",
+    "paragraphs": [
+      "Data-sets will be stored in three locations: (1) memory of a computer that is a part of a given analytic alequipment, (2)",
+      "memory of a researcher’s computer (available space ca. 200 GB), and (3) Bridge of Data repository. Between",
+      "computers in the workplace, data will be transferred by external storage devices. Integrity and accessibility to the data",
+      "stored on the storage devices in the workplace will be checked periodically.",
+      "OSF, OPUS-29 Strona 35 ID: 651253, 2025-05-30 14:54:38",
+      "In the workplace, data-sets will be stored in the memory of password-secured computers. Computers that are",
+      "connected to the Internet will have installed antivirus software to prevent data being stolen. Data on external storage",
+      "devices will be stored in places under the control of project’s researchers that prevent unauthorized access by third",
+      "parties. Open acess data will be stored in the Bridge of Data repository, run by Gdansk University of Technology and",
+      "certified by Core Trust Seal.",
+      "Project research plan, objectives or task are not meant to process personal data other than the researchers basic data.",
+      "It will be used only for publication purpose if agreed by given researcher."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Data-sets will be stored in three locations: (1) memory of a computer that is a part of a given analytic alequipment, (2)",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "memory of a researcher’s computer (available space ca. 200 GB), and (3) Bridge of Data repository. Between",
+        "tags": [],
+        "title": "memory of a researcher’s computer (available space ca."
+      },
+      {
+        "text": "computers in the workplace, data will be transferred by external storage devices. Integrity and accessibility to the data",
+        "tags": [],
+        "title": "computers in the workplace, data will be transferred by external storage devices."
+      },
+      {
+        "text": "stored on the storage devices in the workplace will be checked periodically.",
+        "tags": [],
+        "title": "stored on the storage devices in the workplace will be checked periodically."
+      },
+      {
+        "text": "OSF, OPUS-29 Strona 35 ID: 651253, 2025-05-30 14:54:38",
+        "tags": [],
+        "title": "OSF, OPUS-29 Strona 35 ID: 651253, 2025-05-30 14:54:38"
+      },
+      {
+        "text": "In the workplace, data-sets will be stored in the memory of password-secured computers. Computers that are",
+        "tags": [],
+        "title": "In the workplace, data-sets will be stored in the memory of password-secured computers."
+      },
+      {
+        "text": "connected to the Internet will have installed antivirus software to prevent data being stolen. Data on external storage",
+        "tags": [],
+        "title": "connected to the Internet will have installed antivirus software to prevent data being stolen."
+      },
+      {
+        "text": "devices will be stored in places under the control of project’s researchers that prevent unauthorized access by third",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "parties. Open acess data will be stored in the Bridge of Data repository, run by Gdansk University of Technology and",
+        "tags": [],
+        "title": "parties."
+      },
+      {
+        "text": "certified by Core Trust Seal.",
+        "tags": [],
+        "title": "certified by Core Trust Seal."
+      },
+      {
+        "text": "Project research plan, objectives or task are not meant to process personal data other than the researchers basic data.",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "It will be used only for publication purpose if agreed by given researcher.",
+        "tags": [],
+        "title": "It will be used only for publication purpose if agreed by given researcher."
+      }
+    ]
+  },
+  "4.2": {
+    "section": "4. Legal requirements, codes of conduct",
+    "question": "How will other legal issues, such as intelectual property rights and ownership, be managed? What legislation is applicable?",
+    "paragraphs": [
+      "The ownership and management of any intellectual property developed in collaboration relating to the project remain",
+      "in the equal rights of the Gdansk University of Technology and researchers."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The ownership and management of any intellectual property developed in collaboration relating to the project remain",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "in the equal rights of the Gdansk University of Technology and researchers.",
+        "tags": [],
+        "title": "in the equal rights of the Gdansk University of Technology and researchers."
+      }
+    ]
+  },
+  "5.1": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How and when will data be shared? Are there possible restrictions to data sharing or embargo reasons?",
+    "paragraphs": [
+      "Project’s researchers will have unlimited access to the files created during this project. Data will be transferred",
+      "between researchers on memory storage devices or by email. To share data with third parties, data may be uploaded",
+      "to the open research data repository (The Bridge of Data from Gdańsk University of Technology). Each uploaded data-",
+      "set will beassigned with DOI number and will be shared as openly as possible (preferably open access). Data-sets may",
+      "be also submitted to supplementary materials sections of peer-reviewed journals. Data will be published when it will",
+      "be complete and processed. Moreover, data can beaccessed upon request via direct contact with the project PI.",
+      "data maybe embargoed for up to 3 years to allow publication by students/researchers.",
+      "stored using commonly used file formats. For numerical data, e.g. signal from the detector, it will be .csv or .txt format.",
+      "Those files can be easily processed by any standard software used for scientific computations e.g. Mathlab, Scilab, R,",
+      "Excel. In case of graphic files .tiff or .png format will be preferred."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Project’s researchers will have unlimited access to the files created during this project. Data will be transferred",
+        "tags": [],
+        "title": "Project’s researchers will have unlimited access to the files created during this project."
+      },
+      {
+        "text": "between researchers on memory storage devices or by email. To share data with third parties, data may be uploaded",
+        "tags": [],
+        "title": "between researchers on memory storage devices or by email."
+      },
+      {
+        "text": "to the open research data repository (The Bridge of Data from Gdańsk University of Technology). Each uploaded data-",
+        "tags": [],
+        "title": "to the open research data repository (The Bridge of Data from Gdańsk University of Technology)."
+      },
+      {
+        "text": "set will beassigned with DOI number and will be shared as openly as possible (preferably open access). Data-sets may",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "be also submitted to supplementary materials sections of peer-reviewed journals. Data will be published when it will",
+        "tags": [],
+        "title": "be also submitted to supplementary materials sections of peer-reviewed journals."
+      },
+      {
+        "text": "be complete and processed. Moreover, data can beaccessed upon request via direct contact with the project PI.",
+        "tags": [],
+        "title": "be complete and processed."
+      },
+      {
+        "text": "data maybe embargoed for up to 3 years to allow publication by students/researchers.",
+        "tags": [],
+        "title": "data maybe embargoed for up to 3 years to allow publication by students/researchers."
+      },
+      {
+        "text": "stored using commonly used file formats. For numerical data, e.g. signal from the detector, it will be .csv or .txt format.",
+        "tags": [],
+        "title": "stored using commonly used file formats."
+      },
+      {
+        "text": "Those files can be easily processed by any standard software used for scientific computations e.g. Mathlab, Scilab, R,",
+        "tags": [],
+        "title": "Those files can be easily processed by any standard software used for scientific computations e.g."
+      },
+      {
+        "text": "Excel. In case of graphic files .tiff or .png format will be preferred.",
+        "tags": [],
+        "title": "Excel."
+      }
+    ]
+  },
+  "5.2": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How will data for preservation be selected, and where will data be preserved long-term (for example a data repository or archive)?",
+    "paragraphs": [
+      "All original raw data files will be preserved along with reports in digital form and stored at PI computer (being a part of",
+      "the University infrastructure). The trusthworthy repository Bridge of Data from Gdansk University of Technology,",
+      "certified by Core Trust Seal, will be the main data repository for archivization of the data selected for long term",
+      "storage. The data provided in the repository will fulfill FAIR requirements and will be categorized and labeled",
+      "accordingto the standard file formats."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "All original raw data files will be preserved along with reports in digital form and stored at PI computer (being a part of",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "the University infrastructure). The trusthworthy repository Bridge of Data from Gdansk University of Technology,",
+        "tags": [],
+        "title": "the University infrastructure)."
+      },
+      {
+        "text": "certified by Core Trust Seal, will be the main data repository for archivization of the data selected for long term",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "storage. The data provided in the repository will fulfill FAIR requirements and will be categorized and labeled",
+        "tags": [],
+        "title": "storage."
+      },
+      {
+        "text": "accordingto the standard file formats.",
+        "tags": [],
+        "title": "accordingto the standard file formats."
+      }
+    ]
+  },
+  "5.3": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "What methods or software tools will be needed to access and use the data?",
+    "paragraphs": [
+      "Access to selected data-sets will be provided by the open-access repository Bridge of Data (trustworthy repository from",
+      "Gdansk University of Technology certified by Core Trust Seal). Data sets published as a supporting information to peer-",
+      "reviewed publications will be accessible on a given journal website. Moreover data can be accessed upon request via"
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Access to selected data-sets will be provided by the open-access repository Bridge of Data (trustworthy repository from",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "Gdansk University of Technology certified by Core Trust Seal). Data sets published as a supporting information to peer-",
+        "tags": [],
+        "title": "Gdansk University of Technology certified by Core Trust Seal)."
+      },
+      {
+        "text": "reviewed publications will be accessible on a given journal website. Moreover data can be accessed upon request via",
+        "tags": [],
+        "title": "reviewed publications will be accessible on a given journal website."
+      }
+    ]
+  },
+  "5.4": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How will the application of a unique and persistent identifier (such us a Digital Object Identifier (DOI)) to each data set be ensured?",
+    "paragraphs": [
+      "Repository, to which selected data-sets will be uploaded, ensures that each data-set submission is assigned with the",
+      "DOI number. In case of data-sets being a part of publication in peer-reviewed journals (as a supporting information),",
+      "publisher is assigning the DOI number. If data-sets will be shared in any other way, they will be accompanied with",
+      "REDAME file, which will clearly identify content of data-sets.",
+      "OSF, OPUS-29 Strona 36 ID: 651253, 2025-05-30 14:54:38",
+      "Osoba (np. funkcja, stanowisko i instytucja) odpowiedzialna za zarządzanie danymi (np. data steward)",
+      "Open Science Competence Center (pg.edu.pl/openscience) established by the Gdansk University of Technology will be",
+      "responsible for DMP, data storage and dissemination. Project PI (Maksymilian Plata Gryl) will be responsible for the",
+      "procedures assessment and overall data quality.",
+      "Środki (np. finansowe i czasowe) przeznaczone do zarządzania danymi i zapewnienia możliwości odnalezienia, dostępu,",
+      "interoperacyjności i ponownego wykorzystania danych",
+      "No additional resources will be required to manage data. Storage and archiving of the data will be inseparable part of",
+      "the research project and data processing. Data will be stored in a trustworthy open access repositories Bridge of Data",
+      "assigned, making the data-set traceable and referenceable. Data will be shared as openly as possible, in user-friendly",
+      "OSF, OPUS-29 Strona 37 ID: 651253, 2025-05-30 14:54:38"
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Repository, to which selected data-sets will be uploaded, ensures that each data-set submission is assigned with the",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "DOI number. In case of data-sets being a part of publication in peer-reviewed journals (as a supporting information),",
+        "tags": [],
+        "title": "DOI number."
+      },
+      {
+        "text": "publisher is assigning the DOI number. If data-sets will be shared in any other way, they will be accompanied with",
+        "tags": [],
+        "title": "publisher is assigning the DOI number."
+      },
+      {
+        "text": "REDAME file, which will clearly identify content of data-sets.",
+        "tags": [],
+        "title": "REDAME file, which will clearly identify content of data-sets."
+      },
+      {
+        "text": "OSF, OPUS-29 Strona 36 ID: 651253, 2025-05-30 14:54:38",
+        "tags": [],
+        "title": "OSF, OPUS-29 Strona 36 ID: 651253, 2025-05-30 14:54:38"
+      },
+      {
+        "text": "Osoba (np. funkcja, stanowisko i instytucja) odpowiedzialna za zarządzanie danymi (np. data steward)",
+        "tags": [],
+        "title": "Osoba (np."
+      },
+      {
+        "text": "Open Science Competence Center (pg.edu.pl/openscience) established by the Gdansk University of Technology will be",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "responsible for DMP, data storage and dissemination. Project PI (Maksymilian Plata Gryl) will be responsible for the",
+        "tags": [],
+        "title": "responsible for DMP, data storage and dissemination."
+      },
+      {
+        "text": "procedures assessment and overall data quality.",
+        "tags": [],
+        "title": "procedures assessment and overall data quality."
+      },
+      {
+        "text": "Środki (np. finansowe i czasowe) przeznaczone do zarządzania danymi i zapewnienia możliwości odnalezienia, dostępu,",
+        "tags": [],
+        "title": "Środki (np."
+      },
+      {
+        "text": "interoperacyjności i ponownego wykorzystania danych",
+        "tags": [],
+        "title": "interoperacyjności i ponownego wykorzystania danych"
+      },
+      {
+        "text": "No additional resources will be required to manage data. Storage and archiving of the data will be inseparable part of",
+        "tags": [],
+        "title": "No additional resources will be required to manage data."
+      },
+      {
+        "text": "the research project and data processing. Data will be stored in a trustworthy open access repositories Bridge of Data",
+        "tags": [],
+        "title": "the research project and data processing."
+      },
+      {
+        "text": "assigned, making the data-set traceable and referenceable. Data will be shared as openly as possible, in user-friendly",
+        "tags": [],
+        "title": "assigned, making the data-set traceable and referenceable."
+      },
+      {
+        "text": "OSF, OPUS-29 Strona 37 ID: 651253, 2025-05-30 14:54:38",
+        "tags": [],
+        "title": "OSF, OPUS-29 Strona 37 ID: 651253, 2025-05-30 14:54:38"
+      }
+    ]
+  },
+  "6.1": {
+    "section": "6. Data management responsibilities and resources",
+    "question": "Who (for example role, position, and institution) will be responsible for data management (i.e the data steward)?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "6.2": {
+    "section": "6. Data management responsibilities and resources",
+    "question": "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "_unconnected_text": [
+    {
+      "text": "[w języku angielskim]",
+      "type": "no_section"
+    }
+  ]
+}
