@@ -70,43 +70,7 @@
         </div>
     </main>
 
-    <!-- Add Category Modal -->
-    <div class="modal" id="add-category-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Create New Category</h3>
-                <button class="close-btn" id="close-category-modal">×</button>
-            </div>
-            <div class="modal-body">
-                <label for="category-name">Category Name:</label>
-                <input type="text" id="category-name" placeholder="Enter category name" maxlength="50">
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-secondary" id="cancel-category">Cancel</button>
-                <button class="btn btn-primary" id="create-category">Create Category</button>
-            </div>
-        </div>
-    </div>
 
-    <!-- Add/Edit Quick Comment Modal -->
-    <div class="modal" id="add-comment-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="comment-modal-title">Add Quick Comment</h3>
-                <button class="close-btn" id="close-comment-modal">×</button>
-            </div>
-            <div class="modal-body">
-                <label for="comment-name">Short Name:</label>
-                <input type="text" id="comment-name" placeholder="Enter short name" maxlength="50">
-                <label for="comment-text">Comment Text:</label>
-                <textarea id="comment-text" placeholder="Enter the full comment text" rows="4"></textarea>
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-secondary" id="cancel-comment">Cancel</button>
-                <button class="btn btn-primary" id="save-comment">Save Comment</button>
-            </div>
-        </div>
-    </div>
 
     <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
     <script>
@@ -145,11 +109,8 @@
             }
         });
 
-        // Add category modal
-        document.getElementById('add-category-btn').onclick = () => openCategoryModal();
-        document.getElementById('close-category-modal').onclick = 
-        document.getElementById('cancel-category').onclick = () => closeCategoryModal();
-        document.getElementById('create-category').onclick = createCategory;
+        // Add category button
+        document.getElementById('add-category-btn').onclick = () => createNewCategoryTab();
 
         // Quick comment modal  
         document.getElementById('add-quick-comment').onclick = () => openCommentModal();
@@ -160,9 +121,7 @@
 
         // Close modals on outside click
         window.onclick = function(event) {
-            const categoryModal = document.getElementById('add-category-modal');
             const commentModal = document.getElementById('add-comment-modal');
-            if (event.target === categoryModal) closeCategoryModal();
             if (event.target === commentModal) closeCommentModal();
         };
     }
@@ -523,18 +482,56 @@
             });
     }
 
-    function openCategoryModal() {
-        document.getElementById('add-category-modal').style.display = 'flex';
-        document.getElementById('category-name').value = '';
-        document.getElementById('category-name').focus();
+    function createNewCategoryTab() {
+        const tempTabId = 'new-category-' + Date.now();
+        const nav = document.getElementById('tab-navigation');
+        const addBtn = document.getElementById('add-category-btn');
+        const content = document.getElementById('tab-content');
+        
+        // Create temporary tab button
+        const tab = document.createElement('button');
+        tab.className = 'tab-btn';
+        tab.setAttribute('data-tab', tempTabId);
+        tab.innerHTML = `<i class="fas fa-plus"></i> New Category`;
+        nav.insertBefore(tab, addBtn);
+
+        // Create temporary panel with form
+        const panel = document.createElement('div');
+        panel.className = 'tab-panel';
+        panel.id = `${tempTabId}-panel`;
+        panel.innerHTML = `
+            <div class="panel-header">
+                <h2>Create New Category</h2>
+                <p>Enter a name for your new category.</p>
+            </div>
+            <div class="category-form">
+                <div class="form-group">
+                    <label for="new-category-name">Category Name:</label>
+                    <input type="text" id="new-category-name" placeholder="Enter category name" maxlength="50">
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="submitNewCategory('${tempTabId}')">
+                        <i class="fas fa-save"></i> Create Category
+                    </button>
+                    <button class="btn btn-secondary" onclick="cancelNewCategory('${tempTabId}')">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+            </div>
+        `;
+        content.appendChild(panel);
+        
+        // Switch to new tab
+        switchTab(tempTabId);
+        
+        // Focus on input
+        setTimeout(() => {
+            document.getElementById('new-category-name').focus();
+        }, 100);
     }
 
-    function closeCategoryModal() {
-        document.getElementById('add-category-modal').style.display = 'none';
-    }
-
-    function createCategory() {
-        const name = document.getElementById('category-name').value.trim();
+    function submitNewCategory(tempTabId) {
+        const name = document.getElementById('new-category-name').value.trim();
         if (!name) {
             alert('Please enter a category name');
             return;
@@ -543,8 +540,15 @@
         postJSON('/create_category', { name })
             .then(data => {
                 if (data.success) {
+                    // Remove temporary tab and panel
+                    removeTempTab(tempTabId);
+                    
+                    // Reload categories and switch to new one
                     loadAllConfig();
-                    closeCategoryModal();
+                    setTimeout(() => {
+                        const newCategoryFile = data.file || name.toLowerCase().replace(/\s+/g, '_');
+                        switchTab(newCategoryFile);
+                    }, 100);
                     showMessage('Category created successfully!', 'success');
                 } else {
                     showMessage('Error creating category: ' + data.message, 'error');
@@ -554,6 +558,18 @@
                 console.error('Error creating category:', err);
                 showMessage('Error creating category', 'error');
             });
+    }
+
+    function cancelNewCategory(tempTabId) {
+        removeTempTab(tempTabId);
+        switchTab('dmp-structure');
+    }
+
+    function removeTempTab(tempTabId) {
+        const tab = document.querySelector(`[data-tab="${tempTabId}"]`);
+        const panel = document.getElementById(`${tempTabId}-panel`);
+        if (tab) tab.remove();
+        if (panel) panel.remove();
     }
 
     function removeCategoryTab(file) {
