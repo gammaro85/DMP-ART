@@ -7,11 +7,7 @@ import zipfile
 from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for
 from werkzeug.utils import secure_filename
 from utils.extractor import DMPExtractor
-from utils.dmp_comments import (
-    get_quick_comments,
-    get_category_comments,
-    get_all_categories
-)
+# Comments are now managed through JSON files in config/ directory
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -217,6 +213,11 @@ def documentation():
     """Documentation page with features and technical information"""
     return render_template('documentation.html')
 
+@app.route('/test_categories_page')
+def test_categories_page():
+    """Test page for debugging category loading"""
+    return render_template('test_categories.html')
+
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
@@ -409,27 +410,7 @@ def save_comments():
             'message': f'Error saving comments: {str(e)}'
         })
 
-@app.route('/save_key_phrases', methods=['POST'])
-def save_key_phrases():
-    try:
-        data = request.json
-        
-        # Save key phrases to a file (in a real application, you'd save to database)
-        key_phrases_path = os.path.join('config', 'key_phrases.json')
-        os.makedirs(os.path.dirname(key_phrases_path), exist_ok=True)
-        
-        with open(key_phrases_path, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-        
-        return jsonify({
-            'success': True,
-            'message': 'Key phrases saved successfully'
-        })
-    except Exception as e:
-        return jsonify({
-            'success': False,
-            'message': f'Error saving key phrases: {str(e)}'
-        })
+# Key phrases functionality removed
 
 @app.route('/save_dmp_structure', methods=['POST'])
 def save_dmp_structure():
@@ -461,16 +442,6 @@ def results():
 def template_editor():
     # Load configuration files
     try:
-        # Load key phrases
-        key_phrases_path = os.path.join('config', 'key_phrases.json')
-        if os.path.exists(key_phrases_path):
-            with open(key_phrases_path, 'r', encoding='utf-8') as f:
-                key_phrases = json.load(f)
-        else:
-            # Default key phrases from extractor
-            extractor = DMPExtractor()
-            key_phrases = extractor.get_key_phrases()
-        
         # Load DMP structure
         structure_path = os.path.join('config', 'dmp_structure.json')
         if os.path.exists(structure_path):
@@ -485,7 +456,6 @@ def template_editor():
         print(f"Error loading configuration: {str(e)}")
         # Use defaults
         extractor = DMPExtractor()
-        key_phrases = extractor.get_key_phrases()
         dmp_structure = extractor.dmp_structure
     
     # Organize templates by section for better display
@@ -514,7 +484,6 @@ def template_editor():
                            templates=DMP_TEMPLATES,
                            templates_by_section=templates_by_section,
                            comments=COMMON_COMMENTS,
-                           key_phrases=key_phrases,
                            dmp_structure=dmp_structure)
 
 @app.route('/save_feedback', methods=['POST'])
@@ -584,18 +553,29 @@ def save_category():
 
 @app.route('/load_categories', methods=['GET'])
 def load_categories():
-    """Load all categories and their comments"""
+    """Load all categories and their comments from individual JSON files"""
     try:
-        categories_path = os.path.join('config', 'categories.json')
+        config_dir = 'config'
+        categories = {}
         
-        if not os.path.exists(categories_path):
-            return jsonify({
-                'success': True,
-                'categories': {}
-            })
-        
-        with open(categories_path, 'r', encoding='utf-8') as f:
-            categories = json.load(f)
+        if os.path.exists(config_dir):
+            for filename in os.listdir(config_dir):
+                if filename.endswith('.json') and filename not in ['dmp_structure.json', 'quick_comments.json']:
+                    file_base = filename[:-5]  # Remove .json extension
+                    file_path = os.path.join(config_dir, filename)
+                    
+                    try:
+                        with open(file_path, 'r', encoding='utf-8') as f:
+                            data = json.load(f)
+                            
+                            # Find the main category key (not _comment or other metadata)
+                            for key, value in data.items():
+                                if not key.startswith('_') and isinstance(value, dict):
+                                    categories[key] = value
+                                    break
+                    except Exception as e:
+                        print(f"Error loading category file {filename}: {str(e)}")
+                        continue
         
         return jsonify({
             'success': True,
@@ -698,11 +678,11 @@ def load_quick_comments():
             })
         
         with open(quick_comments_path, 'r', encoding='utf-8') as f:
-            quick_comments = json.load(f)
+            data = json.load(f)
         
         return jsonify({
             'success': True,
-            'quick_comments': quick_comments
+            'quick_comments': data.get('quick_comments', [])
         })
         
     except Exception as e:
@@ -828,6 +808,87 @@ def serve_config(filename):
             return json.load(f)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/test_categories')
+def test_categories():
+    """Test endpoint to debug category loading"""
+    try:
+        config_dir = 'config'
+        result = {
+            'config_dir_exists': os.path.exists(config_dir),
+            'files_in_config': [],
+            'categories_found': [],
+            'load_categories_result': None,
+            'load_categories_errors': []
+        }
+        
+        # List all files in config directory
+        if os.path.exists(config_dir):
+            all_files = os.listdir(config_dir)
+            result['files_in_config'] = all_files
+            
+            # Process each JSON file
+            for filename in all_files:
+                if filename.endswith('.json'):
+                    file_path = os.path.join(config_dir, filename)
+                    file_info = {
+                        'filename': filename,
+                        'file_base': filename[:-5],
+                        'excluded': filename in ['dmp_structure.json', 'quick_comments.json'],
+                        'file_exists': os.path.exists(file_path),
+                        'file_size': os.path.getsize(file_path) if os.path.exists(file_path) else 0,
+                        'json_valid': False,
+                        'json_error': None,
+                        'contains_category_data': False,
+                        'category_keys': []
+                    }
+                    
+                    # Try to load and validate JSON
+                    try:
+                        with open(file_path, 'r', encoding='utf-8') as f:
+                            data = json.load(f)
+                            file_info['json_valid'] = True
+                            file_info['category_keys'] = list(data.keys())
+                            
+                            # Check if it contains category data (dict with DMP sections)
+                            for key, value in data.items():
+                                if not key.startswith('_') and isinstance(value, dict):
+                                    file_info['contains_category_data'] = True
+                                    break
+                                    
+                    except Exception as e:
+                        file_info['json_error'] = str(e)
+                    
+                    result['categories_found'].append(file_info)
+        
+        # Test the actual list_categories logic
+        try:
+            categories = []
+            if os.path.exists(config_dir):
+                for filename in os.listdir(config_dir):
+                    if filename.endswith('.json') and filename not in ['dmp_structure.json', 'quick_comments.json']:
+                        file_base = filename[:-5]
+                        category_name = file_base.replace('_', ' ').title()
+                        categories.append({
+                            'file': file_base,
+                            'name': category_name
+                        })
+            
+            result['load_categories_result'] = {
+                'success': True,
+                'categories': categories,
+                'count': len(categories)
+            }
+        except Exception as e:
+            result['load_categories_errors'].append(str(e))
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        return jsonify({
+            'error': str(e),
+            'status': 'failed'
+        })
 
 @app.route('/health')
 def health_check():

@@ -1,124 +1,50 @@
 {
-     "_comment": "Positive review comments for comprehensive DMP sections. Use these when elements are well-implemented.",
-     "standard_sentences": {
-          "piotr_krajewski_standards": [
-               "Data will be stored using the institutional Office 365 A1 for faculty license, providing OneDrive cloud storage with automatic versioning and EU data residency compliance.",
-               "The only additional resource required is time for FAIR procedures assessment and data quality assurance.",
-               "The Principal Investigator will ensure FAIR principles implementation by describing, structuring, and preparing data for publication.",
-               "DOIs will be automatically assigned upon deposit in MOST Wiedzy repository.",
-               "Data will be shared under Creative Commons Attribution 4.0 International (CC BY 4.0) license, allowing any use with attribution."
-          ],
-          "approval_phrases": [
-               "Plan jest bardzo dobry, należy tylko dodać kilka informacji.",
-               "Plan w kontekście charakteru Pańskich badań jest naprawdę bardzo dobry.",
-               "To są drobne szczegóły, plan jest świetny.",
-               "Plan jest zatwierdzony, prosiłbym tylko o podesłanie ostatecznej wersji do naszej ewidencji.",
-               "The plan is very good, only minor details need adjustment."
-          ],
-          "repository_statements": [
-               "MOST Wiedzy (Bridge of Data) is Gdańsk University of Technology's institutional repository, which is CoreTrustSeal certified, ensuring compliance with international standards for trustworthy data repositories.",
-               "Data will be deposited in MOST Wiedzy, which provides automatic DOI assignment, standardized metadata using DataCite schema, and guarantees minimum 10-year preservation period.",
-               "As alternative to MOST Wiedzy, discipline-specific repositories may be used: Zenodo for general scientific data, GenBank for genetic sequences, PDB for protein structures, or other recognized domain repositories."
-          ]
-     },
      "ready": {
           "1.1": [
-               "The data collection methodology is well described and comprehensive.",
-               "Good specification of sources and collection methods.",
-               "Appropriate quality control measures are in place.",
-               "Clear timeline and procedures for data collection.",
-               "Excellent consideration of data validation approaches."
+            
           ],
           "1.2": [
-               "Data types, formats, and volumes are clearly specified.",
-               "Good consideration of long-term data accessibility.",
-               "Realistic volume estimates provided.",
-               "Comprehensive coverage of different data categories.",
-               "Excellent planning for data organization and structure."
+               
           ],
           "2.1": [
-               "Metadata standards are appropriately selected for the field.",
-               "Comprehensive documentation plan is in place.",
-               "Good consideration of data dictionary and variable definitions.",
-               "Excellent planning for data provenance tracking.",
-               "Metadata creation workflow is well designed."
+               "Lack information about metadata standards"
           ],
           "2.2": [
-               "Quality control procedures are comprehensive and appropriate.",
-               "Good specification of validation methods and criteria.",
-               "Excellent planning for error detection and correction.",
-               "Quality metrics are clearly defined and measurable.",
-               "Good consideration of ongoing quality monitoring."
+             
           ],
           "3.1": [
-               "Backup strategy is comprehensive and follows best practices.",
-               "Storage solutions are appropriate and well planned.",
-               "Good consideration of disaster recovery procedures.",
-               "Excellent planning for data access and synchronization.",
-               "Clear retention and disposal policies are defined."
+               "Data will be stored using the institutional Office 365 A1 for faculty license, providing OneDrive cloud storage with automatic versioning and EU data residency compliance."
           ],
           "3.2": [
-               "Security measures are comprehensive and appropriate for the data sensitivity.",
-               "Access controls are well designed and implemented.",
-               "Good use of encryption and other security technologies.",
-               "Excellent consideration of security monitoring and response.",
-               "Physical security measures are appropriately addressed."
+               "No sensitive or personal data will be collected during the research."    
           ],
-          "4.1": [
-               "GDPR compliance procedures are comprehensive and well planned.",
-               "Excellent consideration of consent management and data subject rights.",
-               "Privacy impact assessment has been conducted appropriately.",
-               "Good planning for cross-border data transfers.",
-               "Data minimization principles are well implemented."
-          ],
+          "4.1": [],
           "4.2": [
-               "Intellectual property arrangements are clearly defined and appropriate.",
-               "Licensing terms for data sharing are well specified.",
-               "Good consideration of ownership and derived works.",
-               "Excellent handling of third-party IP considerations.",
-               "Commercial rights and restrictions are clearly addressed."
+               "The data and results will be published in the open-access model under one of the Creative Commons licenses (CC0 where possible). Metadata will be always available without any restrictions (CC0).",
+               "The ownership and management of any intellectual property developed in collaboration relating to the Project remains in the rights of the Gdansk University of Technology accordingly to the Polish law and institutional regulations (Resolution of the Senate of the Gdańsk University of Technology No. 117/2021/XXV of 19 May 2021 https://link.pg.edu.pl/GdańskTech_intprop)."
           ],
           "5.1": [
-               "Data sharing plans are comprehensive with clear timelines.",
-               "Appropriate repositories have been identified for data sharing.",
-               "Good consideration of access controls and embargo periods.",
-               "Excellent planning for data sharing agreements and responsibilities.",
-               "Cost considerations for data sharing are well addressed."
+              "MOST Wiedzy Open Research Data Catalog (Bridge of Data) is Gdańsk University of Technology's institutional repository, which is CoreTrustSeal certified, ensuring compliance with international standards for trustworthy data repositories.", 
+              "As alternative to MOST Wiedzy, discipline-specific repositories may be used: Zenodo for general scientific data, GenBank for genetic sequences, PDB for protein structures, or other recognized domain repositories.",
+              " Data will be shared under Creative Commons Attribution 4.0 International (CC BY 4.0) license, allowing any use with attribution."
           ],
           "5.2": [
-               "Long-term preservation strategy is comprehensive and well planned.",
-               "Repository selection is appropriate with clear criteria.",
-               "Good specification of preservation periods and policies.",
-               "Excellent consideration of format migration and technology changes.",
-               "Preservation costs and sustainability are well addressed."
+               "The main repository of data will be the MOST Wiedzy repository, which is CoreTrustSeal certified. This certificate confirms the repository's trustworthiness and sustainability.",
+               "The data to be deposited in the repository will be chosen on the basis of its scientific quality and exemplarity.",
+               "Due to the small disk space required for data storage, there is no need to select the data for long term archiving.",
+               "The repository is CoreTrustSeal certified, which means that it has established good preservation and dissemination practices. Data deposited in the repository will be automatically categorized for long term storage, without expiration date."
           ],
           "5.3": [
-               "Software requirements and dependencies are clearly specified.",
-               "Good provision of data access tools and user interfaces.",
-               "Excellent documentation of data processing workflows.",
-               "Software preservation and versioning are well planned.",
-               "User support and training plans are comprehensive."
+           
           ],
           "5.4": [
-               "DOI assignment procedures are well planned and documented.",
-               "Appropriate identifier registration authority has been selected.",
-               "Good consideration of metadata requirements for identifiers.",
-               "Excellent planning for identifier lifecycle management.",
-               "Identifier assignment timeline is realistic and well coordinated."
+               "Data will be deposited in MOST Wiedzy Open Research Data Catalog, which provides automatic DOI assignment, standardized metadata using DataCite schema, and guarantees minimum 10-year preservation period."
           ],
           "6.1": [
-               "Data management roles and responsibilities are clearly defined.",
-               "Good planning for data stewardship training and capacity building.",
-               "Excellent consideration of succession planning and knowledge transfer.",
-               "Data governance and oversight mechanisms are well established.",
-               "Team coordination and communication plans are comprehensive."
+               "The Principal Investigator will ensure FAIR principles implementation by describing, structuring, and preparing data for publication."
           ],
           "6.2": [
-               "Resource requirements for data management are realistically budgeted.",
-               "Good consideration of both initial and ongoing operational costs.",
-               "Excellent planning for resource allocation across project phases.",
-               "Staff time and expertise requirements are well specified.",
-               "Infrastructure and tool costs are appropriately budgeted."
+              "The only additional resource required is time for FAIR procedures assessment and data quality assurance."
           ]
      }
 }

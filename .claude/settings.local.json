@@ -8,7 +8,11 @@
       "Bash(pip install:*)",
       "Bash(C:UserskrajeOneDrivePulpitdmp-extractor.venvScriptsactivate)",
       "Bash(rm:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(mv:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(curl:*)"
     ],
     "deny": []
   }
