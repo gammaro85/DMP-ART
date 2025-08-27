@@ -143,7 +143,6 @@ function initializeUploadPage() {
     const elements = {
         dropArea: document.getElementById('drop-area'),
         fileInput: document.getElementById('file-input'),
-        selectFileBtn: document.getElementById('select-file-btn'),
         fileInfo: document.getElementById('file-info'),
         fileName: document.getElementById('file-name'),
         uploadBtn: document.getElementById('upload-btn'),
@@ -216,12 +215,15 @@ function setupDragAndDrop(elements) {
 }
 
 function setupFileSelection(elements) {
-    const { fileInput, selectFileBtn } = elements;
+    const { fileInput, dropArea } = elements;
 
-    if (selectFileBtn) {
-        selectFileBtn.addEventListener('click', () => {
+    // Make the entire upload area clickable
+    if (dropArea) {
+        dropArea.addEventListener('click', () => {
             if (fileInput) fileInput.click();
         });
+        // Add cursor pointer style to indicate clickability
+        dropArea.style.cursor = 'pointer';
     }
 
     if (fileInput) {
@@ -314,10 +316,10 @@ function setupClearButton(elements) {
 
 // Button state management
 function updateButtonStates(elements, state) {
-    const { selectFileBtn, uploadBtn, clearBtn } = elements;
+    const { uploadBtn, clearBtn } = elements;
     
     // Remove all state classes
-    [selectFileBtn, uploadBtn, clearBtn].forEach(btn => {
+    [uploadBtn, clearBtn].forEach(btn => {
         if (btn) {
             btn.disabled = false;
             btn.classList.remove('btn-active');
@@ -326,22 +328,19 @@ function updateButtonStates(elements, state) {
     
     switch (state) {
         case 'initial':
-            // Only select button active
-            if (selectFileBtn) selectFileBtn.classList.add('btn-active');
+            // Upload disabled, clear disabled
             if (uploadBtn) uploadBtn.disabled = true;
             if (clearBtn) clearBtn.disabled = true;
             break;
             
         case 'file-selected':
-            // Select inactive, upload and clear active
-            if (selectFileBtn) selectFileBtn.disabled = true;
+            // Upload and clear active
             if (uploadBtn) uploadBtn.classList.add('btn-active');
             if (clearBtn) clearBtn.classList.add('btn-active');
             break;
             
         case 'analyzing':
             // Only clear active
-            if (selectFileBtn) selectFileBtn.disabled = true;
             if (uploadBtn) uploadBtn.disabled = true;
             if (clearBtn) clearBtn.classList.add('btn-active');
             break;
