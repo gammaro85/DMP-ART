@@ -70,7 +70,29 @@
         </div>
     </main>
 
-
+    <!-- Quick Comment Modal -->
+    <div id="add-comment-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="comment-modal-title">Add Quick Comment</h3>
+                <button type="button" class="close-btn" id="close-comment-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="comment-name">Comment Name:</label>
+                    <input type="text" id="comment-name" placeholder="Enter comment name" maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label for="comment-text">Comment Text:</label>
+                    <textarea id="comment-text" rows="4" placeholder="Enter comment text" maxlength="500"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancel-comment">Cancel</button>
+                <button type="button" class="btn btn-primary" id="save-comment">Save Comment</button>
+            </div>
+        </div>
+    </div>
 
     <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
     <script>
@@ -233,10 +255,15 @@
             row.className = 'comment-row';
             row.innerHTML = `
                 <div class="comment-info">
-                    <div class="comment-name">${escapeHtml(comment.name)}</div>
-                    <div class="comment-text">${escapeHtml(comment.text)}</div>
+                    <input type="text" class="comment-name-input" value="${escapeHtml(comment.name)}" 
+                           placeholder="Comment name" onchange="updateQuickComment(${idx}, 'name', this.value)">
+                    <textarea class="comment-text-input" rows="3" 
+                              placeholder="Comment text" onchange="updateQuickComment(${idx}, 'text', this.value)">${escapeHtml(comment.text)}</textarea>
                 </div>
                 <div class="comment-actions">
+                    <button class="btn btn-sm btn-success" title="Save This Comment" onclick="saveIndividualComment(${idx})">
+                        <i class="fas fa-save"></i>
+                    </button>
                     <button class="btn btn-sm btn-secondary" title="Edit" onclick="editQuickComment(${idx})">
                         <i class="fas fa-edit"></i>
                     </button>
@@ -305,11 +332,45 @@
         }
     }
 
+    function updateQuickComment(index, field, value) {
+        if (quickComments[index]) {
+            quickComments[index][field] = value;
+        }
+    }
+
+    function saveIndividualComment(index) {
+        const comment = quickComments[index];
+        if (!comment) return;
+        
+        if (!comment.name.trim()) {
+            showMessage('Comment name is required', 'error');
+            return;
+        }
+        if (!comment.text.trim()) {
+            showMessage('Comment text is required', 'error');
+            return;
+        }
+        
+        // Save the entire quick comments array (since the backend expects the full array)
+        postJSON('/save_quick_comments', { quick_comments: quickComments })
+            .then(data => {
+                if (data.success) {
+                    showMessage(`Comment "${comment.name}" saved successfully!`, 'success');
+                } else {
+                    showMessage('Error saving comment: ' + data.message, 'error');
+                }
+            })
+            .catch(err => {
+                console.error('Error saving comment:', err);
+                showMessage('Error saving comment', 'error');
+            });
+    }
+
     function saveQuickComments() {
         postJSON('/save_quick_comments', { quick_comments: quickComments })
             .then(data => {
                 if (data.success) {
-                    showMessage('Quick comments saved successfully!', 'success');
+                    showMessage('All quick comments saved successfully!', 'success');
                 } else {
                     showMessage('Error saving quick comments: ' + data.message, 'error');
                 }
@@ -648,3 +709,7 @@
     </script>
 </body>
 </html>
+
+<footer class="site-footer">
+    DMP ART © 2025
+</footer>
