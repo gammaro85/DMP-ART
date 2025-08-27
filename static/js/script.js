@@ -215,11 +215,15 @@ function setupDragAndDrop(elements) {
 }
 
 function setupFileSelection(elements) {
-    const { fileInput, dropArea } = elements;
+    const { fileInput, dropArea, uploadBtn } = elements;
 
-    // Make the entire upload area clickable
+    // Make the entire upload area clickable, but not the buttons
     if (dropArea) {
-        dropArea.addEventListener('click', () => {
+        dropArea.addEventListener('click', (e) => {
+            // Don't trigger file selection if clicking on buttons
+            if (e.target.tagName === 'BUTTON' || e.target.closest('button')) {
+                return;
+            }
             if (fileInput) fileInput.click();
         });
         // Add cursor pointer style to indicate clickability

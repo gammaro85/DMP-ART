@@ -79,28 +79,7 @@ DMP_TEMPLATES = {
     }
 }
 
-# Common feedback comments that can be inserted
-COMMON_COMMENTS = {
-    "methodology": "The methodology needs more detail on how data will be collected.",
-    "data_format": "Please specify all data formats (CSV, JSON, TIFF, etc.) with examples.",
-    "data_volume": "Estimate the total volume of data expected (in GB/TB).",
-    "metadata": "Consider using established metadata standards like DataCite in your field.",
-    "quality": "Implement validation procedures to ensure data quality and reproducibility.",
-    "storage": "Specify the exact storage solutions and backup procedures you'll be using.",
-    "backup": "Your backup strategy should include off-site copies and regular testing.",
-    "security": "Detail encryption methods and access controls for sensitive data.",
-    "personal_data": "Clarify compliance with GDPR and data minimization strategies.",
-    "license": "Specify the exact licensing arrangements (e.g., Creative Commons) for your data.",
-    "sharing": "Provide specific milestones and timelines for data publication.",
-    "preservation": "Detail your long-term preservation strategy and repository selection criteria.",
-    "tools": "List all required software tools with specific versions and accessibility.",
-    "identifier": "Explain how and when DOIs will be assigned to datasets.",
-    "responsibility": "Designate specific roles and responsibilities for data management tasks.",
-    "resources": "Budget for dedicated staff time and resources for data management activities.",
-    "table_extracted": "This content was extracted from a table structure - please verify accuracy.",
-    "formatting_preserved": "Original formatting (bold/underlined) has been preserved where possible.",
-    "simulation_data": "For simulation data, ensure reproducibility by documenting all parameters and software versions."
-}
+# Common comments functionality removed
 
 # Template categories will be managed through template editor
 
@@ -364,7 +343,7 @@ def review_dmp(filename):
     return render_template('review.html', 
                            filename=filename,
                            templates=DMP_TEMPLATES,
-                           comments=COMMON_COMMENTS,
+                           comments={},
                            extracted_content=extracted_content,
                            extraction_info=extraction_info,
                            unconnected_text=unconnected_text,
@@ -391,24 +370,7 @@ def save_templates():
             'message': f'Error saving templates: {str(e)}'
         })
 
-@app.route('/save_comments', methods=['POST'])
-def save_comments():
-    try:
-        data = request.json
-        global COMMON_COMMENTS
-        
-        # Update the comments with the new data
-        COMMON_COMMENTS.update(data)
-        
-        return jsonify({
-            'success': True,
-            'message': 'Comments saved successfully'
-        })
-    except Exception as e:
-        return jsonify({
-            'success': False,
-            'message': f'Error saving comments: {str(e)}'
-        })
+# Save comments functionality removed
 
 # Key phrases functionality removed
 
@@ -483,7 +445,7 @@ def template_editor():
     return render_template('template_editor.html', 
                            templates=DMP_TEMPLATES,
                            templates_by_section=templates_by_section,
-                           comments=COMMON_COMMENTS,
+                           comments={},
                            dmp_structure=dmp_structure)
 
 @app.route('/save_feedback', methods=['POST'])

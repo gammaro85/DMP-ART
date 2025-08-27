@@ -1,0 +1,222 @@
+{
+  "1.1": {
+    "section": "1. Data description and collection or re-use of existing data",
+    "question": "How will new data be collected or produced and/or how will existing data be re-used?",
+    "paragraphs": [
+      "Sposób pozyskiwania danych, np.: pobieranie danych przestrzennych w otwartym dostępie, np. Baza Danych Obiektów Topograficznych (BDOT10k); pozyskanie bezpłatnych map do celów naukowych w Wydziału Geodezji Urzędu Miejskiego w Gdańsku; wykonywanie pomiarów (długości, wysokości, powierzchni) zgodnie z rozdz. III ust. regulaminu aplikacji.",
+      "Obl View dostępnej przez publiczną miejską stronę Biura Rozwoju Gdańska."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Sposób pozyskiwania danych, np.: pobieranie danych przestrzennych w otwartym dostępie, np. Baza Danych Obiektów Topograficznych (BDOT10k); pozyskanie bezpłatnych map do celów naukowych w Wydziału Geodezji Urzędu Miejskiego w Gdańsku; wykonywanie pomiarów (długości, wysokości, powierzchni) zgodnie z rozdz. III ust. regulaminu aplikacji.",
+        "tags": [],
+        "title": "Sposób pozyskiwania danych, np.: pobieranie danych przestrzennych w otwartym dostępie, np."
+      },
+      {
+        "text": "Obl View dostępnej przez publiczną miejską stronę Biura Rozwoju Gdańska.",
+        "tags": [],
+        "title": "Obl View dostępnej przez publiczną miejską stronę Biura Rozwoju Gdańska."
+      }
+    ]
+  },
+  "1.2": {
+    "section": "1. Data description and collection or re-use of existing data",
+    "question": "What data (for example the types, formats, and volumes) will be collected or produced?",
+    "paragraphs": [
+      "• Dokumentacja i jakość danych."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "• Dokumentacja i jakość danych.",
+        "tags": [],
+        "title": "• Dokumentacja i jakość danych."
+      }
+    ]
+  },
+  "2.1": {
+    "section": "2. Documentation and data quality",
+    "question": "What metadata and documentation (for example methodology or data collection and way of organising data) will accompany data?",
+    "paragraphs": [
+      "Dane zbierane, przetwarzane i zapisywane w szczególności przy użyciu:",
+      "oprogramowania CAD, np. przenoszenie zebranych danych na nowopowstałe zwymiarowane i opisane rysunki przekrojowe. przy użyciu oprogramowania kalkulacyjnego - dane w formie zestawień tabelarycznych. przy użyciu edytora tekstu - dane w formie interpretacji tekstowej analiz przestrzennych i zestawień tabelarycznych."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Dane zbierane, przetwarzane i zapisywane w szczególności przy użyciu:",
+        "tags": [],
+        "title": "Dane zbierane, przetwarzane i zapisywane w szczególności przy użyciu:"
+      },
+      {
+        "text": "oprogramowania CAD, np. przenoszenie zebranych danych na nowopowstałe zwymiarowane i opisane rysunki przekrojowe. przy użyciu oprogramowania kalkulacyjnego - dane w formie zestawień tabelarycznych. przy użyciu edytora tekstu - dane w formie interpretacji tekstowej analiz przestrzennych i zestawień tabelarycznych.",
+        "tags": [],
+        "title": "oprogramowania CAD, np."
+      }
+    ]
+  },
+  "2.2": {
+    "section": "2. Documentation and data quality",
+    "question": "What data quality control measures will be used?",
+    "paragraphs": [
+      "Posługiwanie się danymi wytworzonymi dla sektora publicznego i udostępnianych przez sektor publiczny (mapy do celów informacyjnych, aplikacje umożliwiające wymiarowanie ortofotomap ukośnych)."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Posługiwanie się danymi wytworzonymi dla sektora publicznego i udostępnianych przez sektor publiczny (mapy do celów informacyjnych, aplikacje umożliwiające wymiarowanie ortofotomap ukośnych).",
+        "tags": [],
+        "title": null
+      }
+    ]
+  },
+  "3.1": {
+    "section": "3. Storage and backup during the research process",
+    "question": "How will data and metadata be stored and backed up during the research process?",
+    "paragraphs": [
+      "Dane będą przechowywane w chmurze w ramach pojemności udostępnianej przez Politechnikę Gdańską."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Dane będą przechowywane w chmurze w ramach pojemności udostępnianej przez Politechnikę Gdańską.",
+        "tags": [],
+        "title": "Dane będą przechowywane w chmurze w ramach pojemności udostępnianej przez Politechnikę Gdańską."
+      }
+    ]
+  },
+  "3.2": {
+    "section": "3. Storage and backup during the research process",
+    "question": "How will data security and protection of sensitive data be taken care of during the research?",
+    "paragraphs": [
+      "Dane podlegają zabezpieczeniu dostępu systemem weryfikacji użytkownika (email służbowy, hasło, kody SMS, VPN).",
+      "• Wymogi prawne, kodeks postępowania."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Dane podlegają zabezpieczeniu dostępu systemem weryfikacji użytkownika (email służbowy, hasło, kody SMS, VPN).",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "• Wymogi prawne, kodeks postępowania.",
+        "tags": [],
+        "title": "• Wymogi prawne, kodeks postępowania."
+      }
+    ]
+  },
+  "4.1": {
+    "section": "4. Legal requirements, codes of conduct",
+    "question": "If personal data are processed, how will compliance with legislation on personal data and on data security be ensured?",
+    "paragraphs": [
+      "OSF, SONATA- Strona ID: 632106, 2024-12- 22:06:"
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "OSF, SONATA- Strona ID: 632106, 2024-12- 22:06:",
+        "tags": [],
+        "title": "OSF, SONATA- Strona ID: 632106, 2024-12- 22:06:"
+      }
+    ]
+  },
+  "4.2": {
+    "section": "4. Legal requirements, codes of conduct",
+    "question": "How will other legal issues, such as intelectual property rights and ownership, be managed? What legislation is applicable?",
+    "paragraphs": [
+      "Wykorzystanie danych publicznych lub udostępnionych publicznie na zasadach regulaminu (np. regulamin aplikacji.",
+      "Obli View dostępnej przez publiczną miejską witrynę Biura Rozwoju Gdańska).",
+      "• Udostępnianie i długotrwałe przechowywanie danych."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Wykorzystanie danych publicznych lub udostępnionych publicznie na zasadach regulaminu (np. regulamin aplikacji.",
+        "tags": [],
+        "title": "Wykorzystanie danych publicznych lub udostępnionych publicznie na zasadach regulaminu (np."
+      },
+      {
+        "text": "Obli View dostępnej przez publiczną miejską witrynę Biura Rozwoju Gdańska).",
+        "tags": [],
+        "title": "Obli View dostępnej przez publiczną miejską witrynę Biura Rozwoju Gdańska)."
+      },
+      {
+        "text": "• Udostępnianie i długotrwałe przechowywanie danych.",
+        "tags": [],
+        "title": "• Udostępnianie i długotrwałe przechowywanie danych."
+      }
+    ]
+  },
+  "5.1": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How and when will data be shared? Are there possible restrictions to data sharing or embargo reasons?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "5.2": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How will data for preservation be selected, and where will data be preserved long-term (for example a data repository or archive)?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "5.3": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "What methods or software tools will be needed to access and use the data?",
+    "paragraphs": [
+      "Wykorzystanie oprogramowania CAD do przetwarzania cyfrowych map przestrzennych.",
+      "Wykorzystanie aplikacji Obli View do dokonywania pomiarów ortofotomap/modelu 3D Gdańska."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Wykorzystanie oprogramowania CAD do przetwarzania cyfrowych map przestrzennych.",
+        "tags": [],
+        "title": "Wykorzystanie oprogramowania CAD do przetwarzania cyfrowych map przestrzennych."
+      },
+      {
+        "text": "Wykorzystanie aplikacji Obli View do dokonywania pomiarów ortofotomap/modelu 3D Gdańska.",
+        "tags": [],
+        "title": "Wykorzystanie aplikacji Obli View do dokonywania pomiarów ortofotomap/modelu 3D Gdańska."
+      }
+    ]
+  },
+  "5.4": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How will the application of a unique and persistent identifier (such us a Digital Object Identifier (DOI)) to each data set be ensured?",
+    "paragraphs": [
+      "• Zadania związane z zarządzaniem danymi oraz zasoby."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "• Zadania związane z zarządzaniem danymi oraz zasoby.",
+        "tags": [],
+        "title": "• Zadania związane z zarządzaniem danymi oraz zasoby."
+      }
+    ]
+  },
+  "6.1": {
+    "section": "6. Data management responsibilities and resources",
+    "question": "Who (for example role, position, and institution) will be responsible for data management (i.e the data steward)?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "6.2": {
+    "section": "6. Data management responsibilities and resources",
+    "question": "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)?",
+    "paragraphs": [
+      "OSF, SONATA- Strona ID: 632106, 2024-12- 22:06:"
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "OSF, SONATA- Strona ID: 632106, 2024-12- 22:06:",
+        "tags": [],
+        "title": "OSF, SONATA- Strona ID: 632106, 2024-12- 22:06:"
+      }
+    ]
+  },
+  "_unconnected_text": [
+    {
+      "text": "[w języku angielskim].",
+      "type": "pre_boundary",
+      "position": 0
+    },
+    {
+      "text": "• Opis danych oraz pozyskiwanie lub ponowne wykorzystanie dostępnych danych.",
+      "type": "pre_boundary",
+      "position": 1
+    }
+  ]
+}

@@ -1,0 +1,294 @@
+{
+  "1.1": {
+    "section": "1. Data description and collection or re-use of existing data",
+    "question": "How will new data be collected or produced and/or how will existing data be re-used?",
+    "paragraphs": [
+      "The research is fully anonymous - no personal data is collected.",
+      "• QUALITATIVE RESEARCH Methods: (i) online focus groups, (n=50; waves with players who frequently buy loot boxes) (ii) in-depth online interviews (n= (iii) netnography - until data saturation - approximately 40- hours - online participant observation II. QUANTITATIVE RESEARCH.",
+      "Method: panel survey - conducted on a panel of a research agency III. EXPERIMENTAL RESEARCH.",
+      "Method: experimental online survey.",
+      "The following professional software will be used during the data analysis phase: IBM SPSS Statistics Premium, MPlus and NVivo."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The research is fully anonymous - no personal data is collected.",
+        "tags": [],
+        "title": "The research is fully anonymous - no personal data is collected."
+      },
+      {
+        "text": "• QUALITATIVE RESEARCH Methods: (i) online focus groups, (n=50; waves with players who frequently buy loot boxes) (ii) in-depth online interviews (n= (iii) netnography - until data saturation - approximately 40- hours - online participant observation II. QUANTITATIVE RESEARCH.",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "Method: panel survey - conducted on a panel of a research agency III. EXPERIMENTAL RESEARCH.",
+        "tags": [],
+        "title": "Method: panel survey - conducted on a panel of a research agency III."
+      },
+      {
+        "text": "Method: experimental online survey.",
+        "tags": [],
+        "title": "Method: experimental online survey."
+      },
+      {
+        "text": "The following professional software will be used during the data analysis phase: IBM SPSS Statistics Premium, MPlus and NVivo.",
+        "tags": [],
+        "title": null
+      }
+    ]
+  },
+  "1.2": {
+    "section": "1. Data description and collection or re-use of existing data",
+    "question": "What data (for example the types, formats, and volumes) will be collected or produced?",
+    "paragraphs": [
+      "• QUALITATIVE RESEARCH: 1. Recordings of online interviews - mp3, mp4; 2. Recordings of online participant behaviour observations - mp4; 3. Transcriptions of qualitative interviews - doc; 4. Report - doc.",
+      "• QUANTITATIVE SURVEY: 1. Matrix with preliminary and main quantitative survey working data - xls; csv or sav; 2.",
+      "Data matrix with coded responses from preliminary and main quantitative survey - xls; csv or sav; 3. Files with aggregated results from analysis of quantitative data from main survey - xls, csv, sav; 4. Report - doc.",
+      "• EXPERIMENTAL STUDY (QUANTITATIVE): 1. Matrix with preliminary data from pre-test and main quantitative survey - xls; csv or sav; 2. Data matrix with coded responses from pre-test and main quantitative survey - xls; csv or sav; 3. Files with aggregated results from analysis of quantitative data from main survey - xls, csv, sav; 4. Report - doc.",
+      "• Dokumentacja i jakość danych."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "• QUALITATIVE RESEARCH: 1. Recordings of online interviews - mp3, mp4; 2. Recordings of online participant behaviour observations - mp4; 3. Transcriptions of qualitative interviews - doc; 4. Report - doc.",
+        "tags": [],
+        "title": "• QUALITATIVE RESEARCH: 1."
+      },
+      {
+        "text": "• QUANTITATIVE SURVEY: 1. Matrix with preliminary and main quantitative survey working data - xls; csv or sav; 2.",
+        "tags": [],
+        "title": "• QUANTITATIVE SURVEY: 1."
+      },
+      {
+        "text": "Data matrix with coded responses from preliminary and main quantitative survey - xls; csv or sav; 3. Files with aggregated results from analysis of quantitative data from main survey - xls, csv, sav; 4. Report - doc.",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "• EXPERIMENTAL STUDY (QUANTITATIVE): 1. Matrix with preliminary data from pre-test and main quantitative survey - xls; csv or sav; 2. Data matrix with coded responses from pre-test and main quantitative survey - xls; csv or sav; 3. Files with aggregated results from analysis of quantitative data from main survey - xls, csv, sav; 4. Report - doc.",
+        "tags": [],
+        "title": "• EXPERIMENTAL STUDY (QUANTITATIVE): 1."
+      },
+      {
+        "text": "• Dokumentacja i jakość danych.",
+        "tags": [],
+        "title": "• Dokumentacja i jakość danych."
+      }
+    ]
+  },
+  "2.1": {
+    "section": "2. Documentation and data quality",
+    "question": "What metadata and documentation (for example methodology or data collection and way of organising data) will accompany data?",
+    "paragraphs": [
+      "Data from the different phases presented in the detailed description of the study (phases I-III) will be grouped and stored in separate folders: QUALITATIVE STUDY; QUANTITATIVE STUDY; EXPERIMENTAL STUDY. In addition, subfolders will be created for the QUALITATIVE STUDY: FOCUS GROUPS; IDI; NETNOGRAPHY.",
+      "The metadata should include: Title of the project carried out (Loot boxes in video games: understanding, impact, and regulation) No. of the project carried out and names of the project team: Brzozowska-Woś, Magdalena; Schivinski, Bruno; Gołąb-Andrzejak, Edyta.",
+      "Selected data generated from experiments will be deposited in the MOST Wiedzy Open Research Data Catalog (common name - Bridge of Data) – repository provided by the Gdańsk University of Technology - and described using attributes compatible with general metadata standards. Metadata descriptions will be stored in JSON-LD format and will include, whenever possible, Persistent Identifiers (PID), such as ORCID or GRID."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Data from the different phases presented in the detailed description of the study (phases I-III) will be grouped and stored in separate folders: QUALITATIVE STUDY; QUANTITATIVE STUDY; EXPERIMENTAL STUDY. In addition, subfolders will be created for the QUALITATIVE STUDY: FOCUS GROUPS; IDI; NETNOGRAPHY.",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "The metadata should include: Title of the project carried out (Loot boxes in video games: understanding, impact, and regulation) No. of the project carried out and names of the project team: Brzozowska-Woś, Magdalena; Schivinski, Bruno; Gołąb-Andrzejak, Edyta.",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "Selected data generated from experiments will be deposited in the MOST Wiedzy Open Research Data Catalog (common name - Bridge of Data) – repository provided by the Gdańsk University of Technology - and described using attributes compatible with general metadata standards. Metadata descriptions will be stored in JSON-LD format and will include, whenever possible, Persistent Identifiers (PID), such as ORCID or GRID.",
+        "tags": [],
+        "title": null
+      }
+    ]
+  },
+  "2.2": {
+    "section": "2. Documentation and data quality",
+    "question": "What data quality control measures will be used?",
+    "paragraphs": [
+      "The data collected in the process of each qualitative study will be controlled on an ongoing basis by the researcher, e. g."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The data collected in the process of each qualitative study will be controlled on an ongoing basis by the researcher, e. g.",
+        "tags": [],
+        "title": null
+      }
+    ]
+  },
+  "3.1": {
+    "section": "3. Storage and backup during the research process",
+    "question": "How will data and metadata be stored and backed up during the research process?",
+    "paragraphs": [
+      "During the project, data will be stored on the computers of the project research team (three copies in total):",
+      "Magdalena Brzozowska-Woś; Bruno Schivinski; Edyta Golab-Andrzejak. In addition, after the completion of each stage of the study, a backup copy will be created on an external drive held by the Project Manager."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "During the project, data will be stored on the computers of the project research team (three copies in total):",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "Magdalena Brzozowska-Woś; Bruno Schivinski; Edyta Golab-Andrzejak. In addition, after the completion of each stage of the study, a backup copy will be created on an external drive held by the Project Manager.",
+        "tags": [],
+        "title": "Magdalena Brzozowska-Woś; Bruno Schivinski; Edyta Golab-Andrzejak."
+      }
+    ]
+  },
+  "3.2": {
+    "section": "3. Storage and backup during the research process",
+    "question": "How will data security and protection of sensitive data be taken care of during the research?",
+    "paragraphs": [
+      "There is no sensitive data in the project as no personal data is collected during the project - the research is fully anonymised. copies of data from each stage of the project ensure that it is protected from possible loss.",
+      "• Wymogi prawne, kodeks postępowania."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "There is no sensitive data in the project as no personal data is collected during the project - the research is fully anonymised. copies of data from each stage of the project ensure that it is protected from possible loss.",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "• Wymogi prawne, kodeks postępowania.",
+        "tags": [],
+        "title": "• Wymogi prawne, kodeks postępowania."
+      }
+    ]
+  },
+  "4.1": {
+    "section": "4. Legal requirements, codes of conduct",
+    "question": "If personal data are processed, how will compliance with legislation on personal data and on data security be ensured?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "4.2": {
+    "section": "4. Legal requirements, codes of conduct",
+    "question": "How will other legal issues, such as intelectual property rights and ownership, be managed? What legislation is applicable?",
+    "paragraphs": [
+      "The legal requirements related to the management and commercialisation of intellectual property are governed by the.",
+      "Resolution of the Senate of the Gdańsk University of Technology No. 117/2021/XXV of May.",
+      "Articles will be published under a CCBY licence.",
+      "• Udostępnianie i długotrwałe przechowywanie danych."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The legal requirements related to the management and commercialisation of intellectual property are governed by the.",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "Resolution of the Senate of the Gdańsk University of Technology No. 117/2021/XXV of May.",
+        "tags": [],
+        "title": "Resolution of the Senate of the Gdańsk University of Technology No."
+      },
+      {
+        "text": "Articles will be published under a CCBY licence.",
+        "tags": [],
+        "title": "Articles will be published under a CCBY licence."
+      },
+      {
+        "text": "• Udostępnianie i długotrwałe przechowywanie danych.",
+        "tags": [],
+        "title": "• Udostępnianie i długotrwałe przechowywanie danych."
+      }
+    ]
+  },
+  "5.1": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How and when will data be shared? Are there possible restrictions to data sharing or embargo reasons?",
+    "paragraphs": [
+      "Data will be shared with the Gdansk University of Technology's repository: MOST Wiedzy Open Research Data Catalog (common name Bridge of Data).",
+      "Selected data will be shared when the article based on it is published."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Data will be shared with the Gdansk University of Technology's repository: MOST Wiedzy Open Research Data Catalog (common name Bridge of Data).",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "Selected data will be shared when the article based on it is published.",
+        "tags": [],
+        "title": "Selected data will be shared when the article based on it is published."
+      }
+    ]
+  },
+  "5.2": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How will data for preservation be selected, and where will data be preserved long-term (for example a data repository or archive)?",
+    "paragraphs": [
+      "repozytorium lub archiwum danych).",
+      "As far as long-term data storage is concerned, data shared on Bridge of Data will be stored indefinitely, while other data will be stored for years on a hard drive and made available upon request. The Bridge of Data is Core Trust Seal certified, which confirms the repository's trustworthiness and sustainability."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "repozytorium lub archiwum danych).",
+        "tags": [],
+        "title": "repozytorium lub archiwum danych)."
+      },
+      {
+        "text": "As far as long-term data storage is concerned, data shared on Bridge of Data will be stored indefinitely, while other data will be stored for years on a hard drive and made available upon request. The Bridge of Data is Core Trust Seal certified, which confirms the repository's trustworthiness and sustainability.",
+        "tags": [],
+        "title": null
+      }
+    ]
+  },
+  "5.3": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "What methods or software tools will be needed to access and use the data?",
+    "paragraphs": [
+      "The data will be gathered and made available in file formats that can be processed by free or open-source software."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The data will be gathered and made available in file formats that can be processed by free or open-source software.",
+        "tags": [],
+        "title": null
+      }
+    ]
+  },
+  "5.4": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How will the application of a unique and persistent identifier (such us a Digital Object Identifier (DOI)) to each data set be ensured?",
+    "paragraphs": [
+      "The Bridge of Data provides each dataset a DOI identifier.",
+      "• Zadania związane z zarządzaniem danymi oraz zasoby."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The Bridge of Data provides each dataset a DOI identifier.",
+        "tags": [],
+        "title": "The Bridge of Data provides each dataset a DOI identifier."
+      },
+      {
+        "text": "• Zadania związane z zarządzaniem danymi oraz zasoby.",
+        "tags": [],
+        "title": "• Zadania związane z zarządzaniem danymi oraz zasoby."
+      }
+    ]
+  },
+  "6.1": {
+    "section": "6. Data management responsibilities and resources",
+    "question": "Who (for example role, position, and institution) will be responsible for data management (i.e the data steward)?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "6.2": {
+    "section": "6. Data management responsibilities and resources",
+    "question": "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "_unconnected_text": [
+    {
+      "text": "[w języku angielskim].",
+      "type": "pre_boundary",
+      "position": 0
+    },
+    {
+      "text": "• Opis danych oraz pozyskiwanie lub ponowne wykorzystanie dostępnych danych.",
+      "type": "pre_boundary",
+      "position": 1
+    }
+  ]
+}

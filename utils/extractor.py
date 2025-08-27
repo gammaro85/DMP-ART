@@ -8,6 +8,9 @@ from docx import Document
 from datetime import datetime
 import PyPDF2
 import logging
+from difflib import SequenceMatcher
+from collections import Counter
+import math
 
 class DMPExtractor:
     def __init__(self):
@@ -270,15 +273,15 @@ class DMPExtractor:
                 r"(OSF|OPUS-\d+|Strona\s+\d+|ID:\s*\d+|20\d{2}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}).*?(OSF|OPUS-\d+|Strona\s+\d+|ID:\s*\d+|20\d{2}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})",
             ]
             skip_patterns.extend(pdf_patterns)
-        
+
         # Check basic patterns first
         if any(re.search(pattern, text, re.IGNORECASE) is not None for pattern in skip_patterns):
             return True
-        
+
         # Special handling for complex grant application headers/footers
         if is_pdf:
             return self._is_grant_header_footer(text)
-        
+
         return False
     
     def _is_grant_header_footer(self, text):
@@ -345,22 +348,10 @@ class DMPExtractor:
             print(f"'{test_case}' -> Skip: {should_skip}")
         
         return True
-    
+                
     def extract_author_name(self, text):
-        """Extract author name from the document text"""
-        # Common patterns for author name in grant applications
-        patterns = [
-            r"dr\s+(?:inż\.|hab\.)?\s+([\w\s-]+)",  # Polish academic titles
-            r"Principal\s+Investigator[:\s]+([\w\s-]+)",  # English PI designation
-            r"Kierownik\s+projektu[:\s]+([\w\s-]+)"  # Polish PI designation
-        ]
-        
-        for pattern in patterns:
-            match = re.search(pattern, text)
-            if match:
-                return match.group(1).strip()
-        
-        return None
+        # TODO: Implement author name extraction logic
+        pass
 
     def clean_markup(self, text):
         """Remove common markup from text"""
@@ -451,12 +442,12 @@ class DMPExtractor:
         return f"section_{hash(section + subsection) % 10000}"
     
     def detect_section_from_text(self, text, is_pdf=False):
-        """Detect section from text content, supporting multiple languages and PDF forms"""
+        """Enhanced section detection with fuzzy matching and multiple algorithms"""
         # Clean the text of any markup
         original_text = text
         text = self.clean_markup(text)
         
-        # Enhanced section patterns for PDFs
+        # Enhanced section patterns for PDFs with fuzzy matching
         if is_pdf:
             # Look for form-style section headers
             form_patterns = [
@@ -492,11 +483,10 @@ class DMPExtractor:
                     print(f"Matched to DMP structure: {section}")
                     return section
             
-            # Try to find in section mapping if not found directly
-            for polish, english in self.section_mapping.items():
-                if self._text_similarity(polish.lower(), section_title.lower()) > 0.5:
-                    print(f"Matched via section mapping: {polish} -> {english}")
-                    return english
+            # Enhanced matching with fuzzy similarity for section mapping
+            best_match = self._find_best_section_match(section_title)
+            if best_match:
+                return best_match
         
         # Try bold/underlined section titles
         if any(text.startswith(prefix) for prefix in ["BOLD:", "UNDERLINED:", "UNDERLINED_BOLD:"]):
@@ -504,23 +494,88 @@ class DMPExtractor:
             section_match = re.match(r'^\s*(\d+)\.\s*(.*?)$', clean_text)
             if section_match:
                 section_num = section_match.group(1)
+                section_title = section_match.group(2).strip()
+                
                 for section in self.dmp_structure:
                     if section.startswith(f"{section_num}."):
                         print(f"Formatted section matched: {section}")
                         return section
+                
+                # Fallback to fuzzy matching for formatted titles
+                best_match = self._find_best_section_match(section_title)
+                if best_match:
+                    return best_match
         
-        # Try direct section title matching
-        for polish, english in self.section_mapping.items():
-            if self._text_similarity(polish.lower(), text.lower()) > 0.6:
-                print(f"Direct title match: {polish} -> {english}")
-                return english
+        # Enhanced direct section title matching with fuzzy algorithms
+        best_match = self._find_best_section_match(text)
+        if best_match:
+            return best_match
         
         return None
     
-    def _text_similarity(self, text1, text2):
-        """Calculate simple text similarity based on word overlap"""
-        words1 = set(word.lower() for word in text1.split() if len(word) > 2)
-        words2 = set(word.lower() for word in text2.split() if len(word) > 2)
+    def _find_best_section_match(self, text, threshold=0.4):
+        """Find best section match using enhanced similarity algorithms"""
+        best_match = None
+        best_score = 0.0
+        
+        # Check against section mapping (Polish -> English)
+        for polish, english in self.section_mapping.items():
+            # Try all similarity methods
+            similarity_scores = [
+                self._text_similarity(polish.lower(), text.lower(), 'jaccard'),
+                self._text_similarity(polish.lower(), text.lower(), 'cosine'),
+                self._text_similarity(polish.lower(), text.lower(), 'sequence'),
+                self._text_similarity(polish.lower(), text.lower(), 'combined')
+            ]
+            
+            # Take the maximum similarity
+            max_score = max(similarity_scores)
+            
+            if max_score > best_score and max_score > threshold:
+                best_score = max_score
+                best_match = english
+                print(f"Section match: '{text}' ~ '{polish}' -> '{english}' (score: {max_score:.3f})")
+        
+        # Also check direct English section names
+        for section in self.dmp_structure:
+            similarity_scores = [
+                self._text_similarity(section.lower(), text.lower(), 'jaccard'),
+                self._text_similarity(section.lower(), text.lower(), 'cosine'),
+                self._text_similarity(section.lower(), text.lower(), 'sequence'),
+                self._text_similarity(section.lower(), text.lower(), 'combined')
+            ]
+            
+            max_score = max(similarity_scores)
+            
+            if max_score > best_score and max_score > threshold:
+                best_score = max_score
+                best_match = section
+                print(f"Direct English section match: '{text}' ~ '{section}' (score: {max_score:.3f})")
+        
+        return best_match if best_score > threshold else None
+    
+    def _text_similarity(self, text1, text2, method='combined'):
+        """Enhanced text similarity with multiple algorithms"""
+        if method == 'jaccard':
+            return self._jaccard_similarity(text1, text2)
+        elif method == 'cosine':
+            return self._cosine_similarity(text1, text2)
+        elif method == 'sequence':
+            return self._sequence_similarity(text1, text2)
+        elif method == 'combined':
+            # Combine multiple similarity measures
+            jaccard = self._jaccard_similarity(text1, text2)
+            cosine = self._cosine_similarity(text1, text2)
+            sequence = self._sequence_similarity(text1, text2)
+            # Weighted combination favoring exact matches
+            return (jaccard * 0.4 + cosine * 0.3 + sequence * 0.3)
+        else:
+            return self._jaccard_similarity(text1, text2)
+    
+    def _jaccard_similarity(self, text1, text2):
+        """Jaccard similarity based on word sets"""
+        words1 = set(word.lower() for word in re.findall(r'\w+', text1) if len(word) > 2)
+        words2 = set(word.lower() for word in re.findall(r'\w+', text2) if len(word) > 2)
         
         if not words1 or not words2:
             return 0.0
@@ -530,8 +585,44 @@ class DMPExtractor:
         
         return len(intersection) / len(union) if union else 0.0
     
+    def _cosine_similarity(self, text1, text2):
+        """Cosine similarity based on term frequency"""
+        words1 = [word.lower() for word in re.findall(r'\w+', text1) if len(word) > 2]
+        words2 = [word.lower() for word in re.findall(r'\w+', text2) if len(word) > 2]
+        
+        if not words1 or not words2:
+            return 0.0
+        
+        # Create term frequency vectors
+        counter1 = Counter(words1)
+        counter2 = Counter(words2)
+        
+        # Get all unique terms
+        terms = set(counter1.keys()).union(set(counter2.keys()))
+        
+        if not terms:
+            return 0.0
+        
+        # Create vectors
+        vec1 = [counter1.get(term, 0) for term in terms]
+        vec2 = [counter2.get(term, 0) for term in terms]
+        
+        # Calculate cosine similarity
+        dot_product = sum(a * b for a, b in zip(vec1, vec2))
+        magnitude1 = math.sqrt(sum(a * a for a in vec1))
+        magnitude2 = math.sqrt(sum(a * a for a in vec2))
+        
+        if magnitude1 == 0 or magnitude2 == 0:
+            return 0.0
+        
+        return dot_product / (magnitude1 * magnitude2)
+    
+    def _sequence_similarity(self, text1, text2):
+        """Sequence similarity for exact substring matches"""
+        return SequenceMatcher(None, text1.lower(), text2.lower()).ratio()
+    
     def detect_subsection_from_text(self, text, current_section, is_pdf=False):
-        """Detect subsection from text content, supporting multiple languages and partial matching"""
+        """Enhanced subsection detection with improved fuzzy matching"""
         # Clean the text of any markup
         original_text = text
         text = self.clean_markup(text)
@@ -557,123 +648,194 @@ class DMPExtractor:
             print("No current section, skipping subsection detection")
             return None
         
-        # 1. Check for direct match with English subsections (case insensitive)
-        for subsection in self.dmp_structure.get(current_section, []):
-            if self._text_similarity(text.lower(), subsection.lower()) > 0.8:
-                print(f"High similarity English match: '{text}' ~ '{subsection}'")
-                return subsection
-        
-        # 2. Try enhanced Polish subsection matching with similarity scoring
-        best_match = None
-        best_score = 0.0
-        
-        for polish, english in self.subsection_mapping.items():
-            if current_section and english in self.dmp_structure.get(current_section, []):
-                # Calculate similarity scores
-                similarity = self._text_similarity(normalized_text, polish.lower())
-                
-                # Boost score for exact matches or strong partial matches
-                if normalized_text == polish.lower():
-                    similarity = 1.0
-                elif normalized_text in polish.lower() or polish.lower() in normalized_text:
-                    similarity = max(similarity, 0.7)
-                
-                if similarity > best_score and similarity > 0.3:
-                    best_score = similarity
-                    best_match = english
-                    print(f"Polish mapping candidate: '{text}' ~ '{polish}' -> '{english}' (score: {similarity:.2f})")
-        
-        if best_match and best_score > 0.5:
-            print(f"Best Polish match: '{text}' -> '{best_match}' (score: {best_score:.2f})")
+        # Enhanced subsection matching with all similarity algorithms
+        best_match = self._find_best_subsection_match(text, current_section, threshold=0.3)
+        if best_match:
             return best_match
         
-        # 3. Enhanced word-based matching for formatted text
+        # Fallback: Enhanced word-based matching for formatted text
         if (is_underlined or original_text.endswith(':') or 
             original_text.startswith("BOLD:") or len(text) > 20):
             
-            best_word_match = None
-            max_match_ratio = 0
-            
-            for subsection in self.dmp_structure.get(current_section, []):
-                # Get important words from subsection and line
-                subsection_words = set(word.lower() for word in subsection.split() 
-                                     if len(word) > 3 and word.lower() not in ['data', 'will', 'used', 'such', 'example'])
-                line_words = set(word.lower() for word in text.split() 
-                               if len(word) > 3 and word.lower() not in ['data', 'będą', 'które', 'oraz'])
-                
-                if not subsection_words or not line_words:
-                    continue
-                
-                # Count matching words
-                matching_words = len(subsection_words.intersection(line_words))
-                match_ratio = matching_words / max(len(subsection_words), 1)
-                
-                # Lower threshold for better matching, but require at least 2 matching words
-                if matching_words >= 2 and match_ratio > max_match_ratio:
-                    max_match_ratio = match_ratio
-                    best_word_match = subsection
-                    print(f"Word match candidate: '{text}' ~ '{subsection}' ({matching_words} words, {match_ratio:.2f} ratio)")
-            
-            if best_word_match and max_match_ratio > 0.15:  # Lower threshold
-                print(f"Best word match: '{text}' -> '{best_word_match}' (ratio: {max_match_ratio:.2f})")
-                return best_word_match
+            word_match = self._find_word_based_subsection_match(text, current_section)
+            if word_match:
+                return word_match
         
-        # 4. PDF-specific subsection detection for form fields
+        # PDF-specific subsection detection for form fields
         if is_pdf and len(text) > 10:
-            # Look for characteristic Polish question patterns
-            question_indicators = [
-                r"sposób.*?danych",
-                r"jak.*?będą",
-                r"jakie.*?dane",
-                r"gdzie.*?przechowywane",
-                r"kto.*?odpowiedzialny",
-                r"środki.*?przeznaczone"
+            pdf_match = self._find_pdf_question_match(text, current_section, normalized_text)
+            if pdf_match:
+                return pdf_match
+        
+        print(f"No subsection match found for: '{text}'")
+        return None
+    
+    def _find_best_subsection_match(self, text, current_section, threshold=0.3):
+        """Find best subsection match using enhanced similarity algorithms"""
+        normalized_text = text.lower().rstrip(':')
+        best_match = None
+        best_score = 0.0
+        
+        # 1. Direct match with English subsections
+        for subsection in self.dmp_structure.get(current_section, []):
+            similarity_scores = [
+                self._text_similarity(text.lower(), subsection.lower(), 'jaccard'),
+                self._text_similarity(text.lower(), subsection.lower(), 'cosine'),
+                self._text_similarity(text.lower(), subsection.lower(), 'sequence'),
+                self._text_similarity(text.lower(), subsection.lower(), 'combined')
             ]
             
-            for indicator in question_indicators:
-                if re.search(indicator, normalized_text, re.IGNORECASE):
-                    # Try to match with subsections in current section
-                    for subsection in self.dmp_structure.get(current_section, []):
-                        if self._text_similarity(normalized_text, subsection.lower()) > 0.2:
-                            print(f"PDF question pattern match: '{text}' -> '{subsection}'")
-                            return subsection
+            max_score = max(similarity_scores)
+            
+            if max_score > best_score and max_score > threshold:
+                best_score = max_score
+                best_match = subsection
+                print(f"English subsection match: '{text}' ~ '{subsection}' (score: {max_score:.3f})")
         
-        print(f"No subsection match found for: '{text}' (best score: {best_score:.2f})")
+        # 2. Enhanced Polish subsection matching
+        for polish, english in self.subsection_mapping.items():
+            if current_section and english in self.dmp_structure.get(current_section, []):
+                # Try all similarity methods
+                similarity_scores = [
+                    self._text_similarity(normalized_text, polish.lower(), 'jaccard'),
+                    self._text_similarity(normalized_text, polish.lower(), 'cosine'),
+                    self._text_similarity(normalized_text, polish.lower(), 'sequence'),
+                    self._text_similarity(normalized_text, polish.lower(), 'combined')
+                ]
+                
+                max_score = max(similarity_scores)
+                
+                # Boost score for exact matches or strong partial matches
+                if normalized_text == polish.lower():
+                    max_score = 1.0
+                elif normalized_text in polish.lower() or polish.lower() in normalized_text:
+                    max_score = max(max_score, 0.7)
+                
+                if max_score > best_score and max_score > threshold:
+                    best_score = max_score
+                    best_match = english
+                    print(f"Polish mapping match: '{text}' ~ '{polish}' -> '{english}' (score: {max_score:.3f})")
+        
+        return best_match if best_score > threshold else None
+    
+    def _find_word_based_subsection_match(self, text, current_section):
+        """Enhanced word-based matching for subsections"""
+        best_word_match = None
+        max_match_ratio = 0
+        
+        for subsection in self.dmp_structure.get(current_section, []):
+            # Get important words from subsection and line
+            subsection_words = set(word.lower() for word in re.findall(r'\w+', subsection) 
+                                 if len(word) > 3 and word.lower() not in ['data', 'will', 'used', 'such', 'example', 'what', 'how', 'where', 'when'])
+            line_words = set(word.lower() for word in re.findall(r'\w+', text) 
+                           if len(word) > 3 and word.lower() not in ['data', 'będą', 'które', 'oraz', 'sposób', 'jakie', 'gdzie', 'kiedy'])
+            
+            if not subsection_words or not line_words:
+                continue
+            
+            # Count matching words and calculate ratio
+            matching_words = len(subsection_words.intersection(line_words))
+            match_ratio = matching_words / max(len(subsection_words), 1)
+            
+            # Enhanced matching with lower threshold but require significant words
+            if matching_words >= 2 and match_ratio > max_match_ratio:
+                max_match_ratio = match_ratio
+                best_word_match = subsection
+                print(f"Word match candidate: '{text}' ~ '{subsection}' ({matching_words} words, {match_ratio:.3f} ratio)")
+        
+        if best_word_match and max_match_ratio > 0.12:  # Lower threshold for better coverage
+            print(f"Best word match: '{text}' -> '{best_word_match}' (ratio: {max_match_ratio:.3f})")
+            return best_word_match
+        
+        return None
+    
+    def _find_pdf_question_match(self, text, current_section, normalized_text):
+        """Find PDF question pattern matches"""
+        # Look for characteristic Polish question patterns
+        question_indicators = [
+            r"sposób.*?danych",
+            r"jak.*?będą",
+            r"jakie.*?dane",
+            r"gdzie.*?przechowywane",
+            r"kto.*?odpowiedzialny",
+            r"środki.*?przeznaczone",
+            r"metody.*?narzędzia",
+            r"zgodność.*?przepisami",
+            r"wyboru.*?danych",
+            r"udostępnianie.*?dane"
+        ]
+        
+        for indicator in question_indicators:
+            if re.search(indicator, normalized_text, re.IGNORECASE):
+                # Try to match with subsections in current section using enhanced similarity
+                for subsection in self.dmp_structure.get(current_section, []):
+                    similarity = self._text_similarity(normalized_text, subsection.lower(), 'combined')
+                    if similarity > 0.15:  # Lower threshold for PDF questions
+                        print(f"PDF question pattern match: '{text}' -> '{subsection}' (score: {similarity:.3f})")
+                        return subsection
+        
         return None
     
     def extract_pdf_table_content(self, text_lines):
-        """Extract and structure table-like content from PDF text lines"""
+        """Enhanced PDF text extraction with better preprocessing and structure detection"""
+        # Preprocess lines to improve extraction quality
+        preprocessed_lines = self._preprocess_pdf_lines(text_lines)
+        
         table_content = []
         current_table = []
         in_table = False
+        line_buffer = []  # Buffer to handle multi-line content
         
-        for line in text_lines:
+        for i, line in enumerate(preprocessed_lines):
             line = line.strip()
             if not line:
+                # Handle empty lines - they might separate content blocks
                 if in_table and current_table:
                     # End of table, process it
                     processed_table = self._process_table_rows(current_table)
                     table_content.extend(processed_table)
                     current_table = []
                     in_table = False
+                
+                # Flush line buffer
+                if line_buffer:
+                    combined_line = ' '.join(line_buffer).strip()
+                    if combined_line and not self.should_skip_text(combined_line, is_pdf=True):
+                        table_content.append(combined_line)
+                    line_buffer = []
                 continue
             
-            # Detect table patterns
-            is_table_line = (
-                # Multiple columns separated by spaces (3+ spaces between words)
-                len(re.findall(r'\s{3,}', line)) > 1 or
-                # Currency/number patterns (budget tables)
-                re.search(r'\d+[,.]?\d*\s+(PLN|EUR|USD|\d+)', line) or
-                # Aligned data with consistent spacing
-                re.search(r'^[^\s]+\s{5,}[^\s]+\s{5,}[^\s]+', line) or
-                # Form fields with underscores or dots
-                re.search(r'_{3,}|\.{3,}', line)
-            )
+            # Enhanced table pattern detection
+            is_table_line = self._is_table_line(line)
+            is_form_field = self._is_form_field(line)
+            is_continuation_line = self._is_continuation_line(line, preprocessed_lines, i)
             
             if is_table_line:
                 if not in_table:
                     in_table = True
+                    # Flush any buffered content first
+                    if line_buffer:
+                        combined_line = ' '.join(line_buffer).strip()
+                        if combined_line and not self.should_skip_text(combined_line, is_pdf=True):
+                            table_content.append(combined_line)
+                        line_buffer = []
+                
                 current_table.append(line)
+            elif is_form_field:
+                # Form fields are treated as special content
+                if in_table and current_table:
+                    processed_table = self._process_table_rows(current_table)
+                    table_content.extend(processed_table)
+                    current_table = []
+                    in_table = False
+                
+                # Process form field
+                processed_field = self._process_form_field(line)
+                if processed_field and not self.should_skip_text(processed_field, is_pdf=True):
+                    table_content.append(processed_field)
+            elif is_continuation_line and line_buffer:
+                # This line continues previous content
+                line_buffer.append(line)
             else:
                 if in_table and current_table:
                     # Process completed table
@@ -682,16 +844,154 @@ class DMPExtractor:
                     current_table = []
                     in_table = False
                 
-                # Add non-table content normally
+                # Flush any buffered content
+                if line_buffer:
+                    combined_line = ' '.join(line_buffer).strip()
+                    if combined_line and not self.should_skip_text(combined_line, is_pdf=True):
+                        table_content.append(combined_line)
+                    line_buffer = []
+                
+                # Add current line to buffer or directly
                 if not self.should_skip_text(line, is_pdf=True):
-                    table_content.append(line)
+                    if self._should_buffer_line(line):
+                        # Test if adding this line to buffer would create a combination that gets filtered
+                        test_combination = ' '.join(line_buffer + [line]).strip()
+                        if not self.should_skip_text(test_combination, is_pdf=True):
+                            line_buffer.append(line)
+                        else:
+                            # This line would contaminate the buffer, flush buffer first and add line separately
+                            if line_buffer:
+                                combined_line = ' '.join(line_buffer).strip()
+                                if combined_line and not self.should_skip_text(combined_line, is_pdf=True):
+                                    table_content.append(combined_line)
+                                line_buffer = []
+                            # Add current line directly since it passed individual skip test
+                            table_content.append(line)
+                    else:
+                        table_content.append(line)
         
         # Process any remaining table
         if current_table:
             processed_table = self._process_table_rows(current_table)
             table_content.extend(processed_table)
         
-        return table_content
+        # Handle remaining buffered content
+        if line_buffer:
+            combined_line = ' '.join(line_buffer).strip()
+            if combined_line and not self.should_skip_text(combined_line, is_pdf=True):
+                table_content.append(combined_line)
+        
+        return self._post_process_content(table_content)
+    
+    def _preprocess_pdf_lines(self, text_lines):
+        """Preprocess PDF text lines to improve extraction quality"""
+        processed_lines = []
+        
+        for line in text_lines:
+            # Remove excessive whitespace but preserve structure
+            line = re.sub(r'\s+', ' ', line.strip())
+            
+            # Handle common PDF artifacts
+            line = re.sub(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]', '', line)  # Control characters
+            line = re.sub(r'\s*\|\s*', ' | ', line)  # Normalize table separators
+            line = re.sub(r'_{5,}', '[____FIELD____]', line)  # Mark form fields
+            line = re.sub(r'\.{5,}', '[....FIELD....]', line)  # Mark dotted fields
+            
+            if line:
+                processed_lines.append(line)
+        
+        return processed_lines
+    
+    def _is_table_line(self, line):
+        """Enhanced table line detection"""
+        # Multiple columns separated by spaces (3+ spaces between words)
+        if len(re.findall(r'\s{3,}', line)) > 1:
+            return True
+        
+        # Currency/number patterns (budget tables)
+        if re.search(r'\d+[,.]?\d*\s+(PLN|EUR|USD|zł|\d+)', line, re.IGNORECASE):
+            return True
+        
+        # Aligned data with consistent spacing
+        if re.search(r'^[^\s]+\s{4,}[^\s]+\s{4,}[^\s]+', line):
+            return True
+        
+        # Table separators with pipes
+        if line.count('|') >= 2:
+            return True
+        
+        # Numeric data patterns (dates, IDs, etc.)
+        if re.search(r'\d{2,}\s+\d{2,}\s+\d{2,}', line):
+            return True
+        
+        return False
+    
+    def _is_form_field(self, line):
+        """Detect form field lines"""
+        # Form fields with underscores or dots
+        if re.search(r'_{3,}|\.{3,}|\[____FIELD____\]|\[....FIELD....\]', line):
+            return True
+        
+        # Checkbox patterns
+        if re.search(r'\[\s*[Xx]?\s*\]\s+\w+', line):
+            return True
+        
+        return False
+    
+    def _is_continuation_line(self, line, all_lines, current_index):
+        """Detect if a line continues previous content"""
+        # Lines that don't start with capital letter or number (likely continuation)
+        if not re.match(r'^[A-ZĄĆĘŁŃÓŚŹŻ\d]', line):
+            return True
+        
+        # Very short lines that might be fragments
+        if len(line.split()) <= 3 and current_index > 0:
+            prev_line = all_lines[current_index - 1].strip() if current_index > 0 else ''
+            # If previous line doesn't end with punctuation, this might be continuation
+            if prev_line and not re.search(r'[.!?:;]\s*$', prev_line):
+                return True
+        
+        return False
+    
+    def _should_buffer_line(self, line):
+        """Determine if a line should be buffered for potential combination"""
+        # Lines that don't end with punctuation
+        if not re.search(r'[.!?:;]\s*$', line):
+            return True
+        
+        # Short lines that might be incomplete
+        if len(line.split()) <= 5:
+            return True
+        
+        return False
+    
+    def _process_form_field(self, line):
+        """Process form field content"""
+        # Replace field markers with placeholder text
+        line = re.sub(r'\[____FIELD____\]', '[field]', line)
+        line = re.sub(r'\[....FIELD....\]', '[field]', line)
+        line = re.sub(r'_{3,}', '[field]', line)
+        line = re.sub(r'\.{3,}', '[field]', line)
+        
+        return line.strip()
+    
+    def _post_process_content(self, content_list):
+        """Post-process extracted content for better quality"""
+        processed_content = []
+        
+        for content in content_list:
+            # Skip very short or meaningless content
+            if len(content.strip()) < 3:
+                continue
+            
+            # Clean up common artifacts
+            content = re.sub(r'\s+', ' ', content)  # Normalize whitespace
+            content = re.sub(r'\|\s*\|', ' | ', content)  # Fix table separators
+            content = re.sub(r'^\s*[|]\s*|\s*[|]\s*$', '', content)  # Remove leading/trailing pipes
+            
+            processed_content.append(content.strip())
+        
+        return processed_content
     
     def _process_table_rows(self, table_rows):
         """Process table rows to extract meaningful content"""
@@ -712,13 +1012,848 @@ class DMPExtractor:
         
         return processed
     
+    def extract_hierarchical_content(self, all_content, is_pdf=False):
+        """Hierarchical extraction based on section/subsection boundaries"""
+        print(f"Starting hierarchical extraction from {len(all_content)} content items...")
+        
+        # Clean and preprocess content
+        cleaned_content = self._clean_and_preprocess_content(all_content, is_pdf)
+        
+        # Find all section and subsection boundaries
+        boundaries = self._find_content_boundaries(cleaned_content, is_pdf)
+        
+        # Extract content between boundaries
+        extracted_content = self._extract_content_by_boundaries(cleaned_content, boundaries, is_pdf)
+        
+        return extracted_content
+    
+    def _clean_and_preprocess_content(self, content_list, is_pdf=False):
+        """Enhanced content cleaning with better formatting preservation"""
+        cleaned_content = []
+        
+        for item in content_list:
+            if not item or not item.strip():
+                continue
+            
+            # Remove footnotes and references first
+            cleaned_item = self._remove_footnotes(item)
+            
+            # Remove other artifacts but preserve formatting
+            cleaned_item = self._remove_text_artifacts(cleaned_item, is_pdf)
+            
+            # Special handling for very short content
+            cleaned_stripped = cleaned_item.strip()
+            
+            # Keep "nie dotyczy" even if short
+            if cleaned_stripped.lower() in ['nie dotyczy', 'n/a', 'not applicable', 'brak', '-']:
+                cleaned_content.append('Nie dotyczy')
+                continue
+            
+            # Skip if too short after cleaning (but keep substantial content)
+            if len(cleaned_stripped) < 3:
+                continue
+            
+            # Final cleanup and formatting
+            cleaned_item = self._final_text_cleanup(cleaned_item)
+            
+            if cleaned_item.strip():
+                cleaned_content.append(cleaned_item)
+        
+        print(f"Cleaned content: {len(content_list)} -> {len(cleaned_content)} items")
+        return cleaned_content
+    
+    def _final_text_cleanup(self, text):
+        """Final text cleanup and formatting"""
+        # Remove excessive whitespace while preserving paragraph structure
+        text = re.sub(r'[ \t]+', ' ', text)
+        text = re.sub(r'\n[ \t]*\n', '\n\n', text)
+        text = re.sub(r'\n{3,}', '\n\n', text)
+        
+        # Clean up punctuation spacing
+        text = re.sub(r'\s+([,.!?;:])', r'\1', text)  # Remove space before punctuation
+        text = re.sub(r'([,.!?;:])([A-ZĄĆĘŁŃÓŚŹŻa-z])', r'\1 \2', text)  # Add space after punctuation
+        
+        # Fix common formatting issues
+        text = re.sub(r'([a-ząćęłńóśźż])([A-ZĄĆĘŁŃÓŚŹŻ])', r'\1 \2', text)  # Add space between lowercase and uppercase
+        
+        # Ensure proper sentence endings
+        if text and not text.endswith(('.', '!', '?', ':')):
+            text = text.rstrip() + '.'
+        
+        return text.strip()
+    
+    def _remove_footnotes(self, text):
+        """Enhanced footnote removal with improved patterns"""
+        original_text = text
+        
+        # Remove footnote numbers (superscript style)
+        text = re.sub(r'\^\d+|\[\d+\]|\(\d+\)', '', text)
+        
+        # Remove footnote references at end of sentences
+        text = re.sub(r'\d+\s*$', '', text)
+        text = re.sub(r'\s+\d+\s*$', '', text)  # Also with spaces
+        
+        # Remove common footnote patterns
+        text = re.sub(r'\b(see|por\.|cf\.|ibid\.|op\.\s*cit\.)\s*\d+', '', text, re.IGNORECASE)
+        
+        # Remove bibliography references in brackets
+        text = re.sub(r'\[[^\]]*\d{4}[^\]]*\]', '', text)
+        
+        # Remove author-year citations
+        text = re.sub(r'\([A-Za-z]+[^\)]*\d{4}[^\)]*\)', '', text)
+        
+        # Enhanced Polish footnote patterns
+        text = re.sub(r'\b(zob\.|patrz|por\.|tamże|ibidem)\s*\d+', '', text, re.IGNORECASE)
+        
+        # Remove numbered footnotes at the end of words (e.g., "stored15 in")
+        text = re.sub(r'([a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ])\d+(\s)', r'\1\2', text)
+        
+        # Remove standalone numbers that look like footnote references
+        text = re.sub(r'\s+\d{1,2}\s+', ' ', text)
+        
+        # Remove multiple footnote patterns like [1,2,3]
+        text = re.sub(r'\[[\d,\s]+\]', '', text)
+        
+        # Remove footnotes with specific patterns like "1)" or "(1)"
+        text = re.sub(r'\(\d+\)|\d+\)', '', text)
+        
+        # Remove numbered footnotes in format "1,2,3"
+        text = re.sub(r'\d+(,\d+)*(?=\s|$)', '', text)
+        
+        # Remove DOI and URL patterns that might be footnotes
+        text = re.sub(r'(doi:|http[s]?://)[^\s]+', '', text, re.IGNORECASE)
+        
+        # Clean up excessive spaces created by footnote removal
+        text = re.sub(r'\s{2,}', ' ', text)
+        
+        return text.strip()
+    
+    def _remove_text_artifacts(self, text, is_pdf=False):
+        """Enhanced text artifact removal with improved header/footer cleaning"""
+        original_text = text
+        
+        # Remove excessive whitespace but preserve single spaces
+        text = re.sub(r'[ \t]+', ' ', text)
+        text = re.sub(r'\n\s*\n', '\n\n', text)  # Preserve paragraph breaks
+        
+        # Enhanced header/footer removal patterns
+        text = self._remove_headers_footers(text, is_pdf)
+        
+        # Handle bullet points - preserve but normalize them
+        text = self._normalize_bullet_points(text)
+        
+        # Remove table artifacts
+        text = re.sub(r'\|\s*\|', ' ', text)
+        text = re.sub(r'^\s*\|', '', text, flags=re.MULTILINE)
+        text = re.sub(r'\|\s*$', '', text, flags=re.MULTILINE)
+        
+        # Remove form field markers
+        text = re.sub(r'\[field\]|\[____FIELD____\]|\[....FIELD....\]', '', text)
+        text = re.sub(r'_{3,}|\.{3,}', '', text)
+        
+        # Clean up formatting markers from our processing
+        text = re.sub(r'^(BOLD:|UNDERLINED:|UNDERLINED_BOLD:)', '', text).strip()
+        
+        # Remove excessive punctuation
+        text = re.sub(r'[.]{4,}', '...', text)  # Keep ... but remove longer sequences
+        text = re.sub(r'[-]{4,}', '---', text)  # Keep --- but remove longer sequences
+        
+        # Handle "nie dotyczy" cases
+        text = self._handle_nie_dotyczy(text)
+        
+        return text.strip()
+    
+    def _normalize_bullet_points(self, text):
+        """Normalize bullet points to consistent format"""
+        lines = text.split('\n')
+        processed_lines = []
+        
+        for line in lines:
+            line = line.strip()
+            if not line:
+                processed_lines.append('')
+                continue
+            
+            # Detect and normalize bullet points
+            bullet_patterns = [
+                r'^[\s]*([•·▪▫■□▲▼→←])\s+(.+)$',  # Unicode bullets
+                r'^[\s]*[-*+]\s+(.+)$',  # ASCII bullets
+                r'^[\s]*[\d]+[.):]\s+(.+)$',  # Numbered lists
+                r'^[\s]*[a-zA-Z][.):]\s+(.+)$',  # Letter lists
+                r'^[\s]*[ivxlcdm]+[.):]\s+(.+)$',  # Roman numerals
+            ]
+            
+            is_bullet = False
+            for pattern in bullet_patterns:
+                match = re.match(pattern, line, re.IGNORECASE)
+                if match:
+                    # Normalize to consistent bullet format
+                    if len(match.groups()) == 2:  # Unicode bullet with captured bullet and text
+                        content = match.group(2)
+                    else:  # Other patterns with just content
+                        content = match.group(1)
+                    
+                    processed_lines.append(f'• {content}')
+                    is_bullet = True
+                    break
+            
+            if not is_bullet:
+                processed_lines.append(line)
+        
+        return '\n'.join(processed_lines)
+    
+    def _remove_headers_footers(self, text, is_pdf=False):
+        """Enhanced header and footer removal"""
+        lines = text.split('\n')
+        cleaned_lines = []
+        
+        # Common header/footer patterns (case-insensitive)
+        header_footer_patterns = [
+            r'^\s*strona\s+\d+\s*$',  # "strona X"
+            r'^\s*page\s+\d+\s*$',   # "page X"
+            r'^\s*\d+\s*/\s*\d+\s*$',  # "X / Y"
+            r'^\s*\d+\s*$',          # standalone numbers
+            r'^\s*data\s*management\s*plan\s*$',  # DMP title repeats
+            r'^\s*plan\s*zarządzania\s*danymi\s*$',
+            r'^\s*(politechnika|university|gdansk|gdańsk).*$',  # institution names
+            r'^\s*\d{2}/\d{2}/\d{4}\s*$',  # dates
+            r'^\s*\d{4}-\d{2}-\d{2}\s*$',  # ISO dates
+            r'^\s*(draft|wersja|version).*$',  # version info
+            r'^\s*confidential\s*$',
+            r'^\s*poufne\s*$',
+            r'^\s*(©|copyright).*$',  # copyright info
+        ]
+        
+        for line in lines:
+            line_clean = line.strip()
+            
+            # Skip very short lines that are likely artifacts
+            if len(line_clean) <= 2:
+                continue
+                
+            # Check if line matches header/footer patterns
+            is_header_footer = False
+            for pattern in header_footer_patterns:
+                if re.match(pattern, line_clean, re.IGNORECASE):
+                    is_header_footer = True
+                    break
+            
+            # Skip repeated institutional info or common document headers
+            if any(keyword in line_clean.lower() for keyword in [
+                'politechnika gdańska', 'gdansk university', 'pg.edu.pl',
+                'data management plan template', 'szablon planu zarządzania'
+            ]):
+                is_header_footer = True
+            
+            if not is_header_footer:
+                cleaned_lines.append(line)
+        
+        return '\n'.join(cleaned_lines)
+    
+    def _handle_nie_dotyczy(self, text):
+        """Handle 'nie dotyczy' cases appropriately"""
+        # Clean the text first
+        clean_text = re.sub(r'\s+', ' ', text.strip()).lower()
+        
+        # Patterns that indicate "nie dotyczy" or "not applicable"
+        nie_dotyczy_patterns = [
+            r'^\s*nie\s+dotyczy\s*[.]?\s*$',
+            r'^\s*n/?a\s*[.]?\s*$',
+            r'^\s*not\s+applicable\s*[.]?\s*$',
+            r'^\s*brak\s*[.]?\s*$',
+            r'^\s*-\s*$',
+            r'^\s*nie\s*[.]?\s*$'
+        ]
+        
+        for pattern in nie_dotyczy_patterns:
+            if re.match(pattern, clean_text):
+                return 'Nie dotyczy'  # Standardized format
+        
+        # Check if the content is mostly "nie dotyczy" with some artifacts
+        if 'nie dotyczy' in clean_text and len(clean_text) < 20:
+            return 'Nie dotyczy'
+        
+        return text
+    
+    def _find_content_boundaries(self, content_list, is_pdf=False):
+        """Find all section and subsection boundaries in content with improved confidence thresholds"""
+        boundaries = []
+        
+        for i, content_item in enumerate(content_list):
+            # Check for section with higher confidence threshold
+            section_confidence = self._calculate_section_confidence(content_item, is_pdf)
+            if section_confidence['section'] and section_confidence['score'] > 0.7:  # Higher threshold for sections
+                boundaries.append({
+                    'index': i,
+                    'type': 'section',
+                    'title': section_confidence['section'],
+                    'original_text': content_item,
+                    'level': 1,
+                    'confidence': section_confidence['score']
+                })
+                print(f"Found section boundary at {i}: {section_confidence['section']} (confidence: {section_confidence['score']:.3f})")
+                continue
+            
+            # Check for subsection with improved logic
+            subsection_match = self._find_best_subsection_boundary(content_item, is_pdf)
+            if subsection_match and subsection_match['confidence'] > 0.5:  # Higher threshold for subsections
+                boundaries.append({
+                    'index': i,
+                    'type': 'subsection',
+                    'section': subsection_match['section'],
+                    'title': subsection_match['subsection'],
+                    'original_text': content_item,
+                    'level': 2,
+                    'confidence': subsection_match['confidence']
+                })
+                print(f"Found subsection boundary at {i}: {subsection_match['subsection']} (confidence: {subsection_match['confidence']:.3f})")
+        
+        # Sort boundaries by index
+        boundaries.sort(key=lambda x: x['index'])
+        
+        # Assign parent sections to subsections
+        current_section = None
+        for boundary in boundaries:
+            if boundary['type'] == 'section':
+                current_section = boundary['title']
+            elif boundary['type'] == 'subsection' and current_section:
+                boundary['parent_section'] = current_section
+        
+        print(f"Found {len(boundaries)} boundaries: {len([b for b in boundaries if b['type'] == 'section'])} sections, {len([b for b in boundaries if b['type'] == 'subsection'])} subsections")
+        return boundaries
+    
+    def _calculate_section_confidence(self, text, is_pdf=False):
+        """Calculate confidence for section detection with improved Polish support"""
+        # Check for numbered section patterns first (highest confidence)
+        # Must be EXACTLY "X. " format, not "X.X" (that's a subsection)
+        section_match = re.match(r'^\s*(\d+)\.\s+([^\d].*?)$', text)
+        if section_match:
+            section_num = section_match.group(1)
+            section_title = section_match.group(2).strip()
+            
+            # Exclude if it looks like a subsection (contains another number)
+            if re.search(r'\d+\.\d+', text):
+                return {'section': None, 'score': 0.0}
+            
+            # Direct match with DMP structure
+            for section in self.dmp_structure:
+                if section.startswith(f"{section_num}."):
+                    return {'section': section, 'score': 0.95}  # Very high confidence
+            
+            # Check Polish-English mapping with improved matching
+            for polish, english in self.section_mapping.items():
+                similarity = self._text_similarity(polish.lower(), section_title.lower(), 'combined')
+                if similarity > 0.4:  # Lower threshold, let combined score decide
+                    return {'section': english, 'score': 0.85}
+        
+        # Check for formatted section titles (BOLD, UNDERLINED)
+        if any(text.startswith(prefix) for prefix in ['BOLD:', 'UNDERLINED:', 'UNDERLINED_BOLD:']):
+            clean_text = re.sub(r'^(BOLD:|UNDERLINED:|UNDERLINED_BOLD:)', '', text).strip()
+            return self._calculate_section_confidence(clean_text, is_pdf)  # Recursive call on clean text
+        
+        # Direct section name matching (lower confidence) - only for very high similarity
+        best_match = self._find_best_section_match(text, threshold=0.8)  # Higher threshold
+        if best_match:
+            return {'section': best_match, 'score': 0.7}
+        
+        return {'section': None, 'score': 0.0}
+    
+    def _find_best_subsection_boundary(self, text, is_pdf=False):
+        """Find best subsection boundary with improved Polish pattern recognition"""
+        # More lenient check for subsection titles to catch more content
+        if not self._looks_like_subsection_title(text) and len(text.strip()) < 10:
+            return None
+        
+        # Special handling for numbered subsections (1.1, 1.2, etc.)
+        numbered_match = re.match(r'^\s*(\d+)\.(\d+)[.\s]*(.+)', text)
+        if numbered_match:
+            section_num = int(numbered_match.group(1))
+            subsection_num = int(numbered_match.group(2))
+            subsection_text = numbered_match.group(3).strip()
+            
+            # Map to correct section based on section number
+            target_section = None
+            for section in self.dmp_structure:
+                if section.startswith(f"{section_num}."):
+                    target_section = section
+                    break
+            
+            if target_section:
+                # Try to match with subsections in that section using Polish mapping
+                best_polish_match = None
+                best_score = 0
+                
+                for polish, english in self.subsection_mapping.items():
+                    if english in self.dmp_structure.get(target_section, []):
+                        # Try different matching strategies
+                        scores = [
+                            self._text_similarity(subsection_text.lower(), polish.lower(), 'combined'),
+                            self._text_similarity(text.lower(), polish.lower(), 'combined'),
+                            # Check if key words match
+                            self._calculate_keyword_similarity(subsection_text.lower(), polish.lower())
+                        ]
+                        max_score = max(scores)
+                        
+                        if max_score > best_score:
+                            best_score = max_score
+                            best_polish_match = english
+                
+                if best_polish_match and best_score > 0.3:
+                    confidence = 0.8 + best_score * 0.2  # High confidence for numbered items
+                    return {
+                        'section': target_section,
+                        'subsection': best_polish_match,
+                        'confidence': confidence,
+                        'similarity': best_score
+                    }
+        
+        # Enhanced Polish subsection detection for non-numbered titles
+        enhanced_match = self._detect_polish_subsection_patterns(text)
+        if enhanced_match:
+            return enhanced_match
+        
+        # Fallback to general matching
+        potential_matches = []
+        
+        for section in self.dmp_structure:
+            for subsection in self.dmp_structure[section]:
+                # Direct similarity check
+                similarity = self._text_similarity(text.lower(), subsection.lower(), 'combined')
+                
+                # Check Polish mapping with improved matching
+                for polish, english in self.subsection_mapping.items():
+                    if english == subsection:
+                        polish_similarity = self._text_similarity(text.lower(), polish.lower(), 'combined')
+                        keyword_similarity = self._calculate_keyword_similarity(text.lower(), polish.lower())
+                        similarity = max(similarity, polish_similarity, keyword_similarity)
+                
+                if similarity > 0.25:  # Lower base threshold for better coverage
+                    confidence = self._calculate_subsection_confidence(text, section, subsection)
+                    potential_matches.append({
+                        'section': section,
+                        'subsection': subsection,
+                        'confidence': confidence,
+                        'similarity': similarity
+                    })
+        
+        if potential_matches:
+            # Return the best match
+            best_match = max(potential_matches, key=lambda x: x['confidence'])
+            if best_match['confidence'] > 0.35:  # Lower threshold for better coverage
+                return best_match
+        
+        return None
+    
+    def _detect_polish_subsection_patterns(self, text):
+        """Enhanced detection of Polish subsection patterns"""
+        text_lower = text.lower()
+        
+        # Define enhanced Polish subsection patterns with their English mappings
+        enhanced_patterns = [
+            # Section 1 patterns
+            {
+                'patterns': ['sposób pozyskiwania', 'pozyskiwania i opracowywania', 'wykorzystania dostępnych'],
+                'section': '1. Data description and collection or re-use of existing data',
+                'subsection': 'How will new data be collected or produced and/or how will existing data be re-used?'
+            },
+            {
+                'patterns': ['pozyskiwane lub opracowywane dane', 'rodzaj, format, ilość', 'dane (np. rodzaj'],
+                'section': '1. Data description and collection or re-use of existing data', 
+                'subsection': 'What data (for example the types, formats, and volumes) will be collected or produced?'
+            },
+            # Section 2 patterns
+            {
+                'patterns': ['metadane i dokumenty', 'metodologia lub pozyskiwanie', 'towarzyszące danym'],
+                'section': '2. Documentation and data quality',
+                'subsection': 'What metadata and documentation (for example methodology or data collection and way of organising data) will accompany data?'
+            },
+            {
+                'patterns': ['stosowane środki kontroli', 'kontroli jakości danych', 'środki kontroli'],
+                'section': '2. Documentation and data quality',
+                'subsection': 'What data quality control measures will be used?'
+            },
+            # Section 3 patterns
+            {
+                'patterns': ['przechowywanie i tworzenie kopii', 'kopii zapasowych danych', 'metadanych podczas'],
+                'section': '3. Storage and backup during the research process',
+                'subsection': 'How will data and metadata be stored and backed up during the research process?'
+            },
+            {
+                'patterns': ['sposób zapewnienia bezpieczeństwa', 'ochrony danych wrażliwych', 'bezpieczeństwa danych'],
+                'section': '3. Storage and backup during the research process',
+                'subsection': 'How will data security and protection of sensitive data be taken care of during the research?'
+            },
+            # Section 4 patterns
+            {
+                'patterns': ['zgodności z przepisami', 'danych osobowych i bezpieczeństwa', 'przepisami dotyczącymi'],
+                'section': '4. Legal requirements, codes of conduct',
+                'subsection': 'If personal data are processed, how will compliance with legislation on personal data and on data security be ensured?'
+            },
+            {
+                'patterns': ['zarządzania innymi kwestiami', 'własnością intelektualną', 'kwestiami prawnymi'],
+                'section': '4. Legal requirements, codes of conduct',
+                'subsection': 'How will other legal issues, such as intelectual property rights and ownership, be managed? What legislation is applicable?'
+            },
+            # Section 5 patterns
+            {
+                'patterns': ['sposób i termin udostępnienia', 'udostępnienia danych', 'ograniczenia w udostępnianiu'],
+                'section': '5. Data sharing and long-term preservation',
+                'subsection': 'How and when will data be shared? Are there possible restrictions to data sharing or embargo reasons?'
+            },
+            {
+                'patterns': ['wyboru danych przeznaczonych', 'długotrwałego przechowywania', 'repozytorium lub archiwum'],
+                'section': '5. Data sharing and long-term preservation',
+                'subsection': 'How will data for preservation be selected, and where will data be preserved long-term (for example a data repository or archive)?'
+            },
+            {
+                'patterns': ['metody lub narzędzia programowe', 'dostęp do danych i korzystanie', 'narzędzia umożliwiające'],
+                'section': '5. Data sharing and long-term preservation',
+                'subsection': 'What methods or software tools will be needed to access and use the data?'
+            },
+            {
+                'patterns': ['unikalnego i trwałego identyfikatora', 'identyfikatora (doi)', 'sposób zapewniający stosowanie'],
+                'section': '5. Data sharing and long-term preservation',
+                'subsection': 'How will the application of a unique and persistent identifier (such us a Digital Object Identifier (DOI)) to each data set be ensured?'
+            },
+            # Section 6 patterns
+            {
+                'patterns': ['osoba odpowiedzialna', 'odpowiedzialna za zarządzanie', 'data steward'],
+                'section': '6. Data management responsibilities and resources',
+                'subsection': 'Who (for example role, position, and institution) will be responsible for data management (i.e the data steward)?'
+            },
+            {
+                'patterns': ['środki przeznaczone', 'finansowe i czasowe', 'zarządzania danymi i zapewnienia'],
+                'section': '6. Data management responsibilities and resources',
+                'subsection': 'What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)?'
+            }
+        ]
+        
+        # Find the best matching pattern
+        best_match = None
+        best_score = 0
+        
+        for pattern_def in enhanced_patterns:
+            # Check how many patterns match
+            pattern_matches = 0
+            for pattern in pattern_def['patterns']:
+                if pattern in text_lower:
+                    pattern_matches += 1
+            
+            # Calculate match score
+            match_score = pattern_matches / len(pattern_def['patterns'])
+            
+            # Also check overall similarity
+            similarity_score = self._text_similarity(text_lower, ' '.join(pattern_def['patterns']), 'combined')
+            
+            # Combined score
+            combined_score = (match_score * 0.7) + (similarity_score * 0.3)
+            
+            if combined_score > best_score and pattern_matches > 0:
+                best_score = combined_score
+                best_match = pattern_def
+        
+        if best_match and best_score > 0.3:
+            confidence = 0.6 + (best_score * 0.3)  # Good confidence for pattern matches
+            return {
+                'section': best_match['section'],
+                'subsection': best_match['subsection'],
+                'confidence': confidence,
+                'similarity': best_score
+            }
+        
+        return None
+    
+    def _calculate_keyword_similarity(self, text1, text2):
+        """Calculate similarity based on key words matching"""
+        # Extract key words (longer than 4 characters, not common words)
+        common_words = {'będą', 'dane', 'oraz', 'sposób', 'które', 'jako', 'przez', 'zostanie', 'będzie', 'jakie'}
+        
+        words1 = set(word for word in re.findall(r'\w+', text1.lower()) 
+                    if len(word) > 4 and word not in common_words)
+        words2 = set(word for word in re.findall(r'\w+', text2.lower()) 
+                    if len(word) > 4 and word not in common_words)
+        
+        if not words1 or not words2:
+            return 0.0
+        
+        intersection = words1.intersection(words2)
+        union = words1.union(words2)
+        
+        return len(intersection) / len(union) if union else 0.0
+    
+    def _looks_like_subsection_title(self, text):
+        """Determine if text looks like a subsection title with improved Polish support"""
+        # Remove formatting markers
+        clean_text = re.sub(r'^(BOLD:|UNDERLINED:|UNDERLINED_BOLD:)', '', text).strip()
+        
+        # PRIORITY 1: Check for numbered subsection patterns (e.g., "1.1", "2.3") - HIGHEST PRIORITY
+        if re.match(r'^\s*\d+\.\d+[^\d]', clean_text):  # Must have something after the number
+            return True
+        
+        # PRIORITY 2: Check for exact matches with known Polish subsection patterns
+        polish_subsection_starters = [
+            'sposób pozyskiwania',
+            'pozyskiwane lub opracowywane dane', 
+            'metadane i dokumenty',
+            'stosowane środki kontroli',
+            'przechowywanie i tworzenie kopii',
+            'sposób zapewnienia bezpieczeństwa',
+            'sposób zapewnienia zgodności',
+            'sposób zarządzania innymi kwestiami',
+            'sposób i termin udostępnienia',
+            'sposób wyboru danych',
+            'metody lub narzędzia programowe',
+            'sposób zapewniający stosowanie',
+            'osoba odpowiedzialna',
+            'środki przeznaczone'
+        ]
+        
+        clean_lower = clean_text.lower()
+        for starter in polish_subsection_starters:
+            if clean_lower.startswith(starter):
+                return True
+        
+        # PRIORITY 3: Check for question patterns
+        if '?' in clean_text:
+            return True
+        
+        # PRIORITY 4: Check for characteristic question words
+        question_words = ['how', 'what', 'where', 'when', 'who', 'which', 'why', 'will',
+                         'jak', 'co', 'gdzie', 'kiedy', 'kto', 'który', 'dlaczego', 'czy', 'sposób']
+        if any(word in clean_lower for word in question_words):
+            # Additional check: must be reasonably long to be a real subsection
+            if len(clean_text.split()) >= 4:
+                return True
+        
+        # PRIORITY 5: Check if it's formatted as a title (BOLD/UNDERLINED)
+        if any(text.startswith(prefix) for prefix in ['BOLD:', 'UNDERLINED:', 'UNDERLINED_BOLD:']):
+            if len(clean_text.split()) >= 4:
+                return True
+        
+        # PRIORITY 6: Length-based check for very long titles that might be subsections
+        if len(clean_text.split()) >= 8:  # At least 8 words - likely a subsection
+            return True
+        
+        return False
+    
+    def _calculate_subsection_confidence(self, text, section, subsection):
+        """Calculate confidence score for subsection detection"""
+        # Base similarity score
+        confidence = self._text_similarity(text.lower(), subsection.lower(), 'combined')
+        
+        # Boost for formatting indicators
+        if any(text.startswith(prefix) for prefix in ['BOLD:', 'UNDERLINED:', 'UNDERLINED_BOLD:']):
+            confidence += 0.2
+        
+        # Boost for question-like patterns
+        if '?' in text or any(word in text.lower() for word in ['how', 'what', 'where', 'when', 'who', 'jak', 'co', 'gdzie', 'kiedy', 'kto']):
+            confidence += 0.1
+        
+        # Boost for numbered patterns
+        if re.match(r'^\s*\d+\.\d+', text):
+            confidence += 0.1
+        
+        return confidence
+    
+    def _extract_content_by_boundaries(self, content_list, boundaries, is_pdf=False):
+        """Extract content between boundaries"""
+        extracted_content = {
+            'sections': {},
+            'unassigned': [],
+            'metadata': {
+                'total_items': len(content_list),
+                'boundaries_found': len(boundaries),
+                'extraction_method': 'hierarchical_boundary_based'
+            }
+        }
+        
+        # Initialize section structure
+        for section in self.dmp_structure:
+            extracted_content['sections'][section] = {}
+            for subsection in self.dmp_structure[section]:
+                extracted_content['sections'][section][subsection] = {
+                    'content': [],
+                    'raw_text': '',
+                    'found': False
+                }
+        # Process each boundary and extract content to next boundary
+        for i, boundary in enumerate(boundaries):
+            start_index = boundary['index'] + 1  # Start after the boundary title
+            
+            # Find end index (next boundary or end of content)
+            end_index = len(content_list)
+            if i + 1 < len(boundaries):
+                end_index = boundaries[i + 1]['index']
+            
+            # Extract content between boundaries
+            section_content = content_list[start_index:end_index]
+            
+            # Clean each content item more thoroughly
+            cleaned_content = []
+            for item in section_content:
+                if not item or len(item.strip()) <= 2:
+                    continue
+                    
+                cleaned_item = self._clean_content_item(item.strip())
+                # Accept "nie dotyczy" even if short
+                if cleaned_item and (len(cleaned_item) > 5 or self._is_nie_dotyczy(cleaned_item)):
+                    cleaned_content.append(cleaned_item)
+            
+            section_content = cleaned_content
+            
+            if boundary['type'] == 'section':
+                # For sections without specific subsections, assign to first subsection
+                section_name = boundary['title']
+                if section_name in self.dmp_structure and self.dmp_structure[section_name]:
+                    first_subsection = self.dmp_structure[section_name][0]
+                    self._assign_boundary_content(extracted_content, section_name, first_subsection, section_content, boundary)
+            
+            elif boundary['type'] == 'subsection':
+                # Get parent section
+                parent_section = boundary.get('parent_section')
+                if not parent_section:
+                    # Try to infer from detected section/subsection mapping
+                    for section in self.dmp_structure:
+                        if boundary['title'] in self.dmp_structure[section]:
+                            parent_section = section
+                            break
+                
+                if parent_section:
+                    self._assign_boundary_content(extracted_content, parent_section, boundary['title'], section_content, boundary)
+                else:
+                    print(f"Warning: Could not determine parent section for subsection: {boundary['title']}")
+        
+        # Handle "nie dotyczy" cases - assign to previous subsection
+        self._handle_nie_dotyczy_assignments(extracted_content, content_list)
+        
+        # Handle content before first boundary
+        if boundaries:
+            pre_boundary_content = content_list[:boundaries[0]['index']]
+            if pre_boundary_content:
+                print(f"Found {len(pre_boundary_content)} items before first boundary")
+                extracted_content['unassigned'].extend([{
+                    'text': item,
+                    'type': 'pre_boundary',
+                    'position': i
+                } for i, item in enumerate(pre_boundary_content)])
+        else:
+            # No boundaries found - all content is unassigned
+            extracted_content['unassigned'].extend([{
+                'text': item,
+                'type': 'no_boundaries',
+                'position': i
+            } for i, item in enumerate(content_list)])
+        
+        return extracted_content
+    
+    def _clean_content_item(self, item):
+        """Additional cleaning for individual content items"""
+        if not item:
+            return ''
+        
+        # Remove remaining artifacts
+        item = re.sub(r'^[\s\-_\.]+|[\s\-_\.]+$', '', item)  # Leading/trailing artifacts
+        item = re.sub(r'\s{2,}', ' ', item)  # Multiple spaces
+        
+        # Skip if it's just formatting artifacts
+        if re.match(r'^[\s\-_\.\|]+$', item):
+            return ''
+        
+        # Skip typical header/footer content
+        skip_patterns = [
+            r'^\d+\s*$',  # Just a number
+            r'^\d+\s*/\s*\d+$',  # Page numbers
+            r'^strona\s+\d+$',  # Polish page indicator
+            r'^page\s+\d+$',   # English page indicator
+        ]
+        
+        for pattern in skip_patterns:
+            if re.match(pattern, item.strip(), re.IGNORECASE):
+                return ''
+        
+        return item.strip()
+    
+    def _is_nie_dotyczy(self, text):
+        """Check if text represents 'nie dotyczy' (not applicable)"""
+        if not text:
+            return False
+        
+        text_lower = text.lower().strip()
+        nie_dotyczy_variants = [
+            'nie dotyczy', 'nie dotyczy.', 'nieDotyczy',
+            'n/a', 'not applicable', 'not applicable.', 
+            'brak', 'brak.', '-', '—', '–'
+        ]
+        
+        return text_lower in nie_dotyczy_variants or text_lower == 'nie dotyczy'
+    
+    def _handle_nie_dotyczy_assignments(self, extracted_content, content_list):
+        """Handle special case where 'nie dotyczy' should be assigned to previous subsection"""
+        # Find all 'nie dotyczy' items in content
+        for i, item in enumerate(content_list):
+            if self._is_nie_dotyczy(item.strip()):
+                # Find the previous subsection that was assigned
+                previous_subsection = self._find_previous_assigned_subsection(extracted_content, i)
+                if previous_subsection:
+                    section, subsection = previous_subsection
+                    # Add "nie dotyczy" to that subsection
+                    current_content = extracted_content['sections'][section][subsection]['content']
+                    if 'Nie dotyczy' not in current_content:
+                        current_content.append('Nie dotyczy')
+                        extracted_content['sections'][section][subsection]['raw_text'] += ' Nie dotyczy'
+                        print(f"Added 'Nie dotyczy' to {section} -> {subsection}")
+    
+    def _find_previous_assigned_subsection(self, extracted_content, current_index):
+        """Find the most recently assigned subsection before current_index"""
+        # This is a simplified approach - in practice you might want to track 
+        # the order of processing better
+        for section in extracted_content['sections']:
+            for subsection in extracted_content['sections'][section]:
+                if extracted_content['sections'][section][subsection]['found']:
+                    return (section, subsection)
+        return None
+    
+    def _assign_boundary_content(self, extracted_content, section, subsection, content_items, boundary):
+        """Assign content items to a section/subsection"""
+        if section not in extracted_content['sections']:
+            print(f"Warning: Section '{section}' not found in structure")
+            return
+        
+        if subsection not in extracted_content['sections'][section]:
+            print(f"Warning: Subsection '{subsection}' not found in section '{section}'")
+            return
+        
+        # Clean and filter content
+        cleaned_items = []
+        for item in content_items:
+            cleaned_item = item.strip()
+            if cleaned_item and len(cleaned_item) > 3:
+                cleaned_items.append(cleaned_item)
+        
+        if cleaned_items:
+            extracted_content['sections'][section][subsection]['content'] = cleaned_items
+            extracted_content['sections'][section][subsection]['raw_text'] = ' '.join(cleaned_items)
+            extracted_content['sections'][section][subsection]['found'] = True
+            print(f"Assigned {len(cleaned_items)} items to {section} -> {subsection}")
+        
+        # Store boundary metadata
+        extracted_content['sections'][section][subsection]['boundary_info'] = {
+            'original_text': boundary['original_text'],
+            'confidence': boundary.get('confidence', 0),
+            'detection_type': boundary['type']
+        }
+    
     def improve_content_assignment(self, all_content, is_pdf=False):
-        """Improved content assignment logic with better section/subsection detection"""
-        # Initialize structures
+        """Legacy method - now calls hierarchical extraction and converts format"""
+        # Use new hierarchical extraction
+        hierarchical_result = self.extract_hierarchical_content(all_content, is_pdf)
+        
+        # Convert to legacy format for compatibility
         section_content = {}
         tagged_content = {}
         unconnected_text = []
         
+        # Initialize structures
         for section in self.dmp_structure:
             section_content[section] = {}
             tagged_content[section] = {}
@@ -726,78 +1861,234 @@ class DMPExtractor:
                 section_content[section][subsection] = []
                 tagged_content[section][subsection] = []
         
-        current_section = None
-        current_subsection = None
-        content_buffer = []  # Buffer for content without clear assignment
+        # Fill from hierarchical results
+        for section in hierarchical_result['sections']:
+            for subsection in hierarchical_result['sections'][section]:
+                subsection_data = hierarchical_result['sections'][section][subsection]
+                if subsection_data['found']:
+                    section_content[section][subsection] = subsection_data['content']
+                    # Create tagged content
+                    for content_item in subsection_data['content']:
+                        tagged_content[section][subsection].append(self.process_paragraph(content_item))
         
-        print(f"Processing {len(all_content)} content items...")
-        
-        for i, content_item in enumerate(all_content):
-            if not content_item.strip():
-                continue
-            
-            print(f"\n--- Processing item {i+1}: '{content_item[:100]}...'")
-            
-            # Try to detect section
-            detected_section = self.detect_section_from_text(content_item, is_pdf=is_pdf)
-            if detected_section:
-                # Flush buffer to previous section/subsection
-                if current_section and current_subsection and content_buffer:
-                    print(f"Flushing {len(content_buffer)} buffered items to {current_section} -> {current_subsection}")
-                    for buffered_content in content_buffer:
-                        self._assign_content_safely(section_content, tagged_content, 
-                                                  current_section, current_subsection, buffered_content)
-                    content_buffer = []
-                
-                current_section = detected_section
-                current_subsection = None
-                print(f"Section changed to: {current_section}")
-                continue
-            
-            # Try to detect subsection
-            if current_section:
-                detected_subsection = self.detect_subsection_from_text(content_item, current_section, is_pdf=is_pdf)
-                if detected_subsection:
-                    # Flush buffer to previous subsection
-                    if current_subsection and content_buffer:
-                        print(f"Flushing {len(content_buffer)} buffered items to {current_section} -> {current_subsection}")
-                        for buffered_content in content_buffer:
-                            self._assign_content_safely(section_content, tagged_content, 
-                                                      current_section, current_subsection, buffered_content)
-                        content_buffer = []
-                    
-                    current_subsection = detected_subsection
-                    print(f"Subsection changed to: {current_subsection}")
-                    continue
-            
-            # Handle regular content
-            if current_section and current_subsection:
-                # Direct assignment
-                print(f"Assigning content to {current_section} -> {current_subsection}")
-                self._assign_content_safely(section_content, tagged_content, 
-                                          current_section, current_subsection, content_item)
-            elif current_section:
-                # Buffer content until we find a subsection
-                print(f"Buffering content for section {current_section}")
-                content_buffer.append(content_item)
-            else:
-                # No section identified yet
-                print("Adding to unconnected text (no section)")
-                unconnected_text.append({"text": content_item, "type": "no_section"})
-        
-        # Handle remaining buffered content
-        if content_buffer:
-            if current_section and current_subsection:
-                print(f"Final flush: {len(content_buffer)} items to {current_section} -> {current_subsection}")
-                for buffered_content in content_buffer:
-                    self._assign_content_safely(section_content, tagged_content, 
-                                              current_section, current_subsection, buffered_content)
-            else:
-                print(f"Moving {len(content_buffer)} buffered items to unconnected")
-                for buffered_content in content_buffer:
-                    unconnected_text.append({"text": buffered_content, "type": "buffered"})
+        # Add unassigned content to unconnected_text
+        for item in hierarchical_result['unassigned']:
+            unconnected_text.append(item)
         
         return section_content, tagged_content, unconnected_text
+    
+    def _recover_orphaned_content(self, orphaned_content, section_content, tagged_content):
+        """Attempt to recover orphaned content using various strategies"""
+        recovered_items = []
+        
+        print(f"\n=== Content Recovery Phase: {len(orphaned_content)} items to recover ===")
+        
+        for item in orphaned_content:
+            content_text = item['text']
+            recovery_attempts = []
+            
+            # Strategy 1: Contextual analysis - look for keywords that suggest section/subsection
+            context_match = self._analyze_content_context(content_text)
+            recovery_attempts.append(f"Context analysis: {context_match}")
+            
+            if context_match:
+                recovered_items.append({
+                    'text': content_text,
+                    'section': context_match['section'],
+                    'subsection': context_match['subsection'],
+                    'recovered': True,
+                    'method': 'context_analysis',
+                    'attempts': recovery_attempts
+                })
+                continue
+            
+            # Strategy 2: Semantic similarity with existing content
+            similarity_match = self._find_similar_content_placement(content_text, section_content)
+            recovery_attempts.append(f"Similarity match: {similarity_match}")
+            
+            if similarity_match:
+                recovered_items.append({
+                    'text': content_text,
+                    'section': similarity_match['section'],
+                    'subsection': similarity_match['subsection'],
+                    'recovered': True,
+                    'method': 'similarity_matching',
+                    'attempts': recovery_attempts
+                })
+                continue
+            
+            # Strategy 3: Pattern-based assignment (fallback)
+            pattern_match = self._assign_by_content_patterns(content_text)
+            recovery_attempts.append(f"Pattern match: {pattern_match}")
+            
+            if pattern_match:
+                recovered_items.append({
+                    'text': content_text,
+                    'section': pattern_match['section'],
+                    'subsection': pattern_match['subsection'],
+                    'recovered': True,
+                    'method': 'pattern_matching',
+                    'attempts': recovery_attempts
+                })
+                continue
+            
+            # No recovery possible
+            recovered_items.append({
+                'text': content_text,
+                'recovered': False,
+                'type': item.get('type', 'unrecoverable'),
+                'attempts': recovery_attempts
+            })
+        
+        recovery_stats = {
+            'total': len(orphaned_content),
+            'recovered': len([r for r in recovered_items if r.get('recovered')]),
+            'unrecovered': len([r for r in recovered_items if not r.get('recovered')])
+        }
+        print(f"Recovery stats: {recovery_stats['recovered']}/{recovery_stats['total']} items recovered")
+        
+        return recovered_items
+    
+    def _analyze_content_context(self, content_text):
+        """Analyze content for contextual clues about section/subsection"""
+        # Define keyword patterns for different sections
+        section_keywords = {
+            "1. Data description and collection or re-use of existing data": [
+                ['collect', 'collection', 'data', 'source', 'acquire', 'obtain'],
+                ['type', 'format', 'volume', 'amount', 'size', 'dataset']
+            ],
+            "2. Documentation and data quality": [
+                ['metadata', 'documentation', 'document', 'standard', 'schema'],
+                ['quality', 'validation', 'check', 'verify', 'control', 'measure']
+            ],
+            "3. Storage and backup during the research process": [
+                ['storage', 'store', 'backup', 'save', 'preserve', 'keep'],
+                ['security', 'protection', 'encrypt', 'access', 'safe', 'secure']
+            ],
+            "4. Legal requirements, codes of conduct": [
+                ['legal', 'law', 'regulation', 'compliance', 'gdpr', 'personal'],
+                ['intellectual', 'property', 'copyright', 'license', 'ownership', 'rights']
+            ],
+            "5. Data sharing and long-term preservation": [
+                ['share', 'sharing', 'publish', 'repository', 'archive', 'preserve'],
+                ['identifier', 'doi', 'persistent', 'access', 'method', 'tool']
+            ],
+            "6. Data management responsibilities and resources": [
+                ['responsible', 'responsibility', 'steward', 'manager', 'role'],
+                ['resource', 'cost', 'budget', 'time', 'staff', 'fair']
+            ]
+        }
+        
+        content_lower = content_text.lower()
+        best_section = None
+        best_subsection = None
+        best_score = 0
+        
+        for section, keyword_groups in section_keywords.items():
+            section_score = 0
+            
+            # Check each subsection's keywords
+            for i, subsection in enumerate(self.dmp_structure.get(section, [])):
+                subsection_score = 0
+                
+                if i < len(keyword_groups):
+                    keywords = keyword_groups[i]
+                    for keyword in keywords:
+                        if keyword in content_lower:
+                            subsection_score += 1
+                
+                if subsection_score > best_score:
+                    best_score = subsection_score
+                    best_section = section
+                    best_subsection = subsection
+        
+        if best_score >= 2:  # Require at least 2 keyword matches
+            return {
+                'section': best_section,
+                'subsection': best_subsection,
+                'score': best_score
+            }
+        
+        return None
+    
+    def _find_similar_content_placement(self, content_text, section_content):
+        """Find placement based on similarity to existing content"""
+        best_section = None
+        best_subsection = None
+        best_similarity = 0
+        
+        for section, subsections in section_content.items():
+            for subsection, content_list in subsections.items():
+                if content_list:  # Only check sections with existing content
+                    # Calculate average similarity to existing content
+                    similarities = []
+                    for existing_content in content_list[:5]:  # Check up to 5 items
+                        sim = self._text_similarity(content_text.lower(), existing_content.lower(), 'combined')
+                        similarities.append(sim)
+                    
+                    if similarities:
+                        avg_similarity = sum(similarities) / len(similarities)
+                        if avg_similarity > best_similarity and avg_similarity > 0.3:
+                            best_similarity = avg_similarity
+                            best_section = section
+                            best_subsection = subsection
+        
+        if best_section:
+            return {
+                'section': best_section,
+                'subsection': best_subsection,
+                'similarity': best_similarity
+            }
+        
+        return None
+    
+    def _assign_by_content_patterns(self, content_text):
+        """Assign content based on common patterns"""
+        # Define common patterns for different subsections
+        pattern_mappings = [
+            {
+                'patterns': [r'\b(survey|questionnaire|interview|experiment)\b', r'\b(collect|gather|obtain)\b.*\bdata\b'],
+                'section': "1. Data description and collection or re-use of existing data",
+                'subsection': "How will new data be collected or produced and/or how will existing data be re-used?"
+            },
+            {
+                'patterns': [r'\b(csv|json|xml|excel|database)\b', r'\b(format|type|volume)\b.*\bdata\b'],
+                'section': "1. Data description and collection or re-use of existing data",
+                'subsection': "What data (for example the types, formats, and volumes) will be collected or produced?"
+            },
+            {
+                'patterns': [r'\b(backup|storage|server|cloud)\b', r'\bstore\b.*\bdata\b'],
+                'section': "3. Storage and backup during the research process",
+                'subsection': "How will data and metadata be stored and backed up during the research process?"
+            },
+            {
+                'patterns': [r'\b(gdpr|privacy|personal|consent)\b', r'\b(legal|compliance|regulation)\b'],
+                'section': "4. Legal requirements, codes of conduct",
+                'subsection': "If personal data are processed, how will compliance with legislation on personal data and on data security be ensured?"
+            },
+            {
+                'patterns': [r'\b(repository|archive|zenodo|figshare)\b', r'\b(publish|share|public)\b.*\bdata\b'],
+                'section': "5. Data sharing and long-term preservation",
+                'subsection': "How will data for preservation be selected, and where will data be preserved long-term (for example a data repository or archive)?"
+            }
+        ]
+        
+        content_lower = content_text.lower()
+        
+        for mapping in pattern_mappings:
+            pattern_matches = 0
+            for pattern in mapping['patterns']:
+                if re.search(pattern, content_lower, re.IGNORECASE):
+                    pattern_matches += 1
+            
+            if pattern_matches >= 1:  # At least one pattern match
+                return {
+                    'section': mapping['section'],
+                    'subsection': mapping['subsection'],
+                    'matches': pattern_matches
+                }
+        
+        return None
     
     def _assign_content_safely(self, section_content, tagged_content, section, subsection, content):
         """Safely assign content to section/subsection with error handling"""
@@ -816,6 +2107,29 @@ class DMPExtractor:
         except Exception as e:
             print(f"Error assigning content: {str(e)}")
             # Don't fail completely, just log the error
+    
+    def _filter_pdf_content_quality(self, content_list):
+        """Filter and improve PDF content quality"""
+        filtered_content = []
+        
+        for content in content_list:
+            # Skip very short content
+            if len(content.strip()) < 5:
+                continue
+            
+            # Skip content that's mostly numbers or symbols
+            text_chars = len(re.findall(r'[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]', content))
+            if text_chars < len(content) * 0.3:  # Less than 30% letters
+                continue
+            
+            # Skip repetitive content
+            words = content.split()
+            if len(words) > 3 and len(set(words)) < len(words) * 0.5:  # More than 50% repeated words
+                continue
+            
+            filtered_content.append(content)
+        
+        return filtered_content
     
     def process_docx(self, docx_path, output_dir):
         """Process a DOCX file and extract DMP content with enhanced table support"""
@@ -1120,9 +2434,12 @@ class DMPExtractor:
                 lines = dmp_text.split("\n")
                 print(f"Extracted {len(lines)} lines from PDF")
                 
-                # Use PDF table extraction to better structure content
+                # Use enhanced PDF table extraction to better structure content
                 structured_content = self.extract_pdf_table_content(lines)
-                print(f"After table processing: {len(structured_content)} content items")
+                print(f"After enhanced PDF processing: {len(structured_content)} content items")
+                
+                # Additional content quality filtering for PDFs
+                structured_content = self._filter_pdf_content_quality(structured_content)
                 
                 # Use improved content assignment logic
                 section_content, tagged_content, unconnected_text = self.improve_content_assignment(
