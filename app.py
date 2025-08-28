@@ -79,29 +79,6 @@ DMP_TEMPLATES = {
     }
 }
 
-# Common feedback comments that can be inserted
-COMMON_COMMENTS = {
-    "methodology": "The methodology needs more detail on how data will be collected.",
-    "data_format": "Please specify all data formats (CSV, JSON, TIFF, etc.) with examples.",
-    "data_volume": "Estimate the total volume of data expected (in GB/TB).",
-    "metadata": "Consider using established metadata standards like DataCite in your field.",
-    "quality": "Implement validation procedures to ensure data quality and reproducibility.",
-    "storage": "Specify the exact storage solutions and backup procedures you'll be using.",
-    "backup": "Your backup strategy should include off-site copies and regular testing.",
-    "security": "Detail encryption methods and access controls for sensitive data.",
-    "personal_data": "Clarify compliance with GDPR and data minimization strategies.",
-    "license": "Specify the exact licensing arrangements (e.g., Creative Commons) for your data.",
-    "sharing": "Provide specific milestones and timelines for data publication.",
-    "preservation": "Detail your long-term preservation strategy and repository selection criteria.",
-    "tools": "List all required software tools with specific versions and accessibility.",
-    "identifier": "Explain how and when DOIs will be assigned to datasets.",
-    "responsibility": "Designate specific roles and responsibilities for data management tasks.",
-    "resources": "Budget for dedicated staff time and resources for data management activities.",
-    "table_extracted": "This content was extracted from a table structure - please verify accuracy.",
-    "formatting_preserved": "Original formatting (bold/underlined) has been preserved where possible.",
-    "simulation_data": "For simulation data, ensure reproducibility by documenting all parameters and software versions."
-}
-
 # Template categories will be managed through template editor
 
 def allowed_file(filename):
@@ -228,15 +205,16 @@ def upload_file():
     
     file = request.files['file']
     
-    if file.filename == '':
+    if not file or not file.filename:
         return jsonify({
             'success': False,
             'message': 'No selected file'
         })
     
+    file_path = None  # Ensure file_path is always defined
     if file and allowed_file(file.filename):
         try:
-            filename = secure_filename(file.filename)
+            filename = secure_filename(file.filename or "")
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(file_path)
             
@@ -290,19 +268,20 @@ def upload_file():
             traceback_str = traceback.format_exc()
             print(f"Error processing file: {str(e)}")
             print(traceback_str)
-            
+
             # Clean up uploaded file in case of error
+            # Fix: Ensure file_path is defined before attempting to remove
             try:
-                if 'file_path' in locals():
+                if file_path is not None:
                     os.remove(file_path)
-            except:
+            except Exception:
                 pass
-                
+
             return jsonify({
                 'success': False,
                 'message': f'Error processing file: {str(e)}'
             })
-    
+
     return jsonify({
         'success': False,
         'message': 'Invalid file format. Only PDF and DOCX files are allowed.'
@@ -328,10 +307,8 @@ def review_dmp(filename):
     if not os.path.exists(file_path):
         return "File not found", 404
     
-    # Get cache_id from request
     cache_id = request.args.get('cache_id', '')
     
-    # Load extracted content if available
     extracted_content = {}
     extraction_info = {}
     unconnected_text = []
@@ -343,28 +320,22 @@ def review_dmp(filename):
                 with open(cache_path, 'r', encoding='utf-8') as f:
                     cache_data = json.load(f)
                     
-                    # Extract unconnected text if present
-                    if "_unconnected_text" in cache_data:
-                        unconnected_text = cache_data["_unconnected_text"]
-                        del cache_data["_unconnected_text"]  # Remove from extracted_content
-                    
-                    extracted_content = cache_data
-                    
-                    # Add extraction info for display
-                    extraction_info = {
-                        'total_sections': len([k for k in extracted_content.keys() if k.startswith(('1.', '2.', '3.', '4.', '5.', '6.'))]),
-                        'sections_with_content': len([k for k, v in extracted_content.items() if v.get('paragraphs') and len(v['paragraphs']) > 0]),
-                        'extraction_method': 'Enhanced DOCX processing with table support' if filename.lower().endswith('.docx') else 'PDF text extraction'
-                    }
-                    
+                    if cache_data is not None:
+                        if "_unconnected_text" in cache_data:
+                            unconnected_text = cache_data["_unconnected_text"]
+                            del cache_data["_unconnected_text"]
+                        extracted_content = cache_data
+                        extraction_info = {
+                            'total_sections': len([k for k in extracted_content.keys() if k.startswith(('1.', '2.', '3.', '4.', '5.', '6.'))]),
+                            'sections_with_content': len([k for k, v in extracted_content.items() if v.get('paragraphs') and len(v['paragraphs']) > 0]),
+                            'extraction_method': 'Enhanced DOCX processing with table support' if filename.lower().endswith('.docx') else 'PDF text extraction'
+                        }
             except Exception as e:
                 print(f"Error loading extracted content: {str(e)}")
     
-    # Pass the templates, common comments, extracted content, and unconnected text to the template
     return render_template('review.html', 
                            filename=filename,
                            templates=DMP_TEMPLATES,
-                           comments=COMMON_COMMENTS,
                            extracted_content=extracted_content,
                            extraction_info=extraction_info,
                            unconnected_text=unconnected_text,
@@ -391,26 +362,7 @@ def save_templates():
             'message': f'Error saving templates: {str(e)}'
         })
 
-@app.route('/save_comments', methods=['POST'])
-def save_comments():
-    try:
-        data = request.json
-        global COMMON_COMMENTS
-        
-        # Update the comments with the new data
-        COMMON_COMMENTS.update(data)
-        
-        return jsonify({
-            'success': True,
-            'message': 'Comments saved successfully'
-        })
-    except Exception as e:
-        return jsonify({
-            'success': False,
-            'message': f'Error saving comments: {str(e)}'
-        })
-
-# Key phrases functionality removed
+# Removed /save_comments endpoint
 
 @app.route('/save_dmp_structure', methods=['POST'])
 def save_dmp_structure():
@@ -440,25 +392,19 @@ def results():
 
 @app.route('/template_editor')
 def template_editor():
-    # Load configuration files
     try:
-        # Load DMP structure
         structure_path = os.path.join('config', 'dmp_structure.json')
         if os.path.exists(structure_path):
             with open(structure_path, 'r', encoding='utf-8') as f:
                 dmp_structure = json.load(f)
         else:
-            # Default structure from extractor
             extractor = DMPExtractor()
             dmp_structure = extractor.dmp_structure
-            
     except Exception as e:
         print(f"Error loading configuration: {str(e)}")
-        # Use defaults
         extractor = DMPExtractor()
         dmp_structure = extractor.dmp_structure
     
-    # Organize templates by section for better display
     templates_by_section = {
         "1. Data description and collection or re-use of existing data": {
             k: v for k, v in DMP_TEMPLATES.items() if k.startswith("1.")
@@ -480,18 +426,17 @@ def template_editor():
         }
     }
     
+    # Removed comments=COMMON_COMMENTS
     return render_template('template_editor.html', 
                            templates=DMP_TEMPLATES,
                            templates_by_section=templates_by_section,
-                           comments=COMMON_COMMENTS,
                            dmp_structure=dmp_structure)
 
 @app.route('/save_feedback', methods=['POST'])
 def save_feedback():
     try:
-        data = request.json
+        data = request.json or {}
         
-        # Get filename and feedback text
         filename = data.get('filename', '')
         feedback = data.get('feedback', '')
         
@@ -501,7 +446,6 @@ def save_feedback():
                 'message': 'Missing filename or feedback text'
             })
         
-        # Save feedback to a file
         feedback_filename = f"feedback_{os.path.splitext(filename)[0]}.txt"
         feedback_path = os.path.join(app.config['OUTPUT_FOLDER'], feedback_filename)
         
@@ -524,7 +468,7 @@ def save_feedback():
 def save_category():
     """Save category with its comments"""
     try:
-        data = request.json
+        data = request.json or {}
         file = data.get('file')
         category_data = data.get('data', {})
         
@@ -534,7 +478,6 @@ def save_category():
                 'message': 'File name is required'
             })
         
-        # Save to individual JSON file in config directory
         category_path = os.path.join('config', f'{file}.json')
         
         with open(category_path, 'w', encoding='utf-8') as f:
@@ -557,31 +500,34 @@ def load_categories():
     try:
         config_dir = 'config'
         categories = {}
-        
+
         if os.path.exists(config_dir):
             for filename in os.listdir(config_dir):
                 if filename.endswith('.json') and filename not in ['dmp_structure.json', 'quick_comments.json']:
-                    file_base = filename[:-5]  # Remove .json extension
+                    file_base = filename[:-5]
                     file_path = os.path.join(config_dir, filename)
-                    
+
                     try:
                         with open(file_path, 'r', encoding='utf-8') as f:
                             data = json.load(f)
-                            
-                            # Find the main category key (not _comment or other metadata)
-                            for key, value in data.items():
-                                if not key.startswith('_') and isinstance(value, dict):
-                                    categories[key] = value
-                                    break
+                            # Ensure data is a dict before calling items
+                            if isinstance(data, dict):
+                                for key, value in data.items():
+                                    if not key.startswith('_') and isinstance(value, dict):
+                                        categories[key] = value
+                                        break
+                            else:
+                                # If data is None or not a dict, skip
+                                continue
                     except Exception as e:
                         print(f"Error loading category file {filename}: {str(e)}")
                         continue
-        
+
         return jsonify({
             'success': True,
             'categories': categories
         })
-        
+
     except Exception as e:
         return jsonify({
             'success': False,
@@ -602,6 +548,8 @@ def load_category_comments():
         
         with open(category_comments_path, 'r', encoding='utf-8') as f:
             category_comments = json.load(f)
+            if category_comments is None:
+                category_comments = {}
         
         return jsonify({
             'success': True,
@@ -618,10 +566,9 @@ def load_category_comments():
 def save_category_comments():
     """Save category-specific comments for feedback sections"""
     try:
-        data = request.json
+        data = request.json or {}
         category_comments = data.get('category_comments', {})
         
-        # Save to a JSON file in config directory
         category_comments_path = os.path.join('config', 'category_comments.json')
         os.makedirs(os.path.dirname(category_comments_path), exist_ok=True)
         
@@ -643,10 +590,9 @@ def save_category_comments():
 def save_quick_comments():
     """Save quick comments"""
     try:
-        data = request.json
+        data = request.json or {}
         quick_comments = data.get('quick_comments', [])
         
-        # Save to a JSON file in config directory
         quick_comments_path = os.path.join('config', 'quick_comments.json')
         
         with open(quick_comments_path, 'w', encoding='utf-8') as f:
@@ -679,6 +625,8 @@ def load_quick_comments():
         
         with open(quick_comments_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
+            if data is None:
+                data = {}
         
         return jsonify({
             'success': True,
@@ -698,11 +646,10 @@ def list_categories():
         config_dir = 'config'
         categories = []
         
-        # Scan config directory for JSON files
         if os.path.exists(config_dir):
             for filename in os.listdir(config_dir):
                 if filename.endswith('.json') and filename not in ['dmp_structure.json', 'quick_comments.json']:
-                    file_base = filename[:-5]  # Remove .json extension
+                    file_base = filename[:-5]
                     category_name = file_base.replace('_', ' ').title()
                     categories.append({
                         'file': file_base,
@@ -724,7 +671,7 @@ def list_categories():
 def create_category():
     """Create a new category file"""
     try:
-        data = request.json
+        data = request.json or {}
         name = data.get('name', '').strip()
         
         if not name:
@@ -733,18 +680,15 @@ def create_category():
                 'message': 'Category name is required'
             })
         
-        # Create file name from category name
         file_name = name.lower().replace(' ', '_')
         category_path = os.path.join('config', f'{file_name}.json')
         
-        # Check if file already exists
         if os.path.exists(category_path):
             return jsonify({
                 'success': False,
                 'message': 'Category with this name already exists'
             })
         
-        # Create empty category structure
         category_data = {}
         
         with open(category_path, 'w', encoding='utf-8') as f:
@@ -766,7 +710,7 @@ def create_category():
 def delete_category():
     """Delete a category file"""
     try:
-        data = request.json
+        data = request.json or {}
         file = data.get('file', '').strip()
         
         if not file:
@@ -805,7 +749,10 @@ def serve_config(filename):
             return jsonify({'error': 'File not found'}), 404
         
         with open(config_path, 'r', encoding='utf-8') as f:
-            return json.load(f)
+            data = json.load(f)
+            if data is None:
+                data = {}
+            return data
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

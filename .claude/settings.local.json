@@ -12,7 +12,8 @@
       "Bash(mv:*)",
       "Bash(ls:*)",
       "Bash(find:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(del test_template_editor.py test_save_functionality.py)"
     ],
     "deny": []
   }

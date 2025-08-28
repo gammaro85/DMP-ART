@@ -8,6 +8,36 @@
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/dmp-art-favicon (Niestandardowe).png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Fix template editor layout issues */
+        .template-editor-container {
+            padding: 20px !important;
+            padding-bottom: 100px !important; /* Extra space for footer */
+            min-height: calc(100vh - 120px) !important;
+        }
+        
+        /* Ensure footer doesn't overlap content */
+        .site-footer {
+            margin-top: 50px !important;
+            position: relative !important;
+            z-index: 1 !important;
+        }
+        
+        /* Add some breathing room to tab content */
+        .tab-content {
+            padding-bottom: 30px !important;
+        }
+        
+        /* Make sure comment rows have proper spacing */
+        .comment-row {
+            margin-bottom: 15px !important;
+        }
+        
+        /* Add padding to category content */
+        .category-questions {
+            padding-bottom: 20px !important;
+        }
+    </style>
     <script>
         (function() {
             const saved = localStorage.getItem('dmp-art-theme');
@@ -25,6 +55,9 @@
             <a href="/" class="nav-item">Home</a>
             <a href="#" class="nav-item" onclick="alert('Please upload and process a document first to access review')">Review</a>
             <a href="/template_editor" class="nav-item active">Template Editor</a>
+            <button class="theme-toggle" aria-label="Toggle theme">
+                <i class="fas fa-sun"></i>
+            </button>
         </nav>
     </header>
 
@@ -98,7 +131,13 @@
     <script>
     // --- Utility Functions ---
     function fetchJSON(url) {
-        return fetch(url).then(r => r.json());
+        return fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                return response.json();
+            });
     }
     
     function postJSON(url, data) {
@@ -115,6 +154,11 @@
     let dmpStructure = [];
     let quickComments = [];
     let editingCommentIndex = -1;
+    let dataLoaded = {
+        dmpStructure: false,
+        quickComments: false,
+        categories: false
+    };
 
     // --- DOM Ready ---
     document.addEventListener('DOMContentLoaded', function() {
@@ -162,7 +206,7 @@
         if (btn) btn.classList.add('active');
         if (panel) panel.classList.add('active');
         
-        // Render content based on tab
+        // Render content based on tab - always attempt render, functions will handle loading states
         if (tabId === 'dmp-structure') {
             renderDmpStructure();
         } else if (tabId === 'quick-comments') {
@@ -178,7 +222,10 @@
         fetchJSON('/config/dmp_structure.json')
             .then(data => {
                 dmpStructure = data.structure || [];
-                if (currentTab === 'dmp-structure') renderDmpStructure();
+                dataLoaded.dmpStructure = true;
+                if (currentTab === 'dmp-structure') {
+                    renderDmpStructure();
+                }
             })
             .catch(err => console.error('Error loading DMP structure:', err));
 
@@ -186,7 +233,10 @@
         fetchJSON('/config/quick_comments.json')
             .then(data => {
                 quickComments = data.quick_comments || [];
-                if (currentTab === 'quick-comments') renderQuickComments();
+                dataLoaded.quickComments = true;
+                if (currentTab === 'quick-comments') {
+                    renderQuickComments();
+                }
             })
             .catch(err => console.error('Error loading quick comments:', err));
 
@@ -194,6 +244,7 @@
         fetchJSON('/list_categories')
             .then(data => {
                 categories = data.categories || [];
+                dataLoaded.categories = true;
                 renderCategoryTabs();
             })
             .catch(err => console.error('Error loading categories:', err));
@@ -205,6 +256,11 @@
         if (!container) return;
         
         container.innerHTML = '';
+        
+        if (!dataLoaded.dmpStructure) {
+            container.innerHTML = '<div class="loading">Loading DMP structure...</div>';
+            return;
+        }
         
         if (!dmpStructure.length) {
             container.innerHTML = '<div class="empty-state">No DMP structure found. Check dmp_structure.json file.</div>';
@@ -244,6 +300,11 @@
         if (!list) return;
         
         list.innerHTML = '';
+        
+        if (!dataLoaded.quickComments) {
+            list.innerHTML = '<div class="loading">Loading quick comments...</div>';
+            return;
+        }
         
         if (!quickComments.length) {
             list.innerHTML = '<div class="empty-state">No quick comments yet. Click "Add Quick Comment" to get started.</div>';
@@ -390,6 +451,10 @@
         const addBtn = document.getElementById('add-category-btn');
         const content = document.getElementById('tab-content');
         
+        if (!categories.length) {
+            return;
+        }
+        
         categories.forEach(cat => {
             // Create tab button
             const tab = document.createElement('button');
@@ -412,8 +477,14 @@
     }
 
     function renderCategoryPanel(tabId) {
+        if (!dataLoaded.categories) {
+            return;
+        }
+        
         const cat = categories.find(c => c.file === tabId);
-        if (!cat) return;
+        if (!cat) {
+            return;
+        }
         
         const panel = document.getElementById(`${cat.file}-panel`);
         if (!panel) return;
@@ -706,10 +777,12 @@
             }
         }, 3000);
     }
+
+    // Theme toggle is handled by dark-mode.js
     </script>
+
+    <footer class="site-footer">
+        DMP ART © 2025
+    </footer>
 </body>
 </html>
-
-<footer class="site-footer">
-    DMP ART © 2025
-</footer>
