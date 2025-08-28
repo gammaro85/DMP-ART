@@ -42,63 +42,115 @@
             border-color: var(--border-light);
         }
         
-        /* Fixed Right Sidebar Styles - Override main CSS */
+        /* Layout */
         .review-layout {
             display: flex !important;
             flex-direction: row !important;
-            gap: 20px !important;
-            max-width: none !important;
-            margin: 0 !important;
+            gap: 30px !important;
+            max-width: 1400px !important;
+            margin: 0 auto !important;
             padding: 20px !important;
-            position: relative !important; /* Ensure proper positioning context */
+            position: relative !important;
         }
-        
         .main-content {
             flex: 1 !important;
-            margin-right: 250px !important; /* Space for fixed sidebar */
+            margin-left: 40px !important;
+            margin-right: 290px !important;
             min-width: 0 !important;
             order: 1 !important;
         }
         
-        body[data-page="review"] .right-sidebar {
+        /* Sidebar - Fixed on right side, always visible */
+        body[data-page="review"] aside.right-sidebar {
             position: fixed !important;
-            top: 80px !important; /* Below the header */
+            top: 80px !important;
             right: 20px !important;
-            width: 210px !important; /* Reduced by 30% from 300px */
-            min-width: 210px !important;
-            max-width: 210px !important;
-            min-height: 400px !important;
-            max-height: calc(100vh - 100px) !important; /* Prevent overflow */
+            bottom: 60px !important;
+            width: 250px !important;
             background-color: var(--bg-card) !important;
             border: 1px solid var(--border-light) !important;
             border-radius: 8px !important;
             padding: 15px !important;
             overflow-y: auto !important;
-            z-index: 1001 !important;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+            z-index: 999999 !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
             display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            flex-shrink: 0 !important;
+            transform: none !important;
         }
         
-        /* Force sidebar visibility override with highest specificity */
-        body[data-page="review"] .right-sidebar,
-        .review-container .right-sidebar,
-        .right-sidebar {
-            position: fixed !important;
-            top: 80px !important;
-            right: 20px !important;
-            width: 210px !important;
+        /* Remove previous fixed overrides */
+        /* Removed: body[data-page="review"] .right-sidebar { position: fixed ... } */
+        /* Removed: force visibility override and responsive fixed positioning rules */
+        
+        /* Enhanced Review Page Styles */
+        .results-container {
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-medium);
+            transition: all 0.3s ease;
+        }
+        .result-card {
+            background-color: var(--bg-tertiary);
+            border-color: var(--border-medium);
+        }
+        .feature-card,
+        .stat-item {
+            background-color: var(--bg-secondary);
+            border-color: var(--border-light);
+        }
+        
+        /* Fixed Right Sidebar Styles - Override main CSS */
+        .review-layout {
             display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            flex-shrink: 0 !important;
-            z-index: 9999 !important;
+            gap: 0 !important;
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 20px !important;
+            position: relative !important;
+        }
+        
+        .main-content {
+            flex: 1 !important;
+            margin-right: 0 !important; /* no reserved space, sidebar is outside */
+            min-width: 0 !important;
+            order: 1 !important;
+        }
+        
+        /* Removed duplicate CSS rule that was conflicting with main sidebar rule */
+            float: none !important;
         }
         
         .navigation-pane, .category-comments-pane {
             margin-bottom: 2rem;
+        }
+
+        /* Center the review subtitle to align with logo */
+        .review-subtitle {
+            text-align: center !important;
+            margin: 0 auto !important;
+            font-size: 1.2rem !important;
+            color: var(--text-secondary) !important;
+            margin-bottom: 2rem !important;
+        }
+
+        /* Section and subsection title colors */
+        .question-card h2,
+        .question-card .section-title,
+        h2.section-title {
+            color: #2d5016 !important; /* Darker green for section titles */
+            font-weight: 600 !important;
+        }
+
+        .question-card h3,
+        .question-card .subsection-title,
+        h3.subsection-title {
+            color: #4a7c59 !important; /* Lighter green for subsection titles */
+            font-weight: 500 !important;
         }
         
         .navigation-pane h3, .category-comments-pane h3 {
@@ -189,10 +241,10 @@
             background-color: var(--bg-tertiary);
             border: 1px solid var(--border-light);
             color: var(--text-primary);
-            padding: 8px 12px;
+            padding: 4px 8px;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             transition: all 0.2s ease;
             text-align: left;
         }
@@ -441,44 +493,213 @@
             transition: opacity 0.2s;
         }
         
-        /* Responsive adjustments - Maintain fixed positioning */
+        /* Responsive adjustments - Desktop main content spacing */
         @media (min-width: 1200px) {
-            body[data-page="review"] .right-sidebar {
-                position: fixed !important;
-                top: 80px !important;
-                right: 20px !important;
-                width: 210px !important;
-                display: block !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-                z-index: 1001 !important;
-                flex-shrink: 0 !important;
-            }
-            
             body[data-page="review"] .main-content {
-                margin-right: 250px !important; /* Space for fixed sidebar */
+                margin-right: 0 !important;
             }
         }
         
         /* Smaller sidebar on smaller screens */
         @media (max-width: 1199px) {
             body[data-page="review"] .right-sidebar {
-                position: fixed !important;
-                top: 80px !important;
-                right: 20px !important;
-                width: 180px !important;
-                min-height: 400px !important;
+                position: relative !important;
+                top: unset !important;
+                right: unset !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                margin-bottom: 20px !important;
                 display: block !important;
                 visibility: visible !important;
                 opacity: 1 !important;
-                z-index: 1001 !important;
-                overflow-y: auto !important;
-                flex-shrink: 0 !important;
+                z-index: 1 !important;
+                overflow-y: visible !important;
+                order: -1 !important;
             }
             
             body[data-page="review"] .main-content {
-                margin-right: 220px !important; /* Space for smaller fixed sidebar */
+                margin-right: 0 !important;
             }
+
+            .review-layout {
+                flex-direction: column !important;
+            }
+        }
+
+        /* Add texture background to html instead of body */
+        html {
+            background-color: var(--bg-main);
+            /* background-image and repeat removed, handled by CSS */
+        }
+        /* Remove background from body to avoid double background */
+        body {
+            /* No background or effects here */
+        }
+
+        /* Layout with Quick Navigation */
+        .layout-root {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .has-quick-nav .main-content {
+            padding-right: 240px; /* Reserve space for quick nav */
+        }
+        
+        .quick-nav {
+            position: fixed;
+            top: 80px;
+            right: 0;
+            width: 220px;
+            max-height: calc(100vh - 80px);
+            background-color: var(--bg-card);
+            border-left: 1px solid var(--border-light);
+            border-radius: 8px 0 0 8px;
+            padding: 15px;
+            overflow-y: auto;
+            z-index: 10001;
+            box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Feedback Panel Modal Styles */
+        .compiled-feedback-panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            background: var(--bg-card);
+            border: 2px solid var(--border-medium);
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 1000;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            min-height: 500px;
+        }
+        
+        .compiled-feedback-panel.active {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .panel-handle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            background: var(--bg-secondary);
+            border-radius: 12px 12px 0 0;
+            border-bottom: 1px solid var(--border-light);
+            position: relative;
+        }
+        
+        .panel-handle-bar {
+            display: none;
+        }
+        
+        .panel-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        
+        .panel-content {
+            padding: 24px;
+            height: calc(100% - 80px);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .feedback-summary h3 {
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            font-size: 1.1rem;
+        }
+        
+        .feedback-summary textarea {
+            width: 100%;
+            flex: 1;
+            min-height: 300px;
+            padding: 16px;
+            border: 1px solid var(--border-medium);
+            border-radius: 8px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            resize: none;
+        }
+        
+        .panel-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .panel-actions .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .panel-actions .action-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+        
+        .panel-actions .action-btn i {
+            font-size: 16px;
+        }
+        
+        /* Backdrop overlay */
+        .panel-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+            backdrop-filter: blur(2px);
+        }
+        
+        .panel-backdrop.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Footer always at the bottom */
+        .site-footer {
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            padding: 10px 0;
+            text-align: center;
+            background-color: var(--bg-footer);
+            border-top: 1px solid var(--border-light);
+            z-index: 1001;
         }
     </style>
 </head>
@@ -491,214 +712,211 @@
                 <a href="/template_editor" class="nav-item">Customize Templates</a>
                 <a href="/documentation" class="nav-item">Documentation</a>
             </div>
-            
             <div class="nav-right">
-                <!-- Action Buttons in Header -->
-                <div class="header-action-buttons-nav">
-                    <button id="compile-feedback-btn" class="action-btn primary">Compile Feedback Report</button>
-                    <button id="save-feedback-btn" class="action-btn secondary">Save Progress</button>
-                </div>
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
         </nav>
     </header>
     
-    <div class="review-container">
-        <header class="review-header">
-            <div class="logo-container">
-                <img src="{{ url_for('static', filename='images/dmp-art-logo-main-light.png') }}" 
-                     alt="DMP ART Logo" 
-                     class="logo light-logo">
-                <img src="{{ url_for('static', filename='images/dmp-art-logo-main-dark.png') }}" 
-                     alt="DMP ART Logo" 
-                     class="logo dark-logo">
-            </div>
-            <p class="review-subtitle">Review extracted content and provide feedback</p>
+    <div class="layout-root has-quick-nav">
+        <div class="review-container">
+            <header class="review-header">
+                <div class="logo-container">
+                    <img src="{{ url_for('static', filename='images/dmp-art-logo-main-light.png') }}" 
+                         alt="DMP ART Logo" 
+                         class="logo light-logo">
+                    <img src="{{ url_for('static', filename='images/dmp-art-logo-main-dark.png') }}" 
+                         alt="DMP ART Logo" 
+                         class="logo dark-logo">
+                </div>
+                <p class="review-subtitle">Review extracted content and provide feedback</p>
+            </header>
             
-            {% if extraction_info %}
-            <div class="extraction-info">
-                <p>Extraction Summary</p>
-                <div class="extraction-stats">
-                    <div class="stat-item">
-                        <span class="stat-number">{{ extraction_info.total_sections }}</span>
-                        <span class="stat-label">Total Sections</span>
+            <div class="review-layout">
+                <!-- Main Content Area -->
+                <main class="main-content">
+                <!-- Questions Container -->
+                <div class="questions-container">
+                    {% for section_id, content in extracted_content.items() %}
+                    <div class="question-card" id="section-{{ section_id }}" data-id="{{ section_id }}">
+                        <div class="question-header">
+                            <div class="section-title-only">
+                                {% set section_parts = content.section.split('.', 1) %}
+                                {% if section_parts|length > 1 %}
+                                    {{ section_parts[1].strip() }}
+                                {% else %}
+                                    {{ content.section }}
+                                {% endif %}
+                            </div>
+                            <div class="question-section-combined">
+                                <strong>{{ section_id }}. {{ content.question }}</strong>
+                            </div>
+                        </div>
+                        
+                        <!-- Extracted DMP content -->
+                        <div class="extracted-content">
+                            {% if content.paragraphs|length > 0 %}
+                                <div class="continuous-text">
+                                    <p>{{ content.paragraphs|join(' ') }}</p>
+                                </div>
+                            {% else %}
+                                <div class="no-content-warning">
+                                    <div style="font-size: 2rem; margin-bottom: 10px;"></div>
+                                    <strong>No content found for this section</strong>
+                                    <p>This may indicate that the extraction process couldn't identify content for this specific subsection, or the content may be in a format that wasn't recognized.</p>
+                                    <details style="margin-top: 10px;">
+                                        <summary>Possible reasons</summary>
+                                        <ul style="text-align: left; display: inline-block; margin-top: 5px;">
+                                            <li>Content was in a different format than expected</li>
+                                            <li>Section headers weren't recognized</li>
+                                            <li>Content was in tables or complex layouts</li>
+                                            <li>Text was part of images or non-extractable elements</li>
+                                        </ul>
+                                    </details>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        
+                        <!-- Enhanced feedback section -->
+                        <div class="enhanced-feedback-section">
+                            <div class="feedback-toolbar">
+                                <h3>Feedback for Section {{ section_id }}</h3>
+                                {% if content.get('type') in ['question', 'original_text', 'text_insertion'] %}
+                                <div class="char-counter" id="char-counter-{{ section_id }}">0 characters</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Category Selection -->
+                            <div class="category-selection" id="category-selection-{{ section_id }}">
+                                <label>Choose feedback category:</label>
+                                <div class="category-buttons-inline">
+                                    <button class="category-btn-inline" data-category="newcomer" data-section="{{ section_id }}">Newcomer Guidance</button>
+                                    <button class="category-btn-inline" data-category="missing" data-section="{{ section_id }}">Missing Info</button>
+                                    <button class="category-btn-inline" data-category="ready" data-section="{{ section_id }}">Ready to Use</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Category Comments Dropdown -->
+                            <div class="category-comments-dropdown" id="category-dropdown-{{ section_id }}" style="display: none;">
+                                <div class="category-comments-container">
+                                    <div class="category-comments-list-inline" id="category-comments-{{ section_id }}">
+                                        <!-- Comments will be populated here -->
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <textarea class="feedback-text" 
+                                      id="feedback-{{ section_id }}" 
+                                      data-section-id="{{ section_id }}"
+                                      {% if content.get('type') %}data-section-type="{{ content.get('type') }}"{% endif %}
+                                      placeholder="Enter your feedback for this section..."
+                                      rows="4"></textarea>
+                            
+                            <div class="action-row">
+                                <div class="left-actions">
+                                    <button class="copy-btn" data-id="{{ section_id }}" title="Copy feedback to clipboard">Copy</button>
+                                    <button class="reset-btn" data-id="{{ section_id }}" title="Reset to original template">Reset</button>
+                                </div>
+                                <div class="completion-indicator" id="completion-{{ section_id }}">
+                                    <span class="status-text"></span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-number">{{ extraction_info.sections_with_content }}</span>
-                        <span class="stat-label">Sections with Content</span>
+                    {% endfor %}
+                </div>
+            </main>
+            
+            </div> <!-- End review-layout -->
+            
+            <!-- Unconnected Text Assignment Modal -->
+            {% if unconnected_text and unconnected_text|length > 0 %}
+            <div id="unconnected-text-modal" class="compiled-feedback-container">
+                <div class="compiled-feedback-modal">
+                    <div class="modal-header">
+                        <h2>Unconnected Text Assignment</h2>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0.5rem 0 0 0;">
+                            The following text was found but could not be automatically assigned to any DMP section. Please assign it manually.
+                        </p>
+                        <button id="close-unconnected-btn" class="close-btn" title="Close modal">×</button>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-number">{{ extraction_info.extraction_method }}</span>
-                        <span class="stat-label">Processing Method</span>
+                    
+                    <div class="modal-content">
+                        <div id="unconnected-items">
+                            {% for item in unconnected_text %}
+                            <div class="unconnected-item" data-index="{{ loop.index0 }}">
+                                <div class="unconnected-text-preview">
+                                    <h4>Text {{ loop.index }}:</h4>
+                                    <div class="text-content">{{ item.text }}</div>
+                                </div>
+                                <div class="assignment-controls">
+                                    <label for="section-select-{{ loop.index0 }}">Assign to section:</label>
+                                    <select id="section-select-{{ loop.index0 }}" class="section-select">
+                                        <option value="">-- Select Section --</option>
+                                        {% for section_id, content in extracted_content.items() %}
+                                        <option value="{{ section_id }}">{{ section_id }}. {{ content.question }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button class="assign-btn" data-index="{{ loop.index0 }}" data-text="{{ item.text }}">Assign</button>
+                                    <button class="skip-btn" data-index="{{ loop.index0 }}">Skip</button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button id="assign-all-btn" class="action-btn">Assign All</button>
+                        <button id="skip-all-btn" class="secondary-btn">Skip All</button>
                     </div>
                 </div>
             </div>
             {% endif %}
-        </header>
-        
-        <div class="review-layout">
-            <!-- Main Content Area -->
-            <main class="main-content">
-            <!-- Questions Container -->
-            <div class="questions-container">
-                {% for section_id, content in extracted_content.items() %}
-                <div class="question-card" id="section-{{ section_id }}" data-id="{{ section_id }}">
-                    <div class="question-header">
-                        <div class="section-title-only">
-                            {% set section_parts = content.section.split('.', 1) %}
-                            {% if section_parts|length > 1 %}
-                                {{ section_parts[1].strip() }}
-                            {% else %}
-                                {{ content.section }}
-                            {% endif %}
-                        </div>
-                        <div class="question-section-combined">
-                            <strong>{{ section_id }}. {{ content.question }}</strong>
-                        </div>
-                    </div>
-                    
-                    <!-- Extracted DMP content -->
-                    <div class="extracted-content">
-                        {% if content.paragraphs|length > 0 %}
-                            <div class="continuous-text">
-                                <p>{{ content.paragraphs|join(' ') }}</p>
-                            </div>
-                        {% else %}
-                            <div class="no-content-warning">
-                                <div style="font-size: 2rem; margin-bottom: 10px;"></div>
-                                <strong>No content found for this section</strong>
-                                <p>This may indicate that the extraction process couldn't identify content for this specific subsection, or the content may be in a format that wasn't recognized.</p>
-                                <details style="margin-top: 10px;">
-                                    <summary>Possible reasons</summary>
-                                    <ul style="text-align: left; display: inline-block; margin-top: 5px;">
-                                        <li>Content was in a different format than expected</li>
-                                        <li>Section headers weren't recognized</li>
-                                        <li>Content was in tables or complex layouts</li>
-                                        <li>Text was part of images or non-extractable elements</li>
-                                    </ul>
-                                </details>
-                            </div>
-                        {% endif %}
-                    </div>
-                    
-                    
-                    <!-- Enhanced feedback section -->
-                    <div class="enhanced-feedback-section">
-                        <div class="feedback-toolbar">
-                            <h3>Feedback for Section {{ section_id }}</h3>
-                            {% if content.get('type') in ['question', 'original_text', 'text_insertion'] %}
-                            <div class="char-counter" id="char-counter-{{ section_id }}">0 characters</div>
-                            {% endif %}
-                        </div>
-                        
-                        <!-- Category Selection -->
-                        <div class="category-selection" id="category-selection-{{ section_id }}">
-                            <label>Choose feedback category:</label>
-                            <div class="category-buttons-inline">
-                                <button class="category-btn-inline" data-category="newcomer" data-section="{{ section_id }}">Newcomer Guidance</button>
-                                <button class="category-btn-inline" data-category="missing" data-section="{{ section_id }}">Missing Info</button>
-                                <button class="category-btn-inline" data-category="ready" data-section="{{ section_id }}">Ready to Use</button>
-                            </div>
-                        </div>
-                        
-                        <!-- Category Comments Dropdown -->
-                        <div class="category-comments-dropdown" id="category-dropdown-{{ section_id }}" style="display: none;">
-                            <div class="category-comments-container">
-                                <div class="category-comments-list-inline" id="category-comments-{{ section_id }}">
-                                    <!-- Comments will be populated here -->
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <textarea class="feedback-text" 
-                                  id="feedback-{{ section_id }}" 
-                                  data-section-id="{{ section_id }}"
-                                  {% if content.get('type') %}data-section-type="{{ content.get('type') }}"{% endif %}
-                                  placeholder="Enter your feedback for this section..."
-                                  rows="4"></textarea>
-                        
-                        <div class="action-row">
-                            <div class="left-actions">
-                                <button class="copy-btn" data-id="{{ section_id }}" title="Copy feedback to clipboard">Copy</button>
-                                <button class="reset-btn" data-id="{{ section_id }}" title="Reset to original template">Reset</button>
-                            </div>
-                            <div class="completion-indicator" id="completion-{{ section_id }}">
-                                <span class="status-text"></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </main>
-        
-        </div> <!-- End review-layout -->
-        
-        <!-- Unconnected Text Assignment Modal -->
-        {% if unconnected_text and unconnected_text|length > 0 %}
-        <div id="unconnected-text-modal" class="compiled-feedback-container">
-            <div class="compiled-feedback-modal">
-                <div class="modal-header">
-                    <h2>Unconnected Text Assignment</h2>
-                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0.5rem 0 0 0;">
-                        The following text was found but could not be automatically assigned to any DMP section. Please assign it manually.
-                    </p>
-                    <button id="close-unconnected-btn" class="close-btn" title="Close modal">×</button>
-                </div>
-                
-                <div class="modal-content">
-                    <div id="unconnected-items">
-                        {% for item in unconnected_text %}
-                        <div class="unconnected-item" data-index="{{ loop.index0 }}">
-                            <div class="unconnected-text-preview">
-                                <h4>Text {{ loop.index }}:</h4>
-                                <div class="text-content">{{ item.text }}</div>
-                            </div>
-                            <div class="assignment-controls">
-                                <label for="section-select-{{ loop.index0 }}">Assign to section:</label>
-                                <select id="section-select-{{ loop.index0 }}" class="section-select">
-                                    <option value="">-- Select Section --</option>
-                                    {% for section_id, content in extracted_content.items() %}
-                                    <option value="{{ section_id }}">{{ section_id }}. {{ content.question }}</option>
-                                    {% endfor %}
-                                </select>
-                                <button class="assign-btn" data-index="{{ loop.index0 }}" data-text="{{ item.text }}">Assign</button>
-                                <button class="skip-btn" data-index="{{ loop.index0 }}">Skip</button>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                
-                <div class="modal-actions">
-                    <button id="assign-all-btn" class="action-btn">Assign All</button>
-                    <button id="skip-all-btn" class="secondary-btn">Skip All</button>
-                </div>
-            </div>
-        </div>
-        {% endif %}
 
-        <!-- Compiled feedback modal -->
-        <div id="compiled-feedback-container" class="compiled-feedback-container hidden">
-            <div class="compiled-feedback-modal">
-                <div class="modal-header">
-                    <h2>Compiled Feedback Report</h2>
+            <!-- Backdrop overlay -->
+            <div id="panel-backdrop" class="panel-backdrop"></div>
+            
+            <!-- Compiled feedback bottom sliding panel -->
+            <div id="compiled-feedback-container" class="compiled-feedback-panel">
+                <div class="panel-handle">
+                    <div class="panel-handle-bar"></div>
+                    <span class="panel-title">Compiled Feedback Report</span>
                     <button id="close-compiled-btn" class="close-btn" title="Close report">×</button>
                 </div>
-                
-                <div class="modal-content">
-                    <textarea id="compiled-feedback" readonly></textarea>
-                </div>
-                
-                <div class="modal-actions">
-                    <button id="copy-compiled-btn" class="action-btn" title="Copy report to clipboard">Copy Report</button>
-                    <button id="download-feedback-btn" class="action-btn" title="Download as text file">Download TXT</button>
+                <div class="panel-content">
+                    <div class="feedback-summary">
+                        <h3>Feedback Summary</h3>
+                        <textarea id="compiled-feedback" readonly placeholder="Click 'Compile Feedback' to generate report..."></textarea>
+                    </div>
+                    <div class="panel-actions">
+                        <button id="copy-compiled-btn" class="action-btn" title="Copy report to clipboard">
+                            <i class="fas fa-copy"></i> Copy Report
+                        </button>
+                        <button id="download-feedback-btn" class="action-btn" title="Download as text file">
+                            <i class="fas fa-download"></i> Download TXT
+                        </button>
+                        <button id="generate-docx-btn" class="action-btn" title="Generate Word document">
+                            <i class="fas fa-file-word"></i> Generate DOCX
+                        </button>
+                    </div>
                 </div>
             </div>
+            
         </div>
         
-        <!-- Right Sidebar -->
-        <aside class="right-sidebar">
-            <!-- Navigation Grid -->
+    </div>
+
+    <!-- Right Sidebar - Direct child of body for proper fixed positioning -->
+    <aside class="right-sidebar">
+            <!-- Action Buttons -->
+            <div class="sidebar-actions">
+                <button id="compile-feedback-btn" class="action-btn primary" style="width: 100%; margin-bottom: 10px;">Compile Feedback</button>
+                <button id="save-feedback-btn" class="action-btn secondary" style="width: 100%; margin-bottom: 20px;">Save Progress</button>
+            </div>
+
             <div class="navigation-pane">
                 <h3>Quick Navigation</h3>
                 <div class="nav-grid" id="section-nav-grid">
@@ -715,44 +933,18 @@
                 </div>
             </div>
         </aside>
-        
     </div>
     
-    <footer class="site-footer">
-        DMP ART © 2025
+    <footer class="site-footer" style="z-index:1001;">
+        <span>DMP ART &copy; 2025</span>
     </footer>
 
     <button id="cite-btn-float">Cite</button>
 
     <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-</body>
-</html>
-
-<footer class="site-footer">
-    DMP ART © 2025
-</footer>
 
     <script>
-        // Force sidebar positioning
-        function forceSidebarPositioning() {
-            const sidebar = document.querySelector('.right-sidebar');
-            if (sidebar) {
-                // Force the position with JavaScript
-                sidebar.style.setProperty('position', 'fixed', 'important');
-                sidebar.style.setProperty('top', '80px', 'important');
-                sidebar.style.setProperty('right', '20px', 'important');
-                sidebar.style.setProperty('width', '210px', 'important');
-                sidebar.style.setProperty('z-index', '9999', 'important');
-                sidebar.style.setProperty('display', 'block', 'important');
-                sidebar.style.setProperty('visibility', 'visible', 'important');
-                sidebar.style.setProperty('opacity', '1', 'important');
-                sidebar.style.setProperty('max-height', 'calc(100vh - 100px)', 'important');
-                sidebar.style.setProperty('overflow-y', 'auto', 'important');
-                console.log('Sidebar positioning forced via JavaScript');
-            }
-        }
-
         // Enhanced navigation functionality
         function scrollToSection(sectionId) {
             const element = document.getElementById('section-' + sectionId);
@@ -781,14 +973,6 @@
 
         // Auto-update character counters and track focused textarea
         document.addEventListener('DOMContentLoaded', function() {
-            // Force sidebar positioning as soon as DOM is ready
-            forceSidebarPositioning();
-            
-            // Also force positioning after a short delay to ensure all styles are applied
-            setTimeout(forceSidebarPositioning, 100);
-            
-            // Maintain positioning on window resize
-            window.addEventListener('resize', forceSidebarPositioning);
             const textareas = document.querySelectorAll('.feedback-text');
             textareas.forEach(textarea => {
                 const sectionId = textarea.getAttribute('data-section-id');
@@ -858,10 +1042,20 @@
 
         // Fetch category comments on DOMContentLoaded
         document.addEventListener('DOMContentLoaded', function() {
-            // ...existing code...
-            fetchCategoryComments();
-            loadQuickComments();
-            // ...existing code...
+            console.log('Review page DOM loaded, initializing...');
+            
+            try {
+                fetchCategoryComments();
+                loadQuickComments();
+                
+                // Initialize sidebar components
+                generateNavigationGrid();
+                initializeCategorySelector();
+                
+                console.log('Review page initialization completed');
+            } catch (error) {
+                console.error('Error during review page initialization:', error);
+            }
         });
         
         // Category buttons and comments functionality
@@ -1141,14 +1335,20 @@
         }
 
         function generateNavigationGrid() {
+            console.log('Generating navigation grid...');
             const navGrid = document.getElementById('section-nav-grid');
-            if (!navGrid) return;
+            if (!navGrid) {
+                console.error('section-nav-grid element not found');
+                return;
+            }
 
             // Get all section containers
             const sections = document.querySelectorAll('[id^="section-"]');
+            console.log('Found sections:', sections.length);
             
             sections.forEach(section => {
                 const sectionId = section.id.replace('section-', '');
+                console.log('Creating nav button for section:', sectionId);
                 const btn = document.createElement('button');
                 btn.className = 'nav-grid-btn';
                 btn.textContent = sectionId;
@@ -1158,8 +1358,12 @@
         }
 
         function loadQuickComments() {
+            console.log('Loading quick comments...');
             const quickCommentsList = document.getElementById('quick-comments-list');
-            if (!quickCommentsList) return;
+            if (!quickCommentsList) {
+                console.error('quick-comments-list element not found');
+                return;
+            }
 
             fetch('/load_quick_comments')
             .then(response => response.json())
@@ -1431,4 +1635,160 @@
                 window.getSelection().removeAllRanges();
             });
         })();
+
+        // Theme toggle icon switch
+        document.addEventListener('DOMContentLoaded', function() {
+            function updateThemeIcon() {
+                const btn = document.querySelector('.theme-toggle i');
+                if (!btn) return;
+                if (document.documentElement.getAttribute('data-theme') === 'dark') {
+                    btn.className = 'fas fa-sun';
+                } else {
+                    btn.className = 'fas fa-moon';
+                }
+            }
+            updateThemeIcon();
+            window.toggleTheme = function() {
+                const current = document.documentElement.getAttribute('data-theme');
+                const next = current === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', next);
+                localStorage.setItem('dmp-art-theme', next);
+                updateThemeIcon();
+            };
+            // Also update icon on theme change
+            window.addEventListener('storage', updateThemeIcon);
+        });
+
+        // Sliding Panel Functionality
+        (function() {
+            const panel = document.getElementById('compiled-feedback-container');
+            const backdrop = document.getElementById('panel-backdrop');
+            const compileBtn = document.getElementById('compile-feedback-btn');
+            const closeBtn = document.getElementById('close-compiled-btn');
+            const copyBtn = document.getElementById('copy-compiled-btn');
+            const downloadBtn = document.getElementById('download-feedback-btn');
+            const generateDocxBtn = document.getElementById('generate-docx-btn');
+            const feedbackTextarea = document.getElementById('compiled-feedback');
+            
+            let isOpen = false;
+
+            // Show panel with sliding animation
+            function showPanel() {
+                if (isOpen) return;
+                
+                backdrop.classList.add('active');
+                panel.classList.add('active');
+                isOpen = true;
+                
+                // Generate feedback content
+                generateFeedbackReport();
+            }
+
+            // Hide panel with sliding animation
+            function hidePanel() {
+                if (!isOpen) return;
+                
+                backdrop.classList.remove('active');
+                panel.classList.remove('active');
+                isOpen = false;
+            }
+
+            // Generate feedback report from all sections
+            function generateFeedbackReport() {
+                let report = '';
+                const sections = document.querySelectorAll('.question-card');
+                
+                report += 'DMP FEEDBACK REPORT\\n';
+                report += '==================\\n\\n';
+                report += `Generated on: ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}\\n\\n`;
+                
+                sections.forEach(section => {
+                    const sectionId = section.getAttribute('data-id');
+                    const questionText = section.querySelector('h2')?.textContent || 'Unknown Section';
+                    const feedbackTextarea = section.querySelector(`#feedback-${sectionId}`);
+                    
+                    if (feedbackTextarea && feedbackTextarea.value.trim()) {
+                        report += `SECTION ${sectionId}\\n`;
+                        report += `${questionText}\\n`;
+                        report += `${'='.repeat(50)}\\n`;
+                        report += feedbackTextarea.value.trim() + '\\n\\n';
+                    }
+                });
+                
+                if (report.split('\\n').length <= 6) {
+                    report += 'No feedback has been provided yet. Please add feedback to the sections and try again.';
+                }
+                
+                feedbackTextarea.value = report;
+            }
+
+            // Copy report to clipboard
+            function copyToClipboard() {
+                feedbackTextarea.select();
+                document.execCommand('copy');
+                
+                // Show temporary success message
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                copyBtn.style.background = '#28a745';
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalText;
+                    copyBtn.style.background = '';
+                }, 2000);
+            }
+
+            // Download as text file
+            function downloadReport() {
+                const content = feedbackTextarea.value;
+                const blob = new Blob([content], { type: 'text/plain' });
+                const url = window.URL.createObjectURL(blob);
+                
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `DMP_Feedback_Report_${new Date().toISOString().split('T')[0]}.txt`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            }
+
+            // Event listeners
+            if (compileBtn) {
+                compileBtn.addEventListener('click', showPanel);
+            }
+            
+            if (closeBtn) {
+                closeBtn.addEventListener('click', hidePanel);
+            }
+            
+            if (backdrop) {
+                backdrop.addEventListener('click', hidePanel);
+            }
+            
+            if (copyBtn) {
+                copyBtn.addEventListener('click', copyToClipboard);
+            }
+            
+            if (downloadBtn) {
+                downloadBtn.addEventListener('click', downloadReport);
+            }
+            
+            if (generateDocxBtn) {
+                generateDocxBtn.addEventListener('click', function() {
+                    alert('DOCX generation feature coming soon!');
+                });
+            }
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && isOpen) {
+                    hidePanel();
+                }
+            });
+
+            // Panel is now a centered modal, no dragging needed
+        })();
     </script>
+</body>
+</html>

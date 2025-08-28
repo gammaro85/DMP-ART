@@ -1,0 +1,436 @@
+{
+  "1.1": {
+    "section": "1. Data description and collection or re-use of existing data",
+    "question": "How will new data be collected or produced and/or how will existing data be re-used?",
+    "paragraphs": [
+      "The research is fully anonymous - no personal data is collected.",
+      "I. QUALITATIVE RESEARCH",
+      "Methods:",
+      "(i) online focus groups, (n=50; 5 waves with 10 players who frequently buy loot boxes)",
+      "(ii) in-depth online interviews (n=40)",
+      "(iii) netnography - until data saturation - approximately 40-60 hours - online participant observation",
+      "II. QUANTITATIVE RESEARCH",
+      "Method: panel survey - conducted on a panel of a research agency",
+      "III. EXPERIMENTAL RESEARCH",
+      "Method: experimental online survey",
+      "The following professional software will be used during the data analysis phase: IBM SPSS Statistics Premium, MPlus",
+      "and NVivo."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The research is fully anonymous - no personal data is collected.",
+        "tags": [],
+        "title": "The research is fully anonymous - no personal data is collected."
+      },
+      {
+        "text": "I. QUALITATIVE RESEARCH",
+        "tags": [],
+        "title": "I."
+      },
+      {
+        "text": "Methods:",
+        "tags": [],
+        "title": "Methods:"
+      },
+      {
+        "text": "(i) online focus groups, (n=50; 5 waves with 10 players who frequently buy loot boxes)",
+        "tags": [],
+        "title": "(i) online focus groups, (n=50; 5 waves with 10 players who frequently buy loot boxes)"
+      },
+      {
+        "text": "(ii) in-depth online interviews (n=40)",
+        "tags": [],
+        "title": "(ii) in-depth online interviews (n=40)"
+      },
+      {
+        "text": "(iii) netnography - until data saturation - approximately 40-60 hours - online participant observation",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "II. QUANTITATIVE RESEARCH",
+        "tags": [],
+        "title": "II."
+      },
+      {
+        "text": "Method: panel survey - conducted on a panel of a research agency",
+        "tags": [],
+        "title": "Method: panel survey - conducted on a panel of a research agency"
+      },
+      {
+        "text": "III. EXPERIMENTAL RESEARCH",
+        "tags": [],
+        "title": "III."
+      },
+      {
+        "text": "Method: experimental online survey",
+        "tags": [],
+        "title": "Method: experimental online survey"
+      },
+      {
+        "text": "The following professional software will be used during the data analysis phase: IBM SPSS Statistics Premium, MPlus",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "and NVivo.",
+        "tags": [],
+        "title": "and NVivo."
+      }
+    ]
+  },
+  "1.2": {
+    "section": "1. Data description and collection or re-use of existing data",
+    "question": "What data (for example the types, formats, and volumes) will be collected or produced?",
+    "paragraphs": [
+      "I. QUALITATIVE RESEARCH: 1. Recordings of online interviews - mp3, mp4; 2. Recordings of online participant behaviour",
+      "observations - mp4; 3. Transcriptions of qualitative interviews - doc; 4. Report - doc.",
+      "II. QUANTITATIVE SURVEY: 1. Matrix with preliminary and main quantitative survey working data - xls; csv or sav; 2.",
+      "Data matrix with coded responses from preliminary and main quantitative survey - xls; csv or sav; 3. Files with",
+      "aggregated results from analysis of quantitative data from main survey - xls, csv, sav; 4. Report - doc.",
+      "III. EXPERIMENTAL STUDY (QUANTITATIVE): 1. Matrix with preliminary data from pre-test and main quantitative survey",
+      "- xls; csv or sav; 2. Data matrix with coded responses from pre-test and main quantitative survey - xls; csv or sav; 3. Files",
+      "with aggregated results from analysis of quantitative data from main survey - xls, csv, sav; 4. Report - doc."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "I. QUALITATIVE RESEARCH: 1. Recordings of online interviews - mp3, mp4; 2. Recordings of online participant behaviour",
+        "tags": [],
+        "title": "I."
+      },
+      {
+        "text": "observations - mp4; 3. Transcriptions of qualitative interviews - doc; 4. Report - doc.",
+        "tags": [],
+        "title": "observations - mp4; 3."
+      },
+      {
+        "text": "II. QUANTITATIVE SURVEY: 1. Matrix with preliminary and main quantitative survey working data - xls; csv or sav; 2.",
+        "tags": [],
+        "title": "II."
+      },
+      {
+        "text": "Data matrix with coded responses from preliminary and main quantitative survey - xls; csv or sav; 3. Files with",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "aggregated results from analysis of quantitative data from main survey - xls, csv, sav; 4. Report - doc.",
+        "tags": [],
+        "title": "aggregated results from analysis of quantitative data from main survey - xls, csv, sav; 4."
+      },
+      {
+        "text": "III. EXPERIMENTAL STUDY (QUANTITATIVE): 1. Matrix with preliminary data from pre-test and main quantitative survey",
+        "tags": [],
+        "title": "III."
+      },
+      {
+        "text": "- xls; csv or sav; 2. Data matrix with coded responses from pre-test and main quantitative survey - xls; csv or sav; 3. Files",
+        "tags": [],
+        "title": "- xls; csv or sav; 2."
+      },
+      {
+        "text": "with aggregated results from analysis of quantitative data from main survey - xls, csv, sav; 4. Report - doc.",
+        "tags": [],
+        "title": "with aggregated results from analysis of quantitative data from main survey - xls, csv, sav; 4."
+      }
+    ]
+  },
+  "2.1": {
+    "section": "2. Documentation and data quality",
+    "question": "What metadata and documentation (for example methodology or data collection and way of organising data) will accompany data?",
+    "paragraphs": [
+      "Data from the different phases presented in the detailed description of the study (phases I-III) will be grouped and",
+      "stored in separate folders: QUALITATIVE STUDY; QUANTITATIVE STUDY; EXPERIMENTAL STUDY. In addition, subfolders",
+      "will be created for the QUALITATIVE STUDY: FOCUS GROUPS; IDI; NETNOGRAPHY.",
+      "The metadata should include: Title of the project carried out (Loot boxes in video games: understanding, impact, and",
+      "regulation) No. of the project carried out and names of the project team: Brzozowska-Woś, Magdalena; Schivinski,",
+      "Bruno; Gołąb-Andrzejak, Edyta.",
+      "Selected data generated from experiments will be deposited in the MOST Wiedzy Open Research Data Catalog",
+      "(common name - Bridge of Data) – repository provided by the Gdańsk University of Technology - and described using",
+      "attributes compatible with general metadata standards. Metadata descriptions will be stored in JSON-LD format and",
+      "will include, whenever possible, Persistent Identifiers (PID), such as ORCID or GRID."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Data from the different phases presented in the detailed description of the study (phases I-III) will be grouped and",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "stored in separate folders: QUALITATIVE STUDY; QUANTITATIVE STUDY; EXPERIMENTAL STUDY. In addition, subfolders",
+        "tags": [],
+        "title": "stored in separate folders: QUALITATIVE STUDY; QUANTITATIVE STUDY; EXPERIMENTAL STUDY."
+      },
+      {
+        "text": "will be created for the QUALITATIVE STUDY: FOCUS GROUPS; IDI; NETNOGRAPHY.",
+        "tags": [],
+        "title": "will be created for the QUALITATIVE STUDY: FOCUS GROUPS; IDI; NETNOGRAPHY."
+      },
+      {
+        "text": "The metadata should include: Title of the project carried out (Loot boxes in video games: understanding, impact, and",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "regulation) No. of the project carried out and names of the project team: Brzozowska-Woś, Magdalena; Schivinski,",
+        "tags": [],
+        "title": "regulation) No."
+      },
+      {
+        "text": "Bruno; Gołąb-Andrzejak, Edyta.",
+        "tags": [],
+        "title": "Bruno; Gołąb-Andrzejak, Edyta."
+      },
+      {
+        "text": "Selected data generated from experiments will be deposited in the MOST Wiedzy Open Research Data Catalog",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "(common name - Bridge of Data) – repository provided by the Gdańsk University of Technology - and described using",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "attributes compatible with general metadata standards. Metadata descriptions will be stored in JSON-LD format and",
+        "tags": [],
+        "title": "attributes compatible with general metadata standards."
+      },
+      {
+        "text": "will include, whenever possible, Persistent Identifiers (PID), such as ORCID or GRID.",
+        "tags": [],
+        "title": "will include, whenever possible, Persistent Identifiers (PID), such as ORCID or GRID."
+      }
+    ]
+  },
+  "2.2": {
+    "section": "2. Documentation and data quality",
+    "question": "What data quality control measures will be used?",
+    "paragraphs": [
+      "The data collected in the process of each qualitative study will be controlled on an ongoing basis by the researcher, e.g.",
+      "by asking additional questions of the respondents and clarifying their answers. Data at the different stages of",
+      "quantitative research (phases II and III) will be examined for quality and will undergo a cleaning process. Data deemed",
+      "OSF, OPUS-28 Strona 65 ID: 633263, 2024-12-09 10:29:16"
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The data collected in the process of each qualitative study will be controlled on an ongoing basis by the researcher, e.g.",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "by asking additional questions of the respondents and clarifying their answers. Data at the different stages of",
+        "tags": [],
+        "title": "by asking additional questions of the respondents and clarifying their answers."
+      },
+      {
+        "text": "quantitative research (phases II and III) will be examined for quality and will undergo a cleaning process. Data deemed",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "OSF, OPUS-28 Strona 65 ID: 633263, 2024-12-09 10:29:16",
+        "tags": [],
+        "title": "OSF, OPUS-28 Strona 65 ID: 633263, 2024-12-09 10:29:16"
+      }
+    ]
+  },
+  "3.1": {
+    "section": "3. Storage and backup during the research process",
+    "question": "How will data and metadata be stored and backed up during the research process?",
+    "paragraphs": [
+      "Magdalena Brzozowska-Woś; Bruno Schivinski; Edyta Golab-Andrzejak. In addition, after the completion of each stage",
+      "of the study, a backup copy will be created on an external drive held by the Project Manager.",
+      "anonymised. 4 copies of data from each stage of the project ensure that it is protected from possible loss."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Magdalena Brzozowska-Woś; Bruno Schivinski; Edyta Golab-Andrzejak. In addition, after the completion of each stage",
+        "tags": [],
+        "title": "Magdalena Brzozowska-Woś; Bruno Schivinski; Edyta Golab-Andrzejak."
+      },
+      {
+        "text": "of the study, a backup copy will be created on an external drive held by the Project Manager.",
+        "tags": [],
+        "title": "of the study, a backup copy will be created on an external drive held by the Project Manager."
+      },
+      {
+        "text": "anonymised. 4 copies of data from each stage of the project ensure that it is protected from possible loss.",
+        "tags": [],
+        "title": "anonymised."
+      }
+    ]
+  },
+  "3.2": {
+    "section": "3. Storage and backup during the research process",
+    "question": "How will data security and protection of sensitive data be taken care of during the research?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "4.1": {
+    "section": "4. Legal requirements, codes of conduct",
+    "question": "If personal data are processed, how will compliance with legislation on personal data and on data security be ensured?",
+    "paragraphs": [
+      "Nie dotyczy"
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Nie dotyczy",
+        "tags": [],
+        "title": "Nie dotyczy"
+      }
+    ]
+  },
+  "4.2": {
+    "section": "4. Legal requirements, codes of conduct",
+    "question": "How will other legal issues, such as intelectual property rights and ownership, be managed? What legislation is applicable?",
+    "paragraphs": [
+      "Resolution of the Senate of the Gdańsk University of Technology No. 117/2021/XXV of 19 May 2021",
+      "https://link.pg.edu.pl/GdańskTech_intprop",
+      "The results of the research will be published in scientific articles in reputable journals at the end of each phase of the",
+      "Articles will be published under a CCBY licence."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Resolution of the Senate of the Gdańsk University of Technology No. 117/2021/XXV of 19 May 2021",
+        "tags": [],
+        "title": "Resolution of the Senate of the Gdańsk University of Technology No."
+      },
+      {
+        "text": "https://link.pg.edu.pl/GdańskTech_intprop",
+        "tags": [],
+        "title": "https://link.pg.edu.pl/GdańskTech_intprop"
+      },
+      {
+        "text": "The results of the research will be published in scientific articles in reputable journals at the end of each phase of the",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "Articles will be published under a CCBY licence.",
+        "tags": [],
+        "title": "Articles will be published under a CCBY licence."
+      }
+    ]
+  },
+  "5.1": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How and when will data be shared? Are there possible restrictions to data sharing or embargo reasons?",
+    "paragraphs": [
+      "Data will be shared with the Gdansk University of Technology's repository: MOST Wiedzy Open Research Data Catalog",
+      "(common name Bridge of Data).",
+      "Selected data will be shared when the article based on it is published."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Data will be shared with the Gdansk University of Technology's repository: MOST Wiedzy Open Research Data Catalog",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "(common name Bridge of Data).",
+        "tags": [],
+        "title": "(common name Bridge of Data)."
+      },
+      {
+        "text": "Selected data will be shared when the article based on it is published.",
+        "tags": [],
+        "title": "Selected data will be shared when the article based on it is published."
+      }
+    ]
+  },
+  "5.2": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How will data for preservation be selected, and where will data be preserved long-term (for example a data repository or archive)?",
+    "paragraphs": [
+      "As far as long-term data storage is concerned, data shared on Bridge of Data will be stored indefinitely, while other",
+      "data will be stored for 10 years on a hard drive and made available upon request. The Bridge of Data is CoreTrustSeal",
+      "certified, which confirms the repository's trustworthiness and sustainability."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "As far as long-term data storage is concerned, data shared on Bridge of Data will be stored indefinitely, while other",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "data will be stored for 10 years on a hard drive and made available upon request. The Bridge of Data is CoreTrustSeal",
+        "tags": [],
+        "title": "data will be stored for 10 years on a hard drive and made available upon request."
+      },
+      {
+        "text": "certified, which confirms the repository's trustworthiness and sustainability.",
+        "tags": [],
+        "title": "certified, which confirms the repository's trustworthiness and sustainability."
+      }
+    ]
+  },
+  "5.3": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "What methods or software tools will be needed to access and use the data?",
+    "paragraphs": [
+      "The data will be gathered and made available in file formats that can be processed by free or open-source software."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The data will be gathered and made available in file formats that can be processed by free or open-source software.",
+        "tags": [],
+        "title": null
+      }
+    ]
+  },
+  "5.4": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How will the application of a unique and persistent identifier (such us a Digital Object Identifier (DOI)) to each data set be ensured?",
+    "paragraphs": [
+      "The Bridge of Data provides each dataset a DOI identifier."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The Bridge of Data provides each dataset a DOI identifier.",
+        "tags": [],
+        "title": "The Bridge of Data provides each dataset a DOI identifier."
+      }
+    ]
+  },
+  "6.1": {
+    "section": "6. Data management responsibilities and resources",
+    "question": "Who (for example role, position, and institution) will be responsible for data management (i.e the data steward)?",
+    "paragraphs": [
+      "The Open Science Competence Centre of the Gdansk University of Technology Library",
+      "OSF, OPUS-28 Strona 66 ID: 633263, 2024-12-09 10:29:16"
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The Open Science Competence Centre of the Gdansk University of Technology Library",
+        "tags": [],
+        "title": "The Open Science Competence Centre of the Gdansk University of Technology Library"
+      },
+      {
+        "text": "OSF, OPUS-28 Strona 66 ID: 633263, 2024-12-09 10:29:16",
+        "tags": [],
+        "title": "OSF, OPUS-28 Strona 66 ID: 633263, 2024-12-09 10:29:16"
+      }
+    ]
+  },
+  "6.2": {
+    "section": "6. Data management responsibilities and resources",
+    "question": "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)?",
+    "paragraphs": [
+      "OSF, OPUS-28 Strona 67 ID: 633263, 2024-12-09 10:29:16"
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "OSF, OPUS-28 Strona 67 ID: 633263, 2024-12-09 10:29:16",
+        "tags": [],
+        "title": "OSF, OPUS-28 Strona 67 ID: 633263, 2024-12-09 10:29:16"
+      }
+    ]
+  },
+  "_unconnected_text": [
+    {
+      "text": "[w języku angielskim]",
+      "type": "no_section"
+    }
+  ]
+}

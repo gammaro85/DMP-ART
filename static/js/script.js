@@ -85,6 +85,7 @@ function setTheme(theme) {
 function updateToggleButton(theme) {
     try {
         const themeText = document.getElementById('theme-text');
+        const themeIcon = document.querySelector('.theme-toggle i');
 
         if (themeText) {
             if (theme === 'dark') {
@@ -92,6 +93,11 @@ function updateToggleButton(theme) {
             } else {
                 themeText.textContent = 'Dark Mode';
             }
+        }
+
+        if (themeIcon) {
+            // Sun for dark mode (to switch to light), moon for light mode (to switch to dark)
+            themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
         }
     } catch (error) {
         console.error('Error updating toggle button:', error);
@@ -283,7 +289,8 @@ function setupUploadButton(elements) {
     const { uploadBtn } = elements;
 
     if (uploadBtn) {
-        uploadBtn.addEventListener('click', () => {
+        uploadBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent triggering the drop area click
             if (elements.selectedFile && !uploadBtn.disabled) {
                 updateButtonStates(elements, 'analyzing');
                 uploadFile(elements.selectedFile, elements);
@@ -301,7 +308,8 @@ function setupClearButton(elements) {
     const { clearBtn, fileInput, fileInfo, fileName, uploadBtn } = elements;
 
     if (clearBtn) {
-        clearBtn.addEventListener('click', () => {
+        clearBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent triggering the drop area click
             elements.selectedFile = null;
             updateButtonStates(elements, 'initial');
 
@@ -678,7 +686,12 @@ function initializeSectionNavigation() {
 }
 
 function createSectionNavigation() {
-    const navContainer = document.getElementById('section-nav');
+    // Skip navigation creation on review page - handled by review.html
+    if (document.body.hasAttribute('data-page') && document.body.getAttribute('data-page') === 'review') {
+        return;
+    }
+    
+    const navContainer = document.getElementById('section-nav-grid');
     if (!navContainer) return;
 
     // Clear existing navigation
@@ -691,7 +704,8 @@ function createSectionNavigation() {
         const sectionId = card.getAttribute('data-id');
         const sectionTitle = getSectionTitle(sectionId);
 
-        if (sectionId) {
+        // Skip section 0
+        if (sectionId && sectionId !== '0') {
             const navBtn = document.createElement('button');
             navBtn.className = 'nav-btn';
             navBtn.textContent = sectionId;

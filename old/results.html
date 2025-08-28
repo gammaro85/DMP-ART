@@ -162,6 +162,19 @@
                 padding: 0.2rem 0.4rem;
             }
         }
+        
+        /* Footer Styles */
+        .site-footer {
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            text-align: center;
+            padding: 1rem;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            border-top: 1px solid var(--border-light);
+            box-shadow: var(--shadow);
+        }
     </style>
 </head>
 <body data-page="results">
@@ -170,9 +183,9 @@
         <nav class="header-nav">
             <a href="/template_editor" class="nav-item">Customize Templates</a>
             <a href="/documentation" class="nav-item">Documentation</a>
-            <div class="theme-toggle" onclick="toggleTheme()">
-                <span id="theme-text">Light Mode</span>
-            </div>
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <i class="fas fa-moon"></i>
+            </button>
         </nav>
     </header>
     
@@ -248,17 +261,36 @@
         </div>
     </div>
     
-    <footer>
-        <div class="footer-content">
-            <div class="footer-main">
-                <p>&copy; 2025 DMP ART. All rights reserved.</p>
-            </div>
-        </div>
+    <footer class="site-footer">
+        <span>DMP ART &copy; 2025</span>
     </footer>
     
     <!-- Load dark mode script before other scripts -->
     <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     {% block scripts %}{% endblock %}
+    <script>
+        // Theme toggle icon switch
+        document.addEventListener('DOMContentLoaded', function() {
+            function updateThemeIcon() {
+                const btn = document.querySelector('.theme-toggle i');
+                if (!btn) return;
+                if (document.documentElement.getAttribute('data-theme') === 'dark') {
+                    btn.className = 'fas fa-sun';
+                } else {
+                    btn.className = 'fas fa-moon';
+                }
+            }
+            updateThemeIcon();
+            window.toggleTheme = function() {
+                const current = document.documentElement.getAttribute('data-theme');
+                const next = current === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', next);
+                localStorage.setItem('dmp-art-theme', next);
+                updateThemeIcon();
+            };
+            window.addEventListener('storage', updateThemeIcon);
+        });
+    </script>
 </body>
 </html>

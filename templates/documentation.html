@@ -21,7 +21,7 @@
     </script>
     <style>
         body {
-            background: var(--bg-primary);
+            /* background handled globally by CSS */
             color: var(--text-primary);
             transition: background 0.2s, color 0.2s;
         }
@@ -30,7 +30,7 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
-            padding-top: 100px;
+            padding-top: 0px; /* Use global body padding instead */
         }
         
         .doc-header {
@@ -268,7 +268,7 @@
         @media (max-width: 768px) {
             .doc-container {
                 padding: 1rem;
-                padding-top: 80px;
+                padding-top: 0px;
             }
             
             .features-grid,
@@ -299,6 +299,32 @@
                 grid-template-columns: 1fr;
             }
         }
+        
+        /* Footer styles */
+        .site-footer {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            padding: 1rem;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            border-top: 1px solid var(--border-light);
+        }
+        
+        .site-footer span {
+            display: inline-block;
+            margin: 0;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            background: var(--primary-color);
+            color: white;
+            font-weight: 500;
+        }
+        
+        /* Prevent header overlap */
+        .fixed-header + .doc-container {
+            padding-top: 0px; /* Use global body padding instead */
+        }
     </style>
 </head>
 <body data-page="documentation">
@@ -307,6 +333,9 @@
         <nav class="header-nav">
             <a href="/" class="nav-item">Home</a>
             <a href="/template_editor" class="nav-item">Customize Templates</a>
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <i class="fas fa-moon"></i>
+            </button>
         </nav>
     </header>
     
@@ -987,6 +1016,28 @@ python app.py
                 }
             });
         });
+        
+        // Theme toggle icon switch
+        document.addEventListener('DOMContentLoaded', function() {
+            function updateThemeIcon() {
+                const btn = document.querySelector('.theme-toggle i');
+                if (!btn) return;
+                if (document.documentElement.getAttribute('data-theme') === 'dark') {
+                    btn.className = 'fas fa-sun';
+                } else {
+                    btn.className = 'fas fa-moon';
+                }
+            }
+            updateThemeIcon();
+            window.toggleTheme = function() {
+                const current = document.documentElement.getAttribute('data-theme');
+                const next = current === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', next);
+                localStorage.setItem('dmp-art-theme', next);
+                updateThemeIcon();
+            };
+            window.addEventListener('storage', updateThemeIcon);
+        });
     </script>
     <style>
         .toc a.active {
@@ -999,5 +1050,5 @@ python app.py
 </html>
 
 <footer class="site-footer">
-    DMP ART © 2025
+    <span>DMP ART &copy; 2025</span>
 </footer>

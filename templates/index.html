@@ -20,60 +20,49 @@
         })();
     </script>
 </head>
-<body data-page="index">
+<body data-page="index" style="transition: none !important; animation: none !important;">
     <!-- Fixed Header Navigation -->
     <header class="fixed-header">
         <nav class="header-nav">
             <a href="/template_editor" class="nav-item">Customize Templates</a>
             <a href="/documentation" class="nav-item">Documentation</a>
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <i class="fas fa-moon"></i>
+            </button>
         </nav>
     </header>
-
-    <div class="container">
+    <div class="container" style="margin:0;max-width:100vw;width:100vw;padding-left:0;padding-right:0;">
         <div class="main-logo-section">
             <div class="logo-container">
                 <img src="{{ url_for('static', filename='images/dmp-art-logo-main-light.png') }}" 
                      alt="DMP ART Logo" 
                      class="logo light-logo">
                 <img src="{{ url_for('static', filename='images/dmp-art-logo-main-dark.png') }}" 
-                     alt="DMP ART" 
+                     alt="DMP ART Logo" 
                      class="logo dark-logo">
             </div>
-            <p class="subtitle">Data Management Plan Analysis & Review Tool</p>
-            
-        <main class="main-content">
-            <!-- Upload Area -->
-            <div class="upload-area" id="drop-area">
-                <div class="upload-text">Drag & Drop Your DMP File Here</div>
-                <div class="upload-hint">or click to select a file</div>
-                
-                <input type="file" id="file-input" class="file-input" accept=".pdf,.docx">
-                <!-- File Info Display -->
-                <div id="file-info" class="file-info">
-                    <div class="file-name" id="file-name"></div>
-                </div>
-                
-                <!-- Action Buttons -->
-                <div class="upload-actions">
-                    <button type="button" id="upload-btn" class="primary-btn" disabled>
-                        Extract & Review DMP
-                    </button>
-                    <button type="button" id="clear-btn" class="secondary-btn">
-                        Clear File
-                    </button>
-                </div>
+            <div class="subtitle">
+                <span class="first-letter">D</span>ata <span class="first-letter">M</span>anagement <span class="first-letter">P</span>lan <span class="first-letter">A</span>ssessment and <span class="first-letter">R</span>esponse <span class="first-letter">T</span>ool
             </div>
+        </div>
 
-            <!-- Loading State -->
-            <div id="loading" class="loading">
-                <div class="loading-spinner"></div>
-                <div class="loading-text">Processing your DMP file...</div>
-                <div class="loading-text" style="font-size: 0.9rem; margin-top: 0.5rem;">
-                    This may take a few moments for large files
-                </div>
+        <!-- Drop area for file upload -->
+        <div id="drop-area" class="upload-area" style="border: 4px solid orange; margin-bottom: 5rem;">
+            <div class="upload-text">Drag &amp; drop your DMP file here or click to select</div>
+            <input id="file-input" type="file" accept=".pdf,.docx" class="file-input" />
+            <div id="file-info" class="file-info" style="display:none;">
+                <span id="file-name" class="file-name"></span>
             </div>
-                    </main>
+            <div class="upload-actions" style="gap: 2rem;">
+                <button id="upload-btn" class="primary-btn" disabled>Process File</button>
+                <button id="clear-btn" class="secondary-btn" disabled>Clear</button>
+            </div>
+        </div>
     </div>
+
+    <footer class="site-footer">
+        <span>DMP ART &copy; 2025</span>
+    </footer>
 
     <!-- Load dark mode script before other scripts -->
     <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
@@ -82,7 +71,3 @@
 </body>
 
 </html>
-
-<footer class="site-footer">
-DMP ART © 2025
-</footer>
