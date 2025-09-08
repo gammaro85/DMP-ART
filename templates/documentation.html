@@ -773,7 +773,6 @@ dmp-extractor/
 │   └── documentation.html   # This documentation
 ├── static/                   # Static assets
 │   ├── css/style.css        # Main stylesheet
-│   ├── js/dark-mode.js     # Theme functionality
 │   └── images/             # Logos and icons
 ├── utils/                    # Core processing modules
 │   ├── extractor.py         # Document processing logic
@@ -982,7 +981,6 @@ python app.py
     </div>
     
     <!-- Load dark mode script -->
-    <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
     <script>
         // Smooth scrolling for table of contents links
         document.querySelectorAll('.toc a').forEach(link => {
