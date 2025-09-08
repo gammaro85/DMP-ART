@@ -334,7 +334,7 @@
             <a href="/" class="nav-item">Home</a>
             <a href="/template_editor" class="nav-item">Customize Templates</a>
             <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-                <i class="fas fa-moon"></i>
+                <span id="theme-text">Dark Mode</span>
             </button>
         </nav>
     </header>
@@ -1017,27 +1017,6 @@ python app.py
             });
         });
         
-        // Theme toggle icon switch
-        document.addEventListener('DOMContentLoaded', function() {
-            function updateThemeIcon() {
-                const btn = document.querySelector('.theme-toggle i');
-                if (!btn) return;
-                if (document.documentElement.getAttribute('data-theme') === 'dark') {
-                    btn.className = 'fas fa-sun';
-                } else {
-                    btn.className = 'fas fa-moon';
-                }
-            }
-            updateThemeIcon();
-            window.toggleTheme = function() {
-                const current = document.documentElement.getAttribute('data-theme');
-                const next = current === 'dark' ? 'light' : 'dark';
-                document.documentElement.setAttribute('data-theme', next);
-                localStorage.setItem('dmp-art-theme', next);
-                updateThemeIcon();
-            };
-            window.addEventListener('storage', updateThemeIcon);
-        });
     </script>
     <style>
         .toc a.active {

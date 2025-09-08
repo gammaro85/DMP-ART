@@ -8,7 +8,6 @@
     });
 
     function initializeTemplateEditor() {
-        console.log('Initializing template editor...');
 
         // Initialize all tabs
         initializeTabSwitching();
@@ -17,7 +16,6 @@
         initializeKeywordsTab();
         initializeStructureTab();
 
-        console.log('Template editor initialized successfully');
     }
 
     // TAB SWITCHING FUNCTIONALITY
