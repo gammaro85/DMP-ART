@@ -1,0 +1,1204 @@
+{
+  "analysis_summary": {
+    "files_analyzed": 16,
+    "total_issues": 233,
+    "categories": [
+      "missing_files",
+      "dead_functions",
+      "dead_imports",
+      "inconsistent_naming",
+      "debug_code",
+      "inconsistent_themes",
+      "duplicate_css",
+      "dead_css_classes",
+      "missing_css"
+    ]
+  },
+  "issues_by_category": {
+    "missing_files": [
+      "Missing file: templates/results.html",
+      "Missing file: config/key_phrases.json"
+    ],
+    "dead_functions": [
+      "Potentially unused function 'create_category' in app.py",
+      "Potentially unused function 'delete_category' in app.py",
+      "Potentially unused function 'save_feedback' in app.py",
+      "Potentially unused function 'save_templates' in app.py",
+      "Potentially unused function 'test_categories_page' in app.py",
+      "Potentially unused function 'review_dmp' in app.py",
+      "Potentially unused function 'save_category' in app.py",
+      "Potentially unused function 'internal_error' in app.py",
+      "Potentially unused function 'test_categories' in app.py",
+      "Potentially unused function 'upload_file' in app.py",
+      "Potentially unused function 'results' in app.py",
+      "Potentially unused function 'documentation' in app.py",
+      "Potentially unused function 'download_file' in app.py",
+      "Potentially unused function 'load_quick_comments' in app.py",
+      "Potentially unused function 'load_category_comments' in app.py",
+      "Potentially unused function 'too_large' in app.py",
+      "Potentially unused function 'save_dmp_structure' in app.py",
+      "Potentially unused function 'index' in app.py",
+      "Potentially unused function 'save_quick_comments' in app.py",
+      "Potentially unused function 'serve_config' in app.py",
+      "Potentially unused function 'load_categories' in app.py",
+      "Potentially unused function 'template_editor' in app.py",
+      "Potentially unused function 'save_category_comments' in app.py",
+      "Potentially unused function 'health_check' in app.py",
+      "Potentially unused function 'not_found' in app.py",
+      "Potentially unused function 'list_categories' in app.py",
+      "Potentially unused function 'visit_FunctionDef' in old/debug_analyzer.py",
+      "Potentially unused function 'visit_ImportFrom' in old/debug_analyzer.py",
+      "Potentially unused function 'visit_Import' in old/debug_analyzer.py",
+      "Potentially unused function 'visit_Call' in old/debug_analyzer.py",
+      "Potentially unused function 'test_skip_patterns' in utils/extractor.py",
+      "Potentially unused function 'get_section_ids' in utils/extractor.py",
+      "Potentially unused function 'process_file' in utils/extractor.py",
+      "Potentially unused function 'get_relevant_comments' in utils/dmp-three-categories.py",
+      "Potentially unused function 'get_templates' in utils/templates_manager.py",
+      "Potentially unused function 'save_templates' in utils/templates_manager.py"
+    ],
+    "dead_imports": [
+      "Potentially unused import 'threading' in app.py",
+      "Potentially unused import 'Set' in old/debug_analyzer.py",
+      "Potentially unused import 'Tuple' in old/debug_analyzer.py",
+      "Potentially unused import 'os' in old/test_docx_processing.py",
+      "Potentially unused import 'importlib.util' in old/verify_implementation.py",
+      "Potentially unused import 'logging' in utils/extractor.py"
+    ],
+    "inconsistent_naming": [
+      "Function 'visit_FunctionDef' doesn't follow snake_case in old/debug_analyzer.py",
+      "Function 'visit_Call' doesn't follow snake_case in old/debug_analyzer.py",
+      "Function 'visit_Import' doesn't follow snake_case in old/debug_analyzer.py",
+      "Function 'visit_ImportFrom' doesn't follow snake_case in old/debug_analyzer.py"
+    ],
+    "debug_code": [
+      "Found 2 console.log statements in static/js/template_editor.js",
+      "Found 27 console.log statements in static/js/script.js"
+    ],
+    "inconsistent_themes": [
+      "Found theme icon reference in static/js/dark-mode.js: theme-icon",
+      "Missing updated dark theme color '--success-color: #408A8B' in static/css/style.css",
+      "Missing updated dark theme color '--accent-color: #E86B6B' in static/css/style.css",
+      "Missing updated dark theme color '--secondary-color: #375D78' in static/css/style.css",
+      "Theme toggle missing theme-text span in review.html",
+      "Theme toggle missing onclick handler in template_editor.html",
+      "Theme toggle missing theme-text span in template_editor.html",
+      "Theme toggle missing theme-text span in documentation.html",
+      "Theme toggle missing theme-text span in index.html"
+    ],
+    "duplicate_css": [
+      "Duplicate selector '.container' appears 4 times in static/css/style.css",
+      "Duplicate selector '.main-content' appears 2 times in static/css/style.css",
+      "Duplicate selector '.logo' appears 3 times in static/css/style.css",
+      "Duplicate selector '@media (max-width:768px)' appears 3 times in static/css/style.css",
+      "Duplicate selector '@media (max-width:480px)' appears 2 times in static/css/style.css",
+      "Duplicate selector '.header-nav' appears 2 times in static/css/style.css",
+      "Duplicate selector '.fixed-header' appears 2 times in static/css/style.css",
+      "Duplicate selector '.theme-toggle' appears 4 times in static/css/style.css",
+      "Duplicate selector '.upload-area' appears 2 times in static/css/style.css",
+      "Duplicate selector '.right-sidebar' appears 2 times in static/css/style.css"
+    ],
+    "dead_css_classes": [
+      "Potentially unused CSS class: .save-template-btn",
+      "Potentially unused CSS class: .section",
+      "Potentially unused CSS class: .remove-question-btn",
+      "Potentially unused CSS class: .button",
+      "Potentially unused CSS class: .save-all-templates-btn",
+      "Potentially unused CSS class: .remove-phrase-btn",
+      "Potentially unused CSS class: .existing",
+      "Potentially unused CSS class: .enhanced-section",
+      "Potentially unused CSS class: .description",
+      "Potentially unused CSS class: .add-question-btn",
+      "Potentially unused CSS class: .clear-btn",
+      "Potentially unused CSS class: .save-btn",
+      "Potentially unused CSS class: .add-btn",
+      "Potentially unused CSS class: .upload-hint",
+      "Potentially unused CSS class: .add-phrase-btn",
+      "Potentially unused CSS class: .delete-btn"
+    ],
+    "missing_css": [
+      "CSS class used but not defined: .fa-bug",
+      "CSS class used but not defined: .question-text",
+      "CSS class used but not defined: .left-actions",
+      "CSS class used but not defined: .modal-footer",
+      "CSS class used but not defined: .quick-comments-list",
+      "CSS class used but not defined: .panel-handle-bar",
+      "CSS class used but not defined: .fa-download",
+      "CSS class used but not defined: .fa-code",
+      "CSS class used but not defined: .fa-cogs",
+      "CSS class used but not defined: .category-selection",
+      "CSS class used but not defined: .warning-icon",
+      "CSS class used but not defined: .navigation-pane",
+      "CSS class used but not defined: .fa-comments",
+      "CSS class used but not defined: .doc-header",
+      "CSS class used but not defined: .features-grid",
+      "CSS class used but not defined: .step-number",
+      "CSS class used but not defined: .btn-success",
+      "CSS class used but not defined: .btn-danger",
+      "CSS class used but not defined: .comment-item-actions",
+      "CSS class used but not defined: .continuous-text",
+      "CSS class used but not defined: .status-text",
+      "CSS class used but not defined: .no-content-warning",
+      "CSS class used but not defined: .code-block",
+      "CSS class used but not defined: .primary",
+      "CSS class used but not defined: .tech-stack",
+      "CSS class used but not defined: .comment-text-input",
+      "CSS class used but not defined: .fa-trash",
+      "CSS class used but not defined: .feedback-summary",
+      "CSS class used but not defined: .step-card",
+      "CSS class used but not defined: .fa-file-pdf",
+      "CSS class used but not defined: .fa-balance-scale",
+      "CSS class used but not defined: .subsection-question",
+      "CSS class used but not defined: .fa-comment",
+      "CSS class used but not defined: .version",
+      "CSS class used but not defined: .category-form",
+      "CSS class used but not defined: .btn-sm",
+      "CSS class used but not defined: .unconnected-text-preview",
+      "CSS class used but not defined: .fa-icons",
+      "CSS class used but not defined: .fa-sun",
+      "CSS class used but not defined: .nav-left",
+      "CSS class used but not defined: .comment-actions",
+      "CSS class used but not defined: .compiled-feedback-container",
+      "CSS class used but not defined: .question-header",
+      "CSS class used but not defined: .page-header",
+      "CSS class used but not defined: .quick-comments-pane",
+      "CSS class used but not defined: .panel-handle",
+      "CSS class used but not defined: .fa-cog",
+      "CSS class used but not defined: .subsection-header",
+      "CSS class used but not defined: .tech-item",
+      "CSS class used but not defined: .comments-list",
+      "CSS class used but not defined: .doc-container",
+      "CSS class used but not defined: .review-subtitle",
+      "CSS class used but not defined: .fa-times",
+      "CSS class used but not defined: .fas",
+      "CSS class used but not defined: .fa-list",
+      "CSS class used but not defined: .template-editor-container",
+      "CSS class used but not defined: .assignment-controls",
+      "CSS class used but not defined: .fa-edit",
+      "CSS class used but not defined: .error-state",
+      "CSS class used but not defined: .section-select",
+      "CSS class used but not defined: .sidebar-actions",
+      "CSS class used but not defined: .feedback-toolbar",
+      "CSS class used but not defined: .fa-save",
+      "CSS class used but not defined: .action-row",
+      "CSS class used but not defined: .panel-backdrop",
+      "CSS class used but not defined: .compiled-feedback-panel",
+      "CSS class used but not defined: .fa-file-upload",
+      "CSS class used but not defined: .category-comments-list-inline",
+      "CSS class used but not defined: .enhanced-feedback-section",
+      "CSS class used but not defined: .fa-check-circle",
+      "CSS class used but not defined: .question-section-combined",
+      "CSS class used but not defined: .fa-html5",
+      "CSS class used but not defined: .fa-moon",
+      "CSS class used but not defined: .badge",
+      "CSS class used but not defined: .status",
+      "CSS class used but not defined: .tab-content",
+      "CSS class used but not defined: .file-info",
+      "CSS class used but not defined: .tab-navigation",
+      "CSS class used but not defined: .section-title",
+      "CSS class used but not defined: .modal-body",
+      "CSS class used but not defined: .nav-right",
+      "CSS class used but not defined: .comment-info",
+      "CSS class used but not defined: .no-comments",
+      "CSS class used but not defined: .fa-css3-alt",
+      "CSS class used but not defined: .modal-actions",
+      "CSS class used but not defined: .secondary",
+      "CSS class used but not defined: .loading",
+      "CSS class used but not defined: .test-section",
+      "CSS class used but not defined: .limitation-card",
+      "CSS class used but not defined: .fa-python",
+      "CSS class used but not defined: .file-input",
+      "CSS class used but not defined: .fa-plus",
+      "CSS class used but not defined: .add-category-btn",
+      "CSS class used but not defined: .category-buttons-inline",
+      "CSS class used but not defined: .modal",
+      "CSS class used but not defined: .toc",
+      "CSS class used but not defined: .fa-star",
+      "CSS class used but not defined: .review-header",
+      "CSS class used but not defined: .completion-indicator",
+      "CSS class used but not defined: .fa-mobile-alt",
+      "CSS class used but not defined: .panel-actions",
+      "CSS class used but not defined: .panel-title",
+      "CSS class used but not defined: .feature-card",
+      "CSS class used but not defined: .category-comments-container",
+      "CSS class used but not defined: .fa-palette",
+      "CSS class used but not defined: .category-comments-dropdown",
+      "CSS class used but not defined: .category-comment-section",
+      "CSS class used but not defined: .fa-search",
+      "CSS class used but not defined: .fa-exclamation-triangle",
+      "CSS class used but not defined: .section-id",
+      "CSS class used but not defined: .fa-tools",
+      "CSS class used but not defined: .char-counter",
+      "CSS class used but not defined: .modal-header",
+      "CSS class used but not defined: .fa-check",
+      "CSS class used but not defined: .fa-list-ol",
+      "CSS class used but not defined: .structure-content",
+      "CSS class used but not defined: .structure-header",
+      "CSS class used but not defined: .comment-name-input",
+      "CSS class used but not defined: .workflow-step",
+      "CSS class used but not defined: .remove-tab-btn",
+      "CSS class used but not defined: .subsection-id",
+      "CSS class used but not defined: .fa-copy",
+      "CSS class used but not defined: .form-actions",
+      "CSS class used but not defined: .info",
+      "CSS class used but not defined: .doc-section",
+      "CSS class used but not defined: .fa-info-circle",
+      "CSS class used but not defined: .fa-image",
+      "CSS class used but not defined: .question-comments",
+      "CSS class used but not defined: .panel-header",
+      "CSS class used but not defined: .fab",
+      "CSS class used but not defined: .category-questions",
+      "CSS class used but not defined: .fa-sitemap",
+      "CSS class used but not defined: .fa-server",
+      "CSS class used but not defined: .category-btn-inline",
+      "CSS class used but not defined: .workflow-diagram",
+      "CSS class used but not defined: .steps-container",
+      "CSS class used but not defined: .category-comment-item",
+      "CSS class used but not defined: .panel-content",
+      "CSS class used but not defined: .section-title-only",
+      "CSS class used but not defined: .questions-container",
+      "CSS class used but not defined: .fa-file-word",
+      "CSS class used but not defined: .nav-grid",
+      "CSS class used but not defined: .compiled-feedback-modal",
+      "CSS class used but not defined: .empty-state",
+      "CSS class used but not defined: .fa-js",
+      "CSS class used but not defined: .btn-primary",
+      "CSS class used but not defined: .fa-folder",
+      "CSS class used but not defined: .file-name"
+    ]
+  },
+  "all_issues": [
+    {
+      "category": "missing_files",
+      "description": "Missing file: templates/results.html"
+    },
+    {
+      "category": "missing_files",
+      "description": "Missing file: config/key_phrases.json"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'create_category' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'delete_category' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'save_feedback' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'save_templates' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'test_categories_page' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'review_dmp' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'save_category' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'internal_error' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'test_categories' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'upload_file' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'results' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'documentation' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'download_file' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'load_quick_comments' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'load_category_comments' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'too_large' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'save_dmp_structure' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'index' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'save_quick_comments' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'serve_config' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'load_categories' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'template_editor' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'save_category_comments' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'health_check' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'not_found' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'list_categories' in app.py"
+    },
+    {
+      "category": "dead_imports",
+      "description": "Potentially unused import 'threading' in app.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'visit_FunctionDef' in old/debug_analyzer.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'visit_ImportFrom' in old/debug_analyzer.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'visit_Import' in old/debug_analyzer.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'visit_Call' in old/debug_analyzer.py"
+    },
+    {
+      "category": "dead_imports",
+      "description": "Potentially unused import 'Set' in old/debug_analyzer.py"
+    },
+    {
+      "category": "dead_imports",
+      "description": "Potentially unused import 'Tuple' in old/debug_analyzer.py"
+    },
+    {
+      "category": "inconsistent_naming",
+      "description": "Function 'visit_FunctionDef' doesn't follow snake_case in old/debug_analyzer.py"
+    },
+    {
+      "category": "inconsistent_naming",
+      "description": "Function 'visit_Call' doesn't follow snake_case in old/debug_analyzer.py"
+    },
+    {
+      "category": "inconsistent_naming",
+      "description": "Function 'visit_Import' doesn't follow snake_case in old/debug_analyzer.py"
+    },
+    {
+      "category": "inconsistent_naming",
+      "description": "Function 'visit_ImportFrom' doesn't follow snake_case in old/debug_analyzer.py"
+    },
+    {
+      "category": "dead_imports",
+      "description": "Potentially unused import 'os' in old/test_docx_processing.py"
+    },
+    {
+      "category": "dead_imports",
+      "description": "Potentially unused import 'importlib.util' in old/verify_implementation.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'test_skip_patterns' in utils/extractor.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'get_section_ids' in utils/extractor.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'process_file' in utils/extractor.py"
+    },
+    {
+      "category": "dead_imports",
+      "description": "Potentially unused import 'logging' in utils/extractor.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'get_relevant_comments' in utils/dmp-three-categories.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'get_templates' in utils/templates_manager.py"
+    },
+    {
+      "category": "dead_functions",
+      "description": "Potentially unused function 'save_templates' in utils/templates_manager.py"
+    },
+    {
+      "category": "debug_code",
+      "description": "Found 2 console.log statements in static/js/template_editor.js"
+    },
+    {
+      "category": "debug_code",
+      "description": "Found 27 console.log statements in static/js/script.js"
+    },
+    {
+      "category": "inconsistent_themes",
+      "description": "Found theme icon reference in static/js/dark-mode.js: theme-icon"
+    },
+    {
+      "category": "inconsistent_themes",
+      "description": "Missing updated dark theme color '--success-color: #408A8B' in static/css/style.css"
+    },
+    {
+      "category": "inconsistent_themes",
+      "description": "Missing updated dark theme color '--accent-color: #E86B6B' in static/css/style.css"
+    },
+    {
+      "category": "inconsistent_themes",
+      "description": "Missing updated dark theme color '--secondary-color: #375D78' in static/css/style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.container' appears 4 times in static/css/style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.main-content' appears 2 times in static/css/style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.logo' appears 3 times in static/css/style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '@media (max-width:768px)' appears 3 times in static/css/style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '@media (max-width:480px)' appears 2 times in static/css/style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.header-nav' appears 2 times in static/css/style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.fixed-header' appears 2 times in static/css/style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.theme-toggle' appears 4 times in static/css/style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.upload-area' appears 2 times in static/css/style.css"
+    },
+    {
+      "category": "duplicate_css",
+      "description": "Duplicate selector '.right-sidebar' appears 2 times in static/css/style.css"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .save-template-btn"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .section"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .remove-question-btn"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .button"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .save-all-templates-btn"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .remove-phrase-btn"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .existing"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .enhanced-section"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .description"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .add-question-btn"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .clear-btn"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .save-btn"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .add-btn"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .upload-hint"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .add-phrase-btn"
+    },
+    {
+      "category": "dead_css_classes",
+      "description": "Potentially unused CSS class: .delete-btn"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-bug"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .question-text"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .left-actions"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .modal-footer"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .quick-comments-list"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .panel-handle-bar"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-download"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-code"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-cogs"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .category-selection"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .warning-icon"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .navigation-pane"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-comments"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .doc-header"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .features-grid"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .step-number"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .btn-success"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .btn-danger"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .comment-item-actions"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .continuous-text"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .status-text"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .no-content-warning"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .code-block"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .primary"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .tech-stack"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .comment-text-input"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-trash"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .feedback-summary"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .step-card"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-file-pdf"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-balance-scale"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .subsection-question"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-comment"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .version"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .category-form"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .btn-sm"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .unconnected-text-preview"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-icons"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-sun"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .nav-left"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .comment-actions"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .compiled-feedback-container"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .question-header"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .page-header"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .quick-comments-pane"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .panel-handle"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-cog"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .subsection-header"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .tech-item"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .comments-list"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .doc-container"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .review-subtitle"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-times"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fas"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-list"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .template-editor-container"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .assignment-controls"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-edit"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .error-state"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .section-select"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .sidebar-actions"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .feedback-toolbar"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-save"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .action-row"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .panel-backdrop"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .compiled-feedback-panel"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-file-upload"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .category-comments-list-inline"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .enhanced-feedback-section"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-check-circle"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .question-section-combined"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-html5"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-moon"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .badge"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .status"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .tab-content"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .file-info"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .tab-navigation"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .section-title"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .modal-body"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .nav-right"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .comment-info"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .no-comments"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-css3-alt"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .modal-actions"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .secondary"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .loading"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .test-section"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .limitation-card"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-python"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .file-input"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-plus"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .add-category-btn"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .category-buttons-inline"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .modal"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .toc"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-star"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .review-header"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .completion-indicator"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-mobile-alt"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .panel-actions"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .panel-title"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .feature-card"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .category-comments-container"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-palette"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .category-comments-dropdown"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .category-comment-section"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-search"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-exclamation-triangle"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .section-id"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-tools"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .char-counter"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .modal-header"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-check"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-list-ol"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .structure-content"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .structure-header"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .comment-name-input"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .workflow-step"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .remove-tab-btn"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .subsection-id"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-copy"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .form-actions"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .info"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .doc-section"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-info-circle"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-image"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .question-comments"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .panel-header"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fab"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .category-questions"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-sitemap"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-server"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .category-btn-inline"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .workflow-diagram"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .steps-container"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .category-comment-item"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .panel-content"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .section-title-only"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .questions-container"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-file-word"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .nav-grid"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .compiled-feedback-modal"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .empty-state"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-js"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .btn-primary"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .fa-folder"
+    },
+    {
+      "category": "missing_css",
+      "description": "CSS class used but not defined: .file-name"
+    },
+    {
+      "category": "inconsistent_themes",
+      "description": "Theme toggle missing theme-text span in review.html"
+    },
+    {
+      "category": "inconsistent_themes",
+      "description": "Theme toggle missing onclick handler in template_editor.html"
+    },
+    {
+      "category": "inconsistent_themes",
+      "description": "Theme toggle missing theme-text span in template_editor.html"
+    },
+    {
+      "category": "inconsistent_themes",
+      "description": "Theme toggle missing theme-text span in documentation.html"
+    },
+    {
+      "category": "inconsistent_themes",
+      "description": "Theme toggle missing theme-text span in index.html"
+    }
+  ]
+}
