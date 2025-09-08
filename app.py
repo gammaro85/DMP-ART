@@ -2,7 +2,6 @@
 import os
 import json
 import time
-import threading
 import zipfile
 from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for
 from werkzeug.utils import secure_filename

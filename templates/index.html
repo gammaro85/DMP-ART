@@ -27,7 +27,7 @@
             <a href="/template_editor" class="nav-item">Customize Templates</a>
             <a href="/documentation" class="nav-item">Documentation</a>
             <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-                <i class="fas fa-moon"></i>
+                <span id="theme-text">Dark Mode</span>
             </button>
         </nav>
     </header>
@@ -65,7 +65,6 @@
     </footer>
 
     <!-- Load dark mode script before other scripts -->
-    <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     {% block scripts %}{% endblock %}
 </body>
