@@ -8,16 +8,12 @@
 // ===========================================
 
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('DMP ART: Initializing application...');
-
     try {
         // Initialize core functionality
         initializeDarkMode();
         initializeUploadPage();
         initializeReviewPage();
         initializeTemplateEditor();
-
-        console.log('DMP ART: All components initialized successfully');
     } catch (error) {
         console.error('DMP ART: Error during initialization:', error);
     }
@@ -28,8 +24,6 @@ document.addEventListener('DOMContentLoaded', function () {
 // ===========================================
 
 function initializeDarkMode() {
-    console.log('Initializing dark mode...');
-
     try {
         // Load saved theme preference or detect system preference
         const savedTheme = localStorage.getItem('dmp-art-theme');
@@ -45,8 +39,6 @@ function initializeDarkMode() {
 
         // Listen for system theme changes
         listenForSystemThemeChanges();
-
-        console.log('Dark mode initialized with theme:', initialTheme);
     } catch (error) {
         console.error('Error initializing dark mode:', error);
     }
@@ -60,8 +52,6 @@ function toggleTheme() {
         setTheme(newTheme);
         updateToggleButton(newTheme);
         localStorage.setItem('dmp-art-theme', newTheme);
-
-        console.log('Theme toggled to:', newTheme);
     } catch (error) {
         console.error('Error toggling theme:', error);
     }
@@ -129,7 +119,6 @@ function listenForSystemThemeChanges() {
                     const newTheme = e.matches ? 'dark' : 'light';
                     setTheme(newTheme);
                     updateToggleButton(newTheme);
-                    console.log('System theme changed to:', newTheme);
                 }
             });
         }
@@ -143,7 +132,6 @@ function listenForSystemThemeChanges() {
 // ===========================================
 
 function initializeUploadPage() {
-    console.log('Initializing upload page...');
 
     // Get all required elements
     const elements = {
@@ -163,7 +151,6 @@ function initializeUploadPage() {
 
     // Exit if not on upload page
     if (!elements.dropArea && !elements.fileInput) {
-        console.log('Not on upload page, skipping upload initialization');
         return;
     }
 
@@ -173,7 +160,6 @@ function initializeUploadPage() {
         setupUploadButton(elements);
         setupClearButton(elements);
 
-        console.log('Upload page initialized successfully');
     } catch (error) {
         console.error('Error initializing upload page:', error);
     }
@@ -244,7 +230,6 @@ function setupFileSelection(elements) {
 function handleFileSelection(file, elements) {
     const { fileInfo, fileName, uploadBtn } = elements;
 
-    console.log('File selected:', file.name);
 
     // Validate file type
     const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
@@ -358,7 +343,6 @@ function updateButtonStates(elements, state) {
 function uploadFile(file, elements) {
     const { loading, result, successMessage, errorMessage, errorText } = elements;
 
-    console.log('Starting file upload:', file.name);
 
     const formData = new FormData();
     formData.append('file', file);
@@ -379,7 +363,6 @@ function uploadFile(file, elements) {
     })
         .then(response => response.json())
         .then(data => {
-            console.log('Upload response:', data);
 
             // Hide loading
             if (loading) {
@@ -442,7 +425,6 @@ function uploadFile(file, elements) {
 // ===========================================
 
 function initializeReviewPage() {
-    console.log('Initializing review page...');
 
     const elements = {
         commentButtons: document.querySelectorAll('.comment-btn'),
@@ -458,7 +440,6 @@ function initializeReviewPage() {
 
     // Exit if not on review page
     if (!elements.commentButtons.length && !elements.compileButton) {
-        console.log('Not on review page, skipping review initialization');
         return;
     }
 
@@ -470,7 +451,6 @@ function initializeReviewPage() {
         setupSaveFeedbackButton(elements);
         initializeCharacterCounters();
 
-        console.log('Review page initialized successfully');
     } catch (error) {
         console.error('Error initializing review page:', error);
     }
@@ -605,7 +585,6 @@ function insertCommentWithAnimation(id, comment) {
         textarea.style.backgroundColor = '';
     }, 300);
 
-    console.log(`Comment inserted into section ${id}`);
 }
 
 function compileFeedback() {
@@ -675,11 +654,9 @@ function saveFeedback() {
 // ===========================================
 
 function initializeSectionNavigation() {
-    console.log('Initializing section navigation...');
 
     try {
         createSectionNavigation();
-        console.log('Section navigation initialized');
     } catch (error) {
         console.error('Error initializing section navigation:', error);
     }
@@ -718,7 +695,6 @@ function createSectionNavigation() {
 }
 
 function scrollToSection(sectionId) {
-    console.log('Scrolling to section:', sectionId);
 
     const element = document.getElementById('section-' + sectionId) ||
         document.querySelector(`[data-id="${sectionId}"]`);
@@ -766,7 +742,6 @@ function getSectionTitle(sectionId) {
 // ===========================================
 
 function initializeCharacterCounters() {
-    console.log('Initializing character counters...');
 
     // Only add counters for question-level sections, not comments
     document.querySelectorAll('.feedback-text[data-section-type="question"], .feedback-text[data-section-type="original_text"], .feedback-text[data-section-type="text_insertion"]').forEach(textarea => {
@@ -810,19 +785,16 @@ function updateCharacterCounter(sectionId) {
 // ===========================================
 
 function initializeTemplateEditor() {
-    console.log('Initializing template editor...');
 
     // Check if we're on the template editor page
     const templateContainer = document.getElementById('templates-container');
     if (!templateContainer) {
-        console.log('Not on template editor page, skipping template editor initialization');
         return;
     }
 
     try {
         setupTemplateButtons();
         setupTabSwitching();
-        console.log('Template editor initialized successfully');
     } catch (error) {
         console.error('Error initializing template editor:', error);
     }
@@ -926,7 +898,6 @@ function saveAllTemplates() {
 // ===========================================
 
 function showToast(message, type = 'success') {
-    console.log(`Toast (${type}):`, message);
 
     // Create or get toast container
     let toastContainer = document.getElementById('toast-container');
@@ -1009,7 +980,6 @@ async function copyToClipboard(text) {
 
 // Store original templates for reset functionality
 function storeOriginalTemplates() {
-    console.log('Storing original templates...');
 
     if (typeof window.originalTemplates === 'undefined') {
         window.originalTemplates = {};
@@ -1019,7 +989,6 @@ function storeOriginalTemplates() {
             window.originalTemplates[id] = textarea.value;
         });
 
-        console.log('Original templates stored:', Object.keys(window.originalTemplates));
     }
 }
 
@@ -1055,4 +1024,3 @@ window.DarkMode = {
     }
 };
 
-console.log('DMP ART script.js loaded successfully');

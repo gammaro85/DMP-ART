@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results - DMP ART</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+    <!-- Fixed Header Navigation -->
+    <header class="fixed-header">
+        <nav class="header-nav">
+            <a href="/" class="nav-item">Home</a>
+            <a href="/template_editor" class="nav-item">Customize Templates</a>
+            <a href="/documentation" class="nav-item">Documentation</a>
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <span id="theme-text">Dark Mode</span>
+            </button>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <h1>Processing Results</h1>
+            <p>This page will display processing results when the feature is implemented.</p>
+            <a href="/" class="btn btn-primary">Back to Home</a>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

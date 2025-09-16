@@ -8,7 +8,7 @@ import os
 import re
 import json
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List
 import ast
 
 class DebugAnalyzer:
