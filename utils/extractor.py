@@ -758,14 +758,22 @@ class DMPExtractor:
             if current_section:
                 detected_subsection = self.detect_subsection_from_text(content_item, current_section, is_pdf=is_pdf)
                 if detected_subsection:
-                    # Flush buffer to previous subsection
-                    if current_subsection and content_buffer:
-                        print(f"Flushing {len(content_buffer)} buffered items to {current_section} -> {current_subsection}")
+                    # Flush buffer to previous subsection OR first subsection if none set yet
+                    if content_buffer:
+                        if current_subsection:
+                            # Flush to previous subsection
+                            print(f"Flushing {len(content_buffer)} buffered items to {current_section} -> {current_subsection}")
+                            target_subsection = current_subsection
+                        else:
+                            # No previous subsection - flush to FIRST subsection of current section
+                            target_subsection = self.dmp_structure[current_section][0]
+                            print(f"Flushing {len(content_buffer)} buffered items to FIRST subsection: {current_section} -> {target_subsection}")
+
                         for buffered_content in content_buffer:
-                            self._assign_content_safely(section_content, tagged_content, 
-                                                      current_section, current_subsection, buffered_content)
+                            self._assign_content_safely(section_content, tagged_content,
+                                                      current_section, target_subsection, buffered_content)
                         content_buffer = []
-                    
+
                     current_subsection = detected_subsection
                     print(f"Subsection changed to: {current_subsection}")
                     continue
