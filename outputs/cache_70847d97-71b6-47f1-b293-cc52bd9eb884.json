@@ -1,0 +1,208 @@
+{
+  "1.1": {
+    "section": "1. Data description and collection or re-use of existing data",
+    "question": "How will new data be collected or produced and/or how will existing data be re-used?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "1.2": {
+    "section": "1. Data description and collection or re-use of existing data",
+    "question": "What data (for example the types, formats, and volumes) will be collected or produced?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "2.1": {
+    "section": "2. Documentation and data quality",
+    "question": "What metadata and documentation (for example methodology or data collection and way of organising data) will accompany data?",
+    "paragraphs": [
+      "Any metadata needed for reproducibility will be documented. README files will be used to document data origin and generation/processing steps, as well as a file/folder system. The directories and files will be labelled in a way that indicates their content. The data will be segregated based on the type of experiment, type of system studied etc."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Any metadata needed for reproducibility will be documented. README files will be used to document data origin and generation/processing steps, as well as a file/folder system. The directories and files will be labelled in a way that indicates their content. The data will be segregated based on the type of experiment, type of system studied etc.",
+        "tags": [],
+        "title": "Any metadata needed for reproducibility will be documented."
+      }
+    ]
+  },
+  "2.2": {
+    "section": "2. Documentation and data quality",
+    "question": "What data quality control measures will be used?",
+    "paragraphs": [
+      "Mesuring data will be mostly created and collected automatically by measuring instruments calibrated by the manufacturer. If needed, a way to detect corrupted files or random measurement failures by appropriate test or reference samples recommended by the manufacturer will be defined. The quality and consistency of the data will be ensured by calibration processes and standardized data collection methodologies."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Mesuring data will be mostly created and collected automatically by measuring instruments calibrated by the manufacturer. If needed, a way to detect corrupted files or random measurement failures by appropriate test or reference samples recommended by the manufacturer will be defined. The quality and consistency of the data will be ensured by calibration processes and standardized data collection methodologies.",
+        "tags": [],
+        "title": null
+      }
+    ]
+  },
+  "3.1": {
+    "section": "3. Storage and backup during the research process",
+    "question": "How will data and metadata be stored and backed up during the research process?",
+    "paragraphs": [
+      "Dół formularza",
+      "The created and collected data, both in the raw form and as results of analyses or postprocessing, will be stored on the Gdańsk Tech business computers. All data derived from measuring units will also be stored on controlling PC's. The backup process will be done monthly, and backup files will be stored on external hard drive and in the university's OneDrive cloud.",
+      "Początek formularza"
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Dół formularza",
+        "tags": [],
+        "title": "Dół formularza"
+      },
+      {
+        "text": "The created and collected data, both in the raw form and as results of analyses or postprocessing, will be stored on the Gdańsk Tech business computers. All data derived from measuring units will also be stored on controlling PC's. The backup process will be done monthly, and backup files will be stored on external hard drive and in the university's OneDrive cloud.",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "Początek formularza",
+        "tags": [],
+        "title": "Początek formularza"
+      }
+    ]
+  },
+  "3.2": {
+    "section": "3. Storage and backup during the research process",
+    "question": "How will data security and protection of sensitive data be taken care of during the research?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "4.1": {
+    "section": "4. Legal requirements, codes of conduct",
+    "question": "If personal data are processed, how will compliance with legislation on personal data and on data security be ensured?",
+    "paragraphs": [
+      "Dół formularza",
+      "The project does not plan to acquire personal data.",
+      "Początek formularza"
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Dół formularza",
+        "tags": [],
+        "title": "Dół formularza"
+      },
+      {
+        "text": "The project does not plan to acquire personal data.",
+        "tags": [],
+        "title": "The project does not plan to acquire personal data."
+      },
+      {
+        "text": "Początek formularza",
+        "tags": [],
+        "title": "Początek formularza"
+      }
+    ]
+  },
+  "4.2": {
+    "section": "4. Legal requirements, codes of conduct",
+    "question": "How will other legal issues, such as intelectual property rights and ownership, be managed? What legislation is applicable?",
+    "paragraphs": [
+      "The right to all generated data will be in line with the Gdańsk Tech policy (Resolution of the Gdańsk Tech Senate No. 117/2021/XXV of May 19, 2021), with researchers contributing through collaborative agreements. We will apply licences CC BY/CC BY-SA, or as per application for data sharing, ensuring proper credit and attribution."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The right to all generated data will be in line with the Gdańsk Tech policy (Resolution of the Gdańsk Tech Senate No. 117/2021/XXV of May 19, 2021), with researchers contributing through collaborative agreements. We will apply licences CC BY/CC BY-SA, or as per application for data sharing, ensuring proper credit and attribution.",
+        "tags": [],
+        "title": null
+      }
+    ]
+  },
+  "5.1": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How and when will data be shared? Are there possible restrictions to data sharing or embargo reasons?",
+    "paragraphs": [
+      "Dół formularza",
+      "Początek formularza"
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Dół formularza",
+        "tags": [],
+        "title": "Dół formularza"
+      },
+      {
+        "text": "Początek formularza",
+        "tags": [],
+        "title": "Początek formularza"
+      }
+    ]
+  },
+  "5.2": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How will data for preservation be selected, and where will data be preserved long-term (for example a data repository or archive)?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "5.3": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "What methods or software tools will be needed to access and use the data?",
+    "paragraphs": [
+      "The shared data will be in open and popular formats, so there will be no need for specialized software by recipients. More specialized files will be converted to popular ones (e.g., spa to csv). However, users may need specialized knowledge in the field to interpret the results and to interact with complex datasets."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The shared data will be in open and popular formats, so there will be no need for specialized software by recipients. More specialized files will be converted to popular ones (e.g., spa to csv). However, users may need specialized knowledge in the field to interpret the results and to interact with complex datasets.",
+        "tags": [],
+        "title": null
+      }
+    ]
+  },
+  "5.4": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How will the application of a unique and persistent identifier (such us a Digital Object Identifier (DOI)) to each data set be ensured?",
+    "paragraphs": [
+      "The datasets provided in the repository will have the DOI assigned."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "The datasets provided in the repository will have the DOI assigned.",
+        "tags": [],
+        "title": "The datasets provided in the repository will have the DOI assigned."
+      }
+    ]
+  },
+  "6.1": {
+    "section": "6. Data management responsibilities and resources",
+    "question": "Who (for example role, position, and institution) will be responsible for data management (i.e the data steward)?",
+    "paragraphs": [
+      "Dół formularza",
+      "Open Science Competence Center (pg.edu.pl/openscience), established by Gdańsk Tech, will be responsible for DMP and the quality of metadata describing deposited datasets. Project PI will be responsible for the procedures assessment and overall data quality.",
+      "Początek formularza"
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "Dół formularza",
+        "tags": [],
+        "title": "Dół formularza"
+      },
+      {
+        "text": "Open Science Competence Center (pg.edu.pl/openscience), established by Gdańsk Tech, will be responsible for DMP and the quality of metadata describing deposited datasets. Project PI will be responsible for the procedures assessment and overall data quality.",
+        "tags": [],
+        "title": null
+      },
+      {
+        "text": "Początek formularza",
+        "tags": [],
+        "title": "Początek formularza"
+      }
+    ]
+  },
+  "6.2": {
+    "section": "6. Data management responsibilities and resources",
+    "question": "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)?",
+    "paragraphs": [
+      "We will allocate a suitable amount of hours of staff time, (additional software, or storage if needed) to ensure that the data is managed according to FAIR principles. If any costs arise, they will be covered by the project (from indirect costs). Selected research data will be deposited at the free MOST Wiedzy Open Research Data Catalogue. No fees are charged for the use of the repository, either from the research team or the final user. Storage and archiving of research data in the OneDrive file hosting service within the work-issued Office 365 software package (max. 100 GB) is free of charge."
+    ],
+    "tagged_paragraphs": [
+      {
+        "text": "We will allocate a suitable amount of hours of staff time, (additional software, or storage if needed) to ensure that the data is managed according to FAIR principles. If any costs arise, they will be covered by the project (from indirect costs). Selected research data will be deposited at the free MOST Wiedzy Open Research Data Catalogue. No fees are charged for the use of the repository, either from the research team or the final user. Storage and archiving of research data in the OneDrive file hosting service within the work-issued Office 365 software package (max. 100 GB) is free of charge.",
+        "tags": [],
+        "title": null
+      }
+    ]
+  }
+}
