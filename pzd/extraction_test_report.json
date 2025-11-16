@@ -1,5 +1,5 @@
 {
-  "test_date": "2025-11-16T21:08:33.425511",
+  "test_date": "2025-11-16T23:43:56.648290",
   "total_files": 2,
   "successful": 2,
   "failed": 0,
@@ -7,22 +7,22 @@
     {
       "success": true,
       "filename": "Opus-JS.pdf",
-      "processing_time": 0.123125,
-      "sections_extracted": 11,
+      "processing_time": 0.130189,
+      "sections_extracted": 13,
       "total_paragraphs": 36,
       "unconnected_items": 1,
-      "extraction_rate": 78.57142857142857,
-      "cache_id": "c58b54a7-075b-4d8e-909b-97ab5c5ec438"
+      "extraction_rate": 92.85714285714286,
+      "cache_id": "14552870-adb8-4fa9-965a-3fab4d391e20"
     },
     {
       "success": true,
       "filename": "Barczak-preludiumPlan zarządzania danymi.docx",
-      "processing_time": 0.069071,
+      "processing_time": 0.070229,
       "sections_extracted": 13,
       "total_paragraphs": 13,
       "unconnected_items": 0,
       "extraction_rate": 92.85714285714286,
-      "cache_id": "ded6bd6b-73aa-4c6d-aa40-64936380de86"
+      "cache_id": "f1421e4c-76f3-4449-a57d-db1d1c1ec853"
     }
   ]
 }

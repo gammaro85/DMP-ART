@@ -354,13 +354,201 @@ class DMPExtractor:
             r"Principal\s+Investigator[:\s]+([\w\s-]+)",  # English PI designation
             r"Kierownik\s+projektu[:\s]+([\w\s-]+)"  # Polish PI designation
         ]
-        
+
         for pattern in patterns:
             match = re.search(pattern, text)
             if match:
                 return match.group(1).strip()
-        
+
         return None
+
+    def extract_metadata(self, text, doc=None, filename=None):
+        """
+        Extract metadata from DMP document
+
+        Returns:
+            dict with keys:
+                - researcher_surname: str
+                - researcher_firstname: str
+                - competition_name: str (OPUS, PRELUDIUM, etc.)
+                - competition_edition: str (number)
+                - creation_date: str (DD-MM-YY format)
+                - filename_original: str
+        """
+        metadata = {
+            'researcher_surname': None,
+            'researcher_firstname': None,
+            'competition_name': None,
+            'competition_edition': None,
+            'creation_date': None,
+            'filename_original': filename
+        }
+
+        # Extract from filename first (most reliable)
+        if filename:
+            metadata.update(self._extract_from_filename(filename))
+
+        # Extract from DOCX properties (if available)
+        if doc is not None:
+            try:
+                from docx import Document
+                if isinstance(doc, Document):
+                    metadata.update(self._extract_from_docx_properties(doc))
+            except:
+                pass
+
+        # Extract from document text content
+        metadata.update(self._extract_from_text_content(text))
+
+        # Format creation date
+        if metadata.get('creation_date'):
+            metadata['creation_date'] = self._format_date(metadata['creation_date'])
+
+        return metadata
+
+    def _extract_from_filename(self, filename):
+        """Extract metadata from filename patterns"""
+        metadata = {}
+
+        # Competition patterns in filename
+        comp_patterns = [
+            r'(OPUS|opus)[\s_-]*(\d+)?',
+            r'(PRELUDIUM|preludium|Preludium)[\s_-]*(\d+)?',
+            r'(SONATA|sonata|Sonata)[\s_-]*(\d+)?',
+            r'(SYMFONIA|symfonia|Symfonia)[\s_-]*(\d+)?',
+            r'(MAESTRO|maestro|Maestro)[\s_-]*(\d+)?',
+            r'(HARMONIA|harmonia|Harmonia)[\s_-]*(\d+)?',
+            r'(MINIATURA|miniatura|Miniatura)[\s_-]*(\d+)?'
+        ]
+
+        for pattern in comp_patterns:
+            match = re.search(pattern, filename, re.IGNORECASE)
+            if match:
+                metadata['competition_name'] = match.group(1).upper()
+                if match.group(2):
+                    metadata['competition_edition'] = match.group(2)
+                break
+
+        # Researcher name patterns (Surname-Name or Name_Surname)
+        name_patterns = [
+            r'([A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)[-_]([A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)',  # Polish
+            r'([A-Z][a-z]+)[-_]([A-Z][a-z]+)'  # English
+        ]
+
+        for pattern in name_patterns:
+            match = re.search(pattern, filename)
+            if match:
+                # Assume first is surname, second is firstname
+                metadata['researcher_surname'] = match.group(1)
+                metadata['researcher_firstname'] = match.group(2)
+                break
+
+        return metadata
+
+    def _extract_from_docx_properties(self, doc):
+        """Extract metadata from DOCX document properties"""
+        metadata = {}
+
+        try:
+            # Author from document properties
+            if hasattr(doc.core_properties, 'author') and doc.core_properties.author:
+                author = doc.core_properties.author.strip()
+                # Try to split into firstname and surname
+                parts = author.split()
+                if len(parts) >= 2:
+                    metadata['researcher_firstname'] = parts[0]
+                    metadata['researcher_surname'] = parts[-1]
+                elif len(parts) == 1:
+                    metadata['researcher_surname'] = parts[0]
+
+            # Creation date from document properties
+            if hasattr(doc.core_properties, 'created') and doc.core_properties.created:
+                metadata['creation_date'] = doc.core_properties.created
+
+        except Exception as e:
+            print(f"Warning: Could not extract DOCX properties: {e}")
+
+        return metadata
+
+    def _extract_from_text_content(self, text):
+        """Extract metadata from document text content"""
+        metadata = {}
+
+        # Competition patterns in text
+        comp_patterns = [
+            r'(?:konkurs|competition|grant)[\s:]*(?:NCN[\s:]*)?(OPUS|PRELUDIUM|SONATA|SYMFONIA|MAESTRO|HARMONIA|MINIATURA)[\s-]*(\d+)?',
+            r'(OPUS|PRELUDIUM|SONATA|SYMFONIA|MAESTRO|HARMONIA|MINIATURA)[\s-]*(\d+)',
+            r'ID:\s*\d+\s*,?\s*(OPUS|PRELUDIUM|SONATA|SYMFONIA|MAESTRO|HARMONIA|MINIATURA)[\s-]*(\d+)?'
+        ]
+
+        for pattern in comp_patterns:
+            match = re.search(pattern, text, re.IGNORECASE)
+            if match:
+                if not metadata.get('competition_name'):
+                    metadata['competition_name'] = match.group(1).upper()
+                if match.lastindex >= 2 and match.group(2) and not metadata.get('competition_edition'):
+                    metadata['competition_edition'] = match.group(2)
+
+        # Researcher name patterns
+        name_patterns = [
+            # Polish patterns
+            r'Kierownik\s+projektu[:\s]+(?:dr\.?|prof\.?)?\s*(?:hab\.?|inż\.?)?\s*([A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)\s+([A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)',
+            r'Wykonawca[:\s]+(?:dr\.?|prof\.?)?\s*(?:hab\.?|inż\.?)?\s*([A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)\s+([A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)',
+            # English patterns
+            r'Principal\s+Investigator[:\s]+(?:Dr\.?|Prof\.?)?\s*([A-Z][a-z]+)\s+([A-Z][a-z]+)',
+            r'Researcher[:\s]+(?:Dr\.?|Prof\.?)?\s*([A-Z][a-z]+)\s+([A-Z][a-z]+)',
+            # Name patterns in headers
+            r'(?:^|\n)([A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]{2,})\s+([A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]{2,})\s*(?:\n|$)'
+        ]
+
+        for pattern in name_patterns:
+            matches = re.finditer(pattern, text, re.MULTILINE)
+            for match in matches:
+                if not metadata.get('researcher_firstname') and not metadata.get('researcher_surname'):
+                    # First match wins - assume "Firstname Surname" order
+                    metadata['researcher_firstname'] = match.group(1)
+                    metadata['researcher_surname'] = match.group(2)
+                    break
+
+        # Date patterns (DD-MM-YYYY, DD.MM.YYYY, YYYY-MM-DD)
+        date_patterns = [
+            r'(\d{2})[-.](\d{2})[-.](\d{4})',  # DD-MM-YYYY or DD.MM.YYYY
+            r'(\d{4})[-.](\d{2})[-.](\d{2})'   # YYYY-MM-DD
+        ]
+
+        for pattern in date_patterns:
+            match = re.search(pattern, text)
+            if match and not metadata.get('creation_date'):
+                metadata['creation_date'] = match.group(0)
+                break
+
+        return metadata
+
+    def _format_date(self, date_value):
+        """Format date to DD-MM-YY"""
+        from datetime import datetime
+
+        try:
+            # If it's already a datetime object
+            if isinstance(date_value, datetime):
+                return date_value.strftime('%d-%m-%y')
+
+            # If it's a string, try to parse it
+            if isinstance(date_value, str):
+                # Try different formats
+                for fmt in ['%d-%m-%Y', '%d.%m.%Y', '%Y-%m-%d', '%d/%m/%Y']:
+                    try:
+                        dt = datetime.strptime(date_value, fmt)
+                        return dt.strftime('%d-%m-%y')
+                    except:
+                        continue
+
+                # If parsing failed, return as-is
+                return date_value
+        except:
+            pass
+
+        return date_value
 
     def clean_markup(self, text):
         """Remove common markup from text"""
@@ -758,14 +946,22 @@ class DMPExtractor:
             if current_section:
                 detected_subsection = self.detect_subsection_from_text(content_item, current_section, is_pdf=is_pdf)
                 if detected_subsection:
-                    # Flush buffer to previous subsection
-                    if current_subsection and content_buffer:
-                        print(f"Flushing {len(content_buffer)} buffered items to {current_section} -> {current_subsection}")
+                    # Flush buffer to previous subsection OR first subsection if none set yet
+                    if content_buffer:
+                        if current_subsection:
+                            # Flush to previous subsection
+                            print(f"Flushing {len(content_buffer)} buffered items to {current_section} -> {current_subsection}")
+                            target_subsection = current_subsection
+                        else:
+                            # No previous subsection - flush to FIRST subsection of current section
+                            target_subsection = self.dmp_structure[current_section][0]
+                            print(f"Flushing {len(content_buffer)} buffered items to FIRST subsection: {current_section} -> {target_subsection}")
+
                         for buffered_content in content_buffer:
-                            self._assign_content_safely(section_content, tagged_content, 
-                                                      current_section, current_subsection, buffered_content)
+                            self._assign_content_safely(section_content, tagged_content,
+                                                      current_section, target_subsection, buffered_content)
                         content_buffer = []
-                    
+
                     current_subsection = detected_subsection
                     print(f"Subsection changed to: {current_subsection}")
                     continue
@@ -850,10 +1046,15 @@ class DMPExtractor:
             formatted_paragraphs.extend(table_content)
             
             # Join paragraphs for author detection and searching for markers
-            all_text = "\n".join([p.replace("UNDERLINED:", "").replace("BOLD:", "").replace("UNDERLINED_BOLD:", "") 
+            all_text = "\n".join([p.replace("UNDERLINED:", "").replace("BOLD:", "").replace("UNDERLINED_BOLD:", "")
                                  for p in formatted_paragraphs])
-            
-            # Extract author name
+
+            # Extract metadata from document
+            filename = os.path.basename(docx_path)
+            metadata = self.extract_metadata(all_text, doc=doc, filename=filename)
+            print(f"Metadata extracted: {metadata}")
+
+            # Extract author name (legacy compatibility)
             author_name = self.extract_author_name(all_text)
             print(f"Author detected: {author_name}")
             
@@ -1003,12 +1204,16 @@ class DMPExtractor:
             if unconnected_text:
                 review_structure["_unconnected_text"] = unconnected_text
                 print(f"Added {len(unconnected_text)} unconnected text items to review structure")
-            
+
+            # Add metadata to review structure
+            review_structure["_metadata"] = metadata
+            print(f"Added metadata to review structure")
+
             # Save review structure as JSON
             cache_id = str(uuid.uuid4())
             cache_filename = f"cache_{cache_id}.json"
             cache_path = os.path.join(output_dir, cache_filename)
-            
+
             with open(cache_path, 'w', encoding='utf-8') as f:
                 json.dump(review_structure, f, ensure_ascii=False, indent=2)
             
@@ -1046,7 +1251,7 @@ class DMPExtractor:
                 first_pages_text = ""
                 for i in range(min(3, len(reader.pages))):
                     first_pages_text += reader.pages[i].extract_text() + "\n"
-                
+
                 author_name = self.extract_author_name(first_pages_text)
                 print(f"Author detected: {author_name}")
                 
@@ -1068,7 +1273,12 @@ class DMPExtractor:
                     for mark in self.end_marks:
                         if mark in page_text:
                             print(f"Found end mark '{mark}' on page {i+1}")
-                
+
+                # Extract metadata from PDF
+                filename = os.path.basename(pdf_path)
+                metadata = self.extract_metadata(all_text, doc=None, filename=filename)
+                print(f"Metadata extracted: {metadata}")
+
                 # Find start and end positions
                 start_pos = -1
                 end_pos = len(all_text)
@@ -1201,12 +1411,16 @@ class DMPExtractor:
                 if unconnected_text:
                     review_structure["_unconnected_text"] = unconnected_text
                     print(f"Added {len(unconnected_text)} unconnected text items to PDF review structure")
-                
+
+                # Add metadata to review structure
+                review_structure["_metadata"] = metadata
+                print(f"Added metadata to PDF review structure")
+
                 # Save review structure as JSON for the review interface
                 cache_id = str(uuid.uuid4())
                 cache_filename = f"cache_{cache_id}.json"
                 cache_path = os.path.join(output_dir, cache_filename)
-                
+
                 with open(cache_path, 'w', encoding='utf-8') as f:
                     json.dump(review_structure, f, ensure_ascii=False, indent=2)
                 
