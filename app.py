@@ -4,6 +4,7 @@ import json
 import time
 import threading
 import zipfile
+from datetime import datetime
 from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for
 from werkzeug.utils import secure_filename
 from utils.extractor import DMPExtractor
@@ -462,6 +463,102 @@ def save_feedback():
         return jsonify({
             'success': False,
             'message': f'Error saving feedback: {str(e)}'
+        })
+
+@app.route('/export_json', methods=['POST'])
+def export_json():
+    """Export review with metadata as structured JSON"""
+    try:
+        data = request.json or {}
+
+        cache_id = data.get('cache_id', '')
+        feedback_data = data.get('feedback', {})
+
+        if not cache_id:
+            return jsonify({
+                'success': False,
+                'message': 'Missing cache_id'
+            })
+
+        # Load cache file
+        cache_filename = f"cache_{cache_id}.json"
+        cache_path = os.path.join(app.config['OUTPUT_FOLDER'], cache_filename)
+
+        if not os.path.exists(cache_path):
+            return jsonify({
+                'success': False,
+                'message': 'Cache file not found'
+            })
+
+        with open(cache_path, 'r', encoding='utf-8') as f:
+            cache_data = json.load(f)
+
+        # Extract metadata
+        metadata = cache_data.get('_metadata', {})
+
+        # Build structured export
+        export_data = {
+            'metadata': {
+                'researcher_surname': metadata.get('researcher_surname'),
+                'researcher_firstname': metadata.get('researcher_firstname'),
+                'competition_name': metadata.get('competition_name'),
+                'competition_edition': metadata.get('competition_edition'),
+                'creation_date': metadata.get('creation_date'),
+                'review_date': datetime.now().strftime('%d-%m-%y'),
+                'filename_original': metadata.get('filename_original')
+            },
+            'dmp_content': {},
+            'review_feedback': {}
+        }
+
+        # Add DMP content for each section
+        for section_id in ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2',
+                          '4.1', '4.2', '5.1', '5.2', '5.3', '5.4', '6.1', '6.2']:
+            if section_id in cache_data:
+                section_info = cache_data[section_id]
+                export_data['dmp_content'][section_id] = {
+                    'section': section_info.get('section', ''),
+                    'question': section_info.get('question', ''),
+                    'content': '\n'.join(section_info.get('paragraphs', []))
+                }
+
+                # Add review feedback if provided
+                if section_id in feedback_data:
+                    export_data['review_feedback'][section_id] = feedback_data[section_id]
+
+        # Generate filename
+        if metadata.get('researcher_surname'):
+            json_filename = f"Review_{metadata['researcher_surname']}"
+            if metadata.get('researcher_firstname'):
+                json_filename += f"_{metadata['researcher_firstname'][0]}"
+            if metadata.get('competition_name'):
+                json_filename += f"_{metadata['competition_name']}"
+            if metadata.get('competition_edition'):
+                json_filename += f"_{metadata['competition_edition']}"
+        else:
+            json_filename = f"Review_{cache_id[:8]}"
+
+        json_filename += f"_{datetime.now().strftime('%d%m%y')}.json"
+        json_path = os.path.join(app.config['OUTPUT_FOLDER'], json_filename)
+
+        # Save JSON file
+        with open(json_path, 'w', encoding='utf-8') as f:
+            json.dump(export_data, f, ensure_ascii=False, indent=2)
+
+        return jsonify({
+            'success': True,
+            'filename': json_filename,
+            'path': json_path,
+            'data': export_data,
+            'message': 'JSON exported successfully'
+        })
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'success': False,
+            'message': f'Error exporting JSON: {str(e)}'
         })
 
 @app.route('/save_category', methods=['POST'])
