@@ -550,6 +550,82 @@ class DMPExtractor:
 
         return date_value
 
+    def generate_smart_filename(self, metadata, file_type="DMP", extension=".docx"):
+        """
+        Generate intelligent filename from metadata
+
+        Format: {type}_{Surname}_{FirstInitial}_{Competition}_{Edition}_{DDMMYY}.{ext}
+        Example: DMP_Kowalski_J_OPUS_25_161125.docx
+
+        Args:
+            metadata: dict with extracted metadata
+            file_type: prefix (default: "DMP")
+            extension: file extension (default: ".docx")
+
+        Returns:
+            str: Generated filename
+        """
+        from datetime import datetime
+
+        parts = [file_type]
+
+        # Add researcher name
+        if metadata.get('researcher_surname'):
+            surname = metadata['researcher_surname']
+            # Clean and capitalize
+            surname = re.sub(r'[^a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]', '', surname)
+            parts.append(surname)
+
+            # Add first initial if available
+            if metadata.get('researcher_firstname'):
+                firstname = metadata['researcher_firstname']
+                first_initial = firstname[0].upper() if firstname else ''
+                if first_initial:
+                    parts.append(first_initial)
+
+        # Add competition name
+        if metadata.get('competition_name'):
+            comp = metadata['competition_name'].upper()
+            parts.append(comp)
+
+            # Add edition if available
+            if metadata.get('competition_edition'):
+                parts.append(metadata['competition_edition'])
+
+        # Add date
+        if metadata.get('creation_date'):
+            # Try to parse and format as DDMMYY
+            date_str = metadata['creation_date']
+            try:
+                # If it's already in DD-MM-YY format
+                if isinstance(date_str, str) and '-' in date_str:
+                    parts_date = date_str.split('-')
+                    if len(parts_date) == 3:
+                        # DD-MM-YY format
+                        date_formatted = ''.join(parts_date)  # DDMMYY
+                        parts.append(date_formatted)
+                elif isinstance(date_str, datetime):
+                    parts.append(date_str.strftime('%d%m%y'))
+            except:
+                pass
+
+        # If no date from metadata, use current date
+        if not metadata.get('creation_date'):
+            parts.append(datetime.now().strftime('%d%m%y'))
+
+        # Join parts with underscore
+        filename = '_'.join(parts)
+
+        # Add extension
+        if not extension.startswith('.'):
+            extension = '.' + extension
+        filename += extension
+
+        # Clean filename (remove invalid characters)
+        filename = re.sub(r'[\\/*?:"<>|]', '_', filename)
+
+        return filename
+
     def clean_markup(self, text):
         """Remove common markup from text"""
         # Remove underline markup
@@ -1182,19 +1258,9 @@ class DMPExtractor:
                         "tagged_paragraphs": tagged_paragraphs
                     }
             
-            # Generate output filename
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            base_name = os.path.splitext(os.path.basename(docx_path))[0]
-            
-            if author_name:
-                # Clean author name to use in filename
-                clean_author = re.sub(r'[^a-zA-Z0-9]', '_', author_name.strip())
-                output_filename = f"DMP_{clean_author}_{timestamp}.docx"
-            else:
-                output_filename = f"DMP_{base_name}_{timestamp}.docx"
-            
-            # Create safe filename
-            output_filename = re.sub(r'[\\/*?:"<>|]', "_", output_filename)
+            # Generate smart output filename from metadata
+            output_filename = self.generate_smart_filename(metadata, file_type="DMP", extension=".docx")
+            print(f"Generated smart filename: {output_filename}")
             
             # Save the document
             output_path = os.path.join(output_dir, output_filename)
@@ -1389,19 +1455,9 @@ class DMPExtractor:
                             "tagged_paragraphs": tagged_paragraphs
                         }
                 
-                # Generate output filename
-                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                base_name = os.path.splitext(os.path.basename(pdf_path))[0]
-                
-                if author_name:
-                    # Clean author name to use in filename
-                    clean_author = re.sub(r'[^a-zA-Z0-9]', '_', author_name.strip())
-                    output_filename = f"DMP_{clean_author}_{timestamp}.docx"
-                else:
-                    output_filename = f"DMP_{base_name}_{timestamp}.docx"
-                
-                # Create safe filename
-                output_filename = re.sub(r'[\\/*?:"<>|]', "_", output_filename)
+                # Generate smart output filename from metadata
+                output_filename = self.generate_smart_filename(metadata, file_type="DMP", extension=".docx")
+                print(f"Generated smart filename: {output_filename}")
                 
                 # Save the document
                 output_path = os.path.join(output_dir, output_filename)
