@@ -236,22 +236,26 @@ class DMPExtractor:
         skip_patterns = [
             r"Strona \d+",        # Polish page numbers
             r"Page \d+",          # English page numbers
-            r"ID: \d+",           # Document ID
+            r"ID:\s*\d+",         # Document ID
             r"\[wydruk roboczy\]", # Draft print marker
             r"WZÓR",              # Template marker
             r"W Z Ó R",           # Template marker with spaces
             r"OSF,",              # Document footer
             r"^\d+$",             # Just page numbers
             r"^\+[-=]+\+$",       # Table borders
-            r"^\|[\s\|]*\|$"      # Table separators
+            r"^\|[\s\|]*\|$",     # Table separators
+            r"Dół formularza",    # Form bottom marker
+            r"Początek formularza",  # Form start marker
+            r"^\s*Dół\s+formularza\s*$",  # Form markers with whitespace
+            r"^\s*Początek\s+formularza\s*$"
         ]
         
         # Additional PDF-specific patterns
         if is_pdf:
             pdf_patterns = [
                 r"wydruk roboczy",     # Draft watermark
-                r"\d{6,}",             # Project IDs (6+ digits)
-                r"OPUS-\d+",           # Grant program markers
+                # REMOVED: r"\d{6,}" - too aggressive, catches content with project IDs
+                # This is now handled by _is_grant_header_footer() in context
                 r"Strona \d+ z \d+",   # Page indicators
                 r"TAK\s*NIE\s*$",      # Checkbox patterns
                 r"^\s*[✓✗×]\s*$",      # Checkbox symbols
@@ -263,11 +267,8 @@ class DMPExtractor:
                 # Complex header/footer pattern for grant applications
                 r"OSF,?\s*OPUS-\d+\s*Strona\s+\d+\s*ID:\s*\d+,?\s*\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}",
                 # More flexible patterns for parts of the header
-                r"OSF,?\s*OPUS-\d+",   # OSF + OPUS markers
-                r"ID:\s*\d{6,}",       # ID with 6+ digits
+                r"OSF,?\s*OPUS-\d+\s*Strona",   # OSF + OPUS + Strona (stronger pattern)
                 r"\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}",  # Timestamp pattern
-                # Combined pattern matching multiple elements (more flexible)
-                r"(OSF|OPUS-\d+|Strona\s+\d+|ID:\s*\d+|20\d{2}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}).*?(OSF|OPUS-\d+|Strona\s+\d+|ID:\s*\d+|20\d{2}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})",
             ]
             skip_patterns.extend(pdf_patterns)
         
@@ -285,7 +286,26 @@ class DMPExtractor:
         """Detect complex grant application header/footer patterns with variable elements"""
         # Clean the text for analysis
         clean_text = re.sub(r'\s+', ' ', text.strip())
-        
+
+        # Check for very short text that's clearly a header (< 15 chars with OSF or ID)
+        if len(clean_text) < 15 and re.search(r'(OSF|ID:|Strona)', clean_text, re.IGNORECASE):
+            return True
+
+        # If text is very long (>120 chars), it's probably real content with some metadata appended
+        # Only consider it a header if it has strong header indicators
+        if len(clean_text) > 120:
+            # Only skip if it has OSF AND OPUS AND Strona (very specific header pattern)
+            has_osf = bool(re.search(r'OSF,?\s*', clean_text, re.IGNORECASE))
+            has_opus = bool(re.search(r'OPUS-\d+', clean_text, re.IGNORECASE))
+            has_page = bool(re.search(r'Strona\s+\d+', clean_text, re.IGNORECASE))
+
+            if has_osf and has_opus and has_page:
+                print(f"Detected header in long text: '{clean_text[:80]}...'")
+                return True
+            else:
+                # Probably real content with some numbers
+                return False
+
         # Define the variable components that appear in grant headers/footers
         components = {
             'osf': r'OSF,?\s*',
@@ -295,21 +315,20 @@ class DMPExtractor:
             'date': r'\d{4}-\d{2}-\d{2}',
             'time': r'\d{2}:\d{2}:\d{2}',
             'timestamp': r'\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}',  # Combined date-time
-            'project_id': r'\d{6,}',  # Long numeric IDs
         }
-        
+
         # Count how many components are present
         component_matches = 0
         matched_components = []
-        
+
         for name, pattern in components.items():
             if re.search(pattern, clean_text, re.IGNORECASE):
                 component_matches += 1
                 matched_components.append(name)
-        
-        # If we have 3 or more components, it's likely a header/footer
+
+        # If we have 3 or more strong components, it's likely a header/footer
         if component_matches >= 3:
-            print(f"Detected grant header/footer: '{clean_text}' (matched: {matched_components})")
+            print(f"Detected grant header/footer: '{clean_text[:80]}...' (matched: {matched_components})")
             return True
         
         # Additional check for specific patterns that are clearly headers/footers
@@ -799,12 +818,23 @@ class DMPExtractor:
         # Clean the text of any markup
         original_text = text
         text = self.clean_markup(text)
-        
+
+        # For PDFs, check if subsection header is embedded in the middle of text
+        # This happens when PDF text extraction concatenates lines
+        if is_pdf and len(text) > 100:
+            # Try to find subsection patterns in the middle of the text
+            for polish, english in self.subsection_mapping.items():
+                if current_section and english in self.dmp_structure.get(current_section, []):
+                    # Check if the Polish header appears anywhere in the text
+                    if polish.lower() in text.lower():
+                        print(f"Found embedded subsection header: '{polish}' in '{text[:80]}...'")
+                        return english
+
         # Check if this is an underlined text which is often a subsection header
         is_underlined = text.startswith("UNDERLINED:")
         if is_underlined:
             text = text.replace("UNDERLINED:", "").strip()
-        
+
         # Check if this is bold text
         if text.startswith("BOLD:"):
             text = text.replace("BOLD:", "").strip()
@@ -905,14 +935,43 @@ class DMPExtractor:
         print(f"No subsection match found for: '{text}' (best score: {best_score:.2f})")
         return None
     
+    def _split_embedded_headers(self, line):
+        """Split lines that contain embedded subsection headers (common in PDFs)
+
+        Returns a list of split lines, or [line] if no splitting needed.
+        """
+        # Check if line contains Polish subsection headers
+        for polish_header in self.subsection_mapping.keys():
+            # Look for the header in the middle of the line
+            lower_line = line.lower()
+            lower_header = polish_header.lower()
+
+            # Remove colons for matching
+            if lower_header.endswith(':'):
+                lower_header = lower_header[:-1]
+
+            pos = lower_line.find(lower_header)
+            if pos > 10:  # Header is embedded (not at start, some content before)
+                # Split the line at the header
+                before = line[:pos].strip()
+                header_and_after = line[pos:].strip()
+
+                print(f"Splitting embedded header: '{line[:60]}...' into 2 parts")
+                return [before, header_and_after]
+
+        # No embedded header found
+        return [line]
+
     def extract_pdf_table_content(self, text_lines):
         """Extract and structure table-like content from PDF text lines"""
         table_content = []
         current_table = []
         in_table = False
-        
+
         for line in text_lines:
             line = line.strip()
+
+            # Skip empty lines
             if not line:
                 if in_table and current_table:
                     # End of table, process it
@@ -920,6 +979,20 @@ class DMPExtractor:
                     table_content.extend(processed_table)
                     current_table = []
                     in_table = False
+                continue
+
+            # IMPORTANT: Filter out headers/footers before any processing
+            if self.should_skip_text(line, is_pdf=True):
+                continue
+
+            # Check if line contains an embedded subsection header (concatenated by PDF extraction)
+            # If so, split it into separate lines
+            split_lines = self._split_embedded_headers(line)
+            if len(split_lines) > 1:
+                # Add all split parts instead of the original line
+                for split_line in split_lines:
+                    if split_line.strip():
+                        table_content.append(split_line.strip())
                 continue
             
             # Detect table patterns
@@ -945,10 +1018,9 @@ class DMPExtractor:
                     table_content.extend(processed_table)
                     current_table = []
                     in_table = False
-                
-                # Add non-table content normally
-                if not self.should_skip_text(line, is_pdf=True):
-                    table_content.append(line)
+
+                # Add non-table content normally (already filtered above)
+                table_content.append(line)
         
         # Process any remaining table
         if current_table:
@@ -1021,7 +1093,9 @@ class DMPExtractor:
             # Try to detect subsection
             if current_section:
                 detected_subsection = self.detect_subsection_from_text(content_item, current_section, is_pdf=is_pdf)
-                if detected_subsection:
+
+                # Only change subsection if it's different from the current one
+                if detected_subsection and detected_subsection != current_subsection:
                     # Flush buffer to previous subsection OR first subsection if none set yet
                     if content_buffer:
                         if current_subsection:
@@ -1041,6 +1115,11 @@ class DMPExtractor:
                     current_subsection = detected_subsection
                     print(f"Subsection changed to: {current_subsection}")
                     continue
+                elif detected_subsection and detected_subsection == current_subsection:
+                    # Same subsection detected - this is probably content, not a header
+                    # Don't continue, let it fall through to content assignment
+                    print(f"Ignoring re-detection of same subsection: {current_subsection}")
+                    pass
             
             # Handle regular content
             if current_section and current_subsection:
