@@ -1,0 +1,50 @@
+{
+     "ready": {
+          "1.1": [
+            
+          ],
+          "1.2": [
+               
+          ],
+          "2.1": [
+               "Lack information about metadata standards"
+          ],
+          "2.2": [
+             
+          ],
+          "3.1": [
+               "Data will be stored using the institutional Office 365 A1 for faculty license, providing OneDrive cloud storage with automatic versioning and EU data residency compliance."
+          ],
+          "3.2": [
+               "No sensitive or personal data will be collected during the research."    
+          ],
+          "4.1": [],
+          "4.2": [
+               "The data and results will be published in the open-access model under one of the Creative Commons licenses (CC0 where possible). Metadata will be always available without any restrictions (CC0).",
+               "The ownership and management of any intellectual property developed in collaboration relating to the Project remains in the rights of the Gdansk University of Technology accordingly to the Polish law and institutional regulations (Resolution of the Senate of the Gdańsk University of Technology No. 117/2021/XXV of 19 May 2021 https://link.pg.edu.pl/GdańskTech_intprop)."
+          ],
+          "5.1": [
+              "MOST Wiedzy Open Research Data Catalog (Bridge of Data) is Gdańsk University of Technology's institutional repository, which is CoreTrustSeal certified, ensuring compliance with international standards for trustworthy data repositories.", 
+              "As alternative to MOST Wiedzy, discipline-specific repositories may be used: Zenodo for general scientific data, GenBank for genetic sequences, PDB for protein structures, or other recognized domain repositories.",
+              " Data will be shared under Creative Commons Attribution 4.0 International (CC BY 4.0) license, allowing any use with attribution."
+          ],
+          "5.2": [
+               "The main repository of data will be the MOST Wiedzy repository, which is CoreTrustSeal certified. This certificate confirms the repository's trustworthiness and sustainability.",
+               "The data to be deposited in the repository will be chosen on the basis of its scientific quality and exemplarity.",
+               "Due to the small disk space required for data storage, there is no need to select the data for long term archiving.",
+               "The repository is CoreTrustSeal certified, which means that it has established good preservation and dissemination practices. Data deposited in the repository will be automatically categorized for long term storage, without expiration date."
+          ],
+          "5.3": [
+           
+          ],
+          "5.4": [
+               "Data will be deposited in MOST Wiedzy Open Research Data Catalog, which provides automatic DOI assignment, standardized metadata using DataCite schema, and guarantees minimum 10-year preservation period."
+          ],
+          "6.1": [
+               "The Principal Investigator will ensure FAIR principles implementation by describing, structuring, and preparing data for publication."
+          ],
+          "6.2": [
+              "The only additional resource required is time for FAIR procedures assessment and data quality assurance."
+          ]
+     }
+}

@@ -1,0 +1,110 @@
+{
+     "_comment": "Critical feedback comments for incomplete or missing DMP elements that require attention.",
+     "missing": {
+          "1.1": [
+               "Remember that data derived from raw data analysis are also research data you manage.",
+               "Remember that 'working data' such as laboratory notebooks, sample evidences, reaction protocols are also research data you manage.",
+               "Please specify what previous project exactly is and if you have right to use them.",
+               "Timeline for data collection is not specified.",
+               "Missing information about data collection tools and instruments - your description is too generic."
+          ],
+          "1.2": [
+               "Please provide more specific information about data formats and expected volumes.",
+               "Missing storage volume estimates - this is required information. Provide specific estimates like '49.5 GB' rather than vague terms like 'several GB' or 'large amounts of data'. Even rough estimates (50-100 GB) are better than nothing.",
+               "Volume estimates are missing or unrealistic.",
+               "File formats are not specified for different data types.",
+               "Missing information about data structure and organization."
+          ],
+          "2.1": [
+               "Metadata standards that will be used for daya in repository not specified. Mention at least DataCite as a general standard, plus any discipline-specific standards.",
+               "Documentation plans are incomplete or missing.",
+               "No mention of data dictionary or codebook creation.",
+               "Missing information about variable definitions and units.",
+               "Provenance tracking is not addressed."
+          ],
+          "2.2": [
+               "Quality control procedures are not adequately described, trained personneland standardized procedures won't suffice.",
+               "Missing information about validation methods and criteria.",
+               "No mention of error handling and correction procedures.",
+               "Quality metrics and thresholds are not defined.",
+               "Missing details about calibration and standardization procedures."
+          ],
+          "3.1": [
+               "Backup strategy lacks detail about frequency and verification procedures.",
+               "Storage locations and access controls are not specified.",
+               "Personal Dropbox or Google Drive free accounts are not appropriate for research data during the project. Use the institutional Office 365 A1 for faculty license which provides OneDrive storage with proper versioning, EU data residency compliance, and institutional backup.",
+               "Retention policies are not clearly defined.",
+               "How do you plan data transfer between two research teams?"
+          ],
+          "3.2": [
+               "Security measures are inadequately described.",
+               "Access control mechanisms are not specified.",
+               "Missing information about encryption methods.",
+               "No mention of security monitoring and incident response.",
+               "Physical security measures are not addressed."
+          ],
+          "4.1": [
+               "GDPR compliance procedures are not adequately described.",
+               "Missing information about consent management.",
+               "Data subject rights and procedures are not addressed.",
+               "Cross-border data transfer issues are not considered."
+          ],
+          "4.2": [
+               "If you are planning to conduct research in collaboration with others, then their rights also have to be taken into consideration and discussed. Here it will be enough if you say that all rules and such issues will be described in the cooperation agreement.",
+               "Third-party IP considerations are not mentioned.",
+               "Commercial exploitation rights are not defined."
+          ],
+          "5.1": [
+               "Data sharing timeline is too vague or missing.",
+               "Specific repositories for data sharing are not identified.",
+               "NCN does not accept CC BY-SA license. Use CC BY 4.0 instead for maximum compliance with funder requirements.",
+               "Missing information about data sharing agreements.",
+               "NCN demands that all results of research financed by them be deposited in open research data repository. In practice it is you who decides which data are shared, but something must be shared."
+          ],
+          "5.2": [
+               "Long-term preservation strategy lacks specific details.",
+               "Repository selection criteria are not provided.",
+               "Preservation period is not specified, but by default NCN requires 10 years.",
+               "Missing information about format migration strategies.",
+               "Hence, you write regarding long-time preservation about open repository - I understand that all data will go there?",
+               "No mention of preservation costs and funding."
+          ],
+          "5.3": [
+               "Software requirements are not adequately specified.",
+               "Software versions missing. Always include version numbers (e.g., 'Python 3.8+' not just 'Python').",
+               "Missing information about data access tools and interfaces.",
+               "Documentation for data processing workflows is incomplete.",
+               "No mention of software preservation strategies.",
+               "User training and support plans are missing."
+          ],
+          "5.4": [
+               "DOI assignment procedures are not described."
+          ],
+          "6.1": [
+               "Data management roles and responsibilities are not clearly assigned.",
+               "Timeline for data sharing is too vague. Specify exact triggers like 'upon publication' or dates like 'December 2025'.",
+               "Data management oversight and governance are not addressed.",
+               "Missing details about coordination between team members."
+          ],
+          "6.2": [
+               "Resource requirements for data management are not adequately budgeted.",
+               "Missing information about ongoing operational costs.",
+               "No mention of resource allocation for different project phases.",
+               "Staff time allocation for data management is not specified.",
+               "Missing details about infrastructure and tool costs."
+          ],
+          "general": [
+               "Personal Dropbox or Google Drive free accounts are not appropriate for research data during the project. Use the institutional Office 365 A1 for faculty license which provides OneDrive storage with proper versioning, EU data residency compliance, and institutional backup.",
+               "Section 6.2 should focus on resources (time, money), not responsibilities.",
+               "License information from section 4.2 is missing in section 5.1. You must repeat the license details in both sections for consistency.",
+               "Missing mention of institutional Office 365 A1 for faculty license. This should be included when describing storage and backup solutions in section 3.1.",
+               "FAIR implementation details belong in section 6.1 (responsibilities), not in section 6.2 (resources). Move any text about PI ensuring FAIRness to section 6.1.",
+               "The standard text should be: 'The only additional resource required is time for FAIR procedures assessment and data quality assurance.'",
+               "No information about data volume provided. Section 1.2 requires specific estimates of storage space needed.",
+               "Metadata standards not specified. Mention at least DataCite as a general standard, plus any discipline-specific standards.",
+               "Software versions missing. Always include version numbers (e.g., 'Python 3.8+' not just 'Python').",
+               "Backup frequency not specified. State 'daily for active data, weekly for archived data' or similar specific schedule.",
+               "Timeline for data sharing is too vague. Specify exact triggers like 'upon publication' or dates like 'December 2025'."
+          ]
+     }
+}
