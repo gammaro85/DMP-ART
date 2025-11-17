@@ -979,3 +979,88 @@ textarea,
     margin-bottom: 20px;
   }
 }
+/* ==================== Language Switcher (Review Page) ==================== */
+.language-switcher-pane {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: var(--bg-main);
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+}
+
+.language-switcher-pane h3 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.language-switcher {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.lang-btn {
+  flex: 1;
+  padding: 10px;
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  color: var(--text-primary);
+  cursor: pointer;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.lang-btn:hover {
+  background: var(--bg-hover);
+  transform: translateY(-1px);
+}
+
+.lang-btn.active {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(var(--primary-rgb), 0.3);
+}
+
+.lang-btn i {
+  font-size: 16px;
+}
+
+.lang-note {
+  margin: 0;
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-style: italic;
+  text-align: center;
+}
+
+/* Dark mode adjustments */
+:root[data-theme="dark"] .language-switcher-pane {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+:root[data-theme="dark"] .lang-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+:root[data-theme="dark"] .lang-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+:root[data-theme="dark"] .lang-btn.active {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
