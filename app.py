@@ -321,7 +321,7 @@ def review_dmp(filename):
                 with open(cache_path, 'r', encoding='utf-8') as f:
                     cache_data = json.load(f)
                     
-                    if cache_data is not None:
+                    if cache_data is not None and isinstance(cache_data, dict):
                         if "_unconnected_text" in cache_data:
                             unconnected_text = cache_data["_unconnected_text"]
                             del cache_data["_unconnected_text"]
@@ -607,8 +607,8 @@ def load_categories():
                     try:
                         with open(file_path, 'r', encoding='utf-8') as f:
                             data = json.load(f)
-                            # Ensure data is a dict before calling items
-                            if isinstance(data, dict):
+                            # Ensure data is not None and is a dict before calling items
+                            if data is not None and isinstance(data, dict):
                                 for key, value in data.items():
                                     if not key.startswith('_') and isinstance(value, dict):
                                         categories[key] = value
