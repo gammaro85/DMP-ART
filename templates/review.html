@@ -740,26 +740,27 @@
                 <!-- Questions Container -->
                 <div class="questions-container">
                     {% for section_id, content in extracted_content.items() %}
+                    {% if content and content.get('section') and content.get('question') %}
                     <div class="question-card" id="section-{{ section_id }}" data-id="{{ section_id }}">
                         <div class="question-header">
                             <div class="section-title-only">
-                                {% set section_parts = content.section.split('.', 1) %}
+                                {% set section_parts = content['section'].split('.', 1) %}
                                 {% if section_parts|length > 1 %}
                                     {{ section_parts[1].strip() }}
                                 {% else %}
-                                    {{ content.section }}
+                                    {{ content['section'] }}
                                 {% endif %}
                             </div>
                             <div class="question-section-combined">
-                                <strong>{{ section_id }}. {{ content.question }}</strong>
+                                <strong>{{ section_id }}. {{ content['question'] }}</strong>
                             </div>
                         </div>
                         
                         <!-- Extracted DMP content -->
                         <div class="extracted-content">
-                            {% if content.paragraphs|length > 0 %}
+                            {% if content.get('paragraphs') and content['paragraphs']|length > 0 %}
                                 <div class="continuous-text">
-                                    <p>{{ content.paragraphs|join(' ') }}</p>
+                                    <p>{{ content['paragraphs']|join(' ') }}</p>
                                 </div>
                             {% else %}
                                 <div class="no-content-warning">
@@ -826,6 +827,7 @@
                             </div>
                         </div>
                     </div>
+                    {% endif %}
                     {% endfor %}
                 </div>
             </main>
@@ -857,7 +859,9 @@
                                     <select id="section-select-{{ loop.index0 }}" class="section-select">
                                         <option value="">-- Select Section --</option>
                                         {% for section_id, content in extracted_content.items() %}
-                                        <option value="{{ section_id }}">{{ section_id }}. {{ content.question }}</option>
+                                        {% if content and content.get('question') %}
+                                        <option value="{{ section_id }}">{{ section_id }}. {{ content['question'] }}</option>
+                                        {% endif %}
                                         {% endfor %}
                                     </select>
                                     <button class="assign-btn" data-index="{{ loop.index0 }}" data-text="{{ item.text }}">Assign</button>
