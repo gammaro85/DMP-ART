@@ -882,33 +882,35 @@ class DMPExtractor:
             return best_match
         
         # 3. Enhanced word-based matching for formatted text
-        if (is_underlined or original_text.endswith(':') or 
-            original_text.startswith("BOLD:") or len(text) > 20):
-            
+        # IMPORTANT: Only apply to likely headers (short text or formatted), not long paragraphs (likely content)
+        if ((is_underlined or original_text.endswith(':') or
+            original_text.startswith("BOLD:")) and len(text) < 200) or (20 < len(text) < 150):
+
             best_word_match = None
             max_match_ratio = 0
-            
+
             for subsection in self.dmp_structure.get(current_section, []):
                 # Get important words from subsection and line
-                subsection_words = set(word.lower() for word in subsection.split() 
+                subsection_words = set(word.lower() for word in subsection.split()
                                      if len(word) > 3 and word.lower() not in ['data', 'will', 'used', 'such', 'example'])
-                line_words = set(word.lower() for word in text.split() 
+                line_words = set(word.lower() for word in text.split()
                                if len(word) > 3 and word.lower() not in ['data', 'będą', 'które', 'oraz'])
-                
+
                 if not subsection_words or not line_words:
                     continue
-                
+
                 # Count matching words
                 matching_words = len(subsection_words.intersection(line_words))
                 match_ratio = matching_words / max(len(subsection_words), 1)
-                
-                # Lower threshold for better matching, but require at least 2 matching words
-                if matching_words >= 2 and match_ratio > max_match_ratio:
+
+                # Require at least 3 matching words AND higher threshold for stricter matching
+                if matching_words >= 3 and match_ratio > max_match_ratio:
                     max_match_ratio = match_ratio
                     best_word_match = subsection
                     print(f"Word match candidate: '{text}' ~ '{subsection}' ({matching_words} words, {match_ratio:.2f} ratio)")
-            
-            if best_word_match and max_match_ratio > 0.15:  # Lower threshold
+
+            # Increased threshold from 0.15 to 0.40 to reduce false positives
+            if best_word_match and max_match_ratio > 0.40:
                 print(f"Best word match: '{text}' -> '{best_word_match}' (ratio: {max_match_ratio:.2f})")
                 return best_word_match
         
