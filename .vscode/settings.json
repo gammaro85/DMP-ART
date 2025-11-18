@@ -35,5 +35,12 @@
      "[markdown]": {
           "editor.defaultFormatter": "esbenp.prettier-vscode"
      },
-     "vscode-edge-devtools.defaultEntrypoint": "http://127.0.0.1:5000/"
+     "vscode-edge-devtools.defaultEntrypoint": "http://127.0.0.1:5000/",
+     // Claude Code API Configuration for Promo Credits
+     "claude-code.apiEndpoint": "https://api.anthropic.com",
+     "claude-code.environmentVariables": {
+          "ANTHROPIC_BASE_URL": "https://api.anthropic.com",
+          "ANTHROPIC_MODEL": "claude-sonnet-4-5-20250929"
+     },
+     "claude-code.telemetry.enabled": false
 }
