@@ -1,4 +1,6 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+
   "permissions": {
     "allow": [
       "Bash(python:*)",
@@ -16,5 +18,9 @@
       "Bash(del test_template_editor.py test_save_functionality.py)"
     ],
     "deny": []
-  }
+  },
+
+  "forceLoginMethod": "claudeai",
+  "model": "claude-sonnet-4-5-20250929",
+  "includeCoAuthoredBy": true
 }
