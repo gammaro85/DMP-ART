@@ -10,6 +10,8 @@
   --warning-color: #fd7e14;
   --yellow-accent: #ffe066;
   --yellow-highlight: #e3f6ff;
+  --section-title-color: #2d5016;
+  --subsection-title-color: #4a7c59;
   --shadow-light: 0 2px 8px rgba(90, 180, 255, 0.10);
   --shadow-medium: 0 4px 16px rgba(90, 180, 255, 0.15);
   --shadow-heavy: 0 8px 24px rgba(90, 180, 255, 0.20);
@@ -616,6 +618,8 @@ textarea:focus {
   --error-color: #ff6b6b;
   --success-color: #51c878;
   --warning-color: #ffa500;
+  --section-title-color: #86efac;
+  --subsection-title-color: #6ee7b7;
   --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.15);
   --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.2);
   --shadow-heavy: 0 8px 24px rgba(0, 0, 0, 0.25);
