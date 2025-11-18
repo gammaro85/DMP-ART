@@ -47,7 +47,73 @@
   --text-box-hover-shadow: 0 8px 32px rgba(30, 58, 95, 0.12);
   --glass-bg: rgba(255, 255, 255, 0.7);
   --glass-border: rgba(255, 255, 255, 0.2);
-  --glass-backdrop: blur(20px)
+  --glass-backdrop: blur(20px);
+
+  /* ============================================
+     TYPOGRAPHY SYSTEM
+     Based on 1.25 modular scale (industry standard)
+     ============================================ */
+
+  /* Font Families */
+  --font-family-base: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-family-mono: "Consolas", "Menlo", "Monaco", "Courier New", monospace;
+
+  /* Font Sizes - Modular Scale (1.25 ratio) */
+  --font-size-xs: 0.75rem;    /* 12px */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-base: 1rem;     /* 16px */
+  --font-size-md: 1rem;       /* 16px - alias for base */
+  --font-size-lg: 1.125rem;   /* 18px */
+  --font-size-xl: 1.25rem;    /* 20px */
+  --font-size-2xl: 1.5rem;    /* 24px */
+  --font-size-3xl: 1.875rem;  /* 30px */
+  --font-size-4xl: 2.25rem;   /* 36px */
+  --font-size-5xl: 3rem;      /* 48px */
+
+  /* Heading Sizes */
+  --h1-size: var(--font-size-4xl);  /* 36px */
+  --h2-size: var(--font-size-3xl);  /* 30px */
+  --h3-size: var(--font-size-2xl);  /* 24px */
+  --h4-size: var(--font-size-xl);   /* 20px */
+  --h5-size: var(--font-size-lg);   /* 18px */
+  --h6-size: var(--font-size-base); /* 16px */
+
+  /* Line Heights */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+  --line-height-loose: 2;
+
+  /* Font Weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ============================================
+     SPACING SYSTEM
+     Based on 8px grid (4px, 8px, 12px, 16px, 24px, 32px, 48px, 64px)
+     ============================================ */
+
+  --spacing-0: 0;
+  --spacing-1: 0.25rem;   /* 4px */
+  --spacing-2: 0.5rem;    /* 8px */
+  --spacing-3: 0.75rem;   /* 12px */
+  --spacing-4: 1rem;      /* 16px */
+  --spacing-5: 1.5rem;    /* 24px */
+  --spacing-6: 2rem;      /* 32px */
+  --spacing-8: 3rem;      /* 48px */
+  --spacing-10: 4rem;     /* 64px */
+  --spacing-12: 6rem;     /* 96px */
+  --spacing-16: 8rem;     /* 128px */
+
+  /* Layout Spacing (Semantic aliases) */
+  --container-padding: var(--spacing-4);
+  --section-spacing: var(--spacing-8);
+  --card-padding: var(--spacing-5);
+  --button-padding-y: var(--spacing-3);
+  --button-padding-x: var(--spacing-5);
+  --input-padding: var(--spacing-3);
 }
 *,
 ::after,
@@ -75,8 +141,9 @@ html {
   background-repeat: no-repeat;
 }
 body {
-  font-family: Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-  line-height: 1.6;
+  font-family: var(--font-family-base);
+  line-height: var(--line-height-normal);
+  font-size: var(--font-size-base);
   background: var(--bg-primary);
   transition: .4s cubic-bezier(.4,0,.2,1);
   position: relative;
@@ -124,10 +191,10 @@ body[data-page="review"] {
   line-height: 1.5
 }
 .subtitle {
-  margin-bottom: .5rem;
-  font-weight: 500;
+  margin-bottom: var(--spacing-2);
+  font-weight: var(--font-weight-medium);
   color: var(--text-secondary);
-  font-size: 1.3rem;
+  font-size: var(--font-size-xl);
 }
 
 .first-letter {
@@ -273,7 +340,7 @@ s .light-logo {
 }
 .nav-item,
 .theme-toggle {
-  font-size: .85rem;
+  font-size: var(--font-size-sm);
   border-radius: var(--border-radius-md);
   border: 1px solid rgba(107,114,128,.15);
   background: rgba(249,250,251,.8);
@@ -282,11 +349,11 @@ s .light-logo {
 }
 .nav-item {
   text-decoration: none;
-  font-weight: 400;
-  padding: 8px 16px;
+  font-weight: var(--font-weight-normal);
+  padding: var(--spacing-2) var(--spacing-4);
   color: var(--text-secondary);
   white-space: nowrap;
-  gap: 4px;
+  gap: var(--spacing-1);
   cursor: pointer
 }
 .theme-toggle {
@@ -594,8 +661,8 @@ select,
 textarea {
   background: rgba(255,255,255,.7);
   border: 1px solid var(--border-color);
-  padding: .75em 1em;
-  font-size: 1rem;
+  padding: var(--input-padding) var(--spacing-4);
+  font-size: var(--font-size-base);
   color: var(--text-primary);
   width: 100%;
   box-sizing: border-box;
