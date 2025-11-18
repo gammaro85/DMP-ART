@@ -13,8 +13,10 @@
       "Bash(ls:*)",
       "Bash(find:*)",
       "Bash(curl:*)",
-      "Bash(del test_template_editor.py test_save_functionality.py)"
+      "Bash(del test_template_editor.py test_save_functionality.py)",
+      "Bash(findstr:*)"
     ],
     "deny": []
-  }
+  },
+  "outputStyle": "default"
 }
