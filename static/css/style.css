@@ -250,8 +250,8 @@ s .light-logo {
   }
   .nav-item,
   .theme-toggle {
-    font-size: .7rem;
-    padding: 5px 8px
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-1) var(--spacing-2)
   }
   .fixed-header {
     padding: 0 clamp(2vw,4vw,10px)
@@ -277,8 +277,8 @@ s .light-logo {
   border: 1px solid var(--border-color)!important;
   border-radius: 50%!important;
   cursor: pointer!important;
-  font-size: 16px!important;
-  font-weight: 400!important;
+  font-size: var(--font-size-base)!important;
+  font-weight: var(--font-weight-normal)!important;
   display: flex!important;
   align-items: center!important;
   justify-content: center!important;
@@ -306,7 +306,7 @@ s .light-logo {
     left: 15px!important;
     width: 35px!important;
     height: 35px!important;
-    font-size: 14px!important
+    font-size: var(--font-size-sm)!important
   }
 }
 @media (max-width:480px) {
@@ -315,7 +315,7 @@ s .light-logo {
     left: 15px!important;
     width: 32px!important;
     height: 32px!important;
-    font-size: 12px!important
+    font-size: var(--font-size-xs)!important
   }
 }
 .fixed-header {
@@ -373,12 +373,12 @@ s .light-logo {
 .tab-btn {
   border-radius: 8px 8px 0 0;
   background: var(--bg-secondary);
-  font-size: 1rem;
-  font-weight: 500;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
   border: 0;
   box-shadow: var(--shadow-light);
   transition: .2s;
-  padding: .75em 1.5em;
+  padding: var(--spacing-3) var(--spacing-5);
   margin: 0
 }
 .tab-btn.active {
@@ -511,11 +511,11 @@ s .light-logo {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-weight: 400;
-  font-size: .9rem;
+  font-weight: var(--font-weight-normal);
+  font-size: var(--font-size-sm);
   border-radius: var(--border-radius-md);
   box-shadow: 0 1px 3px rgba(0,0,0,.04);
-  padding: .75em 1.5em;
+  padding: var(--button-padding-y) var(--button-padding-x);
   margin: 0;
   transition: .3s cubic-bezier(.4,0,.2,1);
   border: 1px solid transparent;
@@ -552,9 +552,9 @@ s .light-logo {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: .9rem;
+  font-size: var(--font-size-sm);
   box-shadow: 0 1px 3px rgba(0,0,0,.04);
-  padding: .75em 1.5em;
+  padding: var(--button-padding-y) var(--button-padding-x);
   margin: 0;
   border: 1px solid transparent;
   cursor: pointer;
@@ -585,9 +585,9 @@ textarea {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: .9rem;
+  font-size: var(--font-size-sm);
   box-shadow: 0 1px 3px rgba(0,0,0,.04);
-  padding: .75em 1.5em;
+  padding: var(--button-padding-y) var(--button-padding-x);
   margin: 0;
   border: 1px solid transparent;
   cursor: pointer;
@@ -783,9 +783,9 @@ body::before {
   right: 0;
   background: rgba(255,255,255,.95);
   border-top: 1px solid var(--border-color);
-  padding: 0.5rem clamp(1rem, 5vw, 3rem);
+  padding: var(--spacing-2) clamp(1rem, 5vw, 3rem);
   text-align: center;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   color: var(--text-secondary);
   z-index: 1000;
   backdrop-filter: blur(20px);
@@ -813,9 +813,9 @@ body,
 .review-container,
 .enhanced-section,
 .upload-area {
-  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 16px;
-  line-height: 1.6;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
   color: var(--text-primary);
   background: var(--bg-primary);
   margin: 0 auto;
@@ -879,8 +879,8 @@ textarea,
 .category-comment-textarea {
   width: 100% !important;
   max-width: 100vw !important;
-  font-size: 1.05rem !important;
-  font-family: "Consolas", "Menlo", "Monaco", "Segoe UI", "Arial", sans-serif !important;
+  font-size: var(--font-size-lg) !important;
+  font-family: var(--font-family-mono) !important;
   background: var(--text-box-bg) !important;
   color: var(--text-high-contrast) !important;
   border: 1px solid var(--border-medium) !important;
@@ -1060,8 +1060,8 @@ textarea,
 }
 
 .language-switcher-pane h3 {
-  margin: 0 0 10px 0;
-  font-size: 14px;
+  margin: 0 0 var(--spacing-3) 0;
+  font-size: var(--font-size-sm);
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -1075,14 +1075,14 @@ textarea,
 
 .lang-btn {
   flex: 1;
-  padding: 10px;
+  padding: var(--spacing-3);
   background: var(--bg-card);
   border: 2px solid var(--border-color);
   color: var(--text-primary);
   cursor: pointer;
-  border-radius: 6px;
-  font-weight: 500;
-  font-size: 14px;
+  border-radius: var(--border-radius-sm);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
@@ -1104,12 +1104,12 @@ textarea,
 }
 
 .lang-btn i {
-  font-size: 16px;
+  font-size: var(--font-size-base);
 }
 
 .lang-note {
   margin: 0;
-  font-size: 11px;
+  font-size: var(--font-size-xs);
   color: var(--text-secondary);
   font-style: italic;
   text-align: center;
