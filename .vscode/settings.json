@@ -36,6 +36,7 @@
           "editor.defaultFormatter": "esbenp.prettier-vscode"
      },
      "vscode-edge-devtools.defaultEntrypoint": "http://127.0.0.1:5000/",
+
      // Claude Code API Configuration for Promo Credits
      // These settings enable Claude Code to use your promotional credits
      "claude-code.apiEndpoint": "https://api.anthropic.com",
@@ -43,6 +44,7 @@
           "ANTHROPIC_BASE_URL": "https://api.anthropic.com",
           "ANTHROPIC_MODEL": "claude-sonnet-4-5-20250929"
      },
+
      // Optional: Disable telemetry if preferred
      "claude-code.telemetry.enabled": false
 }
