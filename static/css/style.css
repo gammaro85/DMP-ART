@@ -187,8 +187,8 @@ body[data-page="review"] {
   align-items: center;
 }
 .description {
-  margin-top: .5rem;
-  line-height: 1.5
+  margin-top: var(--spacing-2);
+  line-height: var(--line-height-normal)
 }
 .subtitle {
   margin-bottom: var(--spacing-2);
@@ -206,8 +206,8 @@ body[data-page="review"] {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  margin-top: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
 }
 
 .logo-container {
@@ -412,7 +412,7 @@ s .light-logo {
   border: 1px solid var(--text-box-border);
   border-radius: var(--border-radius-lg);
   box-shadow: var(--text-box-shadow);
-  padding: 2em;
+  padding: var(--spacing-6);
   transition: .4s cubic-bezier(.4,0,.2,1);
   backdrop-filter: var(--glass-backdrop);
   position: relative;
@@ -451,7 +451,7 @@ s .light-logo {
 .text-content,
 .unconnected-item,
 .upload-area {
-  margin-bottom: 1.5em
+  margin-bottom: var(--spacing-5)
 }
 .container:hover,
 .enhanced-section:hover,
@@ -482,24 +482,24 @@ s .light-logo {
 @media (min-width:600px) {
   .container {
     max-width: 1200px;
-    margin: 2em auto;
-    padding: 2em;
-    gap: 1.5em
+    margin: var(--spacing-6) auto;
+    padding: var(--spacing-6);
+    gap: var(--spacing-5)
   }
   .main-content {
-    padding: 1em 0;
-    gap: 1em
+    padding: var(--spacing-4) 0;
+    gap: var(--spacing-4)
   }
   .logo-container,
   .section {
-    margin-bottom: 1.5em
+    margin-bottom: var(--spacing-5)
   }
   .section {
-    padding: 1.5em;
+    padding: var(--spacing-5);
     border-radius: var(--border-radius-lg)
   }
   .form-group {
-    margin-bottom: 1em
+    margin-bottom: var(--spacing-4)
   }
 }
 .primary-btn {
@@ -859,9 +859,9 @@ body,
 /* Centralized typography for headings and paragraphs */
 h1, h2, h3, h4, h5, h6 {
   color: var(--text-high-contrast);
-  font-weight: 600;
-  line-height: 1.3;
-  margin-bottom: 0.75em;
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  margin-bottom: var(--spacing-3);
   text-shadow: none;
 }
 
@@ -885,9 +885,9 @@ textarea,
   color: var(--text-high-contrast) !important;
   border: 1px solid var(--border-medium) !important;
   border-radius: var(--border-radius-md) !important;
-  padding: 1em !important;
+  padding: var(--spacing-4) !important;
   box-sizing: border-box !important;
-  line-height: 1.7 !important;
+  line-height: var(--line-height-relaxed) !important;
   word-break: break-word !important;
   overflow-x: auto !important;
 }
@@ -963,14 +963,14 @@ textarea,
   .upload-area {
     max-width: 98vw;
     min-width: 220px;
-    padding: 1.5rem 1rem !important;
+    padding: var(--spacing-5) var(--spacing-4) !important;
   }
 }
 @media (max-width: 600px) {
   .upload-area {
     max-width: 100vw;
     min-width: 0;
-    padding: 1rem !important;
+    padding: var(--spacing-4) !important;
     margin-left: 0;
     margin-right: 0;
     gap: 0.8rem;
@@ -1005,10 +1005,10 @@ textarea,
 .review-layout {
   display: flex;
   flex-direction: row;
-  gap: 30px;
+  gap: var(--spacing-6);
   max-width: 1400px;
   margin: 0 auto;
-  padding: 20px;
+  padding: var(--spacing-5);
 }
 
 /* Ensure main-content is left and sidebar is right */
@@ -1022,8 +1022,8 @@ textarea,
   width: 300px;
   min-width: 300px;
   background: var(--bg-card);
-  border-radius: 8px;
-  padding: 20px;
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-5);
   box-shadow: var(--shadow-light);
   border: 1px solid var(--border-light);
   height: fit-content;
@@ -1047,15 +1047,15 @@ textarea,
     top: unset;
     align-self: unset;
     margin-left: 0;
-    margin-bottom: 20px;
+    margin-bottom: var(--spacing-5);
   }
 }
 /* ==================== Language Switcher (Review Page) ==================== */
 .language-switcher-pane {
-  margin-bottom: 20px;
-  padding: 15px;
+  margin-bottom: var(--spacing-5);
+  padding: var(--spacing-4);
   background: var(--bg-main);
-  border-radius: 8px;
+  border-radius: var(--border-radius-md);
   border: 1px solid var(--border-light);
 }
 
@@ -1069,8 +1069,8 @@ textarea,
 
 .language-switcher {
   display: flex;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-2);
 }
 
 .lang-btn {
