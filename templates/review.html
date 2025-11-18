@@ -666,7 +666,79 @@
         .panel-actions .action-btn i {
             font-size: 16px;
         }
-        
+
+        /* Confidence Indicator Styles */
+        .confidence-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+            margin-top: 8px;
+            font-size: 0.85rem;
+        }
+
+        .confidence-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .confidence-bar {
+            flex: 1;
+            height: 8px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .confidence-fill.high {
+            background: linear-gradient(90deg, #10b981, #059669);
+        }
+
+        .confidence-fill.medium {
+            background: linear-gradient(90deg, #f59e0b, #d97706);
+        }
+
+        .confidence-fill.low {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+        }
+
+        .confidence-value {
+            min-width: 45px;
+            text-align: right;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .confidence-tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .confidence-tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            white-space: nowrap;
+            z-index: 1000;
+            margin-bottom: 5px;
+        }
+
         /* Backdrop overlay */
         .panel-backdrop {
             position: fixed;
@@ -752,7 +824,20 @@
                                 <strong>{{ section_id }}. {{ content['question'] }}</strong>
                             </div>
                         </div>
-                        
+
+                        <!-- Extraction Confidence Indicator -->
+                        {% if content.get('confidence') is not none %}
+                        <div class="confidence-indicator confidence-tooltip"
+                             data-tooltip="Confidence: {{ (content['confidence'] * 100)|int }}% | Method: {{ content.get('extraction_method', 'Unknown') }}">
+                            <span class="confidence-label">Quality:</span>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill {{ 'high' if content['confidence'] >= 0.7 else ('medium' if content['confidence'] >= 0.4 else 'low') }}"
+                                     style="width: {{ (content['confidence'] * 100)|int }}%;"></div>
+                            </div>
+                            <span class="confidence-value">{{ (content['confidence'] * 100)|int }}%</span>
+                        </div>
+                        {% endif %}
+
                         <!-- Extracted DMP content -->
                         <div class="extracted-content">
                             {% if content.get('paragraphs') and content['paragraphs']|length > 0 %}
