@@ -58,6 +58,21 @@
             <div id="file-info" class="file-info" style="display:none;">
                 <span id="file-name" class="file-name"></span>
             </div>
+
+            <!-- Real-time Progress Bar -->
+            <div id="progress-container" class="progress-container" style="display:none;">
+                <div class="progress-header">
+                    <span id="progress-message" class="progress-message">Processing...</span>
+                    <span id="progress-percentage" class="progress-percentage">0%</span>
+                </div>
+                <div class="progress-bar-wrapper">
+                    <div id="progress-bar" class="progress-bar">
+                        <div id="progress-fill" class="progress-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+                <div id="progress-status" class="progress-status">Initializing...</div>
+            </div>
+
             <div class="upload-actions" style="gap: 2rem;">
                 <button id="upload-btn" class="primary-btn" disabled>Process File</button>
                 <button id="clear-btn" class="secondary-btn" disabled>Clear</button>
