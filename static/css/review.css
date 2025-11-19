@@ -25,24 +25,7 @@
     border-color: var(--border-light);
 }
 
-/* Layout */
-.review-layout {
-    display: flex !important;
-    flex-direction: row !important;
-    gap: 30px !important;
-    max-width: 1400px !important;
-    margin: 0 auto !important;
-    padding: 20px !important;
-    position: relative !important;
-}
-.main-content {
-    flex: 1 !important;
-    margin-left: 40px !important;
-    margin-right: 290px !important;
-    min-width: 0 !important;
-    order: 1 !important;
-}
-
+/* Layout and Sidebar */
 /* Sidebar - Fixed on right side, always visible */
 body[data-page="review"] aside.right-sidebar {
     position: fixed !important;
