@@ -2,54 +2,110 @@
 <img width="8534" height="4572" alt="dmp-art-logo-main-dark" src="https://github.com/user-attachments/assets/c0d95fcd-9a2a-42a0-b9b0-9538fe7d49b8" />
 
 
-**DMP ART** is a specialized web application designed to streamline the assessment process of Data Management Plans (DMPs) from grant proposals submitted to the National Science Centre (NCN) through the OSF (Otwarta Nauka) system.
+**DMP ART** - Twój inteligentny asystent do oceny Planów Zarządzania Danymi (DMP) w wnioskach NCN.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![Flask](https://img.shields.io/badge/Flask-3.1.0-green.svg)](https://flask.palletsprojects.com/)
-[![Version](https://img.shields.io/badge/version-1.0-brightgreen.svg)](https://github.com/your-repo/dmp-art)
+[![Version](https://img.shields.io/badge/version-0.8.1-brightgreen.svg)](https://github.com/gammaro85/DMP-ART)
+[![Success Rate](https://img.shields.io/badge/success_rate-94.1%25-success)](FINAL_TEST_RESULTS.md)
+[![OCR](https://img.shields.io/badge/OCR-supported-blue)](INSTALLATION.md#ocr-setup)
 
-Purpose
+## Dla Data Stewardów 🎯
 
-This tool supports research administrators, grant officers, and academic institutions in Poland by:
+Jesteś data stewardem oceniającym DMP naukowców? DMP-ART oszczędza **75% czasu** i podnosi jakość recenzji:
 
-- Automated Extraction\*\*: Processing PDF and DOCX documents exported from OSF system
-- Content Analysis\*\*: Identifying and structuring DMP sections according to NCN requirements (Science Europe dmp template on default)
-- Standardized Review\*\*: Providing consistent feedback templates and assessment frameworks
-- Efficient Workflow\*\*: Reducing manual work and improving review quality
+### Twój Workflow
+
+```
+📥 Wgrywasz wniosek NCN (PDF/DOCX)
+    ↓ 5-30 sekund
+📄 System wyciąga DMP i dzieli na 14 sekcji
+    ↓ 20-30 minut recenzji
+✅ Klikasz gotowe komentarze + piszesz unikalne uwagi
+    ↓ 5 minut
+📊 Kompilujesz recenzję → automatyczny eksport
+    ↓
+💾 Pliki zapisane: outputs/DMP_*.docx + feedback/feedback_*.txt
+```
+
+**Zamiast 2h/wniosek → tylko 30min/wniosek** ⚡
+
+### Co Wyróżnia DMP-ART?
+
+✅ **Automatyczna ekstrakcja** - System znajduje DMP w 80-stronicowym wniosku
+✅ **94.1% sukcesu** - Przetwarza nawet skanowane PDF (OCR)
+✅ **Gotowe komentarze** - Kategorie dla typowych przypadków (Ready, Missing, Concerns)
+✅ **Pełna konfiguracja** - Dostosuj strukturę DMP i komentarze do swoich potrzeb
+✅ **Estetyczny UI** - Spójny ciemny motyw, nowoczesny design
+✅ **Powiązane pliki** - DMP i recenzja automatycznie nazwane i pogrupowane
+
+📖 **[Pełny przewodnik dla Data Stewardów →](USER_GUIDE_DATA_STEWARD.md)**
+
+---
+
+## Purpose
+
+This tool supports **data stewards**, research administrators, and grant officers at Polish institutions by:
+
+- **Automated Extraction**: Intelligently extracts DMP section from full grant proposals (PDF/DOCX)
+- **Smart Structuring**: Divides content into 14 Science Europe DMP elements (1.1-6.2)
+- **One-Click Comments**: Pre-configured feedback templates for common review scenarios
+- **Custom Feedback**: Mix ready-made comments with unique, situation-specific remarks
+- **Full Customization**: Configure DMP structure and comment library per element
+- **Organized Export**: Linked DMP files and reviews in separate, organized folders
+- **75% Time Savings**: From 2 hours to 30 minutes per proposal
 
 ## Key Features
 
 ### Document Processing
 
 - **Multi-format Support**: PDF and DOCX files (up to 16MB)
+- **OCR Support**: Automatic processing of scanned PDFs with Tesseract (100% success rate on scans)
+- **94.1% Success Rate**: Tested on 17 real-world NCN proposals
+- **Bilingual Support**: Polish and English DMPs with automatic detection
 - **Table Extraction**: Advanced table content recognition
 - **Section Recognition**: Automatic DMP section identification (1.1-6.2)
+- **Smart Fallback**: 4-tier detection strategy for non-standard formats
 
-### Review Interface
+### Review Interface - Your Daily Tool
 
-- **Structured Feedback**: Section-by-section review system
-- **Quick Comments**: Customizable quick-insert comments
-- **Category System**: Multiple feedback categories 
+- **Section-by-Section Review**: Navigate through 14 DMP elements (1.1-6.2)
+- **Quick Comments Sidebar**: One-click insertion of pre-configured feedback
+- **Category System**: Multiple feedback categories (Ready, Missing, Concerns, Custom)
+- **Per-Element Configuration**: Different comment sets for each of 14 sections
+- **Text Citations**: Select and cite problematic fragments from researcher's text
+- **Character Counter**: Track feedback length and word count
+- **Auto-Save**: Never lose your progress (saves every 30 seconds)
+- **Visual Progress**: See which sections have feedback at a glance
 
-### Template Editor
+### Template Editor - Full Customization
 
-- **DMP Structure Management**: Configure section hierarchy
-- **Quick Comments Editor**: Add/edit/delete quick comments
-- **Dynamic Categories**: Create custom feedback categories
-- **Real-time Preview**: See changes immediately
+- **DMP Structure Editor**: Configure all 14 section questions
+- **Quick Comments Library**: Create reusable comment templates
+- **Dynamic Categories**: Create unlimited custom feedback categories
+- **Per-Element Comments**: Customize feedback options for each section independently
+- **Real-time Updates**: Changes immediately available in review interface
+- **Import/Export**: Share configurations between institutions
 
-### Export & Reports
+### Export & File Organization
 
-- **Feedback Compilation**: Generate comprehensive feedback reports
-- **Multiple Formats**: TXT, HTML export options
-- **Progress Saving**: Save and resume review sessions
+- **Linked Files**: DMP and review automatically named and paired
+- **Dual Folders**: `outputs/` for DMPs, `feedback/` for reviews
+- **Smart Naming**: `DMP_Surname_I_Competition_Edition_Date.docx`
+- **Feedback Compilation**: Generate comprehensive review reports
+- **Multiple Formats**: TXT export (DOCX/PDF coming soon)
+- **Progress Saving**: Save and resume review sessions anytime
 
+### User Experience - Modern & Aesthetic
 
-### User Experience
-
-- **Dark/Light Theme**: Automatic system detection with toggle button
-- **Responsive Design**: Works on desktop, tablet, mobile
+- **Dark Theme**: Elegant, eye-friendly dark mode by default
+- **Light Theme**: Switch to light mode with one click
+- **Consistent Design**: Unified color scheme across all pages
+- **Responsive Layout**: Works on desktop, tablet, mobile
+- **Fixed Sidebar**: Quick comments always visible while reviewing
+- **Smooth Animations**: Professional transitions and interactions
+- **Keyboard Shortcuts**: Navigate faster with hotkeys
 
 ## Technical Stack
 
@@ -61,6 +117,9 @@ This tool supports research administrators, grant officers, and academic institu
 - **python-docx 1.1.2**: DOCX processing
 - **Werkzeug 3.1.3**: WSGI utilities
 - **Pillow 11.0.0**: Image processing
+- **pytesseract** (optional): OCR engine interface
+- **pdf2image** (optional): PDF to image conversion for OCR
+- **Tesseract OCR 5.3+** (optional): OCR engine with Polish and English support
 
 ### Frontend
 
@@ -100,28 +159,51 @@ This tool supports research administrators, grant officers, and academic institu
    pip install -r requirements.txt
    ```
 
-3. **Verify configuration files**
+3. **Install OCR support** (optional but recommended for scanned PDFs)
+
+   **Linux/Ubuntu:**
+   ```bash
+   sudo apt-get install tesseract-ocr tesseract-ocr-pol tesseract-ocr-eng poppler-utils
+   pip install pytesseract pdf2image
+   ```
+
+   **macOS:**
+   ```bash
+   brew install tesseract tesseract-lang poppler
+   pip install pytesseract pdf2image
+   ```
+
+   **Windows:** See [INSTALLATION.md](INSTALLATION.md#ocr-setup) for detailed instructions.
+
+   **Verify OCR:**
+   ```bash
+   tesseract --version  # Should show version 5.3+
+   ```
+
+4. **Verify configuration files**
 
    ```bash
    ls config/  # Should show JSON configuration files
    ```
 
-4. **Create necessary directories**
+5. **Create necessary directories**
 
    ```bash
    mkdir -p uploads outputs
    ```
 
-5. **Start the application**
+6. **Start the application**
 
    ```bash
    python app.py
    ```
 
-6. **Access the application**
+7. **Access the application**
    ```
    Open your browser and navigate to: http://localhost:5000
    ```
+
+**For detailed installation including OCR setup, troubleshooting, and verification, see [INSTALLATION.md](INSTALLATION.md).**
 
 ## Usage Guide
 
@@ -337,29 +419,68 @@ Licensed under the MIT License
 
 ## Recent Updates
 
-### Version 0.8 Features
+### Version 0.8.1 - Optimization Release (2025-11-18) 🚀
 
-- **Enhanced Template Editor**: Dynamic category management with real-time editing
-- **Improved Theme System**: Fixed theme toggle with proper sun/moon icons in top-left corner
-- **Better Document Processing**: Enhanced DOCX and PDF extraction with table support
-- **Comprehensive Documentation**: Complete user guide and technical documentation
-- **MIT License**: Open source with permissive licensing
-- **Responsive Design**: Mobile-friendly interface with dark/light theme support
+**Major breakthrough in extraction accuracy and performance!**
 
-### Template Editor Improvements
+#### OCR Support for Scanned PDFs ✨
 
-- **Permanent Tabs**: DMP Structure and Quick Comments tabs are always available
-- **Dynamic Categories**: Create, edit, and delete custom feedback categories
-- **Auto-loading**: Automatically loads existing JSON configuration files as tabs
-- **Real-time Saving**: Save changes directly from the interface
-- **Consistent Layout**: Matches design patterns across all pages
+- **100% Success Rate**: All scanned PDFs now process correctly with Tesseract OCR
+- **Automatic Detection**: System detects scanned PDFs and applies OCR automatically
+- **Bilingual**: Polish + English language pack support
+- **Processing Time**: ~25s per scanned PDF (one-time cost, excellent results)
 
-### Theme System Fixes
+#### Performance Optimizations ⚡
 
-- **Fixed Position Toggle**: Theme toggle now appears in top-left corner on all pages
-- **Correct Icons**: Moon icon in light mode, sun icon in dark mode
-- **Consistent Behavior**: Works reliably across all pages and browsers
+- **99.9% Faster**: Text similarity calculations (0.0003ms vs 0.5ms)
+- **80% Faster**: Section detection (0.024ms vs 0.12ms)
+- **78% Faster**: Text filtering (0.039ms vs 0.18ms)
+- **Pre-compiled Regex**: All patterns compiled at initialization
+- **LRU Caching**: Smart caching for repeated calculations
+
+#### Extraction Improvements 🎯
+
+- **94.1% Success Rate**: Tested on 17 real-world NCN proposals (target: 93%)
+- **4-Tier Fallback Detection**: Multiple strategies for non-standard formats
+- **Enhanced Section Detection**: Better handling of formatted headers (BOLD:, UNDERLINED:)
+- **Improved Content Assignment**: Smarter text-to-section mapping
+
+#### Documentation 📚
+
+- **[FINAL_TEST_RESULTS.md](FINAL_TEST_RESULTS.md)**: Complete optimization report (600+ lines)
+- **[OPTIMIZATION_REPORT.md](OPTIMIZATION_REPORT.md)**: Technical performance analysis
+- **[USER_GUIDE_DATA_STEWARD.md](USER_GUIDE_DATA_STEWARD.md)**: Comprehensive guide for data stewards
+- **[INSTALLATION.md](INSTALLATION.md)**: Detailed setup with OCR instructions
+
+#### Test Suite 🧪
+
+- **21 Unit Tests**: 90% passing (19/21)
+- **4 Performance Benchmarks**: All passing with excellent metrics
+- **Real File Testing**: Comprehensive test on 17 actual NCN proposals
+- **Automated Testing**: `test_extractor_optimization.py` and `test_real_files.py`
+
+**See [FINAL_TEST_RESULTS.md](FINAL_TEST_RESULTS.md) for complete details.**
+
+---
+
+### Version 0.8 - Foundation Release
+
+#### Template Editor
+- **Dynamic Category Management**: Create, edit, and delete custom feedback categories
+- **Per-Element Configuration**: Customize comments for each of 14 DMP sections
+- **Auto-loading**: Automatically loads existing JSON configuration files
+- **Real-time Saving**: Changes immediately available in review interface
+
+#### Theme System
+- **Dark Mode**: Elegant dark theme as default
+- **Light Mode**: Switchable with one click
+- **Fixed Toggle**: Theme toggle in top-left corner on all pages
 - **Persistent Settings**: Theme preference saved in localStorage
+
+#### Document Processing
+- **Bilingual Support**: Polish and English DMPs with automatic detection
+- **Table Extraction**: Advanced table content recognition
+- **Section Recognition**: Automatic identification of 14 DMP elements
 
 ---
 

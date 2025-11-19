@@ -20,6 +20,746 @@
             if (meta) meta.content = theme === 'dark' ? '#121212' : '#ffffff';
         })();
     </script>
+    <style>
+        /* Enhanced Review Page Styles */
+        .results-container {
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-medium);
+            transition: all 0.3s ease;
+        }
+        .result-card {
+            background-color: var(--bg-tertiary);
+            border-color: var(--border-medium);
+        }
+        .feature-card,
+        .stat-item {
+            background-color: var(--bg-secondary);
+            border-color: var(--border-light);
+        }
+        
+        /* Layout */
+        .review-layout {
+            display: flex !important;
+            flex-direction: row !important;
+            gap: 30px !important;
+            max-width: 1400px !important;
+            margin: 0 auto !important;
+            padding: 20px !important;
+            position: relative !important;
+        }
+        .main-content {
+            flex: 1 !important;
+            margin-left: 40px !important;
+            margin-right: 290px !important;
+            min-width: 0 !important;
+            order: 1 !important;
+        }
+        
+        /* Sidebar - Fixed on right side, always visible */
+        /* TODO: Refactor to style.css with proper specificity to eliminate !important */
+        body[data-page="review"] aside.right-sidebar {
+            position: fixed !important;
+            top: 80px !important;
+            right: 20px !important;
+            bottom: 60px !important;
+            width: 250px !important;
+            background-color: var(--bg-card) !important;
+            border: 1px solid var(--border-light) !important;
+            border-radius: 8px !important;
+            padding: 15px !important;
+            overflow-y: auto !important;
+            z-index: 1002 !important; /* Above header (1000) and theme toggle (1001) */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+            display: block !important;
+            transform: none !important;
+        }
+        
+        /* Remove previous fixed overrides */
+        /* Removed: body[data-page="review"] .right-sidebar { position: fixed ... } */
+        /* Removed: force visibility override and responsive fixed positioning rules */
+        
+        /* Enhanced Review Page Styles */
+        .results-container {
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-medium);
+            transition: all 0.3s ease;
+        }
+        .result-card {
+            background-color: var(--bg-tertiary);
+            border-color: var(--border-medium);
+        }
+        .feature-card,
+        .stat-item {
+            background-color: var(--bg-secondary);
+            border-color: var(--border-light);
+        }
+        
+        /* Fixed Right Sidebar Styles - Override main CSS */
+        .review-layout {
+            display: block !important;
+            gap: 0 !important;
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 20px !important;
+            position: relative !important;
+        }
+        
+        .main-content {
+            flex: 1 !important;
+            margin-right: 0 !important; /* no reserved space, sidebar is outside */
+            min-width: 0 !important;
+            order: 1 !important;
+        }
+
+        .navigation-pane, .category-comments-pane {
+            margin-bottom: 2rem;
+        }
+
+        /* Center the review subtitle to align with logo */
+        .review-subtitle {
+            text-align: center !important;
+            margin: 0 auto !important;
+            font-size: 1.2rem !important;
+            color: var(--text-secondary) !important;
+            margin-bottom: 2rem !important;
+        }
+
+        /* Section and subsection title colors */
+        .question-card h2,
+        .question-card .section-title,
+        h2.section-title {
+            color: var(--section-title-color) !important;
+            font-weight: 600 !important;
+        }
+
+        .question-card h3,
+        .question-card .subsection-title,
+        h3.subsection-title {
+            color: var(--subsection-title-color) !important;
+            font-weight: 500 !important;
+        }
+        
+        .navigation-pane h3, .category-comments-pane h3 {
+            color: var(--text-primary) !important;
+            font-size: 0.9rem !important;
+            margin-bottom: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
+            border-bottom: 1px solid var(--border-light) !important;
+        }
+        
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+            gap: 4px;
+        }
+        
+        .nav-grid-btn {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-light);
+            color: var(--text-primary);
+            padding: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-grid-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .category-btn {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-light);
+            color: var(--text-primary);
+            padding: 6px 12px;
+            border-radius: 4px;
+            margin: 2px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }
+        
+        .category-btn:hover, .category-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .category-comment-item {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-light);
+            padding: 8px;
+            margin: 4px 0;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }
+        
+        .category-comment-item:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .category-comment-section {
+            font-weight: bold;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+        
+        .no-comments {
+            color: var(--text-secondary);
+            font-style: italic;
+            font-size: 0.8rem;
+            text-align: center;
+            padding: 1rem;
+        }
+        
+        .quick-comments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .quick-comment-item {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-light);
+            color: var(--text-primary);
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+        
+        .quick-comment-item:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        /* Paragraph Layout Improvements */
+        .extracted-content {
+            background-color: var(--bg-secondary) !important;
+            border-radius: 8px !important;
+            padding: 20px !important;
+            margin: 15px 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+        
+        .continuous-text {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+        
+        .continuous-text p {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            line-height: 1.6 !important;
+            color: var(--text-primary) !important;
+            text-align: justify;
+            word-spacing: normal;
+        }
+        
+        /* Feedback textarea improvements */
+        .feedback-text {
+            min-height: 100px !important;
+            max-height: 300px !important;
+            resize: vertical !important;
+            transition: height 0.2s ease !important;
+        }
+        
+        /* Legacy styles for backward compatibility */
+        .enhanced-paragraph {
+            margin-bottom: 0 !important;
+            border: none !important;
+            background: transparent !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+        }
+        
+        .enhanced-paragraph:not(:last-child) {
+            margin-bottom: 15px !important;
+        }
+        
+        .paragraph-metadata {
+            display: none !important;
+        }
+        
+        .enhanced-paragraph p {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            line-height: 1.6 !important;
+            color: var(--text-primary) !important;
+        }
+        
+        /* Category Selection Styles */
+        .category-selection {
+            margin: 15px 0;
+            padding: 10px;
+            background-color: var(--bg-tertiary);
+            border-radius: 6px;
+            border: 1px solid var(--border-light);
+        }
+        
+        .category-selection label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+        
+        .category-buttons-inline {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .category-btn-inline {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-medium);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+        
+        .category-btn-inline:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .category-btn-inline.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        /* Category Comments Dropdown */
+        .category-comments-dropdown {
+            margin: 10px 0;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            background-color: var(--bg-card);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .category-comments-container {
+            padding: 10px;
+        }
+        
+        .category-comments-list-inline {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .category-comment-item-inline {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            padding: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            transition: all 0.2s ease;
+        }
+        
+        .category-comment-item-inline:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        /* Header Navigation Layout */
+        .header-nav {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            width: 100% !important;
+        }
+        
+        .nav-left {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .nav-right {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        /* Header Action Buttons - Distinguished Style */
+        .header-action-buttons-nav {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            padding: 4px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .action-btn {
+            padding: 8px 14px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            white-space: nowrap;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .action-btn.primary {
+            background-color: #10b981;
+            color: white;
+            box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+        }
+        
+        .action-btn.primary:hover {
+            background-color: #059669;
+            box-shadow: 0 4px 8px rgba(16, 185, 129, 0.4);
+            transform: translateY(-1px);
+        }
+        
+        .action-btn.secondary {
+            background-color: #6366f1;
+            color: white;
+            box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+        }
+        
+        .action-btn.secondary:hover {
+            background-color: #4f46e5;
+            box-shadow: 0 4px 8px rgba(99, 102, 241, 0.4);
+            transform: translateY(-1px);
+        }
+
+        /* Highlighted citation style */
+        .citation-highlight {
+            background-color: #ffe066 !important;
+            border-radius: 3px;
+            padding: 0 2px;
+            transition: background 0.3s;
+        }
+        /* Floating cite button */
+        #cite-btn-float {
+            position: absolute;
+            z-index: 9999;
+            display: none;
+            padding: 6px 12px;
+            background: #6366f1;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(99,102,241,0.15);
+            transition: opacity 0.2s;
+        }
+        
+        /* Responsive adjustments - Desktop main content spacing */
+        @media (min-width: 1200px) {
+            body[data-page="review"] .main-content {
+                margin-right: 0 !important;
+            }
+        }
+        
+        /* Smaller sidebar on smaller screens */
+        @media (max-width: 1199px) {
+            body[data-page="review"] .right-sidebar {
+                position: relative !important;
+                top: unset !important;
+                right: unset !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                margin-bottom: 20px !important;
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                z-index: 1 !important;
+                overflow-y: visible !important;
+                order: -1 !important;
+            }
+            
+            body[data-page="review"] .main-content {
+                margin-right: 0 !important;
+            }
+
+            .review-layout {
+                flex-direction: column !important;
+            }
+        }
+
+        /* Add texture background to html instead of body */
+        html {
+            background-color: var(--bg-main);
+            /* background-image and repeat removed, handled by CSS */
+        }
+        /* Remove background from body to avoid double background */
+        body {
+            /* No background or effects here */
+        }
+
+        /* Layout with Quick Navigation */
+        .layout-root {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .has-quick-nav .main-content {
+            padding-right: 240px; /* Reserve space for quick nav */
+        }
+        
+        .quick-nav {
+            position: fixed;
+            top: 80px;
+            right: 0;
+            width: 220px;
+            max-height: calc(100vh - 80px);
+            background-color: var(--bg-card);
+            border-left: 1px solid var(--border-light);
+            border-radius: 8px 0 0 8px;
+            padding: 15px;
+            overflow-y: auto;
+            z-index: 10001;
+            box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Feedback Panel Modal Styles */
+        .compiled-feedback-panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            background: var(--bg-card);
+            border: 2px solid var(--border-medium);
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 1000;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            min-height: 500px;
+        }
+        
+        .compiled-feedback-panel.active {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .panel-handle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            background: var(--bg-secondary);
+            border-radius: 12px 12px 0 0;
+            border-bottom: 1px solid var(--border-light);
+            position: relative;
+        }
+        
+        .panel-handle-bar {
+            display: none;
+        }
+        
+        .panel-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        
+        .panel-content {
+            padding: 24px;
+            height: calc(100% - 80px);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .feedback-summary h3 {
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            font-size: 1.1rem;
+        }
+        
+        .feedback-summary textarea {
+            width: 100%;
+            flex: 1;
+            min-height: 300px;
+            padding: 16px;
+            border: 1px solid var(--border-medium);
+            border-radius: 8px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            resize: none;
+        }
+        
+        .panel-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .panel-actions .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .panel-actions .action-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+        
+        .panel-actions .action-btn i {
+            font-size: 16px;
+        }
+
+        /* Confidence Indicator Styles */
+        .confidence-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+            margin-top: 8px;
+            font-size: 0.85rem;
+        }
+
+        .confidence-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .confidence-bar {
+            flex: 1;
+            height: 8px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .confidence-fill.high {
+            background: linear-gradient(90deg, #10b981, #059669);
+        }
+
+        .confidence-fill.medium {
+            background: linear-gradient(90deg, #f59e0b, #d97706);
+        }
+
+        .confidence-fill.low {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+        }
+
+        .confidence-value {
+            min-width: 45px;
+            text-align: right;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .confidence-tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .confidence-tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            white-space: nowrap;
+            z-index: 1000;
+            margin-bottom: 5px;
+        }
+
+        /* Backdrop overlay */
+        .panel-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+            backdrop-filter: blur(2px);
+        }
+        
+        .panel-backdrop.active {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
 </head>
 <body data-page="review">
     <!-- Fixed Header Navigation -->
@@ -75,7 +815,20 @@
                                 <strong>{{ section_id }}. {{ content['question'] }}</strong>
                             </div>
                         </div>
-                        
+
+                        <!-- Extraction Confidence Indicator -->
+                        {% if content.get('confidence') is not none %}
+                        <div class="confidence-indicator confidence-tooltip"
+                             data-tooltip="Confidence: {{ (content['confidence'] * 100)|int }}% | Method: {{ content.get('extraction_method', 'Unknown') }}">
+                            <span class="confidence-label">Quality:</span>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill {{ 'high' if content['confidence'] >= 0.7 else ('medium' if content['confidence'] >= 0.4 else 'low') }}"
+                                     style="width: {{ (content['confidence'] * 100)|int }}%;"></div>
+                            </div>
+                            <span class="confidence-value">{{ (content['confidence'] * 100)|int }}%</span>
+                        </div>
+                        {% endif %}
+
                         <!-- Extracted DMP content -->
                         <div class="extracted-content">
                             {% if content.get('paragraphs') and content['paragraphs']|length > 0 %}
