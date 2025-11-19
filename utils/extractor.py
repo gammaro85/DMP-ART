@@ -2039,7 +2039,7 @@ class DMPExtractor:
                 for section_id in ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2', '4.1', '4.2', '5.1', '5.2', '5.3', '6.1', '6.2']:
                     if section_id in review_structure:
                         paras = review_structure[section_id].get('paragraphs', [])
-                        if not paras or len(paras) == 0:
+                        if not paras:
                             # Add placeholder for empty sections
                             placeholder = "Not answered in the source document."
                             review_structure[section_id]['paragraphs'] = [placeholder]
