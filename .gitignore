@@ -36,6 +36,8 @@ outputs/cache_*.json
 outputs/analytics_*.json
 outputs/feedback_*.txt
 outputs/Review_*.json
+test_outputs/*.docx
+test_outputs/cache_*.json
 test_export.json
 
 # IDE

@@ -18,8 +18,8 @@ except ImportError:
     HAS_OCR = False
 
 class DMPExtractor:
-    # Section IDs for complete extraction validation
-    SECTION_IDS = ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2', '4.1', '4.2', '5.1', '5.2', '5.3', '6.1', '6.2']
+    # Section IDs for DMP structure
+    SECTION_IDS = ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2', '4.1', '4.2', '5.1', '5.2', '5.3', '5.4', '6.1', '6.2']
     
     def __init__(self, debug_mode=False):
         """
@@ -426,23 +426,8 @@ class DMPExtractor:
         
         # Special handling for complex grant application headers/footers
         if is_pdf:
-        """Determine if text should be skipped (headers, footers, etc.)
-        Optimized version using pre-compiled regex patterns"""
-
-        # Check basic patterns first using pre-compiled patterns
-        for pattern in self.skip_patterns_compiled:
-            if pattern.search(text) is not None:
-                return True
-
-        # Additional PDF-specific patterns
-        if is_pdf:
-            for pattern in self.pdf_skip_patterns_compiled:
-                if pattern.search(text) is not None:
-                    return True
-
-            # Special handling for complex grant application headers/footers
             return self._is_grant_header_footer(text)
-
+        
         return False
     
     def _is_grant_header_footer(self, text):
