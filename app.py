@@ -445,7 +445,7 @@ def review_dmp(filename):
 @app.route('/save_templates', methods=['POST'])
 def save_templates():
     try:
-        data = request.json
+        data = request.json or {}
         global DMP_TEMPLATES
         
         # Update the templates with the new data
@@ -709,13 +709,10 @@ def load_categories():
                             data = json.load(f)
                             # Ensure data is not None and is a dict before calling items
                             if data is not None and isinstance(data, dict):
-                                for key, value in data.items():
+                                for key, value in (data.items() if data else []):
                                     if not key.startswith('_') and isinstance(value, dict):
                                         categories[key] = value
                                         break
-                            else:
-                                # If data is None or not a dict, skip
-                                continue
                     except Exception as e:
                         print(f"Error loading category file {filename}: {str(e)}")
                         continue
