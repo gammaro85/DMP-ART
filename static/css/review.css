@@ -44,7 +44,6 @@
 }
 
 /* Sidebar - Fixed on right side, always visible */
-/* TODO: Refactor to style.css with proper specificity to eliminate !important */
 body[data-page="review"] aside.right-sidebar {
     position: fixed !important;
     top: 80px !important;
