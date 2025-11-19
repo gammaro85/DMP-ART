@@ -848,6 +848,18 @@ body::before {
   box-shadow: 0 -2px 8px rgba(0,0,0,.2)
 }
 
+/* Modifier: Relative footer for pages with scrollable content */
+.site-footer--relative {
+  position: relative;
+  margin-top: var(--spacing-10);  /* 64px top spacing */
+  z-index: 1;  /* Normal content tier (not sticky) */
+}
+
+/* Body padding for fixed footer pages to prevent content overlap */
+body[data-page="index"] {
+  padding-bottom: 60px;  /* Match footer height */
+}
+
 /* Centralized layout and typography for all pages */
 .layout-root,
 body,

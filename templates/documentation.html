@@ -299,28 +299,7 @@
                 grid-template-columns: 1fr;
             }
         }
-        
-        /* Footer styles */
-        .site-footer {
-            background: var(--bg-card);
-            color: var(--text-primary);
-            padding: 1rem;
-            text-align: center;
-            position: relative;
-            z-index: 10;
-            border-top: 1px solid var(--border-light);
-        }
-        
-        .site-footer span {
-            display: inline-block;
-            margin: 0;
-            padding: 0.5rem 1rem;
-            border-radius: 12px;
-            background: var(--primary-color);
-            color: white;
-            font-weight: 500;
-        }
-        
+
         /* Prevent header overlap */
         .fixed-header + .doc-container {
             padding-top: 0px; /* Use global body padding instead */
@@ -1054,6 +1033,6 @@ python app.py
 </body>
 </html>
 
-<footer class="site-footer">
+<footer class="site-footer site-footer--relative">
     <span>DMP ART &copy; 2025</span>
 </footer>
