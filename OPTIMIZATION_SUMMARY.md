@@ -153,7 +153,8 @@ textarea.addEventListener('input', debouncedUpdate);
 - ✅ Invalid HTML structure (documentation.html)
 - ✅ No debouncing on input events
 - ✅ No image lazy loading
-- ✅ 678 lines of inline CSS in review.html
+- ✅ 678 lines of inline CSS in review.html  
+  > **Note:** While the majority of inline CSS was successfully extracted to `review.css`, the resulting file currently contains duplicate and conflicting rules (e.g., `.results-container`, `.result-card`, `.feature-card`, `.stat-item`, `.review-layout`, `.main-content`). These issues undermine some maintainability benefits and should be addressed in a future cleanup.
 - ✅ 71 unnecessary !important declarations
 
 ---
