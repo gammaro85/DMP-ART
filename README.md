@@ -189,7 +189,7 @@ This tool supports **data stewards**, research administrators, and grant officer
 5. **Create necessary directories**
 
    ```bash
-   mkdir -p uploads outputs
+   mkdir -p uploads outputs feedback
    ```
 
 6. **Start the application**
@@ -264,7 +264,8 @@ dmp-extractor/
 │   ├── extractor.py        # Document processing logic
 │   └── dmp_comments.py     # Comment management
 ├── uploads/                 # Temporary upload storage
-└── outputs/                 # Generated reports and cache
+├── outputs/                 # Generated DMP files and cache
+└── feedback/                # Feedback and review files
 ```
 
 ## Configuration
