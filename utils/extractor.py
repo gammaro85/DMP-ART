@@ -1359,6 +1359,25 @@ class DMPExtractor:
                 review_structure["_unconnected_text"] = unconnected_text
                 print(f"Added {len(unconnected_text)} unconnected text items to review structure")
 
+            # Fill empty sections with placeholder text for complete extraction
+            empty_count = 0
+            for section_id in ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2', '4.1', '4.2', '5.1', '5.2', '5.3', '6.1', '6.2']:
+                if section_id in review_structure:
+                    paras = review_structure[section_id].get('paragraphs', [])
+                    if not paras or len(paras) == 0:
+                        # Add placeholder for empty sections
+                        placeholder = "Not answered in the source document."
+                        review_structure[section_id]['paragraphs'] = [placeholder]
+                        review_structure[section_id]['tagged_paragraphs'] = [{
+                            'text': placeholder,
+                            'tags': [],
+                            'title': None
+                        }]
+                        empty_count += 1
+
+            if empty_count > 0:
+                print(f"Added placeholder text to {empty_count} empty section(s)")
+
             # Add metadata to review structure
             review_structure["_metadata"] = metadata
             print(f"Added metadata to review structure")
@@ -1555,6 +1574,25 @@ class DMPExtractor:
                 if unconnected_text:
                     review_structure["_unconnected_text"] = unconnected_text
                     print(f"Added {len(unconnected_text)} unconnected text items to PDF review structure")
+
+                # Fill empty sections with placeholder text for complete extraction
+                empty_count = 0
+                for section_id in ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2', '4.1', '4.2', '5.1', '5.2', '5.3', '6.1', '6.2']:
+                    if section_id in review_structure:
+                        paras = review_structure[section_id].get('paragraphs', [])
+                        if not paras or len(paras) == 0:
+                            # Add placeholder for empty sections
+                            placeholder = "Not answered in the source document."
+                            review_structure[section_id]['paragraphs'] = [placeholder]
+                            review_structure[section_id]['tagged_paragraphs'] = [{
+                                'text': placeholder,
+                                'tags': [],
+                                'title': None
+                            }]
+                            empty_count += 1
+
+                if empty_count > 0:
+                    print(f"Added placeholder text to {empty_count} empty PDF section(s)")
 
                 # Add metadata to review structure
                 review_structure["_metadata"] = metadata
