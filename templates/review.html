@@ -61,6 +61,7 @@
         }
         
         /* Sidebar - Fixed on right side, always visible */
+        /* TODO: Refactor to style.css with proper specificity to eliminate !important */
         body[data-page="review"] aside.right-sidebar {
             position: fixed !important;
             top: 80px !important;
@@ -72,7 +73,7 @@
             border-radius: 8px !important;
             padding: 15px !important;
             overflow-y: auto !important;
-            z-index: 999999 !important;
+            z-index: 1002 !important; /* Above header (1000) and theme toggle (1001) */
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
             display: block !important;
             transform: none !important;
@@ -120,11 +121,7 @@
             min-width: 0 !important;
             order: 1 !important;
         }
-        
-        /* Removed duplicate CSS rule that was conflicting with main sidebar rule */
-            float: none !important;
-        }
-        
+
         .navigation-pane, .category-comments-pane {
             margin-bottom: 2rem;
         }
@@ -142,14 +139,14 @@
         .question-card h2,
         .question-card .section-title,
         h2.section-title {
-            color: #2d5016 !important; /* Darker green for section titles */
+            color: var(--section-title-color) !important;
             font-weight: 600 !important;
         }
 
         .question-card h3,
         .question-card .subsection-title,
         h3.subsection-title {
-            color: #4a7c59 !important; /* Lighter green for subsection titles */
+            color: var(--subsection-title-color) !important;
             font-weight: 500 !important;
         }
         
@@ -669,7 +666,79 @@
         .panel-actions .action-btn i {
             font-size: 16px;
         }
-        
+
+        /* Confidence Indicator Styles */
+        .confidence-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+            margin-top: 8px;
+            font-size: 0.85rem;
+        }
+
+        .confidence-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .confidence-bar {
+            flex: 1;
+            height: 8px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .confidence-fill.high {
+            background: linear-gradient(90deg, #10b981, #059669);
+        }
+
+        .confidence-fill.medium {
+            background: linear-gradient(90deg, #f59e0b, #d97706);
+        }
+
+        .confidence-fill.low {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+        }
+
+        .confidence-value {
+            min-width: 45px;
+            text-align: right;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .confidence-tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .confidence-tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            white-space: nowrap;
+            z-index: 1000;
+            margin-bottom: 5px;
+        }
+
         /* Backdrop overlay */
         .panel-backdrop {
             position: fixed;
@@ -689,34 +758,22 @@
             opacity: 1;
             visibility: visible;
         }
-        
-        /* Footer always at the bottom */
-        .site-footer {
-            position: relative;
-            bottom: 0;
-            width: 100%;
-            padding: 10px 0;
-            text-align: center;
-            background-color: var(--bg-footer);
-            border-top: 1px solid var(--border-light);
-            z-index: 1001;
-        }
     </style>
 </head>
 <body data-page="review">
     <!-- Fixed Header Navigation -->
     <header class="fixed-header">
         <nav class="header-nav">
-            <div class="nav-left">
-                <a href="/" class="nav-item">Home</a>
-                <a href="/template_editor" class="nav-item">Customize Templates</a>
-                <a href="/documentation" class="nav-item">Documentation</a>
+            <div class="nav-links">
+                <a href="/" class="nav-item" data-page="index">Home</a>
+                <span class="nav-item disabled" data-page="review"
+                      title="Upload and process a document first to access review">Review</span>
+                <a href="/template_editor" class="nav-item" data-page="template-editor">Template Editor</a>
+                <a href="/documentation" class="nav-item" data-page="documentation">Documentation</a>
             </div>
-            <div class="nav-right">
-                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-                    <i class="fas fa-moon"></i>
-                </button>
-            </div>
+            <button class="theme-toggle" aria-label="Toggle theme">
+                <i class="fas fa-moon"></i>
+            </button>
         </nav>
     </header>
     
@@ -755,7 +812,20 @@
                                 <strong>{{ section_id }}. {{ content['question'] }}</strong>
                             </div>
                         </div>
-                        
+
+                        <!-- Extraction Confidence Indicator -->
+                        {% if content.get('confidence') is not none %}
+                        <div class="confidence-indicator confidence-tooltip"
+                             data-tooltip="Confidence: {{ (content['confidence'] * 100)|int }}% | Method: {{ content.get('extraction_method', 'Unknown') }}">
+                            <span class="confidence-label">Quality:</span>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill {{ 'high' if content['confidence'] >= 0.7 else ('medium' if content['confidence'] >= 0.4 else 'low') }}"
+                                     style="width: {{ (content['confidence'] * 100)|int }}%;"></div>
+                            </div>
+                            <span class="confidence-value">{{ (content['confidence'] * 100)|int }}%</span>
+                        </div>
+                        {% endif %}
+
                         <!-- Extracted DMP content -->
                         <div class="extracted-content">
                             {% if content.get('paragraphs') and content['paragraphs']|length > 0 %}
@@ -956,7 +1026,7 @@
         </aside>
     </div>
     
-    <footer class="site-footer" style="z-index:1001;">
+    <footer class="site-footer site-footer--relative">
         <span>DMP ART &copy; 2025</span>
     </footer>
 

@@ -1,20 +1,24 @@
 {
-  "permissions": {
-    "allow": [
-      "Bash(python:*)",
-      "Bash(where python)",
-      "Bash(\"C:\\Users\\kraje\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe\" app.py)",
-      "Bash(pip --version)",
-      "Bash(pip install:*)",
-      "Bash(C:UserskrajeOneDrivePulpitdmp-extractor.venvScriptsactivate)",
-      "Bash(rm:*)",
-      "Bash(git add:*)",
-      "Bash(mv:*)",
-      "Bash(ls:*)",
-      "Bash(find:*)",
-      "Bash(curl:*)",
-      "Bash(del test_template_editor.py test_save_functionality.py)"
-    ],
-    "deny": []
-  }
+     "$schema": "https://json.schemastore.org/claude-code-settings.json",
+     "permissions": {
+          "allow": [
+               "Bash(python:*)",
+               "Bash(where python)",
+               "Bash(\"C:\\Users\\kraje\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe\" app.py)",
+               "Bash(pip --version)",
+               "Bash(pip install:*)",
+               "Bash(C:\\Users\\kraje\\OneDrive\\Pulpit\\dmp-extractor\\.venv\\Scripts\\activate)",
+               "Bash(rm:*)",
+               "Bash(git add:*)",
+               "Bash(mv:*)",
+               "Bash(ls:*)",
+               "Bash(find:*)",
+               "Bash(curl:*)",
+               "Bash(del:*)"
+          ],
+          "deny": []
+     },
+     "forceLoginMethod": "claudeai",
+     "model": "claude-sonnet-4-5-20250929",
+     "includeCoAuthoredBy": true
 }

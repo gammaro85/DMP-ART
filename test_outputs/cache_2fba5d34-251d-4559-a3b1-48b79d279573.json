@@ -1,0 +1,296 @@
+{
+  "1.1": {
+    "section": "1. Data description and collection or re-use of existing data",
+    "question": "How will new data be collected or produced and/or how will existing data be re-used?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "1.2": {
+    "section": "1. Data description and collection or re-use of existing data",
+    "question": "What data (for example the types, formats, and volumes) will be collected or produced?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "2.1": {
+    "section": "2. Documentation and data quality",
+    "question": "What metadata and documentation (for example methodology or data collection and way of organising data) will accompany data?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "2.2": {
+    "section": "2. Documentation and data quality",
+    "question": "What data quality control measures will be used?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "3.1": {
+    "section": "3. Storage and backup during the research process",
+    "question": "How will data and metadata be stored and backed up during the research process?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "3.2": {
+    "section": "3. Storage and backup during the research process",
+    "question": "How will data security and protection of sensitive data be taken care of during the research?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "4.1": {
+    "section": "4. Legal requirements, codes of conduct",
+    "question": "If personal data are processed, how will compliance with legislation on personal data and on data security be ensured?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "4.2": {
+    "section": "4. Legal requirements, codes of conduct",
+    "question": "How will other legal issues, such as intelectual property rights and ownership, be managed? What legislation is applicable?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "5.1": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How and when will data be shared? Are there possible restrictions to data sharing or embargo reasons?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "5.2": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How will data for preservation be selected, and where will data be preserved long-term (for example a data repository or archive)?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "5.3": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "What methods or software tools will be needed to access and use the data?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "5.4": {
+    "section": "5. Data sharing and long-term preservation",
+    "question": "How will the application of a unique and persistent identifier (such us a Digital Object Identifier (DOI)) to each data set be ensured?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "6.1": {
+    "section": "6. Data management responsibilities and resources",
+    "question": "Who (for example role, position, and institution) will be responsible for data management (i.e the data steward)?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "6.2": {
+    "section": "6. Data management responsibilities and resources",
+    "question": "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)?",
+    "paragraphs": [],
+    "tagged_paragraphs": []
+  },
+  "_unconnected_text": [
+    {
+      "text": "BOLD:Opis danych oraz pozyskiwanie lub ponowne wykorzystanie dostępnych danych",
+      "type": "no_section"
+    },
+    {
+      "text": "Sposób pozyskiwania i opracowania nowych danych i/lub wykorzystanie dostępnych danych",
+      "type": "no_section"
+    },
+    {
+      "text": "The bulk of raw data obtained in the project will be produced using three analytical instruments:",
+      "type": "no_section"
+    },
+    {
+      "text": "Thermogravimetric analyser (TG) operated via a commercial PROTEUS® software (NETZSCH GMBH, Germany).",
+      "type": "no_section"
+    },
+    {
+      "text": "Proton transfer reaction time-of-flight mass spectrometer (PTR-ToF-MS) operated via dedicated freeware software (IoniTOF, Ionicon Analytik, Austria). These data will subsequently be pre-processed using a dedicated, licensed piece of software (PTR-MS Viewer v. 3.4 or newer, Ionicon Analytik, Austria).",
+      "type": "no_section"
+    },
+    {
+      "text": "Gas chromatography-mass spectrometry (GC-MS) device running the licensed GCMSsolution software (Shimadzu, Japan). MS spectra databases (NIST, hmdb.ca) will be used during the pre-processing of the GC-MS data.",
+      "type": "no_section"
+    },
+    {
+      "text": "Pre-processed data will be exported in a plain-text format (.csv, UTF-8 encoding) and accessed for subsequent data analysis in a read-only mode. All subsequent data processing will be carried out in Python using the Pandas and OS packages to read the local copies of the datasets.",
+      "type": "no_section"
+    },
+    {
+      "text": "Pozyskiwane lub opracowywane dane (np. rodzaj, format, ilość)",
+      "type": "no_section"
+    },
+    {
+      "text": "PTR-ToF-MS raw data and instrument settings and parameters are stored in an open, general-purpose, hierarchical file format (HDF5) that can be easily parsed independently of the software. These will constitute the bulk of the gathered data. During data acquisition, raw data will be saved in 15-minute chunks that will subsequently be concatenated to minimise the risk of major data loss. Metadata associated with pre-processing using the PTR-MS Viewer software are stored in a plain-text format (.ipt). In the course of the project, this might generate up to 800 GB of raw data, with an additional 200 GB of pre-processed data stored in a plain-text format (.csv, UTF-8 encoding).",
+      "type": "no_section"
+    },
+    {
+      "text": "The TG raw data are stored in a plain-text, ANSI-encoded .ngb-dt6 files. The processed results are immediately exported to plain text, UTF-8 encoded, tab-separated .txt files. All this will amount to a total of no more than 50 MB of data.",
+      "type": "no_section"
+    },
+    {
+      "text": "The GC-MS raw data are stored in the proprietary .QGD format, which can nonetheless be parsed using freeware solutions. Pre-processed GC-MS data of single analyses will be exported and stored in a plain-text format (.csv, UTF-8 encoding). The GC-MS analyses might generate up to 20 GB of raw and pre-processed data.",
+      "type": "no_section"
+    },
+    {
+      "text": "Subsequent data post-processing will be carried out exclusively using Python scripts, accessing the pre-processed files in a read-only mode. The annotated scripts will be stored in a plain-text format (.py, UTF-8 encoding). Post-processed data will be generated exclusively for the purpose of dissemination in a plain-text format (.csv, UTF-8 encoding). Any figures produced during post-processing will be stored in an open vector format (.svg) and only exported as raster .png images for dissemination. The post-processed data will amount to no more than 5 GB.",
+      "type": "no_section"
+    },
+    {
+      "text": "In total, the data generated during the project will amount to approx. 1.1 TB.",
+      "type": "no_section"
+    },
+    {
+      "text": "BOLD:Dokumentacha i jakość danych",
+      "type": "no_section"
+    },
+    {
+      "text": "Metadane i dokumenty",
+      "type": "no_section"
+    },
+    {
+      "text": "The PI follows a tried and established protocol for handling raw data. A project folder will be created on each device running the data acquisition software. It will contain 3 sub-folders:",
+      "type": "no_section"
+    },
+    {
+      "text": "[Raw data] – the main data folder, organised in separate sub-folders for each analysis day and annotated with the date in the ISO format (yyyy-mm-dd). These in turn will contain the raw data files, with the names prefixed by the datetime timestamp in the ISO format (yyyy-mm-dd_hh_mm_ss). Note that in order to avoid artefacts stemming from the onset of daylight saving time, all datetime timestamps in the project will be in UTC.",
+      "type": "no_section"
+    },
+    {
+      "text": "[Settings] – containing instrument and analysis config files, each prefixed with the date on which it was created.",
+      "type": "no_section"
+    },
+    {
+      "text": "[Protocols] – containing the main, daily instrument log file (.txt) and other log files, together with other data relevant to the analysis, such as the calibration files for peripheral instruments (gas flow calibrators, etc.), screenshots of error messages, etc. These will also include SOPs for all procedures, including sample handling, storage, data handling and processing, calibration, validation, and QA/QC. All project-related documents will be maintained in English.",
+      "type": "no_section"
+    },
+    {
+      "text": "Data analysis metadata will be primarily recorded as comments in the data analysis scripts following the PEP-8 standard for Python. The scripts’ documentation will be stored in a plain-text .md format in the code repository (see the following sections).",
+      "type": "no_section"
+    },
+    {
+      "text": "As a redundancy measure, the PI is also enthusiastic about maintaining well-structured analogue lab notebooks, one for the analysis instruments, and one for the project as a whole. He uses waterproof pigmented fountain pen inks that conform to ISO standard 12757 part 2 for archival quality.",
+      "type": "no_section"
+    },
+    {
+      "text": "Stosowane środki kontroli jakości danych",
+      "type": "no_section"
+    },
+    {
+      "text": "Numerous factors impact data quality. In the PI’s experience, the crucial elements are frequent calibrations (in the case of PTR-ToF-MS at least bi-weekly, or after each change of settings) and performing the data pre-processing concurrently with the experiments. This allows for identifying data artefacts and instrumental errors early on. Additional errors might arise during post-processing when preparing the data processing scripts. For this reason, all data analysis code will have to be reviewed by another project member, although not through a fully formal, git-based pull request, review, and approval pathway. Data processing algorithms will be validated using relevant significance metrics and other statistical methods. The generated data validation reports will be protected from further modification.",
+      "type": "no_section"
+    },
+    {
+      "text": "The analytical instruments will be maintained frequently. All data will be catalogued in line with the FAIR guidelines. Data posted to the open repository (see the following sections) will be assigned a unique identifier (DOI number) that ensures their visibility and availability.",
+      "type": "no_section"
+    },
+    {
+      "text": "BOLD:Przechowywanie i tworzenie kopii zapasowych podczas badań",
+      "type": "no_section"
+    },
+    {
+      "text": "Przechowywanie i tworzenie kopii zapasowych danych i metadanych podczas badań",
+      "type": "no_section"
+    },
+    {
+      "text": "Full backup will be provided for all generated data (raw, pre- and post-processed) in real-time. The project folders on instruments running acquisition software will be automatically synced with two locations: a separate, dedicated hard drive on the PI’s workstation, and a NAS network drive located in a separate building on campus and configured with redundancy (2 drives for storage and one drive for parity in the RAID5 configuration). The sync will be carried out using a freeware software (ResilioSync) entirely within the University’s internal network, with no involvement of cloud storage or servers external to the University’s network. The PI has previously used this solution to protect very sensitive and NDA-protected data in projects commissioned by large, commercial stakeholders (Boeing). Thus, the generated data will be stored locally on the analysis computer and backed-up in real-time to two separate, external locations. The PI will be the sole administrator of the read and write rights for the raw data, ensuring that they can only be accessed in read-only mode by selected team members.",
+      "type": "no_section"
+    },
+    {
+      "text": "Relevant data will be deposited in the Open Catalog of Research Data MOST Wiedzy, a repository provided by Gdańsk Tech, in accordance with the rules of FAIR, with descriptions in the JSON-LD format. Authors will be identified and authorized based on the ORCID number. This archive will also contain pre- and post-processed data, metadata, and reports. Data stored in the MOST Wiedzy platform will be accessible and safe, with clear licensing. All data will be assigned proper, individual DOI identification. For data storage and transfers the use of the University’s cloud storage meets the requirements of NCN for data storage.",
+      "type": "no_section"
+    },
+    {
+      "text": "Additionally, the data processing scripts will be backed up to the University’s git platform (git.pg.edu.pl) under the PI’s account, where they will be stored with proper documentation and licensing, and accessible only to authorized users unless marked for open publication during the dissemination stage.",
+      "type": "no_section"
+    },
+    {
+      "text": "Sposób zapewnienia bezpieczeństwa danych oraz ochrony danych wrażliwych podczas badań",
+      "type": "no_section"
+    },
+    {
+      "text": "Data which will not be transferred and accessed as described in the previous section will be transferred either using hardware devices or, in the case of small files, via email (exclusively through the University’s domain). All workstations with locally stored data will be protected with strong and frequently changed passwords. Access to the main backup NAS server will only be granted to project members when necessary by the server administrator (PI). As mentioned in the previous sections, selected, ready-to-share data will be hosted on the MOST Wiedzy platform in accordance with the policies and requirements of both the University and NCN.",
+      "type": "no_section"
+    },
+    {
+      "text": "BOLD:Wymogi prawne, kodeks postępowania",
+      "type": "no_section"
+    },
+    {
+      "text": "Sposób zapewnienia zgodności z przepisami dotyczącymi danych osobowych i bezpieczeństwa w przypadku przetwarzania danych osobowych",
+      "type": "no_section"
+    },
+    {
+      "text": "No personal data will be processed or stored in this project.",
+      "type": "no_section"
+    },
+    {
+      "text": "Sposób zarządzania innymi kwestiami prawnymi",
+      "type": "no_section"
+    },
+    {
+      "text": "UNDERLINED:Ownership and management of all intellectual property related to this research project remain in the rights of the Gdańsk University of Technology and the persons involved in the implementation of this project in accordance with Polish law and institutional regulations (Resolution of the Senate of the Gdańsk University of Technology No 117/2021/XXV of 19 May 2021 https://link.pg.edu.pl/GdańskTech_intprop). Data and results will be published in the open-access model under CC0 or CC BY. Metadata will always be available without any restrictions (CC0). No embargo or any other restrictions are necessary.",
+      "type": "no_section"
+    },
+    {
+      "text": "BOLD:Udostępnianie i długotrwałe przechowywanie danych",
+      "type": "no_section"
+    },
+    {
+      "text": "Sposób i termin udostępnnienia danch",
+      "type": "no_section"
+    },
+    {
+      "text": "The data will be deposited in the Open Catalog of Research Data MOST Wiedzy – a repository provided by the Gdańsk University of Technology, at the latest by the time the articles based on the data are published. Additionally, some data might be published as supplements in scientific journals (preferably Open Access) that require the provision of input data.",
+      "type": "no_section"
+    },
+    {
+      "text": "Sposób wyboru danych do przechowywania",
+      "type": "no_section"
+    },
+    {
+      "text": "Due to the manageable size of the dataset to be produced in the project (approx. 1.1 TB) all data will be stored long-term on the dedicated NAS server with backups. The footprint of the pre- and post-processed data stored in the main data repository (Open Catalog of Research Data MOST Wiedzy – a repository provided by the Gdańsk University of Technology) will be small enough to store them indefinitely in their entirety, with no need to triage the content.",
+      "type": "no_section"
+    },
+    {
+      "text": "Metody lub narzędzia programowe umożliwiające dostęp do danych",
+      "type": "no_section"
+    },
+    {
+      "text": "All pre- and post-processed data, except for figures, will be stored exclusively in plain-text, UTF-8 encoded formats (.txt, .csv) to ensure maximum long-term and cross-platform accessibility.",
+      "type": "no_section"
+    },
+    {
+      "text": "Sposób zapewniający stosowanie unikalnego i trwałego identyfikatora",
+      "type": "no_section"
+    },
+    {
+      "text": "Records made available in the Open Catalog of Research Data MOST Wiedzy – a repository provided by the Gdańsk University of Technology are assigned a DOI number.",
+      "type": "no_section"
+    },
+    {
+      "text": "BOLD:Zadania związane z zarządzaniem danymi oraz zasoby",
+      "type": "no_section"
+    },
+    {
+      "text": "Osoba odpowiedzialna za zarządzanie danymi",
+      "type": "no_section"
+    },
+    {
+      "text": "The Open Science Competence Centre established by Gdańsk Tech (pg.edu.pl/openscience) is responsible for the DMP and the quality of the data deposited in the MOST Wiedzy repository. Due to the use of well-established protocols and PI’s extensive experience with the safe handling of large and sensitive datasets, there is no need to hire a data steward. The PI (Wojciech Wojnowski) will assume the responsibility for data management in the project.",
+      "type": "no_section"
+    },
+    {
+      "text": "Środki przeznaczone do zarządzania danymi",
+      "type": "no_section"
+    },
+    {
+      "text": "No additional measures are required to ensure data quality and compliance with the principles of FAIR. The cost of acquiring the NAS server will be included in the project’s budget.",
+      "type": "no_section"
+    }
+  ],
+  "_metadata": {
+    "researcher_surname": null,
+    "researcher_firstname": null,
+    "competition_name": "SONATA",
+    "competition_edition": "20",
+    "creation_date": null,
+    "filename_original": "20241125_SONATA20_PZD_WW.docx"
+  }
+}

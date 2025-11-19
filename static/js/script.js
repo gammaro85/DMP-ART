@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
     try {
         // Initialize core functionality
         initializeDarkMode();
+        initializeNavigation();
         initializeUploadPage();
         initializeReviewPage();
         initializeTemplateEditor();
@@ -135,6 +136,69 @@ function listenForSystemThemeChanges() {
         }
     } catch (error) {
         console.error('Error setting up system theme listener:', error);
+    }
+}
+
+// ===========================================
+// NAVIGATION FUNCTIONALITY
+// ===========================================
+
+/**
+ * Initialize standardized navigation
+ * - Auto-detect current page
+ * - Apply active states
+ * - Conditionally enable Review link
+ */
+function initializeNavigation() {
+    console.log('Initializing navigation...');
+
+    try {
+        const currentPage = document.body.getAttribute('data-page');
+        if (!currentPage) {
+            console.log('No data-page attribute found, skipping navigation initialization');
+            return;
+        }
+
+        // Set active state for current page
+        const navItems = document.querySelectorAll('.nav-item[data-page]');
+        navItems.forEach(item => {
+            const itemPage = item.getAttribute('data-page');
+
+            if (itemPage === currentPage) {
+                item.classList.add('active');
+
+                // If it's a link, prevent navigation
+                if (item.tagName === 'A') {
+                    item.removeAttribute('href');
+                }
+            }
+        });
+
+        // Enable Review link if on review page OR if cache_id in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const reviewNavItem = document.querySelector('[data-page="review"]');
+
+        if (reviewNavItem && (currentPage === 'review' || urlParams.has('cache_id'))) {
+            // Convert disabled span to active link
+            if (reviewNavItem.tagName === 'SPAN') {
+                const reviewLink = document.createElement('a');
+                reviewLink.href = window.location.pathname; // Use current path if already on review
+                reviewLink.className = 'nav-item';
+                reviewLink.setAttribute('data-page', 'review');
+                reviewLink.textContent = 'Review';
+
+                if (currentPage === 'review') {
+                    reviewLink.classList.add('active');
+                    reviewLink.removeAttribute('href');
+                }
+
+                reviewNavItem.replaceWith(reviewLink);
+            }
+        }
+
+        console.log('Navigation initialized for page:', currentPage);
+    } catch (error) {
+        console.error('Error initializing navigation:', error);
     }
 }
 
