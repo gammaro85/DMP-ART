@@ -9,6 +9,14 @@ from datetime import datetime
 import PyPDF2
 import logging
 
+# Optional OCR dependencies
+try:
+    from pdf2image import convert_from_path
+    import pytesseract
+    HAS_OCR = True
+except ImportError:
+    HAS_OCR = False
+
 class DMPExtractor:
     def __init__(self, debug_mode=False):
         """
@@ -603,6 +611,81 @@ class DMPExtractor:
 
         return date_value
 
+    def _extract_pdf_with_ocr(self, pdf_path):
+        """
+        Extract text from scanned PDF using OCR
+
+        Args:
+            pdf_path (str): Path to PDF file
+
+        Returns:
+            str: Extracted text or None if OCR failed
+        """
+        if not HAS_OCR:
+            self._log_debug("OCR dependencies not available (pdf2image, pytesseract)")
+            return None
+
+        try:
+            self._log_debug("Attempting OCR extraction for scanned PDF...")
+
+            # Convert PDF to images
+            images = convert_from_path(pdf_path, dpi=300)
+            self._log_debug(f"Converted PDF to {len(images)} images")
+
+            # Extract text from each page
+            extracted_text = []
+            for i, image in enumerate(images):
+                self._log_debug(f"Processing page {i+1}/{len(images)} with OCR...")
+                # Use Polish and English language packs
+                text = pytesseract.image_to_string(image, lang='pol+eng')
+                extracted_text.append(text)
+
+            full_text = '\n\n'.join(extracted_text)
+            self._log_debug(f"OCR extracted {len(full_text)} characters total")
+
+            return full_text
+
+        except Exception as e:
+            self._log_debug(f"OCR extraction failed: {str(e)}")
+            return None
+
+    def _is_scanned_pdf(self, pdf_path):
+        """
+        Check if PDF is scanned (no extractable text)
+
+        Args:
+            pdf_path (str): Path to PDF file
+
+        Returns:
+            bool: True if PDF appears to be scanned, False otherwise
+        """
+        try:
+            with open(pdf_path, 'rb') as file:
+                pdf_reader = PyPDF2.PdfReader(file)
+
+                # Check first 3 pages for text
+                pages_to_check = min(3, len(pdf_reader.pages))
+                total_chars = 0
+
+                for i in range(pages_to_check):
+                    text = pdf_reader.pages[i].extract_text()
+                    total_chars += len(text.strip())
+
+                # If very little text (< 50 chars per page on average), likely scanned
+                avg_chars_per_page = total_chars / pages_to_check if pages_to_check > 0 else 0
+                is_scanned = avg_chars_per_page < 50
+
+                if is_scanned:
+                    self._log_debug(f"PDF appears to be scanned ({avg_chars_per_page:.0f} chars/page)")
+                else:
+                    self._log_debug(f"PDF has extractable text ({avg_chars_per_page:.0f} chars/page)")
+
+                return is_scanned
+
+        except Exception as e:
+            self._log_debug(f"Error checking if PDF is scanned: {str(e)}")
+            return False
+
     def generate_smart_filename(self, metadata, file_type="DMP", extension=".docx"):
         """
         Generate intelligent filename from metadata
@@ -964,18 +1047,10 @@ class DMPExtractor:
                 if matching_words >= 3 and match_ratio > max_match_ratio:
                     max_match_ratio = match_ratio
                     best_word_match = subsection
-<<<<<<< HEAD
                     self._log_debug(f"Word match candidate: '{text}' ~ '{subsection}' ({matching_words} words, {match_ratio:.2f} ratio)")
-            
-            if best_word_match and max_match_ratio > 0.15:  # Lower threshold
-                self._log_debug(f"Best word match: '{text}' -> '{best_word_match}' (ratio: {max_match_ratio:.2f})")
-=======
-                    print(f"Word match candidate: '{text}' ~ '{subsection}' ({matching_words} words, {match_ratio:.2f} ratio)")
 
-            # Increased threshold from 0.15 to 0.40 to reduce false positives
-            if best_word_match and max_match_ratio > 0.40:
-                print(f"Best word match: '{text}' -> '{best_word_match}' (ratio: {max_match_ratio:.2f})")
->>>>>>> 9aee8ccdbd158ce7b3dc80a4fddb228d65b464ab
+            if best_word_match and max_match_ratio > 0.15:  # Lower threshold for better extraction
+                self._log_debug(f"Best word match: '{text}' -> '{best_word_match}' (ratio: {max_match_ratio:.2f})")
                 return best_word_match
         
         # 4. PDF-specific subsection detection for form fields
@@ -1506,15 +1581,27 @@ class DMPExtractor:
                     page_text = page.extract_text()
                     all_pages_text.append(page_text)
                     all_text += page_text + "\n\n"
-                    
+
                     # Print info about start/end marks found
                     for mark in self.start_marks:
                         if mark in page_text:
                             self._log_debug(f"Found start mark '{mark}' on page {i+1}")
-                    
+
                     for mark in self.end_marks:
                         if mark in page_text:
                             self._log_debug(f"Found end mark '{mark}' on page {i+1}")
+
+                # Check if PDF is scanned and use OCR if needed
+                if self._is_scanned_pdf(pdf_path):
+                    ocr_text = self._extract_pdf_with_ocr(pdf_path)
+                    if ocr_text:
+                        self._log_debug("Using OCR extracted text instead of standard extraction")
+                        all_text = ocr_text
+                    else:
+                        return {
+                            "success": False,
+                            "message": "PDF appears to be scanned but OCR extraction failed. Install pytesseract and pdf2image for OCR support."
+                        }
 
                 # Extract metadata from PDF
                 filename = os.path.basename(pdf_path)
