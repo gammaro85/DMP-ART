@@ -24,9 +24,14 @@
     <!-- Fixed Header Navigation -->
     <header class="fixed-header">
         <nav class="header-nav">
-            <a href="/template_editor" class="nav-item">Customize Templates</a>
-            <a href="/documentation" class="nav-item">Documentation</a>
-            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+            <div class="nav-links">
+                <a href="/" class="nav-item" data-page="index">Home</a>
+                <span class="nav-item disabled" data-page="review"
+                      title="Upload and process a document first to access review">Review</span>
+                <a href="/template_editor" class="nav-item" data-page="template-editor">Template Editor</a>
+                <a href="/documentation" class="nav-item" data-page="documentation">Documentation</a>
+            </div>
+            <button class="theme-toggle" aria-label="Toggle theme">
                 <i class="fas fa-moon"></i>
             </button>
         </nav>
@@ -47,7 +52,7 @@
         </div>
 
         <!-- Drop area for file upload -->
-        <div id="drop-area" class="upload-area" style="border: 4px solid orange; margin-bottom: 5rem;">
+        <div id="drop-area" class="upload-area" style="border: 4px solid var(--warning-color); margin-bottom: 5rem;">
             <div class="upload-text">Drag &amp; drop your DMP file here or click to select</div>
             <input id="file-input" type="file" accept=".pdf,.docx" class="file-input" />
             <div id="file-info" class="file-info" style="display:none;">

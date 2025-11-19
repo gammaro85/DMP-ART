@@ -299,28 +299,7 @@
                 grid-template-columns: 1fr;
             }
         }
-        
-        /* Footer styles */
-        .site-footer {
-            background: var(--bg-card);
-            color: var(--text-primary);
-            padding: 1rem;
-            text-align: center;
-            position: relative;
-            z-index: 10;
-            border-top: 1px solid var(--border-light);
-        }
-        
-        .site-footer span {
-            display: inline-block;
-            margin: 0;
-            padding: 0.5rem 1rem;
-            border-radius: 12px;
-            background: var(--primary-color);
-            color: white;
-            font-weight: 500;
-        }
-        
+
         /* Prevent header overlap */
         .fixed-header + .doc-container {
             padding-top: 0px; /* Use global body padding instead */
@@ -331,9 +310,14 @@
     <!-- Fixed Header Navigation -->
     <header class="fixed-header">
         <nav class="header-nav">
-            <a href="/" class="nav-item">Home</a>
-            <a href="/template_editor" class="nav-item">Customize Templates</a>
-            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+            <div class="nav-links">
+                <a href="/" class="nav-item" data-page="index">Home</a>
+                <span class="nav-item disabled" data-page="review"
+                      title="Upload and process a document first to access review">Review</span>
+                <a href="/template_editor" class="nav-item" data-page="template-editor">Template Editor</a>
+                <a href="/documentation" class="nav-item" data-page="documentation">Documentation</a>
+            </div>
+            <button class="theme-toggle" aria-label="Toggle theme">
                 <i class="fas fa-moon"></i>
             </button>
         </nav>
@@ -1049,6 +1033,6 @@ python app.py
 </body>
 </html>
 
-<footer class="site-footer">
+<footer class="site-footer site-footer--relative">
     <span>DMP ART &copy; 2025</span>
 </footer>

@@ -243,9 +243,18 @@ def upload_file():
                         'message': f'PDF validation failed: {validation_message}'
                     })
             
-            # Process the file
+            # Process the file with progress callback
+            def progress_callback(message, progress):
+                """Log processing progress to console"""
+                timestamp = datetime.now().strftime('%H:%M:%S')
+                print(f"[{timestamp}] Processing: {progress}% - {message}")
+
             extractor = DMPExtractor()
-            result = extractor.process_file(file_path, app.config['OUTPUT_FOLDER'])
+            result = extractor.process_file(
+                file_path,
+                app.config['OUTPUT_FOLDER'],
+                progress_callback=progress_callback
+            )
             
             # Clean up the uploaded file
             try:

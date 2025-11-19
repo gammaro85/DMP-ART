@@ -1,0 +1,1242 @@
+{
+  "test_date": "2025-11-18T23:27:22.379750",
+  "total_files": 17,
+  "successful": 16,
+  "failed": 1,
+  "statistics": {
+    "avg_processing_time": 5.366515830159187,
+    "avg_extraction_rate": 63.83928571428571,
+    "avg_paragraphs": 26.5,
+    "avg_unconnected": 11.1875
+  },
+  "quality_breakdown": {
+    "excellent": 9,
+    "good": 0,
+    "fair": 2,
+    "poor": 5
+  },
+  "results": [
+    {
+      "filename": "20241125_SONATA20_PZD_WW.docx",
+      "success": true,
+      "processing_time": 0.08620715141296387,
+      "sections_extracted": 7,
+      "total_paragraphs": 12,
+      "unconnected_items": 28,
+      "extraction_rate": 50.0,
+      "cache_id": "0b0d4cf5-14aa-4e03-a534-a397883e0220",
+      "metadata": {
+        "researcher_surname": null,
+        "researcher_firstname": null,
+        "competition_name": "SONATA",
+        "competition_edition": "20",
+        "creation_date": null,
+        "filename_original": "20241125_SONATA20_PZD_WW.docx"
+      },
+      "section_details": {
+        "1.1": {
+          "question": "How will new data be collected or produced and/or ...",
+          "paragraph_count": 0
+        },
+        "1.2": {
+          "question": "What data (for example the types, formats, and vol...",
+          "paragraph_count": 0
+        },
+        "2.1": {
+          "question": "What metadata and documentation (for example metho...",
+          "paragraph_count": 0
+        },
+        "2.2": {
+          "question": "What data quality control measures will be used?...",
+          "paragraph_count": 0
+        },
+        "3.1": {
+          "question": "How will data and metadata be stored and backed up...",
+          "paragraph_count": 3
+        },
+        "3.2": {
+          "question": "How will data security and protection of sensitive...",
+          "paragraph_count": 1
+        },
+        "4.1": {
+          "question": "If personal data are processed, how will complianc...",
+          "paragraph_count": 1
+        },
+        "4.2": {
+          "question": "How will other legal issues, such as intelectual p...",
+          "paragraph_count": 1
+        },
+        "5.1": {
+          "question": "How and when will data be shared? Are there possib...",
+          "paragraph_count": 4
+        },
+        "5.2": {
+          "question": "How will data for preservation be selected, and wh...",
+          "paragraph_count": 0
+        },
+        "5.3": {
+          "question": "What methods or software tools will be needed to a...",
+          "paragraph_count": 1
+        },
+        "5.4": {
+          "question": "How will the application of a unique and persisten...",
+          "paragraph_count": 1
+        },
+        "6.1": {
+          "question": "Who (for example role, position, and institution) ...",
+          "paragraph_count": 0
+        },
+        "6.2": {
+          "question": "What resources (for example financial and time) wi...",
+          "paragraph_count": 0
+        }
+      }
+    },
+    {
+      "filename": "Barczak-preludiumPlan zarządzania danymi copy.docx",
+      "success": true,
+      "processing_time": 0.06303930282592773,
+      "sections_extracted": 14,
+      "total_paragraphs": 14,
+      "unconnected_items": 0,
+      "extraction_rate": 100.0,
+      "cache_id": "5fabfb7a-59ae-49b0-a8bd-16f18b4af94c",
+      "metadata": {
+        "researcher_surname": "Barczak",
+        "researcher_firstname": "Beata",
+        "competition_name": "PRELUDIUM",
+        "competition_edition": "24",
+        "creation_date": null,
+        "filename_original": "Barczak-preludiumPlan zarządzania danymi copy.docx"
+      },
+      "section_details": {
+        "1.1": {
+          "question": "How will new data be collected or produced and/or ...",
+          "paragraph_count": 1
+        },
+        "1.2": {
+          "question": "What data (for example the types, formats, and vol...",
+          "paragraph_count": 1
+        },
+        "2.1": {
+          "question": "What metadata and documentation (for example metho...",
+          "paragraph_count": 1
+        },
+        "2.2": {
+          "question": "What data quality control measures will be used?...",
+          "paragraph_count": 1
+        },
+        "3.1": {
+          "question": "How will data and metadata be stored and backed up...",
+          "paragraph_count": 1
+        },
+        "3.2": {
+          "question": "How will data security and protection of sensitive...",
+          "paragraph_count": 1
+        },
+        "4.1": {
+          "question": "If personal data are processed, how will complianc...",
+          "paragraph_count": 1
+        },
+        "4.2": {
+          "question": "How will other legal issues, such as intelectual p...",
+          "paragraph_count": 1
+        },
+        "5.1": {
+          "question": "How and when will data be shared? Are there possib...",
+          "paragraph_count": 1
+        },
+        "5.2": {
+          "question": "How will data for preservation be selected, and wh...",
+          "paragraph_count": 1
+        },
+        "5.3": {
+          "question": "What methods or software tools will be needed to a...",
+          "paragraph_count": 1
+        },
+        "5.4": {
+          "question": "How will the application of a unique and persisten...",
+          "paragraph_count": 1
+        },
+        "6.1": {
+          "question": "Who (for example role, position, and institution) ...",
+          "paragraph_count": 1
+        },
+        "6.2": {
+          "question": "What resources (for example financial and time) wi...",
+          "paragraph_count": 1
+        }
+      }
+    },
+    {
+      "filename": "Barczak-preludiumPlan zarządzania danymi.docx",
+      "success": true,
+      "processing_time": 0.06380558013916016,
+      "sections_extracted": 14,
+      "total_paragraphs": 14,
+      "unconnected_items": 0,
+      "extraction_rate": 100.0,
+      "cache_id": "1400431f-fa32-4f5c-832a-b8d6bf7f15f9",
+      "metadata": {
+        "researcher_surname": "Barczak",
+        "researcher_firstname": "Beata",
+        "competition_name": "PRELUDIUM",
+        "competition_edition": "24",
+        "creation_date": null,
+        "filename_original": "Barczak-preludiumPlan zarządzania danymi.docx"
+      },
+      "section_details": {
+        "1.1": {
+          "question": "How will new data be collected or produced and/or ...",
+          "paragraph_count": 1
+        },
+        "1.2": {
+          "question": "What data (for example the types, formats, and vol...",
+          "paragraph_count": 1
+        },
+        "2.1": {
+          "question": "What metadata and documentation (for example metho...",
+          "paragraph_count": 1
+        },
+        "2.2": {
+          "question": "What data quality control measures will be used?...",
+          "paragraph_count": 1
+        },
+        "3.1": {
+          "question": "How will data and metadata be stored and backed up...",
+          "paragraph_count": 1
+        },
+        "3.2": {
+          "question": "How will data security and protection of sensitive...",
+          "paragraph_count": 1
+        },
+        "4.1": {
+          "question": "If personal data are processed, how will complianc...",
+          "paragraph_count": 1
+        },
+        "4.2": {
+          "question": "How will other legal issues, such as intelectual p...",
+          "paragraph_count": 1
+        },
+        "5.1": {
+          "question": "How and when will data be shared? Are there possib...",
+          "paragraph_count": 1
+        },
+        "5.2": {
+          "question": "How will data for preservation be selected, and wh...",
+          "paragraph_count": 1
+        },
+        "5.3": {
+          "question": "What methods or software tools will be needed to a...",
+          "paragraph_count": 1
+        },
+        "5.4": {
+          "question": "How will the application of a unique and persisten...",
+          "paragraph_count": 1
+        },
+        "6.1": {
+          "question": "Who (for example role, position, and institution) ...",
+          "paragraph_count": 1
+        },
+        "6.2": {
+          "question": "What resources (for example financial and time) wi...",
+          "paragraph_count": 1
+        }
+      }
+    },
+    {
+      "filename": "DMP_SONATA20_MD.docx",
+      "success": true,
+      "processing_time": 0.06869053840637207,
+      "sections_extracted": 14,
+      "total_paragraphs": 14,
+      "unconnected_items": 0,
+      "extraction_rate": 100.0,
+      "cache_id": "44caa908-79fe-4a6c-8999-05867716b50e",
+      "metadata": {
+        "researcher_surname": null,
+        "researcher_firstname": null,
+        "competition_name": "SONATA",
+        "competition_edition": "20",
+        "creation_date": null,
+        "filename_original": "DMP_SONATA20_MD.docx"
+      },
+      "section_details": {
+        "1.1": {
+          "question": "How will new data be collected or produced and/or ...",
+          "paragraph_count": 1
+        },
+        "1.2": {
+          "question": "What data (for example the types, formats, and vol...",
+          "paragraph_count": 1
+        },
+        "2.1": {
+          "question": "What metadata and documentation (for example metho...",
+          "paragraph_count": 1
+        },
+        "2.2": {
+          "question": "What data quality control measures will be used?...",
+          "paragraph_count": 1
+        },
+        "3.1": {
+          "question": "How will data and metadata be stored and backed up...",
+          "paragraph_count": 1
+        },
+        "3.2": {
+          "question": "How will data security and protection of sensitive...",
+          "paragraph_count": 1
+        },
+        "4.1": {
+          "question": "If personal data are processed, how will complianc...",
+          "paragraph_count": 1
+        },
+        "4.2": {
+          "question": "How will other legal issues, such as intelectual p...",
+          "paragraph_count": 1
+        },
+        "5.1": {
+          "question": "How and when will data be shared? Are there possib...",
+          "paragraph_count": 1
+        },
+        "5.2": {
+          "question": "How will data for preservation be selected, and wh...",
+          "paragraph_count": 1
+        },
+        "5.3": {
+          "question": "What methods or software tools will be needed to a...",
+          "paragraph_count": 1
+        },
+        "5.4": {
+          "question": "How will the application of a unique and persisten...",
+          "paragraph_count": 1
+        },
+        "6.1": {
+          "question": "Who (for example role, position, and institution) ...",
+          "paragraph_count": 1
+        },
+        "6.2": {
+          "question": "What resources (for example financial and time) wi...",
+          "paragraph_count": 1
+        }
+      }
+    },
+    {
+      "filename": "DMP_wydruk1744042086101_1_1_20250506_085710.docx",
+      "success": true,
+      "processing_time": 0.06508660316467285,
+      "sections_extracted": 2,
+      "total_paragraphs": 5,
+      "unconnected_items": 0,
+      "extraction_rate": 14.285714285714285,
+      "cache_id": "06575fc1-6d46-406f-8854-ca82b1d8c765",
+      "metadata": {
+        "researcher_surname": null,
+        "researcher_firstname": null,
+        "competition_name": null,
+        "competition_edition": null,
+        "creation_date": null,
+        "filename_original": "DMP_wydruk1744042086101_1_1_20250506_085710.docx"
+      },
+      "section_details": {
+        "1.1": {
+          "question": "How will new data be collected or produced and/or ...",
+          "paragraph_count": 0
+        },
+        "1.2": {
+          "question": "What data (for example the types, formats, and vol...",
+          "paragraph_count": 0
+        },
+        "2.1": {
+          "question": "What metadata and documentation (for example metho...",
+          "paragraph_count": 2
+        },
+        "2.2": {
+          "question": "What data quality control measures will be used?...",
+          "paragraph_count": 0
+        },
+        "3.1": {
+          "question": "How will data and metadata be stored and backed up...",
+          "paragraph_count": 0
+        },
+        "3.2": {
+          "question": "How will data security and protection of sensitive...",
+          "paragraph_count": 0
+        },
+        "4.1": {
+          "question": "If personal data are processed, how will complianc...",
+          "paragraph_count": 0
+        },
+        "4.2": {
+          "question": "How will other legal issues, such as intelectual p...",
+          "paragraph_count": 0
+        },
+        "5.1": {
+          "question": "How and when will data be shared? Are there possib...",
+          "paragraph_count": 0
+        },
+        "5.2": {
+          "question": "How will data for preservation be selected, and wh...",
+          "paragraph_count": 3
+        },
+        "5.3": {
+          "question": "What methods or software tools will be needed to a...",
+          "paragraph_count": 0
+        },
+        "5.4": {
+          "question": "How will the application of a unique and persisten...",
+          "paragraph_count": 0
+        },
+        "6.1": {
+          "question": "Who (for example role, position, and institution) ...",
+          "paragraph_count": 0
+        },
+        "6.2": {
+          "question": "What resources (for example financial and time) wi...",
+          "paragraph_count": 0
+        }
+      }
+    },
+    {
+      "filename": "DMP_wydruk1744302227265_1_20250703_132328.docx",
+      "success": true,
+      "processing_time": 0.10830473899841309,
+      "sections_extracted": 7,
+      "total_paragraphs": 122,
+      "unconnected_items": 0,
+      "extraction_rate": 50.0,
+      "cache_id": "cf76b7ba-decd-403e-952a-6e7e7d48430f",
+      "metadata": {
+        "researcher_surname": "Gdańska",
+        "researcher_firstname": "Politechnika",
+        "competition_name": null,
+        "competition_edition": null,
+        "creation_date": "24-01-19",
+        "filename_original": "DMP_wydruk1744302227265_1_20250703_132328.docx"
+      },
+      "section_details": {
+        "1.1": {
+          "question": "How will new data be collected or produced and/or ...",
+          "paragraph_count": 0
+        },
+        "1.2": {
+          "question": "What data (for example the types, formats, and vol...",
+          "paragraph_count": 0
+        },
+        "2.1": {
+          "question": "What metadata and documentation (for example metho...",
+          "paragraph_count": 25
+        },
+        "2.2": {
+          "question": "What data quality control measures will be used?...",
+          "paragraph_count": 0
+        },
+        "3.1": {
+          "question": "How will data and metadata be stored and backed up...",
+          "paragraph_count": 0
+        },
+        "3.2": {
+          "question": "How will data security and protection of sensitive...",
+          "paragraph_count": 0
+        },
+        "4.1": {
+          "question": "If personal data are processed, how will complianc...",
+          "paragraph_count": 10
+        },
+        "4.2": {
+          "question": "How will other legal issues, such as intelectual p...",
+          "paragraph_count": 1
+        },
+        "5.1": {
+          "question": "How and when will data be shared? Are there possib...",
+          "paragraph_count": 0
+        },
+        "5.2": {
+          "question": "How will data for preservation be selected, and wh...",
+          "paragraph_count": 6
+        },
+        "5.3": {
+          "question": "What methods or software tools will be needed to a...",
+          "paragraph_count": 0
+        },
+        "5.4": {
+          "question": "How will the application of a unique and persisten...",
+          "paragraph_count": 4
+        },
+        "6.1": {
+          "question": "Who (for example role, position, and institution) ...",
+          "paragraph_count": 46
+        },
+        "6.2": {
+          "question": "What resources (for example financial and time) wi...",
+          "paragraph_count": 30
+        }
+      }
+    },
+    {
+      "filename": "Eliton Popovicz Seidel – OPUS 28_Data Management Plan (1).pdf",
+      "success": true,
+      "processing_time": 30.092506885528564,
+      "sections_extracted": 14,
+      "total_paragraphs": 54,
+      "unconnected_items": 1,
+      "extraction_rate": 100.0,
+      "cache_id": "62109e43-74ad-4635-b39e-65d408fecfbb",
+      "metadata": {
+        "researcher_surname": null,
+        "researcher_firstname": null,
+        "competition_name": "OPUS",
+        "competition_edition": "28",
+        "creation_date": "27-11-24",
+        "filename_original": "Eliton Popovicz Seidel – OPUS 28_Data Management Plan (1).pdf"
+      },
+      "section_details": {
+        "1.1": {
+          "question": "How will new data be collected or produced and/or ...",
+          "paragraph_count": 6
+        },
+        "1.2": {
+          "question": "What data (for example the types, formats, and vol...",
+          "paragraph_count": 3
+        },
+        "2.1": {
+          "question": "What metadata and documentation (for example metho...",
+          "paragraph_count": 5
+        },
+        "2.2": {
+          "question": "What data quality control measures will be used?...",
+          "paragraph_count": 4
+        },
+        "3.1": {
+          "question": "How will data and metadata be stored and backed up...",
+          "paragraph_count": 4
+        },
+        "3.2": {
+          "question": "How will data security and protection of sensitive...",
+          "paragraph_count": 3
+        },
+        "4.1": {
+          "question": "If personal data are processed, how will complianc...",
+          "paragraph_count": 1
+        },
+        "4.2": {
+          "question": "How will other legal issues, such as intelectual p...",
+          "paragraph_count": 6
+        },
+        "5.1": {
+          "question": "How and when will data be shared? Are there possib...",
+          "paragraph_count": 5
+        },
+        "5.2": {
+          "question": "How will data for preservation be selected, and wh...",
+          "paragraph_count": 4
+        },
+        "5.3": {
+          "question": "What methods or software tools will be needed to a...",
+          "paragraph_count": 4
+        },
+        "5.4": {
+          "question": "How will the application of a unique and persisten...",
+          "paragraph_count": 2
+        },
+        "6.1": {
+          "question": "Who (for example role, position, and institution) ...",
+          "paragraph_count": 3
+        },
+        "6.2": {
+          "question": "What resources (for example financial and time) wi...",
+          "paragraph_count": 4
+        }
+      }
+    },
+    {
+      "filename": "Eliton Popovicz Seidel – OPUS 28_Data Management Plan.pdf",
+      "success": true,
+      "processing_time": 29.665632247924805,
+      "sections_extracted": 14,
+      "total_paragraphs": 54,
+      "unconnected_items": 1,
+      "extraction_rate": 100.0,
+      "cache_id": "3fed4e5a-4aac-4e41-8dea-6f2d3f8f5bec",
+      "metadata": {
+        "researcher_surname": null,
+        "researcher_firstname": null,
+        "competition_name": "OPUS",
+        "competition_edition": "28",
+        "creation_date": "27-11-24",
+        "filename_original": "Eliton Popovicz Seidel – OPUS 28_Data Management Plan.pdf"
+      },
+      "section_details": {
+        "1.1": {
+          "question": "How will new data be collected or produced and/or ...",
+          "paragraph_count": 6
+        },
+        "1.2": {
+          "question": "What data (for example the types, formats, and vol...",
+          "paragraph_count": 3
+        },
+        "2.1": {
+          "question": "What metadata and documentation (for example metho...",
+          "paragraph_count": 5
+        },
+        "2.2": {
+          "question": "What data quality control measures will be used?...",
+          "paragraph_count": 4
+        },
+        "3.1": {
+          "question": "How will data and metadata be stored and backed up...",
+          "paragraph_count": 4
+        },
+        "3.2": {
+          "question": "How will data security and protection of sensitive...",
+          "paragraph_count": 3
+        },
+        "4.1": {
+          "question": "If personal data are processed, how will complianc...",
+          "paragraph_count": 1
+        },
+        "4.2": {
+          "question": "How will other legal issues, such as intelectual p...",
+          "paragraph_count": 6
+        },
+        "5.1": {
+          "question": "How and when will data be shared? Are there possib...",
+          "paragraph_count": 5
+        },
+        "5.2": {
+          "question": "How will data for preservation be selected, and wh...",
+          "paragraph_count": 4
+        },
+        "5.3": {
+          "question": "What methods or software tools will be needed to a...",
+          "paragraph_count": 4
+        },
+        "5.4": {
+          "question": "How will the application of a unique and persisten...",
+          "paragraph_count": 2
+        },
+        "6.1": {
+          "question": "Who (for example role, position, and institution) ...",
+          "paragraph_count": 3
+        },
+        "6.2": {
+          "question": "What resources (for example financial and time) wi...",
+          "paragraph_count": 4
+        }
+      }
+    },
+    {
+      "filename": "Falborski_raport_PZD.docx",
+      "success": true,
+      "processing_time": 0.07433342933654785,
+      "sections_extracted": 0,
+      "total_paragraphs": 0,
+      "unconnected_items": 92,
+      "extraction_rate": 0.0,
+      "cache_id": "2517c2c1-6ff6-40be-ba82-fe7a01265784",
+      "metadata": {
+        "researcher_surname": null,
+        "researcher_firstname": null,
+        "competition_name": null,
+        "competition_edition": null,
+        "creation_date": "09-04-24",
+        "filename_original": "Falborski_raport_PZD.docx"
+      },
+      "section_details": {
+        "1.1": {
+          "question": "How will new data be collected or produced and/or ...",
+          "paragraph_count": 0
+        },
+        "1.2": {
+          "question": "What data (for example the types, formats, and vol...",
+          "paragraph_count": 0
+        },
+        "2.1": {
+          "question": "What metadata and documentation (for example metho...",
+          "paragraph_count": 0
+        },
+        "2.2": {
+          "question": "What data quality control measures will be used?...",
+          "paragraph_count": 0
+        },
+        "3.1": {
+          "question": "How will data and metadata be stored and backed up...",
+          "paragraph_count": 0
+        },
+        "3.2": {
+          "question": "How will data security and protection of sensitive...",
+          "paragraph_count": 0
+        },
+        "4.1": {
+          "question": "If personal data are processed, how will complianc...",
+          "paragraph_count": 0
+        },
+        "4.2": {
+          "question": "How will other legal issues, such as intelectual p...",
+          "paragraph_count": 0
+        },
+        "5.1": {
+          "question": "How and when will data be shared? Are there possib...",
+          "paragraph_count": 0
+        },
+        "5.2": {
+          "question": "How will data for preservation be selected, and wh...",
+          "paragraph_count": 0
+        },
+        "5.3": {
+          "question": "What methods or software tools will be needed to a...",
+          "paragraph_count": 0
+        },
+        "5.4": {
+          "question": "How will the application of a unique and persisten...",
+          "paragraph_count": 0
+        },
+        "6.1": {
+          "question": "Who (for example role, position, and institution) ...",
+          "paragraph_count": 0
+        },
+        "6.2": {
+          "question": "What resources (for example financial and time) wi...",
+          "paragraph_count": 0
+        }
+      }
+    },
+    {
+      "filename": "Grobelna Preludium1.docx",
+      "success": true,
+      "processing_time": 0.0454409122467041,
+      "sections_extracted": 1,
+      "total_paragraphs": 3,
+      "unconnected_items": 20,
+      "extraction_rate": 7.142857142857142,
+      "cache_id": "025d83b2-7d9f-4681-a504-a8ab9f1d4fd2",
+      "metadata": {
+        "researcher_surname": null,
+        "researcher_firstname": null,
+        "competition_name": "PRELUDIUM",
+        "competition_edition": "1",
+        "creation_date": "03-06-25",
+        "filename_original": "Grobelna Preludium1.docx"
+      },
+      "section_details": {
+        "1.1": {
+          "question": "How will new data be collected or produced and/or ...",
+          "paragraph_count": 0
+        },
+        "1.2": {
+          "question": "What data (for example the types, formats, and vol...",
+          "paragraph_count": 0
+        },
+        "2.1": {
+          "question": "What metadata and documentation (for example metho...",
+          "paragraph_count": 0
+        },
+        "2.2": {
+          "question": "What data quality control measures will be used?...",
+          "paragraph_count": 3
+        },
+        "3.1": {
+          "question": "How will data and metadata be stored and backed up...",
+          "paragraph_count": 0
+        },
+        "3.2": {
+          "question": "How will data security and protection of sensitive...",
+          "paragraph_count": 0
+        },
+        "4.1": {
+          "question": "If personal data are processed, how will complianc...",
+          "paragraph_count": 0
+        },
+        "4.2": {
+          "question": "How will other legal issues, such as intelectual p...",
+          "paragraph_count": 0
+        },
+        "5.1": {
+          "question": "How and when will data be shared? Are there possib...",
+          "paragraph_count": 0
+        },
+        "5.2": {
+          "question": "How will data for preservation be selected, and wh...",
+          "paragraph_count": 0
+        },
+        "5.3": {
+          "question": "What methods or software tools will be needed to a...",
+          "paragraph_count": 0
+        },
+        "5.4": {
+          "question": "How will the application of a unique and persisten...",
+          "paragraph_count": 0
+        },
+        "6.1": {
+          "question": "Who (for example role, position, and institution) ...",
+          "paragraph_count": 0
+        },
+        "6.2": {
+          "question": "What resources (for example financial and time) wi...",
+          "paragraph_count": 0
+        }
+      }
+    },
+    {
+      "filename": "Opus-JS.pdf",
+      "success": true,
+      "processing_time": 0.13265347480773926,
+      "sections_extracted": 14,
+      "total_paragraphs": 45,
+      "unconnected_items": 1,
+      "extraction_rate": 100.0,
+      "cache_id": "e5feeaa1-b0d9-4f73-b1f3-28dd4be97a25",
+      "metadata": {
+        "researcher_surname": null,
+        "researcher_firstname": null,
+        "competition_name": "OPUS",
+        "competition_edition": "29",
+        "creation_date": "30-05-25",
+        "filename_original": "Opus-JS.pdf"
+      },
+      "section_details": {
+        "1.1": {
+          "question": "How will new data be collected or produced and/or ...",
+          "paragraph_count": 4
+        },
+        "1.2": {
+          "question": "What data (for example the types, formats, and vol...",
+          "paragraph_count": 4
+        },
+        "2.1": {
+          "question": "What metadata and documentation (for example metho...",
+          "paragraph_count": 3
+        },
+        "2.2": {
+          "question": "What data quality control measures will be used?...",
+          "paragraph_count": 3
+        },
+        "3.1": {
+          "question": "How will data and metadata be stored and backed up...",
+          "paragraph_count": 3
+        },
+        "3.2": {
+          "question": "How will data security and protection of sensitive...",
+          "paragraph_count": 3
+        },
+        "4.1": {
+          "question": "If personal data are processed, how will complianc...",
+          "paragraph_count": 2
+        },
+        "4.2": {
+          "question": "How will other legal issues, such as intelectual p...",
+          "paragraph_count": 4
+        },
+        "5.1": {
+          "question": "How and when will data be shared? Are there possib...",
+          "paragraph_count": 3
+        },
+        "5.2": {
+          "question": "How will data for preservation be selected, and wh...",
+          "paragraph_count": 8
+        },
+        "5.3": {
+          "question": "What methods or software tools will be needed to a...",
+          "paragraph_count": 1
+        },
+        "5.4": {
+          "question": "How will the application of a unique and persisten...",
+          "paragraph_count": 2
+        },
+        "6.1": {
+          "question": "Who (for example role, position, and institution) ...",
+          "paragraph_count": 3
+        },
+        "6.2": {
+          "question": "What resources (for example financial and time) wi...",
+          "paragraph_count": 2
+        }
+      }
+    },
+    {
+      "filename": "PLAN ZARZĄDZANIA DANYMI.docx",
+      "success": true,
+      "processing_time": 0.06050610542297363,
+      "sections_extracted": 0,
+      "total_paragraphs": 0,
+      "unconnected_items": 14,
+      "extraction_rate": 0.0,
+      "cache_id": "a3cd1db8-8369-4d55-93e7-1e2de7b4bcc0",
+      "metadata": {
+        "researcher_surname": null,
+        "researcher_firstname": null,
+        "competition_name": null,
+        "competition_edition": null,
+        "creation_date": null,
+        "filename_original": "PLAN ZARZĄDZANIA DANYMI.docx"
+      },
+      "section_details": {
+        "1.1": {
+          "question": "How will new data be collected or produced and/or ...",
+          "paragraph_count": 0
+        },
+        "1.2": {
+          "question": "What data (for example the types, formats, and vol...",
+          "paragraph_count": 0
+        },
+        "2.1": {
+          "question": "What metadata and documentation (for example metho...",
+          "paragraph_count": 0
+        },
+        "2.2": {
+          "question": "What data quality control measures will be used?...",
+          "paragraph_count": 0
+        },
+        "3.1": {
+          "question": "How will data and metadata be stored and backed up...",
+          "paragraph_count": 0
+        },
+        "3.2": {
+          "question": "How will data security and protection of sensitive...",
+          "paragraph_count": 0
+        },
+        "4.1": {
+          "question": "If personal data are processed, how will complianc...",
+          "paragraph_count": 0
+        },
+        "4.2": {
+          "question": "How will other legal issues, such as intelectual p...",
+          "paragraph_count": 0
+        },
+        "5.1": {
+          "question": "How and when will data be shared? Are there possib...",
+          "paragraph_count": 0
+        },
+        "5.2": {
+          "question": "How will data for preservation be selected, and wh...",
+          "paragraph_count": 0
+        },
+        "5.3": {
+          "question": "What methods or software tools will be needed to a...",
+          "paragraph_count": 0
+        },
+        "5.4": {
+          "question": "How will the application of a unique and persisten...",
+          "paragraph_count": 0
+        },
+        "6.1": {
+          "question": "Who (for example role, position, and institution) ...",
+          "paragraph_count": 0
+        },
+        "6.2": {
+          "question": "What resources (for example financial and time) wi...",
+          "paragraph_count": 0
+        }
+      }
+    },
+    {
+      "filename": "PRELUDIUM2025_plan_zarządania_danymi_RG_TW.docx",
+      "success": true,
+      "processing_time": 0.06933426856994629,
+      "sections_extracted": 14,
+      "total_paragraphs": 28,
+      "unconnected_items": 0,
+      "extraction_rate": 100.0,
+      "cache_id": "7cd990fe-4464-4f28-b49f-f957edd61f9d",
+      "metadata": {
+        "researcher_surname": null,
+        "researcher_firstname": null,
+        "competition_name": "PRELUDIUM",
+        "competition_edition": "2025",
+        "creation_date": null,
+        "filename_original": "PRELUDIUM2025_plan_zarządania_danymi_RG_TW.docx"
+      },
+      "section_details": {
+        "1.1": {
+          "question": "How will new data be collected or produced and/or ...",
+          "paragraph_count": 5
+        },
+        "1.2": {
+          "question": "What data (for example the types, formats, and vol...",
+          "paragraph_count": 8
+        },
+        "2.1": {
+          "question": "What metadata and documentation (for example metho...",
+          "paragraph_count": 1
+        },
+        "2.2": {
+          "question": "What data quality control measures will be used?...",
+          "paragraph_count": 1
+        },
+        "3.1": {
+          "question": "How will data and metadata be stored and backed up...",
+          "paragraph_count": 1
+        },
+        "3.2": {
+          "question": "How will data security and protection of sensitive...",
+          "paragraph_count": 1
+        },
+        "4.1": {
+          "question": "If personal data are processed, how will complianc...",
+          "paragraph_count": 1
+        },
+        "4.2": {
+          "question": "How will other legal issues, such as intelectual p...",
+          "paragraph_count": 3
+        },
+        "5.1": {
+          "question": "How and when will data be shared? Are there possib...",
+          "paragraph_count": 1
+        },
+        "5.2": {
+          "question": "How will data for preservation be selected, and wh...",
+          "paragraph_count": 2
+        },
+        "5.3": {
+          "question": "What methods or software tools will be needed to a...",
+          "paragraph_count": 1
+        },
+        "5.4": {
+          "question": "How will the application of a unique and persisten...",
+          "paragraph_count": 1
+        },
+        "6.1": {
+          "question": "Who (for example role, position, and institution) ...",
+          "paragraph_count": 1
+        },
+        "6.2": {
+          "question": "What resources (for example financial and time) wi...",
+          "paragraph_count": 1
+        }
+      }
+    },
+    {
+      "filename": "Plan zarządzanai danymi, PG-GUMEd.docx",
+      "success": true,
+      "processing_time": 0.07610034942626953,
+      "sections_extracted": 0,
+      "total_paragraphs": 0,
+      "unconnected_items": 21,
+      "extraction_rate": 0.0,
+      "cache_id": "ec065982-e104-4ccb-a6e2-e80ecdf5618d",
+      "metadata": {
+        "researcher_surname": null,
+        "researcher_firstname": null,
+        "competition_name": null,
+        "competition_edition": null,
+        "creation_date": null,
+        "filename_original": "Plan zarządzanai danymi, PG-GUMEd.docx"
+      },
+      "section_details": {
+        "1.1": {
+          "question": "How will new data be collected or produced and/or ...",
+          "paragraph_count": 0
+        },
+        "1.2": {
+          "question": "What data (for example the types, formats, and vol...",
+          "paragraph_count": 0
+        },
+        "2.1": {
+          "question": "What metadata and documentation (for example metho...",
+          "paragraph_count": 0
+        },
+        "2.2": {
+          "question": "What data quality control measures will be used?...",
+          "paragraph_count": 0
+        },
+        "3.1": {
+          "question": "How will data and metadata be stored and backed up...",
+          "paragraph_count": 0
+        },
+        "3.2": {
+          "question": "How will data security and protection of sensitive...",
+          "paragraph_count": 0
+        },
+        "4.1": {
+          "question": "If personal data are processed, how will complianc...",
+          "paragraph_count": 0
+        },
+        "4.2": {
+          "question": "How will other legal issues, such as intelectual p...",
+          "paragraph_count": 0
+        },
+        "5.1": {
+          "question": "How and when will data be shared? Are there possib...",
+          "paragraph_count": 0
+        },
+        "5.2": {
+          "question": "How will data for preservation be selected, and wh...",
+          "paragraph_count": 0
+        },
+        "5.3": {
+          "question": "What methods or software tools will be needed to a...",
+          "paragraph_count": 0
+        },
+        "5.4": {
+          "question": "How will the application of a unique and persisten...",
+          "paragraph_count": 0
+        },
+        "6.1": {
+          "question": "Who (for example role, position, and institution) ...",
+          "paragraph_count": 0
+        },
+        "6.2": {
+          "question": "What resources (for example financial and time) wi...",
+          "paragraph_count": 0
+        }
+      }
+    },
+    {
+      "filename": "dr Łukasz Michalak SONATINA 9 – Plan Zarządzania Danymi.pdf",
+      "success": true,
+      "processing_time": 25.132393836975098,
+      "sections_extracted": 14,
+      "total_paragraphs": 45,
+      "unconnected_items": 1,
+      "extraction_rate": 100.0,
+      "cache_id": "158a96e9-7f19-4dbd-9502-7d4ce1c9ad75",
+      "metadata": {
+        "researcher_surname": null,
+        "researcher_firstname": null,
+        "competition_name": null,
+        "competition_edition": null,
+        "creation_date": "10-03-25",
+        "filename_original": "dr Łukasz Michalak SONATINA 9 – Plan Zarządzania Danymi.pdf"
+      },
+      "section_details": {
+        "1.1": {
+          "question": "How will new data be collected or produced and/or ...",
+          "paragraph_count": 5
+        },
+        "1.2": {
+          "question": "What data (for example the types, formats, and vol...",
+          "paragraph_count": 1
+        },
+        "2.1": {
+          "question": "What metadata and documentation (for example metho...",
+          "paragraph_count": 4
+        },
+        "2.2": {
+          "question": "What data quality control measures will be used?...",
+          "paragraph_count": 3
+        },
+        "3.1": {
+          "question": "How will data and metadata be stored and backed up...",
+          "paragraph_count": 4
+        },
+        "3.2": {
+          "question": "How will data security and protection of sensitive...",
+          "paragraph_count": 4
+        },
+        "4.1": {
+          "question": "If personal data are processed, how will complianc...",
+          "paragraph_count": 2
+        },
+        "4.2": {
+          "question": "How will other legal issues, such as intelectual p...",
+          "paragraph_count": 4
+        },
+        "5.1": {
+          "question": "How and when will data be shared? Are there possib...",
+          "paragraph_count": 4
+        },
+        "5.2": {
+          "question": "How will data for preservation be selected, and wh...",
+          "paragraph_count": 4
+        },
+        "5.3": {
+          "question": "What methods or software tools will be needed to a...",
+          "paragraph_count": 2
+        },
+        "5.4": {
+          "question": "How will the application of a unique and persisten...",
+          "paragraph_count": 2
+        },
+        "6.1": {
+          "question": "Who (for example role, position, and institution) ...",
+          "paragraph_count": 3
+        },
+        "6.2": {
+          "question": "What resources (for example financial and time) wi...",
+          "paragraph_count": 3
+        }
+      }
+    },
+    {
+      "filename": "plan zarządzania danymi_SONATA_BIS_Patrycja Makoś-Chełstowska  .docx",
+      "success": true,
+      "processing_time": 0.060217857360839844,
+      "sections_extracted": 14,
+      "total_paragraphs": 14,
+      "unconnected_items": 0,
+      "extraction_rate": 100.0,
+      "cache_id": "e84f8921-f491-4228-a12b-4d2b22d8bab9",
+      "metadata": {
+        "researcher_surname": "Makoś",
+        "researcher_firstname": "Chełstowska",
+        "competition_name": "SONATA",
+        "competition_edition": null,
+        "creation_date": null,
+        "filename_original": "plan zarządzania danymi_SONATA_BIS_Patrycja Makoś-Chełstowska  .docx"
+      },
+      "section_details": {
+        "1.1": {
+          "question": "How will new data be collected or produced and/or ...",
+          "paragraph_count": 1
+        },
+        "1.2": {
+          "question": "What data (for example the types, formats, and vol...",
+          "paragraph_count": 1
+        },
+        "2.1": {
+          "question": "What metadata and documentation (for example metho...",
+          "paragraph_count": 1
+        },
+        "2.2": {
+          "question": "What data quality control measures will be used?...",
+          "paragraph_count": 1
+        },
+        "3.1": {
+          "question": "How will data and metadata be stored and backed up...",
+          "paragraph_count": 1
+        },
+        "3.2": {
+          "question": "How will data security and protection of sensitive...",
+          "paragraph_count": 1
+        },
+        "4.1": {
+          "question": "If personal data are processed, how will complianc...",
+          "paragraph_count": 1
+        },
+        "4.2": {
+          "question": "How will other legal issues, such as intelectual p...",
+          "paragraph_count": 1
+        },
+        "5.1": {
+          "question": "How and when will data be shared? Are there possib...",
+          "paragraph_count": 1
+        },
+        "5.2": {
+          "question": "How will data for preservation be selected, and wh...",
+          "paragraph_count": 1
+        },
+        "5.3": {
+          "question": "What methods or software tools will be needed to a...",
+          "paragraph_count": 1
+        },
+        "5.4": {
+          "question": "How will the application of a unique and persisten...",
+          "paragraph_count": 1
+        },
+        "6.1": {
+          "question": "Who (for example role, position, and institution) ...",
+          "paragraph_count": 1
+        },
+        "6.2": {
+          "question": "What resources (for example financial and time) wi...",
+          "paragraph_count": 1
+        }
+      }
+    },
+    {
+      "filename": "plan_zarządzania_OPUS29.pdf",
+      "success": false,
+      "error": "Could not find the start marker or section 1 in the document.",
+      "processing_time": 0.7794761657714844
+    }
+  ]
+}

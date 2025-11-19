@@ -1,32 +1,3 @@
 {
-  "quick_comments": [
-    {
-      "name": "minor adjustments",
-      "text": "The plan is very good, just need to add some information."
-    },
-    {
-      "name": "send final version",
-      "text": "The plan is approved, I would just ask for the final version to be sent to our records."
-    },
-    {
-      "name": "minor adjustments v2",
-      "text": "Plan is very good, only minor details need adjustment."
-    },
-    {
-      "name": "Sample Comment",
-      "text": "The plan is very good, just need to add some information."
-    },
-    {
-      "name": "repository name",
-      "text": "MOST Wiedzy Open Research Data Catalog (Bridge of Data)"
-    },
-    {
-      "name": "Gdańsk Tech - sentence",
-      "text": "The proper abbreviation for our university is Gdańsk Tech."
-    },
-    {
-      "name": "Gdańsk Tech",
-      "text": "Gdańsk Tech"
-    }
-  ]
+  "quick_comments_backup_20251117_000702": {}
 }
