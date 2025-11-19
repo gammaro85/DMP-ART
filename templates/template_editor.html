@@ -52,11 +52,15 @@
 <body data-page="template-editor">
     <header class="fixed-header">
         <nav class="header-nav">
-            <a href="/" class="nav-item">Home</a>
-            <span class="nav-item disabled" title="Upload and process a document first to access review" style="opacity: 0.5; cursor: not-allowed;">Review</span>
-            <a href="/template_editor" class="nav-item active">Template Editor</a>
+            <div class="nav-links">
+                <a href="/" class="nav-item" data-page="index">Home</a>
+                <span class="nav-item disabled" data-page="review"
+                      title="Upload and process a document first to access review">Review</span>
+                <a href="/template_editor" class="nav-item" data-page="template-editor">Template Editor</a>
+                <a href="/documentation" class="nav-item" data-page="documentation">Documentation</a>
+            </div>
             <button class="theme-toggle" aria-label="Toggle theme">
-                <i class="fas fa-sun"></i>
+                <i class="fas fa-moon"></i>
             </button>
         </nav>
     </header>
