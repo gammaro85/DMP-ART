@@ -4,11 +4,16 @@ import json
 import time
 import threading
 import zipfile
+import uuid
 from datetime import datetime
-from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for
+from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for, Response, stream_with_context
 from werkzeug.utils import secure_filename
 from utils.extractor import DMPExtractor
 # Comments are now managed through JSON files in config/ directory
+
+# Global progress state for real-time SSE updates
+progress_state = {}
+progress_lock = threading.Lock()
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -203,22 +208,40 @@ def upload_file():
             'success': False,
             'message': 'No file part'
         })
-    
+
     file = request.files['file']
-    
+
     if not file or not file.filename:
         return jsonify({
             'success': False,
             'message': 'No selected file'
         })
-    
+
+    # Generate unique session ID for progress tracking
+    session_id = str(uuid.uuid4())
+
+    # Initialize progress state
+    with progress_lock:
+        progress_state[session_id] = {
+            'message': 'Starting upload...',
+            'progress': 0,
+            'status': 'processing'
+        }
+
     file_path = None  # Ensure file_path is always defined
     if file and allowed_file(file.filename):
         try:
             filename = secure_filename(file.filename or "")
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(file_path)
-            
+
+            # Update progress: File saved
+            with progress_lock:
+                progress_state[session_id].update({
+                    'message': 'File uploaded, validating...',
+                    'progress': 5
+                })
+
             # Enhanced file validation based on type
             if filename.lower().endswith('.docx'):
                 is_valid, validation_message = validate_docx_file(file_path)
@@ -227,9 +250,19 @@ def upload_file():
                         os.remove(file_path)
                     except:
                         pass
+
+                    # Mark progress as error
+                    with progress_lock:
+                        progress_state[session_id].update({
+                            'message': f'Validation failed: {validation_message}',
+                            'progress': 0,
+                            'status': 'error'
+                        })
+
                     return jsonify({
                         'success': False,
-                        'message': f'DOCX validation failed: {validation_message}'
+                        'message': f'DOCX validation failed: {validation_message}',
+                        'session_id': session_id
                     })
             elif filename.lower().endswith('.pdf'):
                 is_valid, validation_message = validate_pdf_file(file_path)
@@ -238,16 +271,34 @@ def upload_file():
                         os.remove(file_path)
                     except:
                         pass
+
+                    # Mark progress as error
+                    with progress_lock:
+                        progress_state[session_id].update({
+                            'message': f'Validation failed: {validation_message}',
+                            'progress': 0,
+                            'status': 'error'
+                        })
+
                     return jsonify({
                         'success': False,
-                        'message': f'PDF validation failed: {validation_message}'
+                        'message': f'PDF validation failed: {validation_message}',
+                        'session_id': session_id
                     })
-            
-            # Process the file with progress callback
+
+            # Process the file with real-time progress callback
             def progress_callback(message, progress):
-                """Log processing progress to console"""
+                """Update global progress state for SSE streaming"""
                 timestamp = datetime.now().strftime('%H:%M:%S')
                 print(f"[{timestamp}] Processing: {progress}% - {message}")
+
+                with progress_lock:
+                    if session_id in progress_state:
+                        progress_state[session_id].update({
+                            'message': message,
+                            'progress': progress,
+                            'status': 'processing'
+                        })
 
             extractor = DMPExtractor()
             result = extractor.process_file(
@@ -255,32 +306,62 @@ def upload_file():
                 app.config['OUTPUT_FOLDER'],
                 progress_callback=progress_callback
             )
-            
+
             # Clean up the uploaded file
             try:
                 os.remove(file_path)
             except Exception as e:
                 print(f"Warning: Could not remove uploaded file: {str(e)}")
-            
+
             if result['success']:
-                # Redirect to the review page with cache ID
+                # Mark progress as complete
                 cache_id = result.get('cache_id', '')
+                redirect_url = url_for('review_dmp', filename=result['filename'], cache_id=cache_id)
+
+                with progress_lock:
+                    progress_state[session_id].update({
+                        'message': 'Processing complete!',
+                        'progress': 100,
+                        'status': 'complete',
+                        'redirect': redirect_url
+                    })
+
                 return jsonify({
                     'success': True,
-                    'redirect': url_for('review_dmp', filename=result['filename'], cache_id=cache_id),
-                    'message': result.get('message', 'File processed successfully')
+                    'redirect': redirect_url,
+                    'message': result.get('message', 'File processed successfully'),
+                    'session_id': session_id
                 })
             else:
-                return jsonify(result)
-                
+                # Mark progress as error
+                with progress_lock:
+                    progress_state[session_id].update({
+                        'message': result.get('message', 'Processing failed'),
+                        'progress': 0,
+                        'status': 'error'
+                    })
+
+                return jsonify({
+                    **result,
+                    'session_id': session_id
+                })
+
         except Exception as e:
             import traceback
             traceback_str = traceback.format_exc()
             print(f"Error processing file: {str(e)}")
             print(traceback_str)
 
+            # Mark progress as error
+            with progress_lock:
+                if session_id in progress_state:
+                    progress_state[session_id].update({
+                        'message': f'Error: {str(e)}',
+                        'progress': 0,
+                        'status': 'error'
+                    })
+
             # Clean up uploaded file in case of error
-            # Fix: Ensure file_path is defined before attempting to remove
             try:
                 if file_path is not None:
                     os.remove(file_path)
@@ -289,12 +370,22 @@ def upload_file():
 
             return jsonify({
                 'success': False,
-                'message': f'Error processing file: {str(e)}'
+                'message': f'Error processing file: {str(e)}',
+                'session_id': session_id
             })
+
+    # Invalid file format
+    with progress_lock:
+        progress_state[session_id].update({
+            'message': 'Invalid file format',
+            'progress': 0,
+            'status': 'error'
+        })
 
     return jsonify({
         'success': False,
-        'message': 'Invalid file format. Only PDF and DOCX files are allowed.'
+        'message': 'Invalid file format. Only PDF and DOCX files are allowed.',
+        'session_id': session_id
     })
 
 @app.route('/download/<filename>')
@@ -942,6 +1033,77 @@ def test_categories():
             'error': str(e),
             'status': 'failed'
         })
+
+@app.route('/progress/<session_id>')
+def progress_stream(session_id):
+    """
+    Server-Sent Events (SSE) endpoint for real-time progress updates
+
+    Client connects to this endpoint and receives progress updates as they occur.
+    Format: data: {"message": "...", "progress": 0-100, "status": "processing|complete|error"}
+    """
+    def generate():
+        """Generator function that yields SSE-formatted progress updates"""
+        # Initial connection message
+        yield f"data: {json.dumps({'message': 'Connected', 'progress': 0, 'status': 'connected'})}\n\n"
+
+        last_progress = -1
+        timeout_count = 0
+        max_timeout = 300  # 5 minutes max wait (300 * 1 second checks)
+
+        while timeout_count < max_timeout:
+            with progress_lock:
+                if session_id in progress_state:
+                    state = progress_state[session_id]
+                    current_progress = state.get('progress', 0)
+
+                    # Only send update if progress changed
+                    if current_progress != last_progress:
+                        message_data = {
+                            'message': state.get('message', ''),
+                            'progress': current_progress,
+                            'status': state.get('status', 'processing')
+                        }
+                        yield f"data: {json.dumps(message_data)}\n\n"
+                        last_progress = current_progress
+
+                    # Check if processing is complete
+                    if state.get('status') in ['complete', 'error']:
+                        # Send final message
+                        final_data = {
+                            'message': state.get('message', ''),
+                            'progress': 100 if state.get('status') == 'complete' else current_progress,
+                            'status': state.get('status'),
+                            'redirect': state.get('redirect')
+                        }
+                        yield f"data: {json.dumps(final_data)}\n\n"
+
+                        # Cleanup state after short delay
+                        time.sleep(1)
+                        if session_id in progress_state:
+                            del progress_state[session_id]
+                        break
+
+            # Check for updates every second
+            time.sleep(1)
+            timeout_count += 1
+
+        # Timeout reached without completion
+        if timeout_count >= max_timeout:
+            yield f"data: {json.dumps({'message': 'Processing timeout', 'progress': 0, 'status': 'error'})}\n\n"
+            with progress_lock:
+                if session_id in progress_state:
+                    del progress_state[session_id]
+
+    return Response(
+        stream_with_context(generate()),
+        mimetype='text/event-stream',
+        headers={
+            'Cache-Control': 'no-cache',
+            'X-Accel-Buffering': 'no',  # Disable nginx buffering
+            'Connection': 'keep-alive'
+        }
+    )
 
 @app.route('/health')
 def health_check():
