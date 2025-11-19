@@ -419,6 +419,128 @@ function updateButtonStates(elements, state) {
     }
 }
 
+/**
+ * Connect to Server-Sent Events endpoint for real-time progress updates
+ * @param {string} sessionId - Unique session ID for this upload
+ * @param {Function} onProgress - Callback for progress updates
+ * @param {Function} onComplete - Callback when complete
+ * @param {Function} onError - Callback for errors
+ * @returns {EventSource} The event source connection
+ */
+function connectProgressStream(sessionId, onProgress, onComplete, onError) {
+    const eventSource = new EventSource(`/progress/${sessionId}`);
+
+    eventSource.onmessage = function(event) {
+        try {
+            const data = JSON.parse(event.data);
+            console.log('Progress update:', data);
+
+            if (data.status === 'complete') {
+                onComplete(data);
+                eventSource.close();
+            } else if (data.status === 'error') {
+                onError(data);
+                eventSource.close();
+            } else {
+                onProgress(data);
+            }
+        } catch (error) {
+            console.error('Error parsing progress data:', error);
+        }
+    };
+
+    eventSource.onerror = function(error) {
+        console.error('SSE connection error:', error);
+        eventSource.close();
+        onError({ message: 'Connection lost', progress: 0, status: 'error' });
+    };
+
+    return eventSource;
+}
+
+/**
+ * Update progress bar UI with real-time data
+ * @param {Object} data - Progress data from SSE
+ */
+function updateProgressBar(data) {
+    const progressContainer = document.getElementById('progress-container');
+    const progressFill = document.getElementById('progress-fill');
+    const progressMessage = document.getElementById('progress-message');
+    const progressPercentage = document.getElementById('progress-percentage');
+    const progressStatus = document.getElementById('progress-status');
+
+    if (!progressContainer) return;
+
+    // Show progress container
+    progressContainer.style.display = 'block';
+
+    // Update progress bar width
+    if (progressFill) {
+        progressFill.style.width = `${data.progress}%`;
+
+        // Update color class based on progress
+        progressFill.className = 'progress-fill';
+        if (data.status === 'complete') {
+            progressFill.classList.add('complete');
+        } else if (data.progress < 30) {
+            progressFill.classList.add('low', 'processing');
+        } else if (data.progress < 70) {
+            progressFill.classList.add('medium', 'processing');
+        } else {
+            progressFill.classList.add('high', 'processing');
+        }
+    }
+
+    // Update message
+    if (progressMessage) {
+        progressMessage.textContent = data.message || 'Processing...';
+    }
+
+    // Update percentage
+    if (progressPercentage) {
+        progressPercentage.textContent = `${data.progress}%`;
+    }
+
+    // Update status
+    if (progressStatus) {
+        let statusText = '';
+        switch (data.status) {
+            case 'connected':
+                statusText = 'Connected to server...';
+                break;
+            case 'processing':
+                statusText = 'Processing your DMP file...';
+                break;
+            case 'complete':
+                statusText = 'Processing complete! Redirecting...';
+                break;
+            case 'error':
+                statusText = 'An error occurred during processing';
+                break;
+            default:
+                statusText = 'Working...';
+        }
+        progressStatus.textContent = statusText;
+    }
+}
+
+/**
+ * Hide progress bar and reset
+ */
+function hideProgressBar() {
+    const progressContainer = document.getElementById('progress-container');
+    if (progressContainer) {
+        progressContainer.style.display = 'none';
+    }
+
+    // Reset progress bar
+    const progressFill = document.getElementById('progress-fill');
+    if (progressFill) {
+        progressFill.style.width = '0%';
+        progressFill.className = 'progress-fill';
+    }
+}
+
 function uploadFile(file, elements) {
     const { loading, result, successMessage, errorMessage, errorText } = elements;
 
@@ -427,16 +549,15 @@ function uploadFile(file, elements) {
     const formData = new FormData();
     formData.append('file', file);
 
-    // Show loading state
-    if (loading) {
-        loading.style.display = 'block';
-    }
-
     // Hide previous results
     if (result) result.style.display = 'none';
     if (successMessage) successMessage.style.display = 'none';
     if (errorMessage) errorMessage.style.display = 'none';
 
+    // Hide old loading, show progress bar instead
+    if (loading) loading.style.display = 'none';
+
+    // Start upload
     fetch('/upload', {
         method: 'POST',
         body: formData
@@ -445,49 +566,65 @@ function uploadFile(file, elements) {
         .then(data => {
             console.log('Upload response:', data);
 
-            // Hide loading
-            if (loading) {
-                loading.style.display = 'none';
-            }
+            // Get session ID from response
+            const sessionId = data.session_id;
 
-            if (data.success && data.redirect) {
-                // Center the success message
-                if (successMessage) {
-                    successMessage.style.position = 'fixed';
-                    successMessage.style.top = '50%';
-                    successMessage.style.left = '50%';
-                    successMessage.style.transform = 'translate(-50%, -50%)';
-                    successMessage.style.zIndex = '1000';
-                    successMessage.style.maxWidth = '90%';
-                    successMessage.style.width = 'auto';
-                    successMessage.style.display = 'block';
-                }
+            if (!sessionId) {
+                // No session ID, handle as before (error case)
+                hideProgressBar();
 
-                showToast('File processed successfully!');
-
-                // Redirect after showing success message
-                setTimeout(() => {
-                    window.location.href = data.redirect;
-                }, 2000);
-            } else {
-                // Show error
                 if (errorMessage) {
                     errorMessage.style.display = 'block';
                 }
                 if (errorText) {
                     errorText.textContent = data.message || 'Unknown error occurred';
                 }
-
                 showToast(data.message || 'Upload failed', 'error');
+                return;
             }
+
+            // Connect to SSE for real-time progress
+            let eventSource = connectProgressStream(
+                sessionId,
+                // On progress update
+                (progressData) => {
+                    updateProgressBar(progressData);
+                },
+                // On complete
+                (completeData) => {
+                    updateProgressBar(completeData);
+
+                    // Show success message
+                    showToast('File processed successfully!');
+
+                    // Redirect after delay
+                    setTimeout(() => {
+                        if (completeData.redirect) {
+                            window.location.href = completeData.redirect;
+                        } else if (data.redirect) {
+                            window.location.href = data.redirect;
+                        }
+                    }, 1500);
+                },
+                // On error
+                (errorData) => {
+                    hideProgressBar();
+
+                    if (errorMessage) {
+                        errorMessage.style.display = 'block';
+                    }
+                    if (errorText) {
+                        errorText.textContent = errorData.message || 'Processing error occurred';
+                    }
+                    showToast(errorData.message || 'Processing failed', 'error');
+                }
+            );
+
         })
         .catch(error => {
             console.error('Upload error:', error);
 
-            // Hide loading
-            if (loading) {
-                loading.style.display = 'none';
-            }
+            hideProgressBar();
 
             // Show error
             if (errorMessage) {
