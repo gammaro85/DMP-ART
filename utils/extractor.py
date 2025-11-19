@@ -330,14 +330,39 @@ class DMPExtractor:
         
         return table_content
     
-    def process_file(self, file_path, output_dir):
-        """Process a file and extract DMP content based on file type"""
+    def _report_progress(self, callback, message, progress):
+        """
+        Safely report progress through callback if provided
+
+        Args:
+            callback: Progress callback function (message, progress) or None
+            message (str): Human-readable progress message
+            progress (int): Progress percentage (0-100)
+        """
+        if callback and callable(callback):
+            try:
+                callback(message, progress)
+            except Exception as e:
+                self._log_debug(f"Progress callback error: {str(e)}")
+
+    def process_file(self, file_path, output_dir, progress_callback=None):
+        """
+        Process a file and extract DMP content based on file type
+
+        Args:
+            file_path (str): Path to the input file (PDF or DOCX)
+            output_dir (str): Directory to save output files
+            progress_callback (callable, optional): Function(message, progress) for progress updates
+
+        Returns:
+            dict: Processing result with success status and file information
+        """
         file_extension = os.path.splitext(file_path)[1].lower()
-        
+
         if file_extension == '.pdf':
-            return self.process_pdf(file_path, output_dir)
+            return self.process_pdf(file_path, output_dir, progress_callback)
         elif file_extension == '.docx':
-            return self.process_docx(file_path, output_dir)
+            return self.process_docx(file_path, output_dir, progress_callback)
         else:
             return {
                 "success": False,
@@ -1442,12 +1467,14 @@ class DMPExtractor:
             self._log_debug(f"Error assigning content: {str(e)}")
             # Don't fail completely, just log the error
     
-    def process_docx(self, docx_path, output_dir):
+    def process_docx(self, docx_path, output_dir, progress_callback=None):
         """Process a DOCX file and extract DMP content with enhanced table support"""
         try:
             self._log_debug(f"Processing DOCX: {docx_path}")
-            
+            self._report_progress(progress_callback, "Starting DOCX processing...", 0)
+
             # Validate the DOCX file first
+            self._report_progress(progress_callback, "Validating DOCX file...", 5)
             is_valid, validation_message = self.validate_docx_file(docx_path)
             if not is_valid:
                 return {
@@ -1459,20 +1486,23 @@ class DMPExtractor:
             output_doc = Document()
             
             # Load the input document
+            self._report_progress(progress_callback, "Loading DOCX document...", 10)
             doc = Document(docx_path)
-            
+
             # Extract text from both paragraphs and tables
+            self._report_progress(progress_callback, "Extracting paragraphs and tables...", 15)
             formatted_paragraphs = []
-            
+
             # Process paragraphs
             for paragraph in doc.paragraphs:
                 formatted_text = self.extract_formatted_text(paragraph)
                 if formatted_text.strip():  # Only add non-empty paragraphs
                     formatted_paragraphs.append(formatted_text)
-            
+
             # Process tables
             table_content = self.extract_table_content(doc)
             formatted_paragraphs.extend(table_content)
+            self._report_progress(progress_callback, "Content extraction complete", 25)
             
             # Join paragraphs for author detection and searching for markers
             all_text = "\n".join([p.replace("UNDERLINED:", "").replace("BOLD:", "").replace("UNDERLINED_BOLD:", "")
@@ -1588,11 +1618,14 @@ class DMPExtractor:
                     meaningful_content.append(para)  # Keep original formatting for detection
             
             # Use improved assignment logic
+            self._report_progress(progress_callback, "Analyzing content and assigning to sections...", 40)
             section_content, tagged_content, unconnected_text = self.improve_content_assignment(
                 meaningful_content, is_pdf=False
             )
-            
+            self._report_progress(progress_callback, "Content assignment complete", 60)
+
             # Add content to document
+            self._report_progress(progress_callback, "Building output document...", 65)
             for section in self.dmp_structure:
                 output_doc.add_heading(section, level=1)
                 
@@ -1614,6 +1647,7 @@ class DMPExtractor:
                         output_doc.add_paragraph("")
             
             # Create review structure
+            self._report_progress(progress_callback, "Creating review structure with confidence scores...", 75)
             review_structure = {}
 
             for section in self.dmp_structure:
@@ -1658,9 +1692,10 @@ class DMPExtractor:
             self._log_debug(f"Generated smart filename: {output_filename}")
             
             # Save the document
+            self._report_progress(progress_callback, "Saving output document...", 85)
             output_path = os.path.join(output_dir, output_filename)
             output_doc.save(output_path)
-            
+
             # Add unconnected text to review structure if present
             if unconnected_text:
                 review_structure["_unconnected_text"] = unconnected_text
@@ -1671,13 +1706,16 @@ class DMPExtractor:
             self._log_debug(f"Added metadata to review structure")
 
             # Save review structure as JSON
+            self._report_progress(progress_callback, "Generating cache file...", 90)
             cache_id = str(uuid.uuid4())
             cache_filename = f"cache_{cache_id}.json"
             cache_path = os.path.join(output_dir, cache_filename)
 
             with open(cache_path, 'w', encoding='utf-8') as f:
                 json.dump(review_structure, f, ensure_ascii=False, indent=2)
-            
+
+            self._report_progress(progress_callback, "DOCX processing complete!", 100)
+
             return {
                 "success": True,
                 "filename": output_filename,
@@ -1697,14 +1735,17 @@ class DMPExtractor:
                 "message": f"Error processing DOCX: {str(e)}"
             }
     
-    def process_pdf(self, pdf_path, output_dir):
+    def process_pdf(self, pdf_path, output_dir, progress_callback=None):
         """Process a PDF and extract DMP content"""
         try:
             self._log_debug(f"Processing PDF: {pdf_path}")
+            self._report_progress(progress_callback, "Starting PDF processing...", 0)
+
             # Create a new Word document
             doc = Document()
-            
+
             # Read the PDF
+            self._report_progress(progress_callback, "Opening PDF file...", 5)
             with open(pdf_path, 'rb') as file:
                 reader = PyPDF2.PdfReader(file)
                 
@@ -1715,13 +1756,20 @@ class DMPExtractor:
 
                 author_name = self.extract_author_name(first_pages_text)
                 self._log_debug(f"Author detected: {author_name}")
-                
+
                 # Find the DMP section
                 all_text = ""
                 all_pages_text = []
-                
+
                 # Extract text from all pages
+                self._report_progress(progress_callback, "Extracting text from PDF pages...", 15)
+                total_pages = len(reader.pages)
                 for i, page in enumerate(reader.pages):
+                    # Report progress for each 10% of pages processed
+                    if total_pages > 10 and i % (total_pages // 10) == 0:
+                        page_progress = 15 + int((i / total_pages) * 15)  # Progress from 15% to 30%
+                        self._report_progress(progress_callback, f"Processing page {i+1}/{total_pages}...", page_progress)
+
                     page_text = page.extract_text()
                     all_pages_text.append(page_text)
                     all_text += page_text + "\n\n"
@@ -1735,8 +1783,11 @@ class DMPExtractor:
                         if mark in page_text:
                             self._log_debug(f"Found end mark '{mark}' on page {i+1}")
 
+                self._report_progress(progress_callback, "Text extraction complete", 30)
+
                 # Check if PDF is scanned and use OCR if needed
                 if self._is_scanned_pdf(pdf_path):
+                    self._report_progress(progress_callback, "Scanned PDF detected, running OCR...", 35)
                     ocr_text = self._extract_pdf_with_ocr(pdf_path)
                     if ocr_text:
                         self._log_debug("Using OCR extracted text instead of standard extraction")
@@ -1819,19 +1870,23 @@ class DMPExtractor:
                         tagged_content[section][subsection] = []
                 
                 # Split the content into lines and use improved table extraction
+                self._report_progress(progress_callback, "Processing PDF content structure...", 45)
                 lines = dmp_text.split("\n")
                 self._log_debug(f"Extracted {len(lines)} lines from PDF")
-                
+
                 # Use PDF table extraction to better structure content
                 structured_content = self.extract_pdf_table_content(lines)
                 self._log_debug(f"After table processing: {len(structured_content)} content items")
-                
+
                 # Use improved content assignment logic
+                self._report_progress(progress_callback, "Analyzing content and assigning to sections...", 50)
                 section_content, tagged_content, unconnected_text = self.improve_content_assignment(
                     structured_content, is_pdf=True
                 )
-                
+                self._report_progress(progress_callback, "Content assignment complete", 65)
+
                 # Add content to document
+                self._report_progress(progress_callback, "Building output document...", 70)
                 for section in self.dmp_structure:
                     doc.add_heading(section, level=1)
                     
@@ -1853,6 +1908,7 @@ class DMPExtractor:
                             doc.add_paragraph("")
                 
          # Create a structured representation for the review interface
+                self._report_progress(progress_callback, "Creating review structure with confidence scores...", 75)
                 review_structure = {}
 
                 for section in self.dmp_structure:
@@ -1897,9 +1953,10 @@ class DMPExtractor:
                 self._log_debug(f"Generated smart filename: {output_filename}")
                 
                 # Save the document
+                self._report_progress(progress_callback, "Saving output document...", 85)
                 output_path = os.path.join(output_dir, output_filename)
                 doc.save(output_path)
-                
+
                 # Add unconnected text to review structure if present
                 if unconnected_text:
                     review_structure["_unconnected_text"] = unconnected_text
@@ -1910,13 +1967,16 @@ class DMPExtractor:
                 self._log_debug(f"Added metadata to PDF review structure")
 
                 # Save review structure as JSON for the review interface
+                self._report_progress(progress_callback, "Generating cache file...", 90)
                 cache_id = str(uuid.uuid4())
                 cache_filename = f"cache_{cache_id}.json"
                 cache_path = os.path.join(output_dir, cache_filename)
 
                 with open(cache_path, 'w', encoding='utf-8') as f:
                     json.dump(review_structure, f, ensure_ascii=False, indent=2)
-                
+
+                self._report_progress(progress_callback, "PDF processing complete!", 100)
+
                 return {
                     "success": True,
                     "filename": output_filename,
