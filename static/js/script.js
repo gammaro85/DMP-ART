@@ -836,8 +836,9 @@ function initializeCharacterCounters() {
     document.querySelectorAll('.feedback-text[data-section-type="question"], .feedback-text[data-section-type="original_text"], .feedback-text[data-section-type="text_insertion"]').forEach(textarea => {
         const sectionId = textarea.id.replace('feedback-', '');
 
-        // Update counter on input
-        textarea.addEventListener('input', () => updateCharacterCounter(sectionId));
+        // Update counter on input with debouncing (300ms delay)
+        const debouncedUpdate = debounce(() => updateCharacterCounter(sectionId), 300);
+        textarea.addEventListener('input', debouncedUpdate);
 
         // Initial count
         updateCharacterCounter(sectionId);
@@ -849,8 +850,9 @@ function initializeCharacterCounters() {
         document.querySelectorAll('.feedback-text').forEach(textarea => {
             const sectionId = textarea.id.replace('feedback-', '');
 
-            // Update counter on input
-            textarea.addEventListener('input', () => updateCharacterCounter(sectionId));
+            // Update counter on input with debouncing (300ms delay)
+            const debouncedUpdate = debounce(() => updateCharacterCounter(sectionId), 300);
+            textarea.addEventListener('input', debouncedUpdate);
 
             // Initial count
             updateCharacterCounter(sectionId);
@@ -988,6 +990,24 @@ function saveAllTemplates() {
 // ===========================================
 // UTILITY FUNCTIONS
 // ===========================================
+
+/**
+ * Debounce function to limit how often a function can fire
+ * @param {Function} func - The function to debounce
+ * @param {number} wait - The delay in milliseconds
+ * @returns {Function} - The debounced function
+ */
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func.apply(this, args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
 
 function showToast(message, type = 'success') {
     console.log(`Toast (${type}):`, message);

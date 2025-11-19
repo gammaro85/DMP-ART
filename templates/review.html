@@ -709,12 +709,14 @@
         <div class="review-container">
             <header class="review-header">
                 <div class="logo-container">
-                    <img src="{{ url_for('static', filename='images/dmp-art-logo-main-light.png') }}" 
-                         alt="DMP ART Logo" 
-                         class="logo light-logo">
-                    <img src="{{ url_for('static', filename='images/dmp-art-logo-main-dark.png') }}" 
-                         alt="DMP ART Logo" 
-                         class="logo dark-logo">
+                    <img src="{{ url_for('static', filename='images/dmp-art-logo-main-light.png') }}"
+                         alt="DMP ART Logo"
+                         class="logo light-logo"
+                         loading="lazy">
+                    <img src="{{ url_for('static', filename='images/dmp-art-logo-main-dark.png') }}"
+                         alt="DMP ART Logo"
+                         class="logo dark-logo"
+                         loading="lazy">
                 </div>
                 <p class="review-subtitle">Review extracted content and provide feedback</p>
             </header>
