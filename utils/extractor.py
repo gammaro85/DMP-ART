@@ -249,7 +249,7 @@ class DMPExtractor:
             r"^\s*Dół\s+formularza\s*$",  # Form markers with whitespace
             r"^\s*Początek\s+formularza\s*$"
         ]
-        
+
         # Additional PDF-specific patterns
         if is_pdf:
             pdf_patterns = [
@@ -269,6 +269,13 @@ class DMPExtractor:
                 # More flexible patterns for parts of the header
                 r"OSF,?\s*OPUS-\d+\s*Strona",   # OSF + OPUS + Strona (stronger pattern)
                 r"\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}",  # Timestamp pattern
+                # Polish question fragments (trailing parts of split questions)
+                r"^\s*danym[iy]?\s*$",  # "data" fragments
+                r"^\s*przepisy\s*$",  # "regulations" fragment
+                r"^\s*przetwarzania danych osobowych\s*$",  # "personal data processing" fragment
+                r"^\s*repozytorium lub archiwum danych\)?\s*$",  # "repository or archive" fragment
+                r"^\s*interoperacyjności i ponownego wykorzystania danych\s*$",  # "interoperability and reuse" fragment
+                r"^\s*[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ\s]{1,50}\)\s*$",  # Short Polish text ending with )
             ]
             skip_patterns.extend(pdf_patterns)
         
