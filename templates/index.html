@@ -39,12 +39,14 @@
     <div class="container" style="margin:0;max-width:100vw;width:100vw;padding-left:0;padding-right:0;">
         <div class="main-logo-section">
             <div class="logo-container">
-                <img src="{{ url_for('static', filename='images/dmp-art-logo-main-light.png') }}" 
-                     alt="DMP ART Logo" 
-                     class="logo light-logo">
-                <img src="{{ url_for('static', filename='images/dmp-art-logo-main-dark.png') }}" 
-                     alt="DMP ART Logo" 
-                     class="logo dark-logo">
+                <img src="{{ url_for('static', filename='images/dmp-art-logo-main-light.png') }}"
+                     alt="DMP ART Logo"
+                     class="logo light-logo"
+                     loading="lazy">
+                <img src="{{ url_for('static', filename='images/dmp-art-logo-main-dark.png') }}"
+                     alt="DMP ART Logo"
+                     class="logo dark-logo"
+                     loading="lazy">
             </div>
             <div class="subtitle">
                 <span class="first-letter">D</span>ata <span class="first-letter">M</span>anagement <span class="first-letter">P</span>lan <span class="first-letter">A</span>ssessment and <span class="first-letter">R</span>esponse <span class="first-letter">T</span>ool
