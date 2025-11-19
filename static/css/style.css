@@ -280,55 +280,55 @@ s .light-logo {
   }
 }
 .theme-toggle {
-  position: fixed!important;
-  top: 10px!important;
-  left: 15px!important;
-  width: 40px!important;
-  height: 40px!important;
-  background: var(--bg-card)!important;
-  color: var(--text-primary)!important;
-  border: 1px solid var(--border-color)!important;
-  border-radius: 50%!important;
-  cursor: pointer!important;
-  font-size: var(--font-size-base)!important;
-  font-weight: var(--font-weight-normal)!important;
-  display: flex!important;
-  align-items: center!important;
-  justify-content: center!important;
-  z-index: 1001!important;
-  transition: .3s!important;
-  box-shadow: var(--shadow-light)!important;
-  gap: 0!important;
-  text-decoration: none!important;
-  white-space: normal!important
+  position: fixed;
+  top: 10px;
+  left: 15px;
+  width: 40px;
+  height: 40px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  transition: .3s;
+  box-shadow: var(--shadow-light);
+  gap: 0;
+  text-decoration: none;
+  white-space: normal;
 }
 .theme-toggle:hover {
-  background: var(--bg-hover)!important;
-  border-color: var(--primary-color)!important;
-  transform: scale(1.1)!important;
-  box-shadow: var(--shadow-medium)!important;
-  color: var(--primary-color)!important
+  background: var(--bg-hover);
+  border-color: var(--primary-color);
+  transform: scale(1.1);
+  box-shadow: var(--shadow-medium);
+  color: var(--primary-color);
 }
 .theme-toggle:active {
-  transform: scale(.95)!important;
-  box-shadow: 0 1px 4px rgba(0,0,0,.1)!important
+  transform: scale(.95);
+  box-shadow: 0 1px 4px rgba(0,0,0,.1);
 }
 @media (max-width:768px) {
   .theme-toggle {
-    top: 12px!important;
-    left: 15px!important;
-    width: 35px!important;
-    height: 35px!important;
-    font-size: var(--font-size-sm)!important
+    top: 12px;
+    left: 15px;
+    width: 35px;
+    height: 35px;
+    font-size: var(--font-size-sm);
   }
 }
 @media (max-width:480px) {
   .theme-toggle {
-    top: 14px!important;
-    left: 15px!important;
-    width: 32px!important;
-    height: 32px!important;
-    font-size: var(--font-size-xs)!important
+    top: 14px;
+    left: 15px;
+    width: 32px;
+    height: 32px;
+    font-size: var(--font-size-xs);
   }
 }
 .fixed-header {
@@ -374,9 +374,6 @@ s .light-logo {
   white-space: nowrap;
   gap: var(--spacing-1);
   cursor: pointer
-}
-.theme-toggle {
-  padding: 0!important
 }
 .nav-item:hover,
 .tab-btn {
@@ -787,7 +784,7 @@ textarea:focus {
 [data-theme=dark] .add-btn,
 [data-theme=dark] .save-btn,
 [data-theme=dark] .save-template-btn {
-  color: #ffffff !important;
+  color: var(--text-inverse);
 }
 * {
   transition: color .3s cubic-bezier(.4,0,.2,1),background-color .3s cubic-bezier(.4,0,.2,1),border-color .3s cubic-bezier(.4,0,.2,1),box-shadow .3s cubic-bezier(.4,0,.2,1),transform .3s cubic-bezier(.4,0,.2,1)
@@ -934,19 +931,19 @@ pre,
 textarea,
 .feedback-text,
 .category-comment-textarea {
-  width: 100% !important;
-  max-width: 100vw !important;
-  font-size: var(--font-size-lg) !important;
-  font-family: var(--font-family-mono) !important;
-  background: var(--text-box-bg) !important;
-  color: var(--text-high-contrast) !important;
-  border: 1px solid var(--border-medium) !important;
-  border-radius: var(--border-radius-md) !important;
-  padding: var(--spacing-4) !important;
-  box-sizing: border-box !important;
-  line-height: var(--line-height-relaxed) !important;
-  word-break: break-word !important;
-  overflow-x: auto !important;
+  width: 100%;
+  max-width: 100vw;
+  font-size: var(--font-size-lg);
+  font-family: var(--font-family-mono);
+  background: var(--text-box-bg);
+  color: var(--text-high-contrast);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-4);
+  box-sizing: border-box;
+  line-height: var(--line-height-relaxed);
+  word-break: break-word;
+  overflow-x: auto;
 }
 
 /* Ensure input areas are readable in dark mode */
@@ -954,9 +951,9 @@ textarea,
 [data-theme=dark] textarea,
 [data-theme=dark] .feedback-text,
 [data-theme=dark] .category-comment-textarea {
-  background: var(--text-box-bg) !important;
-  color: var(--text-high-contrast) !important;
-  border-color: var(--text-box-border) !important;
+  background: var(--text-box-bg);
+  color: var(--text-high-contrast);
+  border-color: var(--text-box-border);
 }
 
 /* Flexible wrapping for layout root */
@@ -997,14 +994,14 @@ textarea,
 
 /* Drop area frame and flexible width for index page */
 .upload-area {
-  border: 2px dashed rgba(245, 158, 11, 0.5) !important; /* subtle orange */
+  border: 2px dashed rgba(245, 158, 11, 0.5); /* subtle orange */
   background: var(--bg-card);
   min-width: clamp(280px, 30vw, 450px);
   max-width: clamp(450px, 45vw, 650px);
   width: 100%;
   margin: clamp(1rem, 3vw, 1.5rem) auto clamp(4rem, 6vw, 5rem) auto;
   box-sizing: border-box;
-  padding: clamp(1.2rem, 3vw, 2rem) clamp(1rem, 3vw, 2rem) !important;
+  padding: clamp(1.2rem, 3vw, 2rem) clamp(1rem, 3vw, 2rem);
   display: flex;
   flex-direction: column;
   gap: clamp(0.8rem, 1.5vw, 1.2rem);
@@ -1020,14 +1017,14 @@ textarea,
   .upload-area {
     max-width: 98vw;
     min-width: 220px;
-    padding: var(--spacing-5) var(--spacing-4) !important;
+    padding: var(--spacing-5) var(--spacing-4);
   }
 }
 @media (max-width: 600px) {
   .upload-area {
     max-width: 100vw;
     min-width: 0;
-    padding: var(--spacing-4) !important;
+    padding: var(--spacing-4);
     margin-left: 0;
     margin-right: 0;
     gap: 0.8rem;
@@ -1036,26 +1033,25 @@ textarea,
 
 /* Increase spacing between objects inside the frame */
 .upload-text {
-  font-size: clamp(1rem, 1.5vw, 1.4rem) !important;
-  font-weight: 700 !important;
-  margin-bottom: 0 !important;
-  text-align: center !important;
-  white-space: nowrap !important;
-  color: var(--text-high-contrast) !important;
+  font-size: clamp(1rem, 1.5vw, 1.4rem);
+  font-weight: 700;
+  margin-bottom: 0;
+  text-align: center;
+  white-space: nowrap;
+  color: var(--text-high-contrast);
 }
 .upload-hint {
-  font-size: clamp(1rem, 1.5vw, 1.2rem) !important;
-  margin-bottom: clamp(0.8rem, 1.5vw, 1.2rem) !important;
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  margin-bottom: clamp(0.8rem, 1.5vw, 1.2rem);
 }
 .upload-actions {
-  gap: clamp(1rem, 2vw, 2rem) !important;
+  gap: clamp(1rem, 2vw, 2rem);
 }
 
 /* Only one upload area clickable (fix doubled upload) */
 .upload-area input[type="file"] {
-  /* ...existing code... */
-  pointer-events: none !important;
-  display: none !important;
+  pointer-events: none;
+  display: none;
 }
 
 /* Review layout with sidebar */
