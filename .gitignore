@@ -39,6 +39,8 @@ outputs/Review_*.json
 test_outputs/*.docx
 test_outputs/cache_*.json
 test_export.json
+test_outputs/*.docx
+test_outputs/cache_*.json
 
 # IDE
 .vscode/
