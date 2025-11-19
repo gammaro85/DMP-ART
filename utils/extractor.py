@@ -165,6 +165,36 @@ class DMPExtractor:
         # Performance optimization: Text similarity cache
         self._similarity_cache = {}
 
+        # Performance optimization: Pre-compute subsection word index
+        self._subsection_word_index = self._build_subsection_word_index()
+
+    def _build_subsection_word_index(self):
+        """
+        Pre-compute word sets for each subsection for faster matching
+
+        This optimization reduces the complexity of subsection detection from O(n*m)
+        to O(n) by computing the word sets once during initialization instead of
+        on every detection attempt.
+
+        Returns:
+            dict: Mapping of subsection text to set of significant words
+        """
+        index = {}
+        common_words = {'data', 'will', 'used', 'such', 'example', 'how', 'what', 'are'}
+
+        for section, subsections in self.dmp_structure.items():
+            for subsection in subsections:
+                # Extract significant words (length > 3, not common words)
+                words = set(
+                    word.lower()
+                    for word in subsection.split()
+                    if len(word) > 3 and word.lower() not in common_words
+                )
+                index[subsection] = words
+
+        self._log_debug(f"Built subsection word index with {len(index)} entries")
+        return index
+
     def _compile_regex_patterns(self):
         """Pre-compile regex patterns for better performance"""
         # Skip patterns - compiled once at initialization
@@ -300,14 +330,39 @@ class DMPExtractor:
         
         return table_content
     
-    def process_file(self, file_path, output_dir):
-        """Process a file and extract DMP content based on file type"""
+    def _report_progress(self, callback, message, progress):
+        """
+        Safely report progress through callback if provided
+
+        Args:
+            callback: Progress callback function (message, progress) or None
+            message (str): Human-readable progress message
+            progress (int): Progress percentage (0-100)
+        """
+        if callback and callable(callback):
+            try:
+                callback(message, progress)
+            except Exception as e:
+                self._log_debug(f"Progress callback error: {str(e)}")
+
+    def process_file(self, file_path, output_dir, progress_callback=None):
+        """
+        Process a file and extract DMP content based on file type
+
+        Args:
+            file_path (str): Path to the input file (PDF or DOCX)
+            output_dir (str): Directory to save output files
+            progress_callback (callable, optional): Function(message, progress) for progress updates
+
+        Returns:
+            dict: Processing result with success status and file information
+        """
         file_extension = os.path.splitext(file_path)[1].lower()
-        
+
         if file_extension == '.pdf':
-            return self.process_pdf(file_path, output_dir)
+            return self.process_pdf(file_path, output_dir, progress_callback)
         elif file_extension == '.docx':
-            return self.process_docx(file_path, output_dir)
+            return self.process_docx(file_path, output_dir, progress_callback)
         else:
             return {
                 "success": False,
@@ -812,26 +867,123 @@ class DMPExtractor:
         # Clean any markup in the paragraph
         clean_text = self.clean_markup(paragraph)
         tags = []  # Key phrases functionality removed
-        
+
         # Find lead sentence (first sentence or sentence with most key phrases)
         sentences = re.split(r'(?<=[.!?])\s+', clean_text)
-        
+
         if not sentences:
             return {
                 "text": clean_text,
                 "tags": tags,
                 "title": None
             }
-        
+
         # Use first sentence as title if it's reasonably short
         title = sentences[0] if len(sentences[0]) < 100 else None
-        
+
         return {
             "text": clean_text,
             "tags": tags,
             "title": title
         }
-    
+
+    def clean_extracted_paragraphs(self, paragraphs):
+        """
+        Remove form delimiters and artifacts from final extracted paragraphs
+
+        This fixes the content pollution issue where form markers like
+        "Dół formularza" and "Początek formularza" appear in extracted content.
+
+        Args:
+            paragraphs (list): List of extracted paragraph strings
+
+        Returns:
+            list: Cleaned paragraphs with form delimiters removed
+        """
+        # Known form delimiters and artifacts to remove
+        skip_phrases = {
+            "Dół formularza",
+            "Początek formularza",
+            "dół formularza",
+            "początek formularza",
+        }
+
+        cleaned = []
+        for para in paragraphs:
+            if not para:
+                continue
+
+            # Remove formatting prefixes for comparison
+            clean_para = para
+            for prefix in ["BOLD:", "UNDERLINED:", "UNDERLINED_BOLD:"]:
+                if clean_para.startswith(prefix):
+                    clean_para = clean_para[len(prefix):].strip()
+
+            # Skip exact matches with form delimiters
+            if clean_para.strip() in skip_phrases:
+                self._log_debug(f"Removing form delimiter: '{para}'")
+                continue
+
+            # Skip if the paragraph is only a form delimiter
+            if any(delimiter in clean_para for delimiter in skip_phrases):
+                # If it's ONLY the delimiter (possibly with whitespace), skip it
+                remaining = clean_para
+                for delimiter in skip_phrases:
+                    remaining = remaining.replace(delimiter, '')
+                if not remaining.strip():
+                    self._log_debug(f"Removing paragraph containing only delimiter: '{para}'")
+                    continue
+
+            cleaned.append(para)
+
+        return cleaned
+
+    def calculate_extraction_confidence(self, paragraphs, detection_method=None):
+        """
+        Calculate confidence score for extracted content
+
+        Args:
+            paragraphs (list): List of extracted paragraphs
+            detection_method (str): Method used for detection (e.g., 'direct_match', 'fuzzy_match')
+
+        Returns:
+            float: Confidence score between 0.0 and 1.0
+        """
+        if not paragraphs:
+            return 0.0
+
+        confidence = 0.0
+
+        # Factor 1: Presence of content (40% weight)
+        if len(paragraphs) > 0:
+            confidence += 0.4
+
+        # Factor 2: Content length indicator (30% weight)
+        total_length = sum(len(p) for p in paragraphs)
+        avg_length = total_length / len(paragraphs) if paragraphs else 0
+
+        if avg_length > 100:
+            confidence += 0.3
+        elif avg_length > 50:
+            confidence += 0.2
+        elif avg_length > 20:
+            confidence += 0.1
+
+        # Factor 3: Detection method quality (30% weight)
+        method_scores = {
+            'direct_section_match': 0.3,
+            'direct_subsection_match': 0.3,
+            'numbered_section': 0.25,
+            'fuzzy_match': 0.15,
+            'word_match': 0.1,
+            'buffered': 0.05,
+            None: 0.1  # Default
+        }
+        confidence += method_scores.get(detection_method, 0.1)
+
+        # Cap at 1.0
+        return min(confidence, 1.0)
+
     def map_section_to_id(self, section, subsection):
         """Map a section and subsection to a section ID"""
         # Try to find the matching ID
@@ -1021,7 +1173,7 @@ class DMPExtractor:
             self._log_debug(f"Best Polish match: '{text}' -> '{best_match}' (score: {best_score:.2f})")
             return best_match
         
-        # 3. Enhanced word-based matching for formatted text
+        # 3. Enhanced word-based matching for formatted text (OPTIMIZED with pre-computed index)
         # IMPORTANT: Only apply to likely headers (short text or formatted), not long paragraphs (likely content)
         if ((is_underlined or original_text.endswith(':') or
             original_text.startswith("BOLD:")) and len(text) < 200) or (20 < len(text) < 150):
@@ -1029,17 +1181,23 @@ class DMPExtractor:
             best_word_match = None
             max_match_ratio = 0
 
-            for subsection in self.dmp_structure.get(current_section, []):
-                # Get important words from subsection and line
-                subsection_words = set(word.lower() for word in subsection.split()
-                                     if len(word) > 3 and word.lower() not in ['data', 'will', 'used', 'such', 'example'])
-                line_words = set(word.lower() for word in text.split()
-                               if len(word) > 3 and word.lower() not in ['data', 'będą', 'które', 'oraz'])
+            # Pre-compute line words once
+            polish_common = {'data', 'będą', 'które', 'oraz', 'jako', 'dane'}
+            line_words = set(word.lower() for word in text.split()
+                           if len(word) > 3 and word.lower() not in polish_common)
 
-                if not subsection_words or not line_words:
-                    continue
+            if not line_words:
+                # Skip if no significant words in input text
+                pass
+            else:
+                for subsection in self.dmp_structure.get(current_section, []):
+                    # PERFORMANCE: Use pre-computed word index instead of recalculating
+                    subsection_words = self._subsection_word_index.get(subsection, set())
 
-                # Count matching words
+                    if not subsection_words:
+                        continue
+
+                    # Count matching words
                 matching_words = len(subsection_words.intersection(line_words))
                 match_ratio = matching_words / max(len(subsection_words), 1)
 
@@ -1309,12 +1467,14 @@ class DMPExtractor:
             self._log_debug(f"Error assigning content: {str(e)}")
             # Don't fail completely, just log the error
     
-    def process_docx(self, docx_path, output_dir):
+    def process_docx(self, docx_path, output_dir, progress_callback=None):
         """Process a DOCX file and extract DMP content with enhanced table support"""
         try:
             self._log_debug(f"Processing DOCX: {docx_path}")
-            
+            self._report_progress(progress_callback, "Starting DOCX processing...", 0)
+
             # Validate the DOCX file first
+            self._report_progress(progress_callback, "Validating DOCX file...", 5)
             is_valid, validation_message = self.validate_docx_file(docx_path)
             if not is_valid:
                 return {
@@ -1326,20 +1486,23 @@ class DMPExtractor:
             output_doc = Document()
             
             # Load the input document
+            self._report_progress(progress_callback, "Loading DOCX document...", 10)
             doc = Document(docx_path)
-            
+
             # Extract text from both paragraphs and tables
+            self._report_progress(progress_callback, "Extracting paragraphs and tables...", 15)
             formatted_paragraphs = []
-            
+
             # Process paragraphs
             for paragraph in doc.paragraphs:
                 formatted_text = self.extract_formatted_text(paragraph)
                 if formatted_text.strip():  # Only add non-empty paragraphs
                     formatted_paragraphs.append(formatted_text)
-            
+
             # Process tables
             table_content = self.extract_table_content(doc)
             formatted_paragraphs.extend(table_content)
+            self._report_progress(progress_callback, "Content extraction complete", 25)
             
             # Join paragraphs for author detection and searching for markers
             all_text = "\n".join([p.replace("UNDERLINED:", "").replace("BOLD:", "").replace("UNDERLINED_BOLD:", "")
@@ -1455,11 +1618,14 @@ class DMPExtractor:
                     meaningful_content.append(para)  # Keep original formatting for detection
             
             # Use improved assignment logic
+            self._report_progress(progress_callback, "Analyzing content and assigning to sections...", 40)
             section_content, tagged_content, unconnected_text = self.improve_content_assignment(
                 meaningful_content, is_pdf=False
             )
-            
+            self._report_progress(progress_callback, "Content assignment complete", 60)
+
             # Add content to document
+            self._report_progress(progress_callback, "Building output document...", 65)
             for section in self.dmp_structure:
                 output_doc.add_heading(section, level=1)
                 
@@ -1481,32 +1647,44 @@ class DMPExtractor:
                         output_doc.add_paragraph("")
             
             # Create review structure
+            self._report_progress(progress_callback, "Creating review structure with confidence scores...", 75)
             review_structure = {}
-            
+
             for section in self.dmp_structure:
                 for subsection in self.dmp_structure[section]:
                     section_id = self.map_section_to_id(section, subsection)
-                    
+
                     # Safely get paragraphs and tagged paragraphs
                     paragraphs = []
                     tagged_paragraphs = []
-                    
+
                     try:
                         paragraphs = section_content[section][subsection]
                     except KeyError:
                         self._log_debug(f"Warning: Missing paragraphs for {section} - {subsection}")
-                    
+
                     try:
                         tagged_paragraphs = tagged_content[section][subsection]
                     except KeyError:
                         self._log_debug(f"Warning: Missing tagged paragraphs for {section} - {subsection}")
-                    
-                    # Add to review structure
+
+                    # CRITICAL FIX: Clean extracted paragraphs to remove form delimiters
+                    paragraphs = self.clean_extracted_paragraphs(paragraphs)
+
+                    # Calculate extraction confidence score
+                    confidence = self.calculate_extraction_confidence(
+                        paragraphs,
+                        detection_method='direct_subsection_match' if paragraphs else None
+                    )
+
+                    # Add to review structure with confidence metrics
                     review_structure[section_id] = {
                         "section": section,
                         "question": subsection,
                         "paragraphs": paragraphs,
-                        "tagged_paragraphs": tagged_paragraphs
+                        "tagged_paragraphs": tagged_paragraphs,
+                        "confidence": round(confidence, 2),
+                        "extraction_method": "DOCX processing"
                     }
             
             # Generate smart output filename from metadata
@@ -1514,9 +1692,10 @@ class DMPExtractor:
             self._log_debug(f"Generated smart filename: {output_filename}")
             
             # Save the document
+            self._report_progress(progress_callback, "Saving output document...", 85)
             output_path = os.path.join(output_dir, output_filename)
             output_doc.save(output_path)
-            
+
             # Add unconnected text to review structure if present
             if unconnected_text:
                 review_structure["_unconnected_text"] = unconnected_text
@@ -1527,13 +1706,16 @@ class DMPExtractor:
             self._log_debug(f"Added metadata to review structure")
 
             # Save review structure as JSON
+            self._report_progress(progress_callback, "Generating cache file...", 90)
             cache_id = str(uuid.uuid4())
             cache_filename = f"cache_{cache_id}.json"
             cache_path = os.path.join(output_dir, cache_filename)
 
             with open(cache_path, 'w', encoding='utf-8') as f:
                 json.dump(review_structure, f, ensure_ascii=False, indent=2)
-            
+
+            self._report_progress(progress_callback, "DOCX processing complete!", 100)
+
             return {
                 "success": True,
                 "filename": output_filename,
@@ -1553,14 +1735,17 @@ class DMPExtractor:
                 "message": f"Error processing DOCX: {str(e)}"
             }
     
-    def process_pdf(self, pdf_path, output_dir):
+    def process_pdf(self, pdf_path, output_dir, progress_callback=None):
         """Process a PDF and extract DMP content"""
         try:
             self._log_debug(f"Processing PDF: {pdf_path}")
+            self._report_progress(progress_callback, "Starting PDF processing...", 0)
+
             # Create a new Word document
             doc = Document()
-            
+
             # Read the PDF
+            self._report_progress(progress_callback, "Opening PDF file...", 5)
             with open(pdf_path, 'rb') as file:
                 reader = PyPDF2.PdfReader(file)
                 
@@ -1571,13 +1756,20 @@ class DMPExtractor:
 
                 author_name = self.extract_author_name(first_pages_text)
                 self._log_debug(f"Author detected: {author_name}")
-                
+
                 # Find the DMP section
                 all_text = ""
                 all_pages_text = []
-                
+
                 # Extract text from all pages
+                self._report_progress(progress_callback, "Extracting text from PDF pages...", 15)
+                total_pages = len(reader.pages)
                 for i, page in enumerate(reader.pages):
+                    # Report progress for each 10% of pages processed
+                    if total_pages > 10 and i % (total_pages // 10) == 0:
+                        page_progress = 15 + int((i / total_pages) * 15)  # Progress from 15% to 30%
+                        self._report_progress(progress_callback, f"Processing page {i+1}/{total_pages}...", page_progress)
+
                     page_text = page.extract_text()
                     all_pages_text.append(page_text)
                     all_text += page_text + "\n\n"
@@ -1591,8 +1783,11 @@ class DMPExtractor:
                         if mark in page_text:
                             self._log_debug(f"Found end mark '{mark}' on page {i+1}")
 
+                self._report_progress(progress_callback, "Text extraction complete", 30)
+
                 # Check if PDF is scanned and use OCR if needed
                 if self._is_scanned_pdf(pdf_path):
+                    self._report_progress(progress_callback, "Scanned PDF detected, running OCR...", 35)
                     ocr_text = self._extract_pdf_with_ocr(pdf_path)
                     if ocr_text:
                         self._log_debug("Using OCR extracted text instead of standard extraction")
@@ -1675,19 +1870,23 @@ class DMPExtractor:
                         tagged_content[section][subsection] = []
                 
                 # Split the content into lines and use improved table extraction
+                self._report_progress(progress_callback, "Processing PDF content structure...", 45)
                 lines = dmp_text.split("\n")
                 self._log_debug(f"Extracted {len(lines)} lines from PDF")
-                
+
                 # Use PDF table extraction to better structure content
                 structured_content = self.extract_pdf_table_content(lines)
                 self._log_debug(f"After table processing: {len(structured_content)} content items")
-                
+
                 # Use improved content assignment logic
+                self._report_progress(progress_callback, "Analyzing content and assigning to sections...", 50)
                 section_content, tagged_content, unconnected_text = self.improve_content_assignment(
                     structured_content, is_pdf=True
                 )
-                
+                self._report_progress(progress_callback, "Content assignment complete", 65)
+
                 # Add content to document
+                self._report_progress(progress_callback, "Building output document...", 70)
                 for section in self.dmp_structure:
                     doc.add_heading(section, level=1)
                     
@@ -1709,32 +1908,44 @@ class DMPExtractor:
                             doc.add_paragraph("")
                 
          # Create a structured representation for the review interface
+                self._report_progress(progress_callback, "Creating review structure with confidence scores...", 75)
                 review_structure = {}
-                
+
                 for section in self.dmp_structure:
                     for subsection in self.dmp_structure[section]:
                         section_id = self.map_section_to_id(section, subsection)
-                        
+
                         # Safely get paragraphs
                         paragraphs = []
                         tagged_paragraphs = []
-                        
+
                         try:
                             paragraphs = section_content[section][subsection]
                         except KeyError:
                             self._log_debug(f"Warning: Missing paragraphs for {section} - {subsection}")
-                        
+
                         try:
                             tagged_paragraphs = tagged_content[section][subsection]
                         except KeyError:
                             self._log_debug(f"Warning: Missing tagged paragraphs for {section} - {subsection}")
-                        
-                        # Add to review structure
+
+                        # CRITICAL FIX: Clean extracted paragraphs to remove form delimiters
+                        paragraphs = self.clean_extracted_paragraphs(paragraphs)
+
+                        # Calculate extraction confidence score
+                        confidence = self.calculate_extraction_confidence(
+                            paragraphs,
+                            detection_method='direct_subsection_match' if paragraphs else None
+                        )
+
+                        # Add to review structure with confidence metrics
                         review_structure[section_id] = {
                             "section": section,
                             "question": subsection,
                             "paragraphs": paragraphs,
-                            "tagged_paragraphs": tagged_paragraphs
+                            "tagged_paragraphs": tagged_paragraphs,
+                            "confidence": round(confidence, 2),
+                            "extraction_method": "PDF processing"
                         }
                 
                 # Generate smart output filename from metadata
@@ -1742,9 +1953,10 @@ class DMPExtractor:
                 self._log_debug(f"Generated smart filename: {output_filename}")
                 
                 # Save the document
+                self._report_progress(progress_callback, "Saving output document...", 85)
                 output_path = os.path.join(output_dir, output_filename)
                 doc.save(output_path)
-                
+
                 # Add unconnected text to review structure if present
                 if unconnected_text:
                     review_structure["_unconnected_text"] = unconnected_text
@@ -1755,13 +1967,16 @@ class DMPExtractor:
                 self._log_debug(f"Added metadata to PDF review structure")
 
                 # Save review structure as JSON for the review interface
+                self._report_progress(progress_callback, "Generating cache file...", 90)
                 cache_id = str(uuid.uuid4())
                 cache_filename = f"cache_{cache_id}.json"
                 cache_path = os.path.join(output_dir, cache_filename)
 
                 with open(cache_path, 'w', encoding='utf-8') as f:
                     json.dump(review_structure, f, ensure_ascii=False, indent=2)
-                
+
+                self._report_progress(progress_callback, "PDF processing complete!", 100)
+
                 return {
                     "success": True,
                     "filename": output_filename,
