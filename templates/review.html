@@ -758,34 +758,22 @@
             opacity: 1;
             visibility: visible;
         }
-        
-        /* Footer always at the bottom */
-        .site-footer {
-            position: relative;
-            bottom: 0;
-            width: 100%;
-            padding: 10px 0;
-            text-align: center;
-            background-color: var(--bg-footer);
-            border-top: 1px solid var(--border-light);
-            z-index: 1001;
-        }
     </style>
 </head>
 <body data-page="review">
     <!-- Fixed Header Navigation -->
     <header class="fixed-header">
         <nav class="header-nav">
-            <div class="nav-left">
-                <a href="/" class="nav-item">Home</a>
-                <a href="/template_editor" class="nav-item">Customize Templates</a>
-                <a href="/documentation" class="nav-item">Documentation</a>
+            <div class="nav-links">
+                <a href="/" class="nav-item" data-page="index">Home</a>
+                <span class="nav-item disabled" data-page="review"
+                      title="Upload and process a document first to access review">Review</span>
+                <a href="/template_editor" class="nav-item" data-page="template-editor">Template Editor</a>
+                <a href="/documentation" class="nav-item" data-page="documentation">Documentation</a>
             </div>
-            <div class="nav-right">
-                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-                    <i class="fas fa-moon"></i>
-                </button>
-            </div>
+            <button class="theme-toggle" aria-label="Toggle theme">
+                <i class="fas fa-moon"></i>
+            </button>
         </nav>
     </header>
     
@@ -1038,7 +1026,7 @@
         </aside>
     </div>
     
-    <footer class="site-footer" style="z-index:1001;">
+    <footer class="site-footer site-footer--relative">
         <span>DMP ART &copy; 2025</span>
     </footer>
 
