@@ -423,23 +423,8 @@ class DMPExtractor:
         
         # Special handling for complex grant application headers/footers
         if is_pdf:
-        """Determine if text should be skipped (headers, footers, etc.)
-        Optimized version using pre-compiled regex patterns"""
-
-        # Check basic patterns first using pre-compiled patterns
-        for pattern in self.skip_patterns_compiled:
-            if pattern.search(text) is not None:
-                return True
-
-        # Additional PDF-specific patterns
-        if is_pdf:
-            for pattern in self.pdf_skip_patterns_compiled:
-                if pattern.search(text) is not None:
-                    return True
-
-            # Special handling for complex grant application headers/footers
             return self._is_grant_header_footer(text)
-
+        
         return False
     
     def _is_grant_header_footer(self, text):
