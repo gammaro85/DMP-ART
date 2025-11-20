@@ -48,18 +48,7 @@ body[data-page="review"] aside.right-sidebar {
 /* Removed: body[data-page="review"] .right-sidebar { position: fixed ... } */
 /* Removed: force visibility override and responsive fixed positioning rules */
 
-/* Enhanced Review Page Styles */
-.result-card {
-    background-color: var(--bg-tertiary);
-    border-color: var(--border-medium);
-}
-.feature-card,
-.stat-item {
-    background-color: var(--bg-secondary);
-    border-color: var(--border-light);
-}
-
-/* Fixed Right Sidebar Styles - Override main CSS */
+/* Layout */
 .review-layout {
     display: block !important;
     gap: 0 !important;
