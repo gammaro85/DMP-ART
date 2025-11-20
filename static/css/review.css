@@ -25,6 +25,7 @@
     border-color: var(--border-light);
 }
 
+/* Layout and Sidebar */
 /* Sidebar - Fixed on right side, always visible */
 body[data-page="review"] aside.right-sidebar {
     position: fixed !important;
@@ -47,7 +48,7 @@ body[data-page="review"] aside.right-sidebar {
 /* Removed: body[data-page="review"] .right-sidebar { position: fixed ... } */
 /* Removed: force visibility override and responsive fixed positioning rules */
 
-/* Layout - Fixed Right Sidebar Styles */
+/* Layout */
 .review-layout {
     display: block !important;
     gap: 0 !important;

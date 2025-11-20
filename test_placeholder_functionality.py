@@ -71,7 +71,7 @@ class TestPlaceholderFunctionality(unittest.TestCase):
         for section_id in self.section_ids:
             if section_id in review_structure:
                 paras = review_structure[section_id].get('paragraphs', [])
-                if not paras or len(paras) == 0:
+                if not paras:
                     placeholder = self.expected_placeholder
                     review_structure[section_id]['paragraphs'] = [placeholder]
                     review_structure[section_id]['tagged_paragraphs'] = [{

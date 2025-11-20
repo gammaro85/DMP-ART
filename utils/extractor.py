@@ -18,9 +18,6 @@ except ImportError:
     HAS_OCR = False
 
 class DMPExtractor:
-    # Section IDs for DMP structure
-    SECTION_IDS = ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2', '4.1', '4.2', '5.1', '5.2', '5.3', '5.4', '6.1', '6.2']
-    
     def __init__(self, debug_mode=False):
         """
         Initialize DMP Extractor
@@ -373,61 +370,23 @@ class DMPExtractor:
             }
     
     def should_skip_text(self, text, is_pdf=False):
-        """Determine if text should be skipped (headers, footers, etc.)"""
-        skip_patterns = [
-            r"Strona \d+",        # Polish page numbers
-            r"Page \d+",          # English page numbers
-            r"ID:\s*\d+",         # Document ID
-            r"\[wydruk roboczy\]", # Draft print marker
-            r"WZÓR",              # Template marker
-            r"W Z Ó R",           # Template marker with spaces
-            r"OSF,",              # Document footer
-            r"^\d+$",             # Just page numbers
-            r"^\+[-=]+\+$",       # Table borders
-            r"^\|[\s\|]*\|$",     # Table separators
-            r"Dół formularza",    # Form bottom marker
-            r"Początek formularza",  # Form start marker
-            r"^\s*Dół\s+formularza\s*$",  # Form markers with whitespace
-            r"^\s*Początek\s+formularza\s*$"
-        ]
+        """Determine if text should be skipped (headers, footers, etc.)
+        Optimized version using pre-compiled regex patterns"""
+
+        # Check basic patterns first using pre-compiled patterns
+        for pattern in self.skip_patterns_compiled:
+            if pattern.search(text) is not None:
+                return True
 
         # Additional PDF-specific patterns
         if is_pdf:
-            pdf_patterns = [
-                r"wydruk roboczy",     # Draft watermark
-                # REMOVED: r"\d{6,}" - too aggressive, catches content with project IDs
-                # This is now handled by _is_grant_header_footer() in context
-                r"Strona \d+ z \d+",   # Page indicators
-                r"TAK\s*NIE\s*$",      # Checkbox patterns
-                r"^\s*[✓✗×]\s*$",      # Checkbox symbols
-                r"^\s*\[\s*[Xx]?\s*\]\s*$",  # Checkbox brackets
-                r"^\s*_{3,}\s*$",      # Underline fields
-                r"^\.{3,}$",           # Dotted lines
-                r"^\s*data\s*:\s*$",   # Date fields
-                r"^\s*podpis\s*:\s*$", # Signature fields
-                # Complex header/footer pattern for grant applications
-                r"OSF,?\s*OPUS-\d+\s*Strona\s+\d+\s*ID:\s*\d+,?\s*\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}",
-                # More flexible patterns for parts of the header
-                r"OSF,?\s*OPUS-\d+\s*Strona",   # OSF + OPUS + Strona (stronger pattern)
-                r"\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}",  # Timestamp pattern
-                # Polish question fragments (trailing parts of split questions)
-                r"^\s*danym[iy]?\s*$",  # "data" fragments
-                r"^\s*przepisy\s*$",  # "regulations" fragment
-                r"^\s*przetwarzania danych osobowych\s*$",  # "personal data processing" fragment
-                r"^\s*repozytorium lub archiwum danych\)?\s*$",  # "repository or archive" fragment
-                r"^\s*interoperacyjności i ponownego wykorzystania danych\s*$",  # "interoperability and reuse" fragment
-                r"^\s*[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ\s]{1,50}\)\s*$",  # Short Polish text ending with )
-            ]
-            skip_patterns.extend(pdf_patterns)
-        
-        # Check basic patterns first
-        if any(re.search(pattern, text, re.IGNORECASE) is not None for pattern in skip_patterns):
-            return True
-        
-        # Special handling for complex grant application headers/footers
-        if is_pdf:
+            for pattern in self.pdf_skip_patterns_compiled:
+                if pattern.search(text) is not None:
+                    return True
+
+            # Special handling for complex grant application headers/footers
             return self._is_grant_header_footer(text)
-        
+
         return False
     
     def _is_grant_header_footer(self, text):
@@ -1744,7 +1703,7 @@ class DMPExtractor:
 
             # Fill empty sections with placeholder text for complete extraction
             empty_count = 0
-            for section_id in self.SECTION_IDS:
+            for section_id in ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2', '4.1', '4.2', '5.1', '5.2', '5.3', '6.1', '6.2']:
                 if section_id in review_structure:
                     paras = review_structure[section_id].get('paragraphs', [])
                     if not paras or len(paras) == 0:
