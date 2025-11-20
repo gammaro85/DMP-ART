@@ -25,6 +25,7 @@
     border-color: var(--border-light);
 }
 
+/* Layout and Sidebar */
 /* Sidebar - Fixed on right side, always visible */
 body[data-page="review"] aside.right-sidebar {
     position: fixed !important;

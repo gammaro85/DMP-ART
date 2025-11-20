@@ -18,12 +18,14 @@ progress_lock = threading.Lock()
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['OUTPUT_FOLDER'] = 'outputs'
+app.config['FEEDBACK_FOLDER'] = 'feedback'
 app.config['ALLOWED_EXTENSIONS'] = {'pdf', 'docx'}
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB max upload
 
 # Create necessary directories
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['OUTPUT_FOLDER'], exist_ok=True)
+os.makedirs(app.config['FEEDBACK_FOLDER'], exist_ok=True)
 
 # DMP question templates with default text
 DMP_TEMPLATES = {
@@ -445,7 +447,7 @@ def review_dmp(filename):
 @app.route('/save_templates', methods=['POST'])
 def save_templates():
     try:
-        data = request.json
+        data = request.json or {}
         global DMP_TEMPLATES
         
         # Update the templates with the new data
@@ -548,7 +550,7 @@ def save_feedback():
             })
         
         feedback_filename = f"feedback_{os.path.splitext(filename)[0]}.txt"
-        feedback_path = os.path.join(app.config['OUTPUT_FOLDER'], feedback_filename)
+        feedback_path = os.path.join(app.config['FEEDBACK_FOLDER'], feedback_filename)
         
         with open(feedback_path, 'w', encoding='utf-8') as f:
             f.write(feedback)
@@ -639,7 +641,7 @@ def export_json():
             json_filename = f"Review_{cache_id[:8]}"
 
         json_filename += f"_{datetime.now().strftime('%d%m%y')}.json"
-        json_path = os.path.join(app.config['OUTPUT_FOLDER'], json_filename)
+        json_path = os.path.join(app.config['FEEDBACK_FOLDER'], json_filename)
 
         # Save JSON file
         with open(json_path, 'w', encoding='utf-8') as f:
@@ -709,13 +711,10 @@ def load_categories():
                             data = json.load(f)
                             # Ensure data is not None and is a dict before calling items
                             if data is not None and isinstance(data, dict):
-                                for key, value in data.items():
+                                for key, value in (data.items() if data else []):
                                     if not key.startswith('_') and isinstance(value, dict):
                                         categories[key] = value
                                         break
-                            else:
-                                # If data is None or not a dict, skip
-                                continue
                     except Exception as e:
                         print(f"Error loading category file {filename}: {str(e)}")
                         continue
@@ -1112,6 +1111,7 @@ def health_check():
         'status': 'healthy',
         'upload_folder': app.config['UPLOAD_FOLDER'],
         'output_folder': app.config['OUTPUT_FOLDER'],
+        'feedback_folder': app.config['FEEDBACK_FOLDER'],
         'allowed_extensions': list(app.config['ALLOWED_EXTENSIONS']),
         'max_content_length': app.config['MAX_CONTENT_LENGTH']
     })
