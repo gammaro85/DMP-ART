@@ -1703,7 +1703,7 @@ class DMPExtractor:
 
             # Fill empty sections with placeholder text for complete extraction
             empty_count = 0
-            for section_id in ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2', '4.1', '4.2', '5.1', '5.2', '5.3', '6.1', '6.2']:
+            for section_id in ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2', '4.1', '4.2', '5.1', '5.2', '5.3', '5.4', '6.1', '6.2']:
                 if section_id in review_structure:
                     paras = review_structure[section_id].get('paragraphs', [])
                     if not paras or len(paras) == 0:
@@ -1777,7 +1777,6 @@ class DMPExtractor:
                 self._log_debug(f"Author detected: {author_name}")
 
                 # Find the DMP section
-                all_text = ""
                 all_pages_text = []
 
                 # Extract text from all pages
@@ -1791,7 +1790,6 @@ class DMPExtractor:
 
                     page_text = page.extract_text()
                     all_pages_text.append(page_text)
-                    all_text += page_text + "\n\n"
 
                     # Print info about start/end marks found
                     for mark in self.start_marks:
@@ -1802,6 +1800,8 @@ class DMPExtractor:
                         if mark in page_text:
                             self._log_debug(f"Found end mark '{mark}' on page {i+1}")
 
+                # Join all pages at once for better performance
+                all_text = "\n\n".join(all_pages_text)
                 self._report_progress(progress_callback, "Text extraction complete", 30)
 
                 # Check if PDF is scanned and use OCR if needed
@@ -1983,7 +1983,7 @@ class DMPExtractor:
 
                 # Fill empty sections with placeholder text for complete extraction
                 empty_count = 0
-                for section_id in ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2', '4.1', '4.2', '5.1', '5.2', '5.3', '6.1', '6.2']:
+                for section_id in ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2', '4.1', '4.2', '5.1', '5.2', '5.3', '5.4', '6.1', '6.2']:
                     if section_id in review_structure:
                         paras = review_structure[section_id].get('paragraphs', [])
                         if not paras:

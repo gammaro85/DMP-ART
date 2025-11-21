@@ -422,8 +422,8 @@ def review_dmp(filename):
             try:
                 with open(cache_path, 'r', encoding='utf-8') as f:
                     cache_data = json.load(f)
-                    
-                    if cache_data is not None and isinstance(cache_data, dict):
+
+                    if isinstance(cache_data, dict):
                         if "_unconnected_text" in cache_data:
                             unconnected_text = cache_data["_unconnected_text"]
                             del cache_data["_unconnected_text"]
@@ -709,9 +709,9 @@ def load_categories():
                     try:
                         with open(file_path, 'r', encoding='utf-8') as f:
                             data = json.load(f)
-                            # Ensure data is not None and is a dict before calling items
-                            if data is not None and isinstance(data, dict):
-                                for key, value in (data.items() if data else []):
+                            # Ensure data is a dict before processing
+                            if isinstance(data, dict):
+                                for key, value in data.items():
                                     if not key.startswith('_') and isinstance(value, dict):
                                         categories[key] = value
                                         break
@@ -744,12 +744,10 @@ def load_category_comments():
         
         with open(category_comments_path, 'r', encoding='utf-8') as f:
             category_comments = json.load(f)
-            if category_comments is None:
-                category_comments = {}
-        
+
         return jsonify({
             'success': True,
-            'category_comments': category_comments
+            'category_comments': category_comments if isinstance(category_comments, dict) else {}
         })
         
     except Exception as e:
@@ -821,12 +819,10 @@ def load_quick_comments():
         
         with open(quick_comments_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
-            if data is None:
-                data = {}
-        
+
         return jsonify({
             'success': True,
-            'quick_comments': data.get('quick_comments', [])
+            'quick_comments': data.get('quick_comments', []) if isinstance(data, dict) else []
         })
         
     except Exception as e:
@@ -946,9 +942,7 @@ def serve_config(filename):
         
         with open(config_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
-            if data is None:
-                data = {}
-            return data
+            return data if isinstance(data, dict) else {}
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
