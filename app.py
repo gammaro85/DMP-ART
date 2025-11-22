@@ -725,6 +725,85 @@ def save_category_comments():
             'message': f'Error saving category comments: {str(e)}'
         })
 
+@app.route('/api/discover-categories', methods=['GET'])
+def discover_categories():
+    """
+    Discover all category JSON files in config/ directory dynamically.
+
+    Returns JSON list of categories (excluding dmp_structure and quick_comments).
+    This enables the template editor to work with any number of categories
+    without hardcoding.
+    """
+    try:
+        config_dir = 'config'
+        categories = []
+
+        if not os.path.exists(config_dir):
+            return jsonify({
+                'success': False,
+                'message': 'Config directory not found'
+            }), 404
+
+        # List all JSON files
+        for filename in os.listdir(config_dir):
+            if not filename.endswith('.json'):
+                continue
+
+            # Skip system files
+            if filename in ['dmp_structure.json', 'quick_comments.json', 'category_comments.json']:
+                continue
+
+            # Skip backup files
+            if '_backup_' in filename:
+                continue
+
+            # Extract category name (remove .json extension)
+            category_name = filename.replace('.json', '')
+            categories.append({
+                'id': category_name,
+                'filename': filename,
+                'display_name': format_category_name(category_name)
+            })
+
+        # Sort alphabetically
+        categories.sort(key=lambda x: x['display_name'])
+
+        return jsonify({
+            'success': True,
+            'categories': categories,
+            'count': len(categories)
+        })
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': str(e)
+        }), 500
+
+
+def format_category_name(category_id):
+    """
+    Format category ID for display.
+
+    Examples:
+        'newcomer' -> 'Newcomer'
+        'mising' -> 'Missing Info'
+        'ready' -> 'Ready to Use'
+        'my_custom_category' -> 'My Custom Category'
+    """
+    # Special cases for existing categories
+    special_names = {
+        'newcomer': 'Newcomer',
+        'mising': 'Missing Info',
+        'ready': 'Ready to Use'
+    }
+
+    if category_id in special_names:
+        return special_names[category_id]
+
+    # Default: title case with underscores replaced
+    return category_id.replace('_', ' ').title()
+
 @app.route('/save_quick_comments', methods=['POST'])
 def save_quick_comments():
     """Save quick comments"""
