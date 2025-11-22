@@ -864,7 +864,20 @@
                 </main>
 
                 <!-- Right Sidebar - Now inside review-layout for proper sticky positioning -->
-                <aside class="right-sidebar">
+                <aside class="right-sidebar" id="right-sidebar">
+                    <!-- Collapsed Sidebar Buttons (shown when collapsed) -->
+                    <div class="sidebar-collapsed-buttons">
+                        <button class="sidebar-tab-btn" data-panel="navigation" title="Quick Navigation">
+                            Navigation
+                        </button>
+                        <button class="sidebar-tab-btn" data-panel="comments" title="Quick Comments">
+                            Comments
+                        </button>
+                        <button class="sidebar-tab-btn" data-panel="options" title="Options">
+                            Options
+                        </button>
+                    </div>
+
                     <!-- Action Buttons -->
                     <div class="sidebar-actions">
                         <button id="compile-feedback-btn" class="action-btn primary" style="width: 100%; margin-bottom: 10px;">Compile Feedback</button>
@@ -901,6 +914,40 @@
                         </div>
                     </div>
                 </aside>
+
+                <!-- Hover Panels for Collapsed Sidebar -->
+                <div id="navigation-hover-panel" class="sidebar-hover-panel" data-panel="navigation">
+                    <h3 style="margin-bottom: 0.75rem; font-size: 0.85rem; color: var(--text-primary);">Quick Navigation</h3>
+                    <div class="nav-grid" id="hover-nav-grid">
+                        <!-- Navigation buttons will be cloned here -->
+                    </div>
+                </div>
+
+                <div id="comments-hover-panel" class="sidebar-hover-panel" data-panel="comments">
+                    <h3 style="margin-bottom: 0.75rem; font-size: 0.85rem; color: var(--text-primary);">Quick Comments</h3>
+                    <div class="quick-comments-list" id="hover-comments-list">
+                        <!-- Quick comments will be cloned here -->
+                    </div>
+                </div>
+
+                <div id="options-hover-panel" class="sidebar-hover-panel" data-panel="options">
+                    <h3 style="margin-bottom: 0.75rem; font-size: 0.85rem; color: var(--text-primary);">Options</h3>
+                    <div class="sidebar-actions" style="margin-bottom: 1rem;">
+                        <button id="hover-compile-feedback-btn" class="action-btn primary" style="width: 100%; margin-bottom: 0.5rem;">Compile Feedback</button>
+                        <button id="hover-save-feedback-btn" class="action-btn secondary" style="width: 100%;">Save Progress</button>
+                    </div>
+                    <div class="language-switcher-pane" style="padding: 0.5rem; margin-bottom: 0;">
+                        <h4 style="font-size: 0.75rem; margin-bottom: 0.4rem; color: var(--text-secondary);">Language</h4>
+                        <div class="language-switcher">
+                            <button id="hover-lang-en-btn" class="lang-btn active" data-lang="en" title="English">
+                                <i class="fas fa-language"></i> EN
+                            </button>
+                            <button id="hover-lang-pl-btn" class="lang-btn" data-lang="pl" title="Polski">
+                                <i class="fas fa-language"></i> PL
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
             </div> <!-- End review-layout -->
             
@@ -1199,8 +1246,175 @@
             } catch (error) {
                 console.error('Error during review page initialization:', error);
             }
+
+            // Initialize collapsible sidebar
+            initializeCollapsibleSidebar();
         });
-        
+
+        // Collapsible Sidebar Functionality
+        function initializeCollapsibleSidebar() {
+            const sidebar = document.getElementById('right-sidebar');
+            const tabButtons = document.querySelectorAll('.sidebar-tab-btn');
+            const hoverPanels = document.querySelectorAll('.sidebar-hover-panel');
+            let activePanel = null;
+            let hoverTimeout = null;
+
+            // Clone navigation and comments to hover panels
+            function syncHoverPanels() {
+                // Clone navigation buttons
+                const navGrid = document.getElementById('section-nav-grid');
+                const hoverNavGrid = document.getElementById('hover-nav-grid');
+                if (navGrid && hoverNavGrid) {
+                    hoverNavGrid.innerHTML = navGrid.innerHTML;
+                    // Re-attach click events
+                    hoverNavGrid.querySelectorAll('.nav-grid-btn').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            const sectionId = btn.textContent.trim();
+                            scrollToSection(sectionId);
+                            hideAllHoverPanels();
+                        });
+                    });
+                }
+
+                // Clone quick comments
+                const commentsList = document.getElementById('quick-comments-list');
+                const hoverCommentsList = document.getElementById('hover-comments-list');
+                if (commentsList && hoverCommentsList) {
+                    hoverCommentsList.innerHTML = commentsList.innerHTML;
+                    // Re-attach click events
+                    hoverCommentsList.querySelectorAll('.quick-comment-item').forEach(item => {
+                        item.addEventListener('click', () => {
+                            const commentText = item.title || item.textContent;
+                            insertQuickComment(commentText);
+                            hideAllHoverPanels();
+                        });
+                    });
+                }
+            }
+
+            // Sync hover panels whenever navigation or comments are updated
+            const observer = new MutationObserver(syncHoverPanels);
+            const navGrid = document.getElementById('section-nav-grid');
+            const commentsList = document.getElementById('quick-comments-list');
+            if (navGrid) observer.observe(navGrid, { childList: true, subtree: true });
+            if (commentsList) observer.observe(commentsList, { childList: true, subtree: true });
+            syncHoverPanels(); // Initial sync
+
+            // Check if sidebar should be collapsed based on content height
+            function checkSidebarCollapse() {
+                const questionCards = document.querySelectorAll('.question-card');
+                let totalContentHeight = 0;
+                questionCards.forEach(card => {
+                    totalContentHeight += card.scrollHeight;
+                });
+
+                const viewportHeight = window.innerHeight;
+                const maxContentHeight = viewportHeight * 0.85; // 85% of viewport
+
+                // Collapse if content is too tall
+                if (totalContentHeight > maxContentHeight * 1.5) {
+                    sidebar.classList.add('collapsed');
+                } else {
+                    sidebar.classList.remove('collapsed');
+                }
+            }
+
+            // Show hover panel
+            function showHoverPanel(panelName) {
+                hideAllHoverPanels();
+                const panel = document.getElementById(`${panelName}-hover-panel`);
+                if (panel) {
+                    panel.classList.add('active');
+                    activePanel = panel;
+                }
+            }
+
+            // Hide all hover panels
+            function hideAllHoverPanels() {
+                hoverPanels.forEach(panel => panel.classList.remove('active'));
+                activePanel = null;
+            }
+
+            // Tab button hover/click events
+            tabButtons.forEach(btn => {
+                btn.addEventListener('mouseenter', () => {
+                    clearTimeout(hoverTimeout);
+                    const panelName = btn.getAttribute('data-panel');
+                    hoverTimeout = setTimeout(() => {
+                        showHoverPanel(panelName);
+                    }, 100); // Short delay before showing
+                });
+
+                btn.addEventListener('mouseleave', () => {
+                    clearTimeout(hoverTimeout);
+                    hoverTimeout = setTimeout(() => {
+                        if (activePanel && !activePanel.matches(':hover')) {
+                            hideAllHoverPanels();
+                        }
+                    }, 200);
+                });
+
+                btn.addEventListener('click', () => {
+                    const panelName = btn.getAttribute('data-panel');
+                    if (activePanel && activePanel.id === `${panelName}-hover-panel`) {
+                        hideAllHoverPanels();
+                    } else {
+                        showHoverPanel(panelName);
+                    }
+                });
+            });
+
+            // Keep hover panel open when mouse is over it
+            hoverPanels.forEach(panel => {
+                panel.addEventListener('mouseenter', () => {
+                    clearTimeout(hoverTimeout);
+                });
+
+                panel.addEventListener('mouseleave', () => {
+                    hoverTimeout = setTimeout(() => {
+                        hideAllHoverPanels();
+                    }, 200);
+                });
+            });
+
+            // Connect hover buttons to main actions
+            const hoverCompileBtn = document.getElementById('hover-compile-feedback-btn');
+            const hoverSaveBtn = document.getElementById('hover-save-feedback-btn');
+            const hoverLangEnBtn = document.getElementById('hover-lang-en-btn');
+            const hoverLangPlBtn = document.getElementById('hover-lang-pl-btn');
+
+            if (hoverCompileBtn) {
+                hoverCompileBtn.addEventListener('click', () => {
+                    document.getElementById('compile-feedback-btn').click();
+                    hideAllHoverPanels();
+                });
+            }
+            if (hoverSaveBtn) {
+                hoverSaveBtn.addEventListener('click', () => {
+                    document.getElementById('save-feedback-btn').click();
+                    hideAllHoverPanels();
+                });
+            }
+            if (hoverLangEnBtn) {
+                hoverLangEnBtn.addEventListener('click', () => {
+                    document.getElementById('lang-en-btn').click();
+                    hoverLangEnBtn.classList.add('active');
+                    hoverLangPlBtn.classList.remove('active');
+                });
+            }
+            if (hoverLangPlBtn) {
+                hoverLangPlBtn.addEventListener('click', () => {
+                    document.getElementById('lang-pl-btn').click();
+                    hoverLangPlBtn.classList.add('active');
+                    hoverLangEnBtn.classList.remove('active');
+                });
+            }
+
+            // Check on load and resize
+            checkSidebarCollapse();
+            window.addEventListener('resize', checkSidebarCollapse);
+        }
+
         // Category buttons and comments functionality
         function initializeCategoryButtons() {
             // Add event listeners to all category buttons
