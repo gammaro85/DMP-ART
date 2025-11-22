@@ -1669,15 +1669,12 @@
             const allItems = document.querySelectorAll('.unconnected-item');
             const processedItems = document.querySelectorAll('.unconnected-item.assigned, .unconnected-item.skipped');
 
-            // Auto-close when all processed with notification
+            // Auto-close when all processed with visual notification
             if (allItems.length === processedItems.length && allItems.length > 0) {
-                // Show notification with option to cancel auto-close
-                showAutoCloseNotification();
-                
-                // Set timeout for auto-close
-                autoCloseTimeout = setTimeout(() => {
+                showNotification('All items processed. Closing assignment window...', 'success');
+                setTimeout(() => {
                     closeUnconnectedModal();
-                }, 3000);
+                }, 2000);
             }
         }
 
