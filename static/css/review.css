@@ -47,11 +47,18 @@ body[data-page="review"] aside.right-sidebar {
     transition: all 0.3s ease !important;
 }
 
+/* CSS Variables for sidebar dimensions */
+:root {
+    --sidebar-collapsed-width-min: 2rem;
+    --sidebar-collapsed-width-pref: 3vw;
+    --sidebar-collapsed-width-max: 2.5rem;
+}
+
 /* Collapsed Sidebar State */
 body[data-page="review"] aside.right-sidebar.collapsed {
-    width: clamp(2rem, 3vw, 2.5rem) !important;
-    min-width: clamp(2rem, 3vw, 2.5rem) !important;
-    max-width: clamp(2rem, 3vw, 2.5rem) !important;
+    width: clamp(var(--sidebar-collapsed-width-min), var(--sidebar-collapsed-width-pref), var(--sidebar-collapsed-width-max)) !important;
+    min-width: clamp(var(--sidebar-collapsed-width-min), var(--sidebar-collapsed-width-pref), var(--sidebar-collapsed-width-max)) !important;
+    max-width: clamp(var(--sidebar-collapsed-width-min), var(--sidebar-collapsed-width-pref), var(--sidebar-collapsed-width-max)) !important;
     padding: clamp(0.5rem, 1vh, 0.75rem) clamp(0.25rem, 0.5vw, 0.4rem) !important;
     border-radius: 0 clamp(0.25rem, 0.5vw, 0.5rem) clamp(0.25rem, 0.5vw, 0.5rem) 0 !important;
 }
@@ -105,7 +112,7 @@ body[data-page="review"] aside.right-sidebar.collapsed > *:not(.sidebar-collapse
 .sidebar-hover-panel {
     display: none;
     position: fixed;
-    right: clamp(2.2rem, 3.5vw, 3rem);
+    right: calc(clamp(var(--sidebar-collapsed-width-min), var(--sidebar-collapsed-width-pref), var(--sidebar-collapsed-width-max)) + 0.2rem);
     background: var(--bg-card);
     border: 2px solid var(--border-medium);
     border-radius: clamp(0.25rem, 0.5vw, 0.5rem);
