@@ -1663,22 +1663,81 @@
             checkIfAllItemsProcessed();
         }
 
+        let autoCloseTimeout = null;
+
         function checkIfAllItemsProcessed() {
             const allItems = document.querySelectorAll('.unconnected-item');
             const processedItems = document.querySelectorAll('.unconnected-item.assigned, .unconnected-item.skipped');
 
-            // Auto-close when all processed - no confirmation needed
+            // Show notification and auto-close when all processed
             if (allItems.length === processedItems.length && allItems.length > 0) {
-                setTimeout(() => {
-                    closeUnconnectedModal();
-                }, 800);
+                showAutoCloseNotification();
             }
+        }
+
+        function showAutoCloseNotification() {
+            // Clear any existing timeout
+            if (autoCloseTimeout) {
+                clearTimeout(autoCloseTimeout);
+            }
+
+            // Create notification with cancel option
+            const notification = document.createElement('div');
+            notification.className = 'notification notification-info auto-close-notification';
+            notification.innerHTML = `
+                <span>All items processed. Modal closing in 3 seconds...</span>
+                <button style="margin-left: 10px; padding: 4px 12px; background: white; color: var(--primary-color); border: none; border-radius: 4px; cursor: pointer; font-weight: 500;">Cancel</button>
+            `;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                border-radius: 6px;
+                color: white;
+                font-weight: 500;
+                z-index: 10000;
+                transition: all 0.3s ease;
+                background: var(--primary-color);
+                display: flex;
+                align-items: center;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => notification.style.transform = 'translateX(0)', 10);
+            
+            // Add cancel button handler
+            const cancelBtn = notification.querySelector('button');
+            cancelBtn.addEventListener('click', () => {
+                if (autoCloseTimeout) {
+                    clearTimeout(autoCloseTimeout);
+                    autoCloseTimeout = null;
+                }
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => notification.remove(), 300);
+            });
+            
+            // Set timeout to close modal
+            autoCloseTimeout = setTimeout(() => {
+                closeUnconnectedModal();
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
         }
 
         function closeUnconnectedModal() {
             const modal = document.getElementById('unconnected-text-modal');
             if (modal) {
                 modal.style.display = 'none';
+            }
+            // Clear timeout if modal is closed manually
+            if (autoCloseTimeout) {
+                clearTimeout(autoCloseTimeout);
+                autoCloseTimeout = null;
             }
         }
 
