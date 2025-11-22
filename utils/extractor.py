@@ -172,8 +172,35 @@ class DMPExtractor:
             else:
                 self.subsection_mapping[polish[:-1].strip()] = english
         
-        # Load DMP structure from configuration file
-        self.dmp_structure = self._load_dmp_structure()
+        # Define the structure of DMP sections and questions
+        self.dmp_structure = {
+            "1. Data description and collection or re-use of existing data": [
+                "How will new data be collected or produced and/or how will existing data be re-used?",
+                "What data (for example the types, formats, and volumes) will be collected or produced?"
+            ],
+            "2. Documentation and data quality": [
+                "What metadata and documentation (for example methodology or data collection and way of organising data) will accompany data?",
+                "What data quality control measures will be used?"
+            ],
+            "3. Storage and backup during the research process": [
+                "How will data and metadata be stored and backed up during the research process?",
+                "How will data security and protection of sensitive data be taken care of during the research?"
+            ],
+            "4. Legal requirements, codes of conduct": [
+                "If personal data are processed, how will compliance with legislation on personal data and on data security be ensured?",
+                "How will other legal issues, such as intelectual property rights and ownership, be managed? What legislation is applicable?"
+            ],
+            "5. Data sharing and long-term preservation": [
+                "How and when will data be shared? Are there possible restrictions to data sharing or embargo reasons?",
+                "How will data for preservation be selected, and where will data be preserved long-term (for example a data repository or archive)?",
+                "What methods or software tools will be needed to access and use the data?",
+                "How will the application of a unique and persistent identifier (such us a Digital Object Identifier (DOI)) to each data set be ensured?"
+            ],
+            "6. Data management responsibilities and resources": [
+                "Who (for example role, position, and institution) will be responsible for data management (i.e the data steward)?",
+                "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)?"
+            ]
+        }
         
         # Map section numbers to IDs for the review interface
         self.section_ids = {
@@ -201,60 +228,6 @@ class DMPExtractor:
 
         # Performance optimization: Pre-compute subsection word index
         self._subsection_word_index = self._build_subsection_word_index()
-
-    def _load_dmp_structure(self):
-        """
-        Load DMP structure from configuration file.
-
-        Returns:
-            dict: DMP structure mapping sections to subsection questions
-        """
-        config_path = os.path.join('config', 'dmp_structure.json')
-
-        if not os.path.exists(config_path):
-            self._log_debug(f"Warning: DMP structure config not found at {config_path}")
-            self._log_debug("Using fallback structure")
-            return self._get_fallback_structure()
-
-        try:
-            with open(config_path, 'r', encoding='utf-8') as f:
-                config_data = json.load(f)
-
-            # Convert from new JSON format to internal format
-            structure = {}
-            for section_data in config_data.get('structure', []):
-                section_title = f"{section_data['id']}. {section_data['question']}"
-                subsections = [sub['question'] for sub in section_data.get('subsections', [])]
-                structure[section_title] = subsections
-
-            # Validate structure is not empty
-            if not structure:
-                self._log_debug("Warning: DMP structure config is empty, using fallback")
-                return self._get_fallback_structure()
-
-            self._log_debug(f"Loaded DMP structure with {len(structure)} sections")
-            return structure
-
-        except json.JSONDecodeError as e:
-            self._log_debug(f"Error parsing DMP structure: {e}")
-            self._log_debug("Using fallback structure")
-            return self._get_fallback_structure()
-        except Exception as e:
-            self._log_debug(f"Unexpected error loading DMP structure: {e}")
-            return self._get_fallback_structure()
-
-    def _get_fallback_structure(self):
-        """Minimal fallback structure if config fails"""
-        return {
-            "1. Data description and collection or re-use of existing data": [
-                "How will new data be collected or produced and/or how will existing data be re-used?",
-                "What data (for example the types, formats, and volumes) will be collected or produced?"
-            ],
-            "2. Documentation and data quality": [
-                "What metadata and documentation will accompany data?",
-                "What data quality control measures will be used?"
-            ]
-        }
 
     def _build_subsection_word_index(self):
         """
@@ -344,6 +317,36 @@ class DMPExtractor:
         if self.debug_mode:
             print(message)
 
+    def validate_docx_file(self, file_path):
+        """Validate DOCX file integrity"""
+        try:
+            if not os.path.exists(file_path):
+                return False, "File does not exist"
+            
+            if not file_path.lower().endswith('.docx'):
+                return False, "File is not a DOCX file"
+            
+            # Check if it's a valid ZIP file (DOCX is ZIP-based)
+            try:
+                with zipfile.ZipFile(file_path, 'r') as zip_file:
+                    file_list = zip_file.namelist()
+                    if 'word/document.xml' not in file_list:
+                        return False, "Invalid DOCX structure: missing document.xml"
+            except zipfile.BadZipFile:
+                return False, "File is not a valid ZIP archive"
+            
+            # Try to load with python-docx
+            doc = Document(file_path)
+            paragraph_count = len(doc.paragraphs)
+            table_count = len(doc.tables)
+            
+            if paragraph_count == 0 and table_count == 0:
+                return False, "Document appears to be empty"
+            
+            return True, "File is valid"
+            
+        except Exception as e:
+            return False, f"Validation error: {str(e)}"
     
     def clean_table_delimiters(self, text):
         """Remove table formatting artifacts"""
@@ -1761,7 +1764,7 @@ class DMPExtractor:
 
             # Fill empty sections with placeholder text for complete extraction
             empty_count = 0
-            for section_id in ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2', '4.1', '4.2', '5.1', '5.2', '5.3', '5.4', '6.1', '6.2']:
+            for section_id in ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2', '4.1', '4.2', '5.1', '5.2', '5.3', '6.1', '6.2']:
                 if section_id in review_structure:
                     paras = review_structure[section_id].get('paragraphs', [])
                     if not paras or len(paras) == 0:
@@ -1835,6 +1838,7 @@ class DMPExtractor:
                 self._log_debug(f"Author detected: {author_name}")
 
                 # Find the DMP section
+                all_text = ""
                 all_pages_text = []
 
                 # Extract text from all pages
@@ -1848,6 +1852,7 @@ class DMPExtractor:
 
                     page_text = page.extract_text()
                     all_pages_text.append(page_text)
+                    all_text += page_text + "\n\n"
 
                     # Print info about start/end marks found
                     for mark in self.start_marks:
@@ -1858,8 +1863,6 @@ class DMPExtractor:
                         if mark in page_text:
                             self._log_debug(f"Found end mark '{mark}' on page {i+1}")
 
-                # Join all pages at once for better performance
-                all_text = "\n\n".join(all_pages_text)
                 self._report_progress(progress_callback, "Text extraction complete", 30)
 
                 # Check if PDF is scanned and use OCR if needed
@@ -2041,7 +2044,7 @@ class DMPExtractor:
 
                 # Fill empty sections with placeholder text for complete extraction
                 empty_count = 0
-                for section_id in ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2', '4.1', '4.2', '5.1', '5.2', '5.3', '5.4', '6.1', '6.2']:
+                for section_id in ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2', '4.1', '4.2', '5.1', '5.2', '5.3', '6.1', '6.2']:
                     if section_id in review_structure:
                         paras = review_structure[section_id].get('paragraphs', [])
                         if not paras:
