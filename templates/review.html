@@ -42,48 +42,6 @@
             background-color: var(--bg-secondary);
             border-color: var(--border-light);
         }
-        
-        /* Layout */
-        .review-layout {
-            display: flex !important;
-            flex-direction: row !important;
-            gap: 30px !important;
-            max-width: 1400px !important;
-            margin: 0 auto !important;
-            padding: 20px !important;
-            position: relative !important;
-        }
-        .main-content {
-            flex: 1 !important;
-            margin-left: 40px !important;
-            margin-right: 290px !important;
-            min-width: 0 !important;
-            order: 1 !important;
-        }
-        
-        /* Sidebar - Sticky positioning for natural scrolling */
-        body[data-page="review"] aside.right-sidebar {
-            position: sticky !important;
-            top: 100px !important;
-            align-self: flex-start !important;
-            width: 280px !important;
-            min-width: 280px !important;
-            max-height: calc(100vh - 120px) !important;
-            background-color: var(--bg-card) !important;
-            border: 1px solid var(--border-light) !important;
-            border-radius: 8px !important;
-            padding: 15px !important;
-            overflow-y: auto !important;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
-            order: 2 !important;
-        }
-        
-        /* Review page container - simple wrapper */
-        body[data-page="review"] .container {
-            max-width: 100%;
-            padding: 0;
-            margin: 0;
-        }
 
         /* Enhanced Review Page Styles */
         .results-container {
@@ -99,11 +57,6 @@
         .result-card {
             background-color: var(--bg-tertiary);
             border-color: var(--border-medium);
-        }
-        .feature-card,
-        .stat-item {
-            background-color: var(--bg-secondary);
-            border-color: var(--border-light);
         }
         
         /* Fixed Right Sidebar Styles - Proper flex layout */
@@ -123,6 +76,25 @@
             margin-right: 0 !important;
             min-width: 0 !important;
             order: 1 !important;
+        }
+
+        /* Sticky Right Sidebar */
+        body[data-page="review"] .right-sidebar {
+            position: sticky !important;
+            top: 100px !important;
+            align-self: flex-start !important;
+            width: 280px !important;
+            min-width: 280px !important;
+            max-width: 280px !important;
+            max-height: calc(100vh - 120px) !important;
+            background-color: var(--bg-card) !important;
+            border: 1px solid var(--border-light) !important;
+            border-radius: 8px !important;
+            padding: 15px !important;
+            overflow-y: auto !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+            order: 2 !important;
+            flex-shrink: 0 !important;
         }
 
         .navigation-pane, .category-comments-pane {
