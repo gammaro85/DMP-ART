@@ -1259,6 +1259,19 @@
             let activePanel = null;
             let hoverTimeout = null;
 
+            // Debounce utility to prevent excessive function calls
+            function debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+
             // Clone navigation and comments to hover panels
             function syncHoverPanels() {
                 // Clone navigation buttons
@@ -1293,11 +1306,14 @@
             }
 
             // Sync hover panels whenever navigation or comments are updated
-            const observer = new MutationObserver(syncHoverPanels);
+            // Use debounced version to prevent excessive re-syncs (300ms delay)
+            const debouncedSyncHoverPanels = debounce(syncHoverPanels, 300);
+            const observer = new MutationObserver(debouncedSyncHoverPanels);
             const navGrid = document.getElementById('section-nav-grid');
             const commentsList = document.getElementById('quick-comments-list');
-            if (navGrid) observer.observe(navGrid, { childList: true, subtree: true });
-            if (commentsList) observer.observe(commentsList, { childList: true, subtree: true });
+            // Only observe direct child changes, not nested subtree changes
+            if (navGrid) observer.observe(navGrid, { childList: true });
+            if (commentsList) observer.observe(commentsList, { childList: true });
             syncHoverPanels(); // Initial sync
 
             // Check if sidebar should be collapsed based on content height
