@@ -72,35 +72,80 @@
 
 ---
 
-### ⏳ Task 2.3: File Organization
-**What needs to be done:**
-- Create `outputs/dmp/`, `outputs/reviews/`, `outputs/cache/` folders
-- Update file save paths in app.py
-- Link DMP and review files via metadata
-- Test file organization works correctly
+### ✅ Task 2.3: File Organization
+**Status:** ✅ COMPLETE
 
-**Estimated Time:** 1 hour
+**Changes Made:**
+- Created `outputs/dmp/`, `outputs/reviews/`, `outputs/cache/` directories
+- Updated app.py configuration with new folder paths
+- Updated cache file paths to `outputs/cache/`
+- Updated review/feedback file paths to `outputs/reviews/`
+- Added metadata linking (cache_id + dmp_cache_file) in export_json
+- Moved existing cache file to new location
+- Updated health check endpoint with new folder info
+
+**Files Modified:**
+- `app.py`: Added CACHE_FOLDER, DMP_FOLDER, REVIEWS_FOLDER config
+- `app.py`: Updated 4 file path references to use new folders
+- `app.py`: Enhanced export metadata with cache linking
+
+**Impact:**
+- Clean file organization with dedicated folders
+- Review files now link back to source DMP via cache_id
+- Easier backup and maintenance
+- Separation of concerns (cache vs reviews vs DMPs)
 
 ---
 
-### ⏳ Task 2.4: Unconnected Text Modal
-**What needs to be done:**
-- Move unconnected text assignment to post-upload
-- Show modal before review page loads
-- Allow users to assign text to sections
-- Improve workflow timing
+### ✅ Task 2.4: Unconnected Text Modal
+**Status:** ✅ COMPLETE
 
-**Estimated Time:** 30 minutes
+**Changes Made:**
+- Added comprehensive CSS styling for unconnected text modal
+- Modal now displays automatically on page load (if unconnected text exists)
+- Full-screen modal overlay with backdrop blur
+- Professional styling with animations (fadeIn, slideUp)
+- Styled all modal components (header, content, controls, actions)
+- Visual feedback for assigned/skipped items (opacity changes, color indicators)
+- Responsive button styling with hover effects
+
+**Files Modified:**
+- `static/css/review.css`: Added 230+ lines of modal styling
+
+**Impact:**
+- Professional, polished modal appearance
+- Clear visual hierarchy and user guidance
+- Smooth animations improve UX
+- Modal automatically shows post-upload
+- Users can assign or skip unconnected text before reviewing
 
 ---
 
-### ⏳ Task 2.5: Unify Font System
-**What needs to be done:**
-- Define single font stack in CSS variables
-- Replace all font-family declarations
-- Test consistency across all pages
+### ✅ Task 2.5: Unify Font System
+**Status:** ✅ COMPLETE
 
-**Estimated Time:** 30 minutes
+**Changes Made:**
+- Replaced all hardcoded font-family declarations with CSS variables
+- Updated review.css: 'Segoe UI' → var(--font-family-base)
+- Updated review.html: 'Segoe UI' → var(--font-family-base)
+- Updated documentation.html: 'Courier New' → var(--font-family-mono)
+- Updated test_categories.html: 'Arial' → var(--font-family-base)
+
+**Files Modified:**
+- `static/css/review.css`: 1 font declaration unified
+- `templates/review.html`: 1 font declaration unified
+- `templates/documentation.html`: 1 font declaration unified
+- `templates/test_categories.html`: 1 font declaration unified
+
+**Impact:**
+- Single source of truth for typography
+- Consistent font rendering across all pages
+- Easy to change fonts globally via CSS variables
+- Better maintainability
+
+**CSS Variables Used:**
+- `--font-family-base`: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif
+- `--font-family-mono`: "Consolas", "Menlo", "Monaco", "Courier New", monospace
 
 ---
 
@@ -109,24 +154,33 @@
 **Total Progress:**
 - Debug & Optimization: ✅ Complete
 - Phase 1 (4 tasks): ✅ Complete
-- Phase 2 (5 tasks): 🔄 1/5 tasks complete
+- Phase 2 (5 tasks): ✅ 5/5 tasks complete
 
-**Next Steps:**
-1. Complete Task 2.1b (dynamic category tabs)
-2. Continue with Tasks 2.2-2.5
-3. Test all Phase 2 changes
-4. Commit Phase 2
+**All Phase 2 Tasks Completed:**
+1. ✅ Task 2.1: Dynamic Category System
+2. ✅ Task 2.2: Fix Right Sidebar CSS
+3. ✅ Task 2.3: File Organization
+4. ✅ Task 2.4: Unconnected Text Modal
+5. ✅ Task 2.5: Unify Font System
 
-**Estimated Remaining Time:** 3-4 hours
+**Ready for Commit!**
 
-**Current Files Modified (uncommitted):**
-- `app.py`: Added /api/discover-categories endpoint (~80 lines added)
+**Files Modified in Phase 2:**
+- `app.py`: 6 config paths, 4 route updates, metadata linking
+- `static/css/review.css`: 230+ lines modal CSS, 1 font fix
+- `static/js/template_editor.js`: 267 lines dynamic categories
+- `templates/review.html`: CSS Grid layout, sticky sidebar, 1 font fix
+- `templates/documentation.html`: 1 font fix
+- `templates/test_categories.html`: 1 font fix
+- `PHASE_2_PROGRESS.md`: Progress tracking
 
-**Code Quality Improvements So Far:**
-- Removed ~83 lines duplicate code (Phase 1)
-- Added dynamic category system (Phase 2.1a)
-- Single source of truth for DMP structure
-- Improved error handling and fallbacks
+**Code Quality Improvements:**
+- Phase 1: Removed ~83 lines duplicate code
+- Phase 2: Added 500+ lines of new features
+- Improved file organization and structure
+- Unified typography system
+- Enhanced UX with modal styling
+- Single source of truth for categories and fonts
 
 ---
 
