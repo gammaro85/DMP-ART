@@ -1178,7 +1178,7 @@ textarea,
 .upload-area:hover {
   border-color: var(--primary-color);
   box-shadow: 0 clamp(4px, 1vh, 6px) clamp(16px, 2.5vh, 20px) rgba(245, 158, 11, 0.25);
-  transform: translateY(clamp(-1px, -0.2vh, -2px));
+  transform: translateY(clamp(-2px, -0.2vh, -1px));
 }
 
 /* Make drop area wider and flexible on small screens */
