@@ -1237,8 +1237,9 @@ textarea,
   display: flex;
   flex-direction: row;
   gap: var(--spacing-6);
-  max-width: 1400px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: none;
+  margin: 0;
   padding: var(--spacing-5);
 }
 
@@ -1252,6 +1253,8 @@ textarea,
 .right-sidebar {
   width: 300px;
   min-width: 300px;
+  max-width: 300px;
+  flex-shrink: 0;
   background: var(--bg-card);
   border-radius: var(--border-radius-md);
   padding: var(--spacing-5);
@@ -1266,13 +1269,14 @@ textarea,
 }
 
 /* On mobile, sidebar goes above main content */
-@media (max-width: 1200px) {
+@media (max-width: 900px) {
   .review-layout {
     flex-direction: column;
   }
   .right-sidebar {
     width: 100%;
     min-width: 0;
+    max-width: none;
     position: static;
     order: -1;
     top: unset;
