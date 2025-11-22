@@ -17,6 +17,67 @@ try:
 except ImportError:
     HAS_OCR = False
 
+
+def validate_docx_file(file_path):
+    """
+    Enhanced DOCX file validation.
+
+    Args:
+        file_path: Path to the DOCX file
+
+    Returns:
+        tuple: (is_valid: bool, message: str)
+    """
+    try:
+        if not os.path.exists(file_path):
+            return False, "File does not exist"
+
+        if not file_path.lower().endswith('.docx'):
+            return False, "File is not a DOCX file"
+
+        # Check file size
+        file_size = os.path.getsize(file_path)
+        if file_size == 0:
+            return False, "File is empty"
+
+        if file_size > 16 * 1024 * 1024:  # 16MB limit
+            return False, "File is too large (max 16MB)"
+
+        # Check if it's a valid ZIP file (DOCX is ZIP-based)
+        try:
+            with zipfile.ZipFile(file_path, 'r') as zip_file:
+                file_list = zip_file.namelist()
+                required_files = ['word/document.xml', '[Content_Types].xml']
+
+                for required_file in required_files:
+                    if required_file not in file_list:
+                        return False, f"Invalid DOCX structure: missing {required_file}"
+
+        except zipfile.BadZipFile:
+            return False, "File is not a valid ZIP archive"
+        except Exception as e:
+            return False, f"ZIP validation error: {str(e)}"
+
+        # Try to load with python-docx
+        try:
+            doc = Document(file_path)
+            table_count = len(doc.tables)
+
+            # Check for minimum content
+            has_content = any(p.text.strip() for p in doc.paragraphs) or table_count > 0
+
+            if not has_content:
+                return False, "Document appears to be empty or contains no readable content"
+
+        except Exception as e:
+            return False, f"Document processing error: {str(e)}"
+
+        return True, "File is valid"
+
+    except Exception as e:
+        return False, f"Unexpected validation error: {str(e)}"
+
+
 class DMPExtractor:
     def __init__(self, debug_mode=False):
         """
@@ -1475,7 +1536,7 @@ class DMPExtractor:
 
             # Validate the DOCX file first
             self._report_progress(progress_callback, "Validating DOCX file...", 5)
-            is_valid, validation_message = self.validate_docx_file(docx_path)
+            is_valid, validation_message = validate_docx_file(docx_path)
             if not is_valid:
                 return {
                     "success": False,
