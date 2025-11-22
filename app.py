@@ -1043,8 +1043,8 @@ def list_categories():
         })
 
 @app.route('/create_category', methods=['POST'])
-def create_category():
-    """Create a new category file"""
+def create_category_legacy():
+    """Create a new category file (legacy endpoint)"""
     try:
         data = request.json or {}
         name = data.get('name', '').strip()
@@ -1082,8 +1082,8 @@ def create_category():
         })
 
 @app.route('/delete_category', methods=['POST'])
-def delete_category():
-    """Delete a category file"""
+def delete_category_legacy():
+    """Delete a category file (legacy endpoint)"""
     try:
         data = request.json or {}
         file = data.get('file', '').strip()
