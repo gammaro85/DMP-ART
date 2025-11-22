@@ -1156,7 +1156,9 @@
             document.querySelectorAll('.lang-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            document.querySelector(`[data-lang="${currentCommentLanguage}"]`)?.classList.add('active');
+            document.querySelectorAll(`[data-lang="${currentCommentLanguage}"]`).forEach(btn => {
+                btn.classList.add('active');
+            });
 
             // Add event listeners
             langEnBtn.addEventListener('click', () => setCommentLanguage('en'));
