@@ -1697,7 +1697,15 @@
             }
         }
 
+        // Store timeout IDs to prevent memory leaks
+        let reopenBtnAutoHideTimeout = null;
+        let reopenBtnFadeTimeout = null;
+
         function showReopenOption() {
+            // Clear any existing timeouts
+            if (reopenBtnAutoHideTimeout) clearTimeout(reopenBtnAutoHideTimeout);
+            if (reopenBtnFadeTimeout) clearTimeout(reopenBtnFadeTimeout);
+
             // Create or show a reopen button
             let reopenBtn = document.getElementById('reopen-modal-btn');
             if (!reopenBtn) {
@@ -1734,13 +1742,14 @@
                 document.body.appendChild(reopenBtn);
             } else {
                 reopenBtn.style.display = 'flex';
+                reopenBtn.style.opacity = '1';
             }
             
             // Auto-hide the reopen button after 30 seconds
-            setTimeout(() => {
+            reopenBtnAutoHideTimeout = setTimeout(() => {
                 if (reopenBtn) {
                     reopenBtn.style.opacity = '0';
-                    setTimeout(() => {
+                    reopenBtnFadeTimeout = setTimeout(() => {
                         reopenBtn.style.display = 'none';
                         reopenBtn.style.opacity = '1';
                     }, 300);
