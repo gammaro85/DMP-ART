@@ -1701,6 +1701,7 @@
                 background: var(--primary-color);
                 display: flex;
                 align-items: center;
+                transform: translateX(100%);
             `;
             
             document.body.appendChild(notification);
@@ -1722,10 +1723,12 @@
             
             // Set timeout to close modal
             autoCloseTimeout = setTimeout(() => {
-                closeUnconnectedModal();
+                // Animate notification out first
                 notification.style.opacity = '0';
                 notification.style.transform = 'translateX(100%)';
                 setTimeout(() => notification.remove(), 300);
+                // Then close modal
+                closeUnconnectedModal();
             }, 3000);
         }
 
