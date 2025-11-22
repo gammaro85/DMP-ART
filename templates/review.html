@@ -1672,7 +1672,12 @@
                 const assignedCount = document.querySelectorAll('.unconnected-item.assigned').length;
                 const skippedCount = document.querySelectorAll('.unconnected-item.skipped').length;
                 
-                // Create countdown notification
+                // Constants for timing
+                const COUNTDOWN_DURATION_MS = 3000;
+                const COUNTDOWN_SECONDS = 3;
+                const FADE_OUT_DURATION_MS = 300;
+                
+                // Create countdown notification using similar pattern to showNotification
                 const notification = document.createElement('div');
                 notification.className = 'notification notification-info';
                 notification.style.cssText = `
@@ -1687,23 +1692,27 @@
                     background: var(--primary-color);
                     transition: opacity 0.3s ease;
                 `;
-                notification.textContent = 'All items processed. Closing in 3 seconds...';
+                notification.textContent = `All items processed. Closing in ${COUNTDOWN_SECONDS} seconds...`;
                 document.body.appendChild(notification);
                 
-                let countdown = 3;
+                let countdown = COUNTDOWN_SECONDS;
                 const countdownInterval = setInterval(() => {
                     countdown--;
                     if (countdown > 0) {
                         notification.textContent = `All items processed. Closing in ${countdown} second${countdown !== 1 ? 's' : ''}...`;
+                    } else {
+                        clearInterval(countdownInterval);
                     }
                 }, 1000);
                 
                 setTimeout(() => {
                     clearInterval(countdownInterval);
                     notification.style.opacity = '0';
-                    setTimeout(() => notification.remove(), 300);
-                    closeUnconnectedModal(assignedCount, skippedCount);
-                }, 3000);
+                    setTimeout(() => {
+                        notification.remove();
+                        closeUnconnectedModal(assignedCount, skippedCount);
+                    }, FADE_OUT_DURATION_MS);
+                }, COUNTDOWN_DURATION_MS);
             }
         }
 
