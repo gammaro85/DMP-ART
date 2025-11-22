@@ -179,58 +179,132 @@
     }
 
     function createNewCategory() {
-        const categoryName = prompt('Enter new category name (lowercase, no spaces):');
-        if (!categoryName) return;
+        showCategoryModal();
+    }
 
-        // Validate category name
-        if (!/^[a-z0-9_]+$/.test(categoryName)) {
-            showNotification('Category name must be lowercase alphanumeric with underscores only', 'error');
-            return;
+    // Modal dialog for creating a new category
+    function showCategoryModal() {
+        // Create modal elements
+        const modalOverlay = document.createElement('div');
+        modalOverlay.className = 'modal-overlay';
+        modalOverlay.style.position = 'fixed';
+        modalOverlay.style.top = '0';
+        modalOverlay.style.left = '0';
+        modalOverlay.style.width = '100vw';
+        modalOverlay.style.height = '100vh';
+        modalOverlay.style.background = 'rgba(0,0,0,0.5)';
+        modalOverlay.style.display = 'flex';
+        modalOverlay.style.alignItems = 'center';
+        modalOverlay.style.justifyContent = 'center';
+        modalOverlay.style.zIndex = '9999';
+
+        const modal = document.createElement('div');
+        modal.className = 'modal-dialog';
+        modal.style.background = '#fff';
+        modal.style.padding = '2em';
+        modal.style.borderRadius = '8px';
+        modal.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
+        modal.style.minWidth = '320px';
+        modal.style.maxWidth = '90vw';
+
+        modal.innerHTML = `
+            <h2>Create New Category</h2>
+            <label for="categoryNameInput">Category name (lowercase, no spaces):</label>
+            <input type="text" id="categoryNameInput" style="width:100%;margin-bottom:1em;" autocomplete="off" />
+            <div id="categoryModalError" style="color:red;min-height:1.5em;margin-bottom:1em;"></div>
+            <div style="text-align:right;">
+                <button id="categoryModalCancel" style="margin-right:1em;">Cancel</button>
+                <button id="categoryModalCreate">Create</button>
+            </div>
+        `;
+
+        modalOverlay.appendChild(modal);
+        document.body.appendChild(modalOverlay);
+
+        const input = modal.querySelector('#categoryNameInput');
+        const errorDiv = modal.querySelector('#categoryModalError');
+        const btnCancel = modal.querySelector('#categoryModalCancel');
+        const btnCreate = modal.querySelector('#categoryModalCreate');
+
+        // Focus input
+        input.focus();
+
+        // Remove modal helper
+        function closeModal() {
+            document.body.removeChild(modalOverlay);
         }
 
-        // Check if category already exists
-        if (availableCategories.some(c => c.id === categoryName)) {
-            showNotification('Category already exists', 'error');
-            return;
-        }
+        // Cancel button
+        btnCancel.addEventListener('click', function() {
+            closeModal();
+        });
 
-        // Create empty category file
-        const emptyCategory = {
-            "_category_name": categoryName,
-            "1.1": {},
-            "1.2": {},
-            "2.1": {},
-            "2.2": {},
-            "3.1": {},
-            "3.2": {},
-            "4.1": {},
-            "4.2": {},
-            "5.1": {},
-            "5.2": {},
-            "5.3": {},
-            "5.4": {},
-            "6.1": {},
-            "6.2": {}
-        };
-
-        // Save new category (you'll need a backend endpoint for this)
-        fetch(`/api/create-category`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: categoryName, content: emptyCategory })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showNotification('Category created successfully', 'success');
-                loadDynamicCategories(); // Reload categories
-            } else {
-                showNotification(data.message || 'Failed to create category', 'error');
+        // Create button
+        btnCreate.addEventListener('click', function() {
+            const categoryName = input.value.trim();
+            // Validate category name
+            if (!categoryName) {
+                errorDiv.textContent = 'Category name is required.';
+                input.focus();
+                return;
             }
-        })
-        .catch(error => {
-            console.error('Error creating category:', error);
-            showNotification('Error creating category', 'error');
+            if (!/^[a-z0-9_]+$/.test(categoryName)) {
+                errorDiv.textContent = 'Category name must be lowercase alphanumeric with underscores only.';
+                input.focus();
+                return;
+            }
+            if (availableCategories.some(c => c.id === categoryName)) {
+                errorDiv.textContent = 'Category already exists.';
+                input.focus();
+                return;
+            }
+
+            // Create empty category file
+            const emptyCategory = {
+                "_category_name": categoryName,
+                "1.1": {},
+                "1.2": {},
+                "2.1": {},
+                "2.2": {},
+                "3.1": {},
+                "3.2": {},
+                "4.1": {},
+                "4.2": {},
+                "5.1": {},
+                "5.2": {},
+                "5.3": {},
+                "5.4": {},
+                "6.1": {},
+                "6.2": {}
+            };
+
+            // Save new category (you'll need a backend endpoint for this)
+            fetch(`/api/create-category`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: categoryName, content: emptyCategory })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Category created successfully', 'success');
+                    loadDynamicCategories(); // Reload categories
+                    closeModal();
+                } else {
+                    errorDiv.textContent = data.message || 'Failed to create category';
+                }
+            })
+            .catch(error => {
+                console.error('Error creating category:', error);
+                errorDiv.textContent = 'Error creating category';
+            });
+        });
+
+        // Allow Enter key to submit
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                btnCreate.click();
+            }
         });
     }
 
