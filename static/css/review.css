@@ -655,8 +655,8 @@ h3.subsection-title {
     }
 }
 
-/* Responsive layout for VERY small screens only (10% of cases) */
-@media (max-width: 1023px) {
+/* Responsive layout for tablets and small desktops (up to 1199px) */
+@media (max-width: 1199px) {
     .review-layout {
         flex-direction: column !important;
     }
@@ -946,7 +946,7 @@ body {
     width: clamp(85%, 90vw, 95%);
     max-width: clamp(600px, 80vw, 900px);
     max-height: clamp(60vh, 75vh, 85vh);
-    margin: 0 auto clamp(1rem, 3vh, 2rem) auto; /* Margin only at bottom */
+    margin: 0 auto clamp(1rem, 3vh, 2rem); /* Margin only at bottom */
     display: flex;
     flex-direction: column;
     animation: slideDown 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Slide from top */

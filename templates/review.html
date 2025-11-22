@@ -1668,7 +1668,8 @@
             const processedItems = document.querySelectorAll('.unconnected-item.assigned, .unconnected-item.skipped');
 
             // Auto-close when all processed - no confirmation needed
-            if (allItems.length === processedItems.length && allItems.length > 0) {
+            if (allItems.length === 0) return;
+            if (allItems.length === processedItems.length) {
                 setTimeout(() => {
                     closeUnconnectedModal();
                 }, 800);
