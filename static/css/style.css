@@ -1162,12 +1162,12 @@ textarea,
 }
 
 .upload-dropzone:hover::before,
-.upload-dropzone.dragover::before {
+.upload-dropzone.drag-over::before {
   opacity: 1;
 }
 
 /* Drag-over state */
-.upload-dropzone.dragover {
+.upload-dropzone.drag-over {
   border-color: var(--primary-color);
   background: var(--bg-hover);
   box-shadow: 0 clamp(4px, 1vh, 6px) clamp(16px, 2.5vh, 20px) rgba(91, 188, 255, 0.3);
