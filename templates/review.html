@@ -1081,7 +1081,9 @@
             document.querySelectorAll('.lang-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            document.querySelector(`[data-lang="${lang}"]`).classList.add('active');
+            document.querySelectorAll(`[data-lang="${lang}"]`).forEach(btn => {
+                btn.classList.add('active');
+            });
 
             // Refresh quick comments
             refreshQuickComments();
@@ -1398,15 +1400,11 @@
             if (hoverLangEnBtn) {
                 hoverLangEnBtn.addEventListener('click', () => {
                     document.getElementById('lang-en-btn').click();
-                    hoverLangEnBtn.classList.add('active');
-                    hoverLangPlBtn.classList.remove('active');
                 });
             }
             if (hoverLangPlBtn) {
                 hoverLangPlBtn.addEventListener('click', () => {
                     document.getElementById('lang-pl-btn').click();
-                    hoverLangPlBtn.classList.add('active');
-                    hoverLangEnBtn.classList.remove('active');
                 });
             }
 
