@@ -1667,18 +1667,58 @@
             const allItems = document.querySelectorAll('.unconnected-item');
             const processedItems = document.querySelectorAll('.unconnected-item.assigned, .unconnected-item.skipped');
 
-            // Auto-close when all processed - no confirmation needed
+            // Show countdown notification before auto-closing
             if (allItems.length === processedItems.length && allItems.length > 0) {
+                const assignedCount = document.querySelectorAll('.unconnected-item.assigned').length;
+                const skippedCount = document.querySelectorAll('.unconnected-item.skipped').length;
+                
+                // Create countdown notification
+                const notification = document.createElement('div');
+                notification.className = 'notification notification-info';
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    padding: 12px 20px;
+                    border-radius: 6px;
+                    color: white;
+                    font-weight: 500;
+                    z-index: 10000;
+                    background: var(--primary-color);
+                    transition: opacity 0.3s ease;
+                `;
+                notification.textContent = 'All items processed. Closing in 3 seconds...';
+                document.body.appendChild(notification);
+                
+                let countdown = 3;
+                const countdownInterval = setInterval(() => {
+                    countdown--;
+                    if (countdown > 0) {
+                        notification.textContent = `All items processed. Closing in ${countdown} second${countdown !== 1 ? 's' : ''}...`;
+                    }
+                }, 1000);
+                
                 setTimeout(() => {
-                    closeUnconnectedModal();
-                }, 800);
+                    clearInterval(countdownInterval);
+                    notification.style.opacity = '0';
+                    setTimeout(() => notification.remove(), 300);
+                    closeUnconnectedModal(assignedCount, skippedCount);
+                }, 3000);
             }
         }
 
-        function closeUnconnectedModal() {
+        function closeUnconnectedModal(assignedCount = 0, skippedCount = 0) {
             const modal = document.getElementById('unconnected-text-modal');
             if (modal) {
                 modal.style.display = 'none';
+                
+                // Show summary notification after closing
+                if (assignedCount > 0 || skippedCount > 0) {
+                    const summary = [];
+                    if (assignedCount > 0) summary.push(`${assignedCount} assigned`);
+                    if (skippedCount > 0) summary.push(`${skippedCount} skipped`);
+                    showNotification(`Text processing complete: ${summary.join(', ')}`, 'success');
+                }
             }
         }
 
