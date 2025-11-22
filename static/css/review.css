@@ -1155,3 +1155,37 @@ body {
     background: var(--bg-card);
     border-color: var(--border-light);
 }
+
+/* ============================================
+   Review-specific Utility Classes
+   Moved from inline styles for better maintainability
+   ============================================ */
+
+/* Sidebar heading styles */
+.sidebar-section-heading {
+    margin-bottom: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+}
+
+.sidebar-subsection-heading {
+    font-size: 0.75rem;
+    margin-bottom: 0.4rem;
+    color: var(--text-secondary);
+}
+
+.sidebar-description {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0.5rem 0 0 0;
+}
+
+/* Action button utilities */
+.action-btn-full {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.action-btn-full.mb-lg {
+    margin-bottom: 20px;
+}
