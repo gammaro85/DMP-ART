@@ -155,7 +155,8 @@ body {
   overscroll-behavior: none;
   overscroll-behavior-x: none;
   overscroll-behavior-y: none;
-  width: calc(100vw - clamp(0.5rem, 2vw, 1.5rem)); /* Account for margins */
+  /* Width accounts for both left and right margins: 100vw - (2 × margin) */
+  width: calc(100vw - clamp(0.5rem, 2vw, 1.5rem)); /* 2× the margin values above */
   max-width: 100vw;
   box-sizing: border-box;
 }
