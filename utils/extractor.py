@@ -60,9 +60,7 @@ def validate_docx_file(file_path):
 
         # Try to load with python-docx
         try:
-            from docx import Document
             doc = Document(file_path)
-            paragraph_count = len(doc.paragraphs)
             table_count = len(doc.tables)
 
             # Check for minimum content
@@ -1535,7 +1533,7 @@ class DMPExtractor:
 
             # Validate the DOCX file first
             self._report_progress(progress_callback, "Validating DOCX file...", 5)
-            is_valid, validation_message = self.validate_docx_file(docx_path)
+            is_valid, validation_message = validate_docx_file(docx_path)
             if not is_valid:
                 return {
                     "success": False,
