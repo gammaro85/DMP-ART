@@ -8,7 +8,7 @@ import uuid
 from datetime import datetime
 from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for, Response, stream_with_context
 from werkzeug.utils import secure_filename
-from utils.extractor import DMPExtractor
+from utils.extractor import DMPExtractor, validate_docx_file
 # Comments are now managed through JSON files in config/ directory
 
 # Global progress state for real-time SSE updates
@@ -93,58 +93,6 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-def validate_docx_file(file_path):
-    """Enhanced DOCX file validation"""
-    try:
-        if not os.path.exists(file_path):
-            return False, "File does not exist"
-        
-        if not file_path.lower().endswith('.docx'):
-            return False, "File is not a DOCX file"
-        
-        # Check file size
-        file_size = os.path.getsize(file_path)
-        if file_size == 0:
-            return False, "File is empty"
-        
-        if file_size > 16 * 1024 * 1024:  # 16MB limit
-            return False, "File is too large (max 16MB)"
-        
-        # Check if it's a valid ZIP file (DOCX is ZIP-based)
-        try:
-            with zipfile.ZipFile(file_path, 'r') as zip_file:
-                file_list = zip_file.namelist()
-                required_files = ['word/document.xml', '[Content_Types].xml']
-                
-                for required_file in required_files:
-                    if required_file not in file_list:
-                        return False, f"Invalid DOCX structure: missing {required_file}"
-                        
-        except zipfile.BadZipFile:
-            return False, "File is not a valid ZIP archive"
-        except Exception as e:
-            return False, f"ZIP validation error: {str(e)}"
-        
-        # Try to load with python-docx
-        try:
-            from docx import Document
-            doc = Document(file_path)
-            paragraph_count = len(doc.paragraphs)
-            table_count = len(doc.tables)
-            
-            # Check for minimum content
-            has_content = any(p.text.strip() for p in doc.paragraphs) or table_count > 0
-            
-            if not has_content:
-                return False, "Document appears to be empty or contains no readable content"
-                
-        except Exception as e:
-            return False, f"Document processing error: {str(e)}"
-        
-        return True, "File is valid"
-        
-    except Exception as e:
-        return False, f"Validation error: {str(e)}"
 
 def validate_pdf_file(file_path):
     """Enhanced PDF file validation"""
@@ -489,9 +437,6 @@ def save_dmp_structure():
             'message': f'Error saving DMP structure: {str(e)}'
         })
 
-@app.route('/results')
-def results():
-    return render_template('results.html')
 
 @app.route('/template_editor')
 def template_editor():
