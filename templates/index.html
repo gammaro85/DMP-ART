@@ -36,7 +36,7 @@
             </button>
         </nav>
     </header>
-    <div class="container" style="margin:0;max-width:100vw;width:100vw;padding-left:0;padding-right:0;">
+    <div class="container index-container">
         <div class="main-logo-section">
             <div class="logo-container">
                 <img src="{{ url_for('static', filename='images/dmp-art-logo-main-light.png') }}"
@@ -53,8 +53,8 @@
             </div>
         </div>
 
-        <!-- Drop area for file upload -->
-        <div id="drop-area" class="upload-area">
+        <!-- Drop area for file upload with drag-and-drop styling -->
+        <div id="drop-area" class="upload-area upload-dropzone">
             <div class="upload-text">Drag &amp; drop your DMP file here or click to select</div>
             <input id="file-input" type="file" accept=".pdf,.docx" class="file-input" />
             <div id="file-info" class="file-info" style="display:none;">

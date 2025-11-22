@@ -1108,33 +1108,77 @@ textarea,
   margin-bottom: clamp(0.5rem, 2vw, 1rem);
 }
 
+/* Index page container - remove fixed overrides */
+.index-container {
+  margin: 0 !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  padding: 0 clamp(0.5rem, 2vw, 1.5rem) !important;
+  box-sizing: border-box !important;
+}
+
 /* Drop area frame and flexible width for index page */
 .upload-area {
-  border: 3px dashed var(--warning-color); /* Prominent colored border */
+  border: clamp(2px, 0.3vw, 3px) dashed var(--warning-color); /* Prominent colored border */
   background: var(--bg-card);
-  min-width: min(320px, 90vw);
-  max-width: min(700px, 95vw);
+  min-width: min(clamp(280px, 60vw, 320px), 90vw);
+  max-width: min(clamp(600px, 70vw, 750px), 95vw);
   width: 100%;
-  margin: var(--spacing-5) auto;
+  margin: clamp(1rem, 3vh, 2rem) auto;
   box-sizing: border-box;
-  padding: var(--spacing-8) var(--spacing-6);
+  padding: clamp(1.5rem, 4vh, 3rem) clamp(1rem, 3vw, 2rem);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-5);
+  gap: clamp(1rem, 2.5vh, 1.5rem);
   align-items: center;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   position: relative;
   z-index: 1;
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15); /* Softer glow */
-  border-radius: var(--border-radius-lg);
+  box-shadow: 0 clamp(2px, 0.5vh, 4px) clamp(8px, 1.5vh, 12px) rgba(245, 158, 11, 0.15); /* Softer glow */
+  border-radius: clamp(0.5rem, 1vw, 0.75rem);
+}
+
+/* Upload dropzone enhanced styling for drag-and-drop */
+.upload-dropzone {
+  position: relative;
+  overflow: hidden;
+}
+
+.upload-dropzone::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg,
+    rgba(245, 158, 11, 0.05) 0%,
+    rgba(91, 188, 255, 0.05) 100%);
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.upload-dropzone:hover::before,
+.upload-dropzone.drag-over::before {
+  opacity: 1;
+}
+
+/* Drag-over state */
+.upload-dropzone.drag-over {
+  border-color: var(--primary-color);
+  background: var(--bg-hover);
+  box-shadow: 0 clamp(4px, 1vh, 6px) clamp(16px, 2.5vh, 20px) rgba(91, 188, 255, 0.3);
+  transform: scale(1.02);
 }
 
 /* Upload area hover state */
 .upload-area:hover {
   border-color: var(--primary-color);
-  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.25);
-  transform: translateY(-2px);
+  box-shadow: 0 clamp(4px, 1vh, 6px) clamp(16px, 2.5vh, 20px) rgba(245, 158, 11, 0.25);
+  transform: translateY(clamp(-2px, -0.2vh, -1px));
 }
 
 /* Make drop area wider and flexible on small screens */
