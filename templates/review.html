@@ -1258,6 +1258,11 @@
             const hoverPanels = document.querySelectorAll('.sidebar-hover-panel');
             let activePanel = null;
             let hoverTimeout = null;
+            
+            // Height multiplier for sidebar collapse threshold
+            // When content exceeds 1.5x the max height (85% of viewport), collapse the sidebar
+            // to prevent overwhelming the UI and ensure better readability
+            const COLLAPSE_HEIGHT_MULTIPLIER = 1.5;
 
             // Clone navigation and comments to hover panels
             function syncHoverPanels() {
@@ -1312,7 +1317,7 @@
                 const maxContentHeight = viewportHeight * 0.85; // 85% of viewport
 
                 // Collapse if content is too tall
-                if (totalContentHeight > maxContentHeight * 1.5) {
+                if (totalContentHeight > maxContentHeight * COLLAPSE_HEIGHT_MULTIPLIER) {
                     sidebar.classList.add('collapsed');
                 } else {
                     sidebar.classList.remove('collapsed');
