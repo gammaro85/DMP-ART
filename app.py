@@ -5,6 +5,7 @@ import time
 import threading
 import zipfile
 import uuid
+import re
 from datetime import datetime
 from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for, Response, stream_with_context
 from werkzeug.utils import secure_filename
@@ -18,14 +19,18 @@ progress_lock = threading.Lock()
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['OUTPUT_FOLDER'] = 'outputs'
-app.config['FEEDBACK_FOLDER'] = 'feedback'
+app.config['CACHE_FOLDER'] = 'outputs/cache'
+app.config['DMP_FOLDER'] = 'outputs/dmp'
+app.config['REVIEWS_FOLDER'] = 'outputs/reviews'
 app.config['ALLOWED_EXTENSIONS'] = {'pdf', 'docx'}
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB max upload
 
 # Create necessary directories
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['OUTPUT_FOLDER'], exist_ok=True)
-os.makedirs(app.config['FEEDBACK_FOLDER'], exist_ok=True)
+os.makedirs(app.config['CACHE_FOLDER'], exist_ok=True)
+os.makedirs(app.config['DMP_FOLDER'], exist_ok=True)
+os.makedirs(app.config['REVIEWS_FOLDER'], exist_ok=True)
 
 # DMP question templates with default text
 DMP_TEMPLATES = {
@@ -305,7 +310,7 @@ def upload_file():
             extractor = DMPExtractor()
             result = extractor.process_file(
                 file_path,
-                app.config['OUTPUT_FOLDER'],
+                app.config['CACHE_FOLDER'],
                 progress_callback=progress_callback
             )
 
@@ -417,7 +422,7 @@ def review_dmp(filename):
     unconnected_text = []
     
     if cache_id:
-        cache_path = os.path.join(app.config['OUTPUT_FOLDER'], f"cache_{cache_id}.json")
+        cache_path = os.path.join(app.config['CACHE_FOLDER'], f"cache_{cache_id}.json")
         if os.path.exists(cache_path):
             try:
                 with open(cache_path, 'r', encoding='utf-8') as f:
@@ -550,7 +555,7 @@ def save_feedback():
             })
         
         feedback_filename = f"feedback_{os.path.splitext(filename)[0]}.txt"
-        feedback_path = os.path.join(app.config['FEEDBACK_FOLDER'], feedback_filename)
+        feedback_path = os.path.join(app.config['REVIEWS_FOLDER'], feedback_filename)
         
         with open(feedback_path, 'w', encoding='utf-8') as f:
             f.write(feedback)
@@ -584,7 +589,7 @@ def export_json():
 
         # Load cache file
         cache_filename = f"cache_{cache_id}.json"
-        cache_path = os.path.join(app.config['OUTPUT_FOLDER'], cache_filename)
+        cache_path = os.path.join(app.config['CACHE_FOLDER'], cache_filename)
 
         if not os.path.exists(cache_path):
             return jsonify({
@@ -607,7 +612,9 @@ def export_json():
                 'competition_edition': metadata.get('competition_edition'),
                 'creation_date': metadata.get('creation_date'),
                 'review_date': datetime.now().strftime('%d-%m-%y'),
-                'filename_original': metadata.get('filename_original')
+                'filename_original': metadata.get('filename_original'),
+                'cache_id': cache_id,
+                'dmp_cache_file': f"cache_{cache_id}.json"
             },
             'dmp_content': {},
             'review_feedback': {}
@@ -641,7 +648,7 @@ def export_json():
             json_filename = f"Review_{cache_id[:8]}"
 
         json_filename += f"_{datetime.now().strftime('%d%m%y')}.json"
-        json_path = os.path.join(app.config['FEEDBACK_FOLDER'], json_filename)
+        json_path = os.path.join(app.config['REVIEWS_FOLDER'], json_filename)
 
         # Save JSON file
         with open(json_path, 'w', encoding='utf-8') as f:
@@ -781,6 +788,178 @@ def save_category_comments():
             'success': False,
             'message': f'Error saving category comments: {str(e)}'
         })
+
+@app.route('/api/discover-categories', methods=['GET'])
+def discover_categories():
+    """
+    Discover all category JSON files in config/ directory dynamically.
+
+    Returns JSON list of categories (excluding dmp_structure and quick_comments).
+    This enables the template editor to work with any number of categories
+    without hardcoding.
+    """
+    try:
+        config_dir = 'config'
+        categories = []
+
+        if not os.path.exists(config_dir):
+            return jsonify({
+                'success': False,
+                'message': 'Config directory not found'
+            }), 404
+
+        # List all JSON files
+        for filename in os.listdir(config_dir):
+            if not filename.endswith('.json'):
+                continue
+
+            # Skip system files
+            if filename in ['dmp_structure.json', 'quick_comments.json', 'category_comments.json']:
+                continue
+
+            # Skip backup files
+            if '_backup_' in filename:
+                continue
+
+            # Extract category name (remove .json extension)
+            category_name = filename.replace('.json', '')
+            categories.append({
+                'id': category_name,
+                'filename': filename,
+                'display_name': format_category_name(category_name)
+            })
+
+        # Sort alphabetically
+        categories.sort(key=lambda x: x['display_name'])
+
+        return jsonify({
+            'success': True,
+            'categories': categories,
+            'count': len(categories)
+        })
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': str(e)
+        }), 500
+
+
+def format_category_name(category_id):
+    """
+    Format category ID for display.
+
+    Examples:
+        'newcomer' -> 'Newcomer'
+        'mising' -> 'Missing Info'
+        'ready' -> 'Ready to Use'
+        'my_custom_category' -> 'My Custom Category'
+    """
+    # Special cases for existing categories
+    special_names = {
+        'newcomer': 'Newcomer',
+        'mising': 'Missing Info',
+        'ready': 'Ready to Use'
+    }
+
+    if category_id in special_names:
+        return special_names[category_id]
+
+    # Default: title case with underscores replaced
+    return category_id.replace('_', ' ').title()
+
+
+@app.route('/api/create-category', methods=['POST'])
+def create_category():
+    """Create a new category file"""
+    try:
+        data = request.json or {}
+        category_name = data.get('name', '').strip()
+        category_content = data.get('content', {})
+
+        if not category_name:
+            return jsonify({
+                'success': False,
+                'message': 'Category name is required'
+            }), 400
+
+        # Validate category name (alphanumeric with underscores only)
+        if not re.match(r'^[a-z0-9_]+$', category_name):
+            return jsonify({
+                'success': False,
+                'message': 'Category name must be lowercase alphanumeric with underscores only'
+            }), 400
+
+        # Check if category already exists
+        category_path = os.path.join('config', f'{category_name}.json')
+        if os.path.exists(category_path):
+            return jsonify({
+                'success': False,
+                'message': 'Category already exists'
+            }), 409
+
+        # Create category file
+        with open(category_path, 'w', encoding='utf-8') as f:
+            json.dump(category_content, f, indent=2, ensure_ascii=False)
+
+        return jsonify({
+            'success': True,
+            'message': f'Category "{category_name}" created successfully',
+            'category': {
+                'id': category_name,
+                'filename': f'{category_name}.json',
+                'display_name': format_category_name(category_name)
+            }
+        })
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': str(e)
+        }), 500
+
+
+@app.route('/api/delete-category/<category_id>', methods=['DELETE'])
+def delete_category(category_id):
+    """Delete a category file"""
+    try:
+        # Prevent deletion of system files
+        if category_id in ['dmp_structure', 'quick_comments', 'category_comments']:
+            return jsonify({
+                'success': False,
+                'message': 'Cannot delete system files'
+            }), 403
+
+        category_path = os.path.join('config', f'{category_id}.json')
+
+        if not os.path.exists(category_path):
+            return jsonify({
+                'success': False,
+                'message': 'Category not found'
+            }), 404
+
+        # Create backup before deleting
+        backup_name = f'{category_id}_backup_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json'
+        backup_path = os.path.join('config', backup_name)
+
+        # Copy to backup
+        import shutil
+        shutil.copy2(category_path, backup_path)
+
+        # Delete the category file
+        os.remove(category_path)
+
+        return jsonify({
+            'success': True,
+            'message': f'Category "{category_id}" deleted successfully (backup created)',
+            'backup_file': backup_name
+        })
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': str(e)
+        }), 500
 
 @app.route('/save_quick_comments', methods=['POST'])
 def save_quick_comments():
@@ -1111,7 +1290,9 @@ def health_check():
         'status': 'healthy',
         'upload_folder': app.config['UPLOAD_FOLDER'],
         'output_folder': app.config['OUTPUT_FOLDER'],
-        'feedback_folder': app.config['FEEDBACK_FOLDER'],
+        'cache_folder': app.config['CACHE_FOLDER'],
+        'dmp_folder': app.config['DMP_FOLDER'],
+        'reviews_folder': app.config['REVIEWS_FOLDER'],
         'allowed_extensions': list(app.config['ALLOWED_EXTENSIONS']),
         'max_content_length': app.config['MAX_CONTENT_LENGTH']
     })
