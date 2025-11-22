@@ -210,7 +210,7 @@ body[data-page="review"] aside.right-sidebar.collapsed > *:not(.sidebar-collapse
 #compiled-feedback {
     max-height: clamp(20rem, 50vh, 35rem) !important;
     overflow-y: auto !important;
-    font-size: clamp(0.8rem, 0.95vw, 0.85rem) !important;
+    font-size: clamp(0.8rem, 0.95vw, 0.9rem) !important;
 }
 
 .navigation-pane, .category-comments-pane, .quick-comments-pane {
