@@ -1673,8 +1673,8 @@
                 const skippedCount = document.querySelectorAll('.unconnected-item.skipped').length;
                 
                 // Constants for timing
-                const COUNTDOWN_DURATION_MS = 3000;
                 const COUNTDOWN_SECONDS = 3;
+                const COUNTDOWN_DURATION_MS = COUNTDOWN_SECONDS * 1000;
                 const FADE_OUT_DURATION_MS = 300;
                 
                 // Create countdown notification using similar pattern to showNotification
@@ -1696,17 +1696,20 @@
                 document.body.appendChild(notification);
                 
                 let countdown = COUNTDOWN_SECONDS;
-                const countdownInterval = setInterval(() => {
+                let countdownInterval = setInterval(() => {
                     countdown--;
                     if (countdown > 0) {
                         notification.textContent = `All items processed. Closing in ${countdown} second${countdown !== 1 ? 's' : ''}...`;
                     } else {
                         clearInterval(countdownInterval);
+                        countdownInterval = null;
                     }
                 }, 1000);
                 
                 setTimeout(() => {
-                    clearInterval(countdownInterval);
+                    if (countdownInterval) {
+                        clearInterval(countdownInterval);
+                    }
                     notification.style.opacity = '0';
                     setTimeout(() => {
                         notification.remove();
