@@ -9,7 +9,7 @@ import re
 from datetime import datetime
 from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for, Response, stream_with_context
 from werkzeug.utils import secure_filename
-from utils.extractor import DMPExtractor, validate_docx_file
+from utils.extractor import DMPExtractor
 # Comments are now managed through JSON files in config/ directory
 
 # Global progress state for real-time SSE updates
@@ -98,6 +98,58 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
+def validate_docx_file(file_path):
+    """Enhanced DOCX file validation"""
+    try:
+        if not os.path.exists(file_path):
+            return False, "File does not exist"
+        
+        if not file_path.lower().endswith('.docx'):
+            return False, "File is not a DOCX file"
+        
+        # Check file size
+        file_size = os.path.getsize(file_path)
+        if file_size == 0:
+            return False, "File is empty"
+        
+        if file_size > 16 * 1024 * 1024:  # 16MB limit
+            return False, "File is too large (max 16MB)"
+        
+        # Check if it's a valid ZIP file (DOCX is ZIP-based)
+        try:
+            with zipfile.ZipFile(file_path, 'r') as zip_file:
+                file_list = zip_file.namelist()
+                required_files = ['word/document.xml', '[Content_Types].xml']
+                
+                for required_file in required_files:
+                    if required_file not in file_list:
+                        return False, f"Invalid DOCX structure: missing {required_file}"
+                        
+        except zipfile.BadZipFile:
+            return False, "File is not a valid ZIP archive"
+        except Exception as e:
+            return False, f"ZIP validation error: {str(e)}"
+        
+        # Try to load with python-docx
+        try:
+            from docx import Document
+            doc = Document(file_path)
+            paragraph_count = len(doc.paragraphs)
+            table_count = len(doc.tables)
+            
+            # Check for minimum content
+            has_content = any(p.text.strip() for p in doc.paragraphs) or table_count > 0
+            
+            if not has_content:
+                return False, "Document appears to be empty or contains no readable content"
+                
+        except Exception as e:
+            return False, f"Document processing error: {str(e)}"
+        
+        return True, "File is valid"
+        
+    except Exception as e:
+        return False, f"Validation error: {str(e)}"
 
 def validate_pdf_file(file_path):
     """Enhanced PDF file validation"""
@@ -375,8 +427,8 @@ def review_dmp(filename):
             try:
                 with open(cache_path, 'r', encoding='utf-8') as f:
                     cache_data = json.load(f)
-
-                    if isinstance(cache_data, dict):
+                    
+                    if cache_data is not None and isinstance(cache_data, dict):
                         if "_unconnected_text" in cache_data:
                             unconnected_text = cache_data["_unconnected_text"]
                             del cache_data["_unconnected_text"]
@@ -442,6 +494,9 @@ def save_dmp_structure():
             'message': f'Error saving DMP structure: {str(e)}'
         })
 
+@app.route('/results')
+def results():
+    return render_template('results.html')
 
 @app.route('/template_editor')
 def template_editor():
@@ -661,9 +716,9 @@ def load_categories():
                     try:
                         with open(file_path, 'r', encoding='utf-8') as f:
                             data = json.load(f)
-                            # Ensure data is a dict before processing
-                            if isinstance(data, dict):
-                                for key, value in data.items():
+                            # Ensure data is not None and is a dict before calling items
+                            if data is not None and isinstance(data, dict):
+                                for key, value in (data.items() if data else []):
                                     if not key.startswith('_') and isinstance(value, dict):
                                         categories[key] = value
                                         break
@@ -696,10 +751,12 @@ def load_category_comments():
         
         with open(category_comments_path, 'r', encoding='utf-8') as f:
             category_comments = json.load(f)
-
+            if category_comments is None:
+                category_comments = {}
+        
         return jsonify({
             'success': True,
-            'category_comments': category_comments if isinstance(category_comments, dict) else {}
+            'category_comments': category_comments
         })
         
     except Exception as e:
@@ -943,10 +1000,12 @@ def load_quick_comments():
         
         with open(quick_comments_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
-
+            if data is None:
+                data = {}
+        
         return jsonify({
             'success': True,
-            'quick_comments': data.get('quick_comments', []) if isinstance(data, dict) else []
+            'quick_comments': data.get('quick_comments', [])
         })
         
     except Exception as e:
@@ -983,6 +1042,97 @@ def list_categories():
             'message': f'Error listing categories: {str(e)}'
         })
 
+@app.route('/create_category', methods=['POST'])
+def create_category():
+    """Create a new category file"""
+    try:
+        data = request.json or {}
+        name = data.get('name', '').strip()
+        
+        if not name:
+            return jsonify({
+                'success': False,
+                'message': 'Category name is required'
+            })
+        
+        file_name = name.lower().replace(' ', '_')
+        category_path = os.path.join('config', f'{file_name}.json')
+        
+        if os.path.exists(category_path):
+            return jsonify({
+                'success': False,
+                'message': 'Category with this name already exists'
+            })
+        
+        category_data = {}
+        
+        with open(category_path, 'w', encoding='utf-8') as f:
+            json.dump(category_data, f, indent=2, ensure_ascii=False)
+        
+        return jsonify({
+            'success': True,
+            'message': f'Category "{name}" created successfully',
+            'file': file_name
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error creating category: {str(e)}'
+        })
+
+@app.route('/delete_category', methods=['POST'])
+def delete_category():
+    """Delete a category file"""
+    try:
+        data = request.json or {}
+        file = data.get('file', '').strip()
+        
+        if not file:
+            return jsonify({
+                'success': False,
+                'message': 'File name is required'
+            })
+        
+        category_path = os.path.join('config', f'{file}.json')
+        
+        if not os.path.exists(category_path):
+            return jsonify({
+                'success': False,
+                'message': 'Category file does not exist'
+            })
+        
+        os.remove(category_path)
+        
+        return jsonify({
+            'success': True,
+            'message': f'Category "{file}" deleted successfully'
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error deleting category: {str(e)}'
+        })
+
+@app.route('/config/<filename>')
+def serve_config(filename):
+    """Serve config files"""
+    try:
+        config_path = os.path.join('config', filename)
+        if not os.path.exists(config_path):
+            return jsonify({'error': 'File not found'}), 404
+        
+        with open(config_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            if data is None:
+                data = {}
+            return data
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/test_categories')
+def test_categories():
     """Test endpoint to debug category loading"""
     try:
         config_dir = 'config'
