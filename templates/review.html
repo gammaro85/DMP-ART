@@ -1667,11 +1667,12 @@
             const allItems = document.querySelectorAll('.unconnected-item');
             const processedItems = document.querySelectorAll('.unconnected-item.assigned, .unconnected-item.skipped');
 
-            // Auto-close when all processed - no confirmation needed
+            // Auto-close when all processed - with notification
             if (allItems.length === processedItems.length && allItems.length > 0) {
+                showNotification('All items processed. Closing assignment window...', 'success');
                 setTimeout(() => {
                     closeUnconnectedModal();
-                }, 800);
+                }, 2500);
             }
         }
 
