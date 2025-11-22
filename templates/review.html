@@ -1643,9 +1643,9 @@
                 const controls = item.querySelectorAll('select, button');
                 controls.forEach(control => control.disabled = true);
                 
-                // Show success feedback
-                showNotification(`Text assigned to section ${sectionId}`, 'success');
-                
+                // Visual feedback only - no popup notification
+                // showNotification removed to reduce interruptions
+
                 checkIfAllItemsProcessed();
             }
         }
@@ -1653,26 +1653,25 @@
         function skipText(index) {
             const item = document.querySelector(`.unconnected-item[data-index="${index}"]`);
             item.classList.add('skipped');
-            
+
             // Disable controls
             const controls = item.querySelectorAll('select, button');
             controls.forEach(control => control.disabled = true);
-            
-            showNotification('Text skipped', 'info');
-            
+
+            // No notification - visual feedback is enough
+
             checkIfAllItemsProcessed();
         }
 
         function checkIfAllItemsProcessed() {
             const allItems = document.querySelectorAll('.unconnected-item');
             const processedItems = document.querySelectorAll('.unconnected-item.assigned, .unconnected-item.skipped');
-            
-            if (allItems.length === processedItems.length) {
+
+            // Auto-close when all processed - no confirmation needed
+            if (allItems.length === processedItems.length && allItems.length > 0) {
                 setTimeout(() => {
-                    if (confirm('All text items have been processed. Close the assignment window?')) {
-                        closeUnconnectedModal();
-                    }
-                }, 500);
+                    closeUnconnectedModal();
+                }, 800);
             }
         }
 
