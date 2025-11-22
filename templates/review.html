@@ -63,31 +63,26 @@
         
         /* Sidebar - Sticky positioning for natural scrolling */
         body[data-page="review"] aside.right-sidebar {
-            position: sticky;
-            top: 90px;
-            align-self: flex-start;
-            width: 250px;
-            max-height: calc(100vh - 100px);
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-light);
-            border-radius: 8px;
-            padding: 15px;
-            overflow-y: auto;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            position: sticky !important;
+            top: 100px !important;
+            align-self: flex-start !important;
+            width: 280px !important;
+            min-width: 280px !important;
+            max-height: calc(100vh - 120px) !important;
+            background-color: var(--bg-card) !important;
+            border: 1px solid var(--border-light) !important;
+            border-radius: 8px !important;
+            padding: 15px !important;
+            overflow-y: auto !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+            order: 2 !important;
         }
         
-        /* Review page layout using CSS Grid */
+        /* Review page container - simple wrapper */
         body[data-page="review"] .container {
-            display: grid;
-            grid-template-columns: 1fr 270px;
-            gap: 20px;
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        body[data-page="review"] .review-layout {
-            grid-column: 1;
+            max-width: 100%;
+            padding: 0;
+            margin: 0;
         }
 
         /* Enhanced Review Page Styles */
@@ -111,19 +106,21 @@
             border-color: var(--border-light);
         }
         
-        /* Fixed Right Sidebar Styles - Override main CSS */
+        /* Fixed Right Sidebar Styles - Proper flex layout */
         .review-layout {
-            display: block !important;
-            gap: 0 !important;
-            max-width: none !important;
-            margin: 0 !important;
+            display: flex !important;
+            flex-direction: row !important;
+            gap: 30px !important;
+            max-width: 1600px !important;
+            margin: 0 auto !important;
             padding: 20px !important;
             position: relative !important;
+            align-items: flex-start !important;
         }
-        
+
         .main-content {
             flex: 1 !important;
-            margin-right: 0 !important; /* no reserved space, sidebar is outside */
+            margin-right: 0 !important;
             min-width: 0 !important;
             order: 1 !important;
         }
@@ -496,27 +493,20 @@
             transition: opacity 0.2s;
         }
         
-        /* Responsive adjustments - Desktop main content spacing */
-        @media (min-width: 1200px) {
-            body[data-page="review"] .main-content {
-                margin-right: 0 !important;
-            }
-        }
-        
         /* Responsive layout for smaller screens */
         @media (max-width: 1199px) {
-            body[data-page="review"] .container {
-                grid-template-columns: 1fr;
-                gap: 15px;
+            .review-layout {
+                flex-direction: column !important;
             }
 
             body[data-page="review"] .right-sidebar {
-                position: relative;
-                top: unset;
-                width: 100%;
-                max-height: none;
-                order: -1;
-                margin-bottom: 20px;
+                position: relative !important;
+                top: unset !important;
+                width: 100% !important;
+                min-width: 0 !important;
+                max-height: none !important;
+                order: -1 !important;
+                margin-bottom: 20px !important;
             }
         }
 
@@ -793,8 +783,8 @@
             <div class="review-layout">
                 <!-- Main Content Area -->
                 <main class="main-content">
-                <!-- Questions Container -->
-                <div class="questions-container">
+                    <!-- Questions Container -->
+                    <div class="questions-container">
                     {% for section_id, content in extracted_content.items() %}
                     {% if content and content.get('section') and content.get('question') %}
                     <div class="question-card" id="section-{{ section_id }}" data-id="{{ section_id }}">
@@ -899,8 +889,47 @@
                     {% endif %}
                     {% endfor %}
                 </div>
-            </main>
-            
+                </main>
+
+                <!-- Right Sidebar - Now inside review-layout for proper sticky positioning -->
+                <aside class="right-sidebar">
+                    <!-- Action Buttons -->
+                    <div class="sidebar-actions">
+                        <button id="compile-feedback-btn" class="action-btn primary" style="width: 100%; margin-bottom: 10px;">Compile Feedback</button>
+                        <button id="save-feedback-btn" class="action-btn secondary" style="width: 100%; margin-bottom: 20px;">Save Progress</button>
+                    </div>
+
+                    <div class="navigation-pane">
+                        <h3>Quick Navigation</h3>
+                        <div class="nav-grid" id="section-nav-grid">
+                            <!-- Navigation buttons will be generated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Language Switcher for Comments -->
+                    <div class="language-switcher-pane">
+                        <h3>Comment Language</h3>
+                        <div class="language-switcher">
+                            <button id="lang-en-btn" class="lang-btn active" data-lang="en" title="English comments">
+                                <i class="fas fa-language"></i> EN
+                            </button>
+                            <button id="lang-pl-btn" class="lang-btn" data-lang="pl" title="Polski komentarze">
+                                <i class="fas fa-language"></i> PL
+                            </button>
+                        </div>
+                        <p class="lang-note">Switch comment language only</p>
+                    </div>
+
+                    <!-- Quick Comments -->
+                    <div class="quick-comments-pane">
+                        <h3>Quick Comments</h3>
+                        <div class="quick-comments-list" id="quick-comments-list">
+                            <!-- Quick comments will be loaded here -->
+                            <div class="no-comments">No quick comments available. Add them in Template Editor.</div>
+                        </div>
+                    </div>
+                </aside>
+
             </div> <!-- End review-layout -->
             
             <!-- Unconnected Text Assignment Modal -->
@@ -982,47 +1011,7 @@
             </div>
             
         </div>
-        
-    </div>
 
-    <!-- Right Sidebar - Direct child of body for proper fixed positioning -->
-    <aside class="right-sidebar">
-            <!-- Action Buttons -->
-            <div class="sidebar-actions">
-                <button id="compile-feedback-btn" class="action-btn primary" style="width: 100%; margin-bottom: 10px;">Compile Feedback</button>
-                <button id="save-feedback-btn" class="action-btn secondary" style="width: 100%; margin-bottom: 20px;">Save Progress</button>
-            </div>
-
-            <div class="navigation-pane">
-                <h3>Quick Navigation</h3>
-                <div class="nav-grid" id="section-nav-grid">
-                    <!-- Navigation buttons will be generated by JavaScript -->
-                </div>
-            </div>
-
-            <!-- Language Switcher for Comments -->
-            <div class="language-switcher-pane">
-                <h3>Comment Language</h3>
-                <div class="language-switcher">
-                    <button id="lang-en-btn" class="lang-btn active" data-lang="en" title="English comments">
-                        <i class="fas fa-language"></i> EN
-                    </button>
-                    <button id="lang-pl-btn" class="lang-btn" data-lang="pl" title="Polski komentarze">
-                        <i class="fas fa-language"></i> PL
-                    </button>
-                </div>
-                <p class="lang-note">Switch comment language only</p>
-            </div>
-
-            <!-- Quick Comments -->
-            <div class="quick-comments-pane">
-                <h3>Quick Comments</h3>
-                <div class="quick-comments-list" id="quick-comments-list">
-                    <!-- Quick comments will be loaded here -->
-                    <div class="no-comments">No quick comments available. Add them in Template Editor.</div>
-                </div>
-            </div>
-        </aside>
     </div>
     
     <footer class="site-footer site-footer--relative">
