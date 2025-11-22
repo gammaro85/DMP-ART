@@ -1663,6 +1663,8 @@
             checkIfAllItemsProcessed();
         }
 
+        let autoCloseTimeout = null;
+
         function checkIfAllItemsProcessed() {
             const allItems = document.querySelectorAll('.unconnected-item');
             const processedItems = document.querySelectorAll('.unconnected-item.assigned, .unconnected-item.skipped');
@@ -1676,10 +1678,89 @@
             }
         }
 
+        function showAutoCloseNotification() {
+            // Create notification with cancel option
+            const notification = document.createElement('div');
+            notification.className = 'notification notification-info';
+            notification.innerHTML = `
+                <span>All items processed. Closing in 3 seconds...</span>
+                <button onclick="cancelAutoClose()" style="
+                    margin-left: 15px;
+                    padding: 4px 12px;
+                    background: white;
+                    color: var(--primary-color);
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    font-size: 12px;
+                ">Keep Open</button>
+            `;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                border-radius: 6px;
+                color: white;
+                font-weight: 500;
+                z-index: 10000;
+                transition: all 0.3s ease;
+                background: var(--primary-color);
+                display: flex;
+                align-items: center;
+            `;
+            
+            notification.id = 'auto-close-notification';
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => notification.style.transform = 'translateX(0)', 10);
+            
+            // Remove notification when modal closes or after timeout
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.style.opacity = '0';
+                    notification.style.transform = 'translateX(100%)';
+                    setTimeout(() => notification.remove(), 300);
+                }
+            }, 3300);
+        }
+
+        function cancelAutoClose() {
+            // Clear the auto-close timeout
+            if (autoCloseTimeout) {
+                clearTimeout(autoCloseTimeout);
+                autoCloseTimeout = null;
+            }
+            
+            // Remove notification
+            const notification = document.getElementById('auto-close-notification');
+            if (notification) {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => notification.remove(), 300);
+            }
+            
+            showNotification('Modal will stay open', 'success');
+        }
+
         function closeUnconnectedModal() {
             const modal = document.getElementById('unconnected-text-modal');
             if (modal) {
                 modal.style.display = 'none';
+            }
+            
+            // Clear auto-close timeout if it exists
+            if (autoCloseTimeout) {
+                clearTimeout(autoCloseTimeout);
+                autoCloseTimeout = null;
+            }
+            
+            // Remove notification if it exists
+            const notification = document.getElementById('auto-close-notification');
+            if (notification) {
+                notification.remove();
             }
         }
 
