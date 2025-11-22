@@ -64,8 +64,9 @@
             display: flex !important;
             flex-direction: row !important;
             gap: 30px !important;
-            max-width: 1600px !important;
-            margin: 0 auto !important;
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 !important;
             padding: 20px !important;
             position: relative !important;
             align-items: flex-start !important;
@@ -83,9 +84,9 @@
             position: sticky !important;
             top: 100px !important;
             align-self: flex-start !important;
-            width: 280px !important;
-            min-width: 280px !important;
-            max-width: 280px !important;
+            width: 300px !important;
+            min-width: 300px !important;
+            max-width: 300px !important;
             max-height: calc(100vh - 120px) !important;
             background-color: var(--bg-card) !important;
             border: 1px solid var(--border-light) !important;
@@ -466,7 +467,7 @@
         }
         
         /* Responsive layout for smaller screens */
-        @media (max-width: 1199px) {
+        @media (max-width: 900px) {
             .review-layout {
                 flex-direction: column !important;
             }
@@ -476,6 +477,7 @@
                 top: unset !important;
                 width: 100% !important;
                 min-width: 0 !important;
+                max-width: none !important;
                 max-height: none !important;
                 order: -1 !important;
                 margin-bottom: 20px !important;
