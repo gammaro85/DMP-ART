@@ -655,8 +655,8 @@ h3.subsection-title {
     }
 }
 
-/* Responsive layout for VERY small screens only (10% of cases) */
-@media (max-width: 1023px) {
+/* Responsive layout for tablets and small desktops (up to 1199px) */
+@media (max-width: 1199px) {
     .review-layout {
         flex-direction: column !important;
     }
