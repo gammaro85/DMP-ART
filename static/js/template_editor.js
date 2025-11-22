@@ -2,13 +2,19 @@
 (function () {
     'use strict';
 
+    // Global state for dynamic categories
+    let availableCategories = [];
+
     // Wait for DOM to be ready
     document.addEventListener('DOMContentLoaded', function () {
         initializeTemplateEditor();
     });
 
-    function initializeTemplateEditor() {
+    async function initializeTemplateEditor() {
         console.log('Initializing template editor...');
+
+        // Load categories dynamically first
+        await loadDynamicCategories();
 
         // Initialize all tabs
         initializeTabSwitching();
@@ -18,6 +24,246 @@
         initializeStructureTab();
 
         console.log('Template editor initialized successfully');
+    }
+
+    // DYNAMIC CATEGORY LOADING
+    async function loadDynamicCategories() {
+        try {
+            const response = await fetch('/api/discover-categories');
+            const data = await response.json();
+
+            if (data.success) {
+                availableCategories = data.categories;
+                renderCategoryTabs();
+                console.log(`Loaded ${data.count} categories dynamically`);
+            } else {
+                console.error('Failed to load categories:', data.message);
+                showNotification('Failed to load categories', 'error');
+            }
+        } catch (error) {
+            console.error('Error discovering categories:', error);
+            showNotification('Error loading categories', 'error');
+        }
+    }
+
+    function renderCategoryTabs() {
+        const tabNav = document.getElementById('tab-navigation');
+        const tabContent = document.getElementById('tab-content');
+
+        if (!tabNav || !tabContent) {
+            console.error('Tab navigation or content element not found');
+            return;
+        }
+
+        // Find add button (we'll re-add it at the end)
+        const addBtn = tabNav.querySelector('.add-category-btn');
+
+        // Remove existing dynamic category tabs
+        const existingTabs = tabNav.querySelectorAll('[data-tab]');
+        existingTabs.forEach(tab => {
+            const tabType = tab.getAttribute('data-tab');
+            if (tabType !== 'dmp-structure' && tabType !== 'quick-comments') {
+                tab.remove();
+            }
+        });
+
+        // Remove existing dynamic category panels
+        const existingPanels = tabContent.querySelectorAll('[id$="-panel"]');
+        existingPanels.forEach(panel => {
+            const panelId = panel.id;
+            if (!panelId.includes('dmp-structure') && !panelId.includes('quick-comments')) {
+                panel.remove();
+            }
+        });
+
+        // Add dynamic category tabs
+        availableCategories.forEach(category => {
+            // Create tab button
+            const btn = document.createElement('button');
+            btn.className = 'tab-btn';
+            btn.setAttribute('data-tab', category.id);
+            btn.innerHTML = `
+                <i class="fas fa-tags"></i>
+                ${category.display_name}
+                <button class="delete-category-btn" onclick="event.stopPropagation(); deleteCategoryConfirm('${category.id}')" title="Delete category">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+
+            // Insert before add button
+            if (addBtn) {
+                tabNav.insertBefore(btn, addBtn);
+            } else {
+                tabNav.appendChild(btn);
+            }
+
+            // Create tab panel
+            const panel = document.createElement('div');
+            panel.className = 'tab-panel';
+            panel.id = `${category.id}-panel`;
+            panel.innerHTML = `
+                <div class="panel-header">
+                    <h2>${category.display_name}</h2>
+                    <p>Edit feedback templates for the ${category.display_name} category.</p>
+                </div>
+                <div class="category-content" id="${category.id}-content">
+                    Loading...
+                </div>
+            `;
+
+            tabContent.appendChild(panel);
+        });
+
+        // Re-attach click handlers after rendering
+        attachTabClickHandlers();
+    }
+
+    function attachTabClickHandlers() {
+        const tabs = document.querySelectorAll('.tab-btn');
+
+        tabs.forEach(tab => {
+            // Remove existing listeners by cloning
+            const newTab = tab.cloneNode(true);
+            tab.parentNode.replaceChild(newTab, tab);
+
+            newTab.addEventListener('click', function(e) {
+                // Don't trigger if clicking delete button
+                if (e.target.closest('.delete-category-btn')) {
+                    return;
+                }
+
+                const targetTab = this.getAttribute('data-tab');
+
+                // Remove active class from all tabs and panels
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+
+                // Add active class to clicked tab
+                this.classList.add('active');
+
+                // Show corresponding panel
+                const targetPanel = document.getElementById(`${targetTab}-panel`);
+                if (targetPanel) {
+                    targetPanel.classList.add('active');
+
+                    // Load category content if it's a dynamic category
+                    if (targetTab !== 'dmp-structure' && targetTab !== 'quick-comments') {
+                        loadCategoryContent(targetTab);
+                    }
+                }
+            });
+        });
+
+        // Add click handler for "Create Category" button
+        const addBtn = document.getElementById('add-category-btn');
+        if (addBtn) {
+            addBtn.onclick = createNewCategory;
+        }
+    }
+
+    async function loadCategoryContent(categoryId) {
+        const contentDiv = document.getElementById(`${categoryId}-content`);
+        if (!contentDiv) return;
+
+        try {
+            const response = await fetch(`/config/${categoryId}.json`);
+            const data = await response.json();
+
+            // Render category content here
+            contentDiv.innerHTML = '<p>Category content loaded (feature in development)</p>';
+            // TODO: Render editable sections based on data
+        } catch (error) {
+            console.error(`Error loading category ${categoryId}:`, error);
+            contentDiv.innerHTML = '<p class="error">Error loading category content</p>';
+        }
+    }
+
+    function createNewCategory() {
+        const categoryName = prompt('Enter new category name (lowercase, no spaces):');
+        if (!categoryName) return;
+
+        // Validate category name
+        if (!/^[a-z0-9_]+$/.test(categoryName)) {
+            showNotification('Category name must be lowercase alphanumeric with underscores only', 'error');
+            return;
+        }
+
+        // Check if category already exists
+        if (availableCategories.some(c => c.id === categoryName)) {
+            showNotification('Category already exists', 'error');
+            return;
+        }
+
+        // Create empty category file
+        const emptyCategory = {
+            "_category_name": categoryName,
+            "1.1": {},
+            "1.2": {},
+            "2.1": {},
+            "2.2": {},
+            "3.1": {},
+            "3.2": {},
+            "4.1": {},
+            "4.2": {},
+            "5.1": {},
+            "5.2": {},
+            "5.3": {},
+            "5.4": {},
+            "6.1": {},
+            "6.2": {}
+        };
+
+        // Save new category (you'll need a backend endpoint for this)
+        fetch(`/api/create-category`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: categoryName, content: emptyCategory })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Category created successfully', 'success');
+                loadDynamicCategories(); // Reload categories
+            } else {
+                showNotification(data.message || 'Failed to create category', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error creating category:', error);
+            showNotification('Error creating category', 'error');
+        });
+    }
+
+    function deleteCategoryConfirm(categoryId) {
+        if (!confirm(`Are you sure you want to delete the "${categoryId}" category? This cannot be undone.`)) {
+            return;
+        }
+
+        fetch(`/api/delete-category/${categoryId}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Category deleted successfully', 'success');
+                loadDynamicCategories(); // Reload categories
+            } else {
+                showNotification(data.message || 'Failed to delete category', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting category:', error);
+            showNotification('Error deleting category', 'error');
+        });
+    }
+
+    // Make deleteCategoryConfirm available globally for onclick handler
+    window.deleteCategoryConfirm = deleteCategoryConfirm;
+
+    function showNotification(message, type = 'info') {
+        // Simple notification - can be enhanced with toast library
+        console.log(`[${type.toUpperCase()}] ${message}`);
+        alert(message);
     }
 
     // TAB SWITCHING FUNCTIONALITY

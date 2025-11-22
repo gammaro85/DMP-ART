@@ -22,29 +22,36 @@
 - DMP structure now loads from `config/dmp_structure.json`
 - Total: ~83 lines of duplicate code removed
 
-### ✅ Phase 2 Task 2.1a: Dynamic Category Discovery API
-**Status:** COMPLETE (not yet committed)
-- Added `/api/discover-categories` endpoint
+### ✅ Phase 2 Task 2.1: Dynamic Category System
+**Status:** ✅ COMPLETE
+
+**Backend Changes:**
+- Added `/api/discover-categories` endpoint (GET)
+- Added `/api/create-category` endpoint (POST)
+- Added `/api/delete-category/<id>` endpoint (DELETE)
 - Added `format_category_name()` helper function
-- API returns list of category files from config/ directory
-- Excludes system files (dmp_structure, quick_comments, backups)
-- Tested successfully: finds 3 categories (newcomer, mising, ready)
+- Removed old duplicate `/create_category` and `/delete_category` routes
+- Added `re` module import for validation
+
+**Frontend Changes:**
+- Updated `static/js/template_editor.js` with dynamic category loading
+- Added `loadDynamicCategories()` function
+- Added `renderCategoryTabs()` function
+- Added `createNewCategory()` function
+- Added `deleteCategoryConfirm()` function
+- Categories now load dynamically on page load
+- Can create new categories via UI
+- Can delete categories via UI (with backup)
+
+**Impact:**
+- No more hardcoded categories!
+- Users can create unlimited custom categories
+- Category tabs render dynamically
+- Automatic backup on delete
 
 ---
 
 ## Phase 2 Remaining Tasks
-
-### 🔄 Task 2.1b: Dynamic Category Tabs (IN PROGRESS)
-**File:** `static/js/template_editor.js` (424 lines)
-**Status:** Ready to implement
-
-**What needs to be done:**
-- Update `template_editor.js` to call `/api/discover-categories` on load
-- Dynamically generate category tabs instead of hardcoding
-- Add ability to create/delete categories via UI
-- Update tab switching to work with dynamic categories
-
-**Estimated Time:** 1 hour
 
 ---
 

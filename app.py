@@ -5,6 +5,7 @@ import time
 import threading
 import zipfile
 import uuid
+import re
 from datetime import datetime
 from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for, Response, stream_with_context
 from werkzeug.utils import secure_filename
@@ -804,6 +805,99 @@ def format_category_name(category_id):
     # Default: title case with underscores replaced
     return category_id.replace('_', ' ').title()
 
+
+@app.route('/api/create-category', methods=['POST'])
+def create_category():
+    """Create a new category file"""
+    try:
+        data = request.json or {}
+        category_name = data.get('name', '').strip()
+        category_content = data.get('content', {})
+
+        if not category_name:
+            return jsonify({
+                'success': False,
+                'message': 'Category name is required'
+            }), 400
+
+        # Validate category name (alphanumeric with underscores only)
+        if not re.match(r'^[a-z0-9_]+$', category_name):
+            return jsonify({
+                'success': False,
+                'message': 'Category name must be lowercase alphanumeric with underscores only'
+            }), 400
+
+        # Check if category already exists
+        category_path = os.path.join('config', f'{category_name}.json')
+        if os.path.exists(category_path):
+            return jsonify({
+                'success': False,
+                'message': 'Category already exists'
+            }), 409
+
+        # Create category file
+        with open(category_path, 'w', encoding='utf-8') as f:
+            json.dump(category_content, f, indent=2, ensure_ascii=False)
+
+        return jsonify({
+            'success': True,
+            'message': f'Category "{category_name}" created successfully',
+            'category': {
+                'id': category_name,
+                'filename': f'{category_name}.json',
+                'display_name': format_category_name(category_name)
+            }
+        })
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': str(e)
+        }), 500
+
+
+@app.route('/api/delete-category/<category_id>', methods=['DELETE'])
+def delete_category(category_id):
+    """Delete a category file"""
+    try:
+        # Prevent deletion of system files
+        if category_id in ['dmp_structure', 'quick_comments', 'category_comments']:
+            return jsonify({
+                'success': False,
+                'message': 'Cannot delete system files'
+            }), 403
+
+        category_path = os.path.join('config', f'{category_id}.json')
+
+        if not os.path.exists(category_path):
+            return jsonify({
+                'success': False,
+                'message': 'Category not found'
+            }), 404
+
+        # Create backup before deleting
+        backup_name = f'{category_id}_backup_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json'
+        backup_path = os.path.join('config', backup_name)
+
+        # Copy to backup
+        import shutil
+        shutil.copy2(category_path, backup_path)
+
+        # Delete the category file
+        os.remove(category_path)
+
+        return jsonify({
+            'success': True,
+            'message': f'Category "{category_id}" deleted successfully (backup created)',
+            'backup_file': backup_name
+        })
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': str(e)
+        }), 500
+
 @app.route('/save_quick_comments', methods=['POST'])
 def save_quick_comments():
     """Save quick comments"""
@@ -883,95 +977,6 @@ def list_categories():
             'message': f'Error listing categories: {str(e)}'
         })
 
-@app.route('/create_category', methods=['POST'])
-def create_category():
-    """Create a new category file"""
-    try:
-        data = request.json or {}
-        name = data.get('name', '').strip()
-        
-        if not name:
-            return jsonify({
-                'success': False,
-                'message': 'Category name is required'
-            })
-        
-        file_name = name.lower().replace(' ', '_')
-        category_path = os.path.join('config', f'{file_name}.json')
-        
-        if os.path.exists(category_path):
-            return jsonify({
-                'success': False,
-                'message': 'Category with this name already exists'
-            })
-        
-        category_data = {}
-        
-        with open(category_path, 'w', encoding='utf-8') as f:
-            json.dump(category_data, f, indent=2, ensure_ascii=False)
-        
-        return jsonify({
-            'success': True,
-            'message': f'Category "{name}" created successfully',
-            'file': file_name
-        })
-        
-    except Exception as e:
-        return jsonify({
-            'success': False,
-            'message': f'Error creating category: {str(e)}'
-        })
-
-@app.route('/delete_category', methods=['POST'])
-def delete_category():
-    """Delete a category file"""
-    try:
-        data = request.json or {}
-        file = data.get('file', '').strip()
-        
-        if not file:
-            return jsonify({
-                'success': False,
-                'message': 'File name is required'
-            })
-        
-        category_path = os.path.join('config', f'{file}.json')
-        
-        if not os.path.exists(category_path):
-            return jsonify({
-                'success': False,
-                'message': 'Category file does not exist'
-            })
-        
-        os.remove(category_path)
-        
-        return jsonify({
-            'success': True,
-            'message': f'Category "{file}" deleted successfully'
-        })
-        
-    except Exception as e:
-        return jsonify({
-            'success': False,
-            'message': f'Error deleting category: {str(e)}'
-        })
-
-@app.route('/config/<filename>')
-def serve_config(filename):
-    """Serve config files"""
-    try:
-        config_path = os.path.join('config', filename)
-        if not os.path.exists(config_path):
-            return jsonify({'error': 'File not found'}), 404
-        
-        with open(config_path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            return data if isinstance(data, dict) else {}
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/test_categories')
-def test_categories():
     """Test endpoint to debug category loading"""
     try:
         config_dir = 'config'
