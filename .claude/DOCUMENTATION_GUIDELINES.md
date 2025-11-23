@@ -192,6 +192,12 @@ principles when designing routes...
 **Purpose:** GitHub Copilot agent configuration
 **Updates:** When agent behavior needs tuning
 
+#### `.github/copilot-instructions.md`
+**Purpose:** Onboarding instructions for GitHub Copilot and Claude agents
+**Updates:** When setup commands, architecture, or common patterns change
+**Length:** ~300 lines (concise, 2-page limit)
+**Content:** Setup validation, build commands, architecture overview, troubleshooting
+
 #### `requirements.txt`
 **Purpose:** Python dependencies
 **Updates:** When dependencies change

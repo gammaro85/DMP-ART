@@ -376,11 +376,6 @@ python app.py
 
 ### Automated Testing
 
-**Run unit tests:**
-```bash
-python -m pytest tests/unit/test_extractor.py -v
-```
-
 **Run performance benchmarks:**
 ```bash
 python test_extractor_optimization.py
@@ -389,8 +384,17 @@ python test_extractor_optimization.py
 **Test real files:**
 ```bash
 python test_real_files.py
-# Requires test files in tests/fixtures/
+# NOTE: Requires /pzd directory with test PDF/DOCX files
+# This directory is not included in the repository
+# Test will fail with FileNotFoundError if missing - this is expected
 ```
+
+**Run integration tests:**
+```bash
+python test_integration_workflow.py
+```
+
+**Note:** No pytest/unittest framework used. Tests are custom Python scripts that can be run directly.
 
 ### OCR Testing
 
@@ -713,6 +717,7 @@ git push -u origin <branch-name>
 - **`HISTORY.md`** - Chronological project history with all major changes
 - **`FINAL_TEST_RESULTS.md`** - Current test results and quality metrics
 - **`.claude/DOCUMENTATION_GUIDELINES.md`** - Standards for maintaining documentation
+- **`.github/copilot-instructions.md`** - GitHub Copilot/Claude onboarding instructions
 - **`README.md`** - Project overview (simplified, GitHub-facing)
 
 **Documentation Principles:**
