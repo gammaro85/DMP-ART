@@ -36,7 +36,7 @@
             </button>
         </nav>
     </header>
-    <div class="container" style="margin:0;max-width:100vw;width:100vw;padding-left:0;padding-right:0;">
+    <div class="container index-container">
         <div class="main-logo-section">
             <div class="logo-container">
                 <img src="{{ url_for('static', filename='images/dmp-art-logo-main-light.png') }}"
@@ -57,25 +57,25 @@
         <div id="drop-area" class="upload-area">
             <div class="upload-text">Drag &amp; drop your DMP file here or click to select</div>
             <input id="file-input" type="file" accept=".pdf,.docx" class="file-input" />
-            <div id="file-info" class="file-info" style="display:none;">
+            <div id="file-info" class="file-info hidden">
                 <span id="file-name" class="file-name"></span>
             </div>
 
             <!-- Real-time Progress Bar -->
-            <div id="progress-container" class="progress-container" style="display:none;">
+            <div id="progress-container" class="progress-container hidden">
                 <div class="progress-header">
                     <span id="progress-message" class="progress-message">Processing...</span>
                     <span id="progress-percentage" class="progress-percentage">0%</span>
                 </div>
                 <div class="progress-bar-wrapper">
                     <div id="progress-bar" class="progress-bar">
-                        <div id="progress-fill" class="progress-fill" style="width: 0%;"></div>
+                        <div id="progress-fill" class="progress-fill"></div>
                     </div>
                 </div>
                 <div id="progress-status" class="progress-status">Initializing...</div>
             </div>
 
-            <div class="upload-actions" style="gap: 2rem;">
+            <div class="upload-actions gap-2xl">
                 <button id="upload-btn" class="primary-btn" disabled>Process File</button>
                 <button id="clear-btn" class="secondary-btn" disabled>Clear</button>
             </div>
