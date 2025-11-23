@@ -1677,9 +1677,9 @@
                     // Show reopen option after closing
                     showReopenOption();
                 }, 2000);
+            } else {
+                showNotification('Modal will stay open', 'success');
             }
-            
-            showNotification('Modal will stay open', 'success');
         }
 
         function closeUnconnectedModal(assignedCount = 0, skippedCount = 0) {
