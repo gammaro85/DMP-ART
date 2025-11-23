@@ -1,7 +1,7 @@
 # DMP-ART: AI Agent Development Guide
 
 **Version:** 0.8.1
-**Last Updated:** 2025-11-19
+**Last Updated:** 2025-11-23
 **Purpose:** Context and instructions for AI agents working on this codebase
 
 ---
@@ -21,15 +21,18 @@ DMP-ART (Data Management Plan Assessment and Response Tool) is a web application
 ### Technology Stack
 
 **Backend:**
-- Python 3.8+ with Flask 3.1.0
+- Python 3.8+ with Flask 3.1.1
 - PyPDF2 3.0.1 (PDF processing)
 - python-docx 1.1.2 (DOCX processing)
+- Werkzeug 3.1.3 (security utilities)
+- Pillow 11.0.0 (image processing for OCR)
 - pytesseract + Tesseract OCR 5.3+ (scanned PDF support)
 
 **Frontend:**
-- Vanilla JavaScript (no frameworks)
+- Vanilla JavaScript (no frameworks, but now organized in separate files)
 - HTML5 + CSS3 with custom properties
-- Dark/Light theme system
+- Dark/Light theme system with dedicated dark-mode.js
+- Modular JS architecture (script.js, template_editor.js)
 
 **Data Storage:**
 - JSON files in `config/` directory
@@ -44,9 +47,12 @@ DMP-ART (Data Management Plan Assessment and Response Tool) is a web application
 
 ```
 app.py                              # Flask routes, upload handling, main logic
-utils/extractor.py                  # Core DMP extraction engine (1,236 lines)
-templates/review.html               # Main review interface (1,789 lines)
-static/css/style.css                # Unified styling (980 lines, dark/light themes)
+utils/extractor.py                  # Core DMP extraction engine (2,101 lines)
+templates/review.html               # Main review interface (2,341 lines)
+static/css/style.css                # Unified styling (1,596 lines, dark/light themes)
+static/js/script.js                 # Main JavaScript functionality (42KB)
+static/js/template_editor.js        # Template editor logic (28KB)
+static/js/dark-mode.js              # Theme management (4KB)
 ```
 
 ### Configuration Files (User-Editable)
@@ -68,18 +74,26 @@ templates/                          # Jinja2 HTML templates
 ├── index.html                      # Upload page
 ├── review.html                     # Review interface (main UI)
 ├── template_editor.html            # Configuration management
-└── documentation.html              # User documentation
+├── documentation.html              # User documentation
+└── test_categories.html            # Category testing interface
 
 static/
 ├── css/style.css                   # Main stylesheet
-├── js/                             # (No separate JS files, embedded in HTML)
+├── js/
+│   ├── script.js                   # Main application logic
+│   ├── template_editor.js          # Template editor functionality
+│   └── dark-mode.js                # Theme switching logic
 └── images/                         # Logos and assets
 
 utils/
-└── extractor.py                    # DMPExtractor class
+├── extractor.py                    # DMPExtractor class
+└── dmp-three-categories.py         # Category migration utility
 
 uploads/                            # Temporary file storage (cleaned on processing)
-outputs/                            # Generated DOCX files + JSON cache
+outputs/
+├── cache/                          # JSON cache files (cache_*.json)
+├── dmp/                            # Extracted DMP files
+└── reviews/                        # Feedback/review files
 ```
 
 ---
@@ -157,13 +171,19 @@ if result['success']:
 ```
 
 **Cache System:**
-- Cache files: `outputs/cache_{uuid}.json`
+- Cache files: `outputs/cache/cache_{uuid}.json`
 - Structure: `{"1.1": {section, question, paragraphs, tagged_paragraphs}, ...}`
 - UUID ensures no collisions across concurrent uploads
+- Organized folder structure: DMP files in `outputs/dmp/`, reviews in `outputs/reviews/`
 
 ### Frontend JavaScript Patterns
 
-**No build tools** - All JavaScript is embedded in HTML templates
+**No build tools** - JavaScript is now organized in separate files but served as vanilla JS without bundling
+
+**File Organization:**
+- `static/js/script.js` - Main application logic, AJAX handlers, UI interactions
+- `static/js/template_editor.js` - Template editor specific functionality
+- `static/js/dark-mode.js` - Theme management and persistence
 
 **Common patterns:**
 ```javascript
@@ -292,6 +312,37 @@ def new_feature():
         app.logger.error(f'Error in new_feature: {str(e)}')
         return jsonify({'success': False, 'message': str(e)}), 500
 ```
+
+### Current API Routes
+
+**Main Routes:**
+- `GET /` - Home/upload page
+- `POST /upload` - File upload and processing
+- `GET /review/<filename>` - Review interface for extracted DMP
+- `GET /download/<filename>` - Download processed files
+- `GET /documentation` - User documentation page
+- `GET /template_editor` - Template configuration interface
+- `GET /test_categories_page` - Category testing interface
+
+**Template Management:**
+- `POST /save_templates` - Save DMP question templates
+- `POST /save_dmp_structure` - Update DMP structure configuration
+- `POST /save_quick_comments` - Save quick comment templates
+- `POST /save_category` - Save category configurations
+- `POST /save_category_comments` - Save comments for specific category
+- `GET /load_categories` - Retrieve available categories
+- `GET /load_category_comments` - Get comments for specific category
+
+**Category API:**
+- `GET /api/discover-categories` - Discover all available categories
+- `POST /api/create-category` - Create new category
+- `DELETE /api/delete-category/<category_id>` - Delete category
+
+**Review/Feedback:**
+- `POST /save_feedback` - Save review feedback
+- `POST /export_json` - Export data as JSON
+
+**Note:** All POST endpoints follow the standard JSON response pattern with `{success: bool, message: string, data: object}` structure.
 
 ---
 
@@ -537,13 +588,17 @@ CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]
 ### Common Git Commands for This Project
 
 ```bash
-# Before making changes
-git checkout claude/reorganize-documentation-01NQ1rExTCxz3Qz3MgHHZe3u
+# Check current branch
+git status
+git branch
 
 # After changes
 git add .
 git commit -m "Clear, descriptive message"
-git push -u origin claude/reorganize-documentation-01NQ1rExTCxz3Qz3MgHHZe3u
+git push -u origin <branch-name>
+
+# Note: Claude branches start with 'claude/' prefix
+# Example: claude/feature-name-sessionid
 ```
 
 ---
@@ -668,8 +723,39 @@ git push -u origin claude/reorganize-documentation-01NQ1rExTCxz3Qz3MgHHZe3u
 
 ---
 
-**Last Updated:** 2025-11-19
+**Last Updated:** 2025-11-23
 **Codebase Version:** 0.8.1
 **Extraction Success Rate:** 94.1% (tested on 17 real NCN proposals)
 **Target Users:** Data stewards at Polish research institutions
 **Core Value:** 75% time reduction in DMP review process
+
+---
+
+## Recent Changes (Since Last Update)
+
+### 2025-11-23 Update
+
+**Dependency Updates:**
+- Flask upgraded from 3.1.0 to 3.1.1 (security patches)
+- Werkzeug 3.1.3 added to dependencies
+- Pillow 11.0.0 added for image processing
+
+**Architecture Changes:**
+- JavaScript refactored from embedded code to separate modular files:
+  - `static/js/script.js` (42KB) - Main application logic
+  - `static/js/template_editor.js` (28KB) - Template editor
+  - `static/js/dark-mode.js` (4KB) - Theme management
+- File organization improved with dedicated folders:
+  - `outputs/cache/` for cache files
+  - `outputs/dmp/` for extracted DMPs
+  - `outputs/reviews/` for feedback files
+
+**Codebase Growth:**
+- `utils/extractor.py`: 1,236 → 2,101 lines (+70% more features)
+- `templates/review.html`: 1,789 → 2,341 lines (+31% enhanced UI)
+- `static/css/style.css`: 980 → 1,596 lines (+63% refined styling)
+
+**New Features:**
+- Test categories interface (`test_categories.html`)
+- Enhanced category management system
+- Improved file organization and naming conventions
