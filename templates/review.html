@@ -1672,7 +1672,7 @@
             // Auto-close when all processed with notification
             if (allItems.length === processedItems.length && allItems.length > 0) {
                 showNotification('All items processed. Modal closing...', 'success');
-                setTimeout(() => {
+                autoCloseTimeout = setTimeout(() => {
                     closeUnconnectedModal();
                     // Show reopen option after closing
                     showReopenOption();
