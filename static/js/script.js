@@ -670,6 +670,7 @@ function initializeReviewPage() {
         setupCompileButton(elements);
         setupSaveFeedbackButton(elements);
         initializeCharacterCounters();
+        initializeAutoResize();
 
         console.log('Review page initialized successfully');
     } catch (error) {
@@ -1009,6 +1010,52 @@ function updateCharacterCounter(sectionId) {
 }
 
 // ===========================================
+// AUTO-RESIZE TEXTAREAS
+// ===========================================
+
+/**
+ * Auto-resize a textarea to fit its content
+ * @param {HTMLTextAreaElement} textarea - The textarea element to resize
+ */
+function autoResizeTextarea(textarea) {
+    if (!textarea) return;
+
+    // Reset height to auto to get the correct scrollHeight
+    textarea.style.height = 'auto';
+
+    // Set height to scrollHeight plus a small buffer
+    const newHeight = Math.max(textarea.scrollHeight, 80); // Minimum 80px height
+    textarea.style.height = newHeight + 'px';
+}
+
+/**
+ * Initialize auto-resize for all textareas on the page
+ */
+function initializeAutoResize() {
+    console.log('Initializing auto-resize textareas...');
+
+    // Get all feedback textareas
+    const textareas = document.querySelectorAll('.feedback-text, .template-input, textarea');
+
+    textareas.forEach(textarea => {
+        // Set initial size
+        autoResizeTextarea(textarea);
+
+        // Add input event listener for auto-resize
+        textarea.addEventListener('input', function() {
+            autoResizeTextarea(this);
+        });
+
+        // Also resize on focus (in case content was changed programmatically)
+        textarea.addEventListener('focus', function() {
+            autoResizeTextarea(this);
+        });
+    });
+
+    console.log(`Auto-resize initialized for ${textareas.length} textareas`);
+}
+
+// ===========================================
 // TEMPLATE EDITOR FUNCTIONALITY
 // ===========================================
 
@@ -1025,6 +1072,7 @@ function initializeTemplateEditor() {
     try {
         setupTemplateButtons();
         setupTabSwitching();
+        initializeAutoResize();
         console.log('Template editor initialized successfully');
     } catch (error) {
         console.error('Error initializing template editor:', error);
