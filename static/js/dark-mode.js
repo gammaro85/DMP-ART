@@ -39,10 +39,17 @@
         },
 
         createToggleButton() {
-            // Check if button already exists
-            if (document.querySelector('.theme-toggle')) return;
+            // Check if button already exists in HTML
+            let button = document.querySelector('.theme-toggle');
 
-            const button = document.createElement('button');
+            if (button) {
+                // Button exists in HTML - just add event listener
+                button.addEventListener('click', () => this.toggleTheme());
+                return;
+            }
+
+            // Button doesn't exist - create it dynamically
+            button = document.createElement('button');
             button.className = 'theme-toggle';
             button.setAttribute('aria-label', 'Toggle dark mode');
             button.innerHTML = `
@@ -54,13 +61,22 @@
         },
 
         updateToggleButton(isDark) {
-            const icon = document.getElementById('theme-icon');
+            // Try to find icon by ID first (dynamically created button)
+            let icon = document.getElementById('theme-icon');
+
+            // If not found, try to find icon inside theme-toggle button (HTML button)
+            if (!icon) {
+                const button = document.querySelector('.theme-toggle');
+                if (button) {
+                    icon = button.querySelector('i');
+                }
+            }
 
             if (icon) {
                 // Sun for dark mode (to switch to light), moon for light mode (to switch to dark)
                 icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
             } else {
-                console.warn('updateToggleButton: Element with ID "theme-icon" not found. Ensure the toggle button is created properly.');
+                console.warn('updateToggleButton: Theme toggle icon not found.');
             }
         },
 
