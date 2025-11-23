@@ -706,18 +706,27 @@ git push -u origin <branch-name>
 
 ---
 
-## Contact and Support
+## Documentation Structure
 
-**Primary Documentation:**
-- This file (AI agent context)
-- README.md (user-facing overview)
-- USER_GUIDE_DATA_STEWARD.md (end-user guide)
-- INSTALLATION.md (setup instructions)
+**For AI Agents (Primary Documentation):**
+- **This file** (`.claude/CLAUDE.md`) - Complete AI agent guide to codebase
+- **`HISTORY.md`** - Chronological project history with all major changes
+- **`FINAL_TEST_RESULTS.md`** - Current test results and quality metrics
+- **`.claude/DOCUMENTATION_GUIDELINES.md`** - Standards for maintaining documentation
+- **`README.md`** - Project overview (simplified, GitHub-facing)
+
+**Documentation Principles:**
+1. **Single Source of Truth** - Each concept documented in ONE location only
+2. **Modify, Don't Create** - Update existing docs rather than create new files
+3. **Code References Over Prose** - Link to actual code with file:line references
+4. **For AI Agents, Not Humans** - Optimized for code assistants, not end users
+5. **Actionable Information** - Every section answers "What does an AI agent need to DO?"
 
 **For Issues:**
-- Check `FINAL_TEST_RESULTS.md` for known issues
-- Review recent git commits for context
-- Test with `test_extractor_optimization.py`
+- Check `FINAL_TEST_RESULTS.md` for known issues and test results
+- Review `HISTORY.md` for historical context and evolution
+- Follow patterns documented in this file
+- Consult `.claude/DOCUMENTATION_GUIDELINES.md` for documentation best practices
 
 **Remember:** This is a single-user tool optimized for Polish research administrators. Keep it simple, fast, and focused on the core use case.
 
