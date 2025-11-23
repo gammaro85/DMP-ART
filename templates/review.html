@@ -919,27 +919,27 @@
 
                 <!-- Hover Panels for Collapsed Sidebar -->
                 <div id="navigation-hover-panel" class="sidebar-hover-panel" data-panel="navigation">
-                    <h3 class="sidebar-section-heading">Quick Navigation</h3>
+                    <h3 style="margin-bottom: 0.75rem; font-size: 0.85rem; color: var(--text-primary);">Quick Navigation</h3>
                     <div class="nav-grid" id="hover-nav-grid">
                         <!-- Navigation buttons will be cloned here -->
                     </div>
                 </div>
 
                 <div id="comments-hover-panel" class="sidebar-hover-panel" data-panel="comments">
-                    <h3 class="sidebar-section-heading">Quick Comments</h3>
+                    <h3 style="margin-bottom: 0.75rem; font-size: 0.85rem; color: var(--text-primary);">Quick Comments</h3>
                     <div class="quick-comments-list" id="hover-comments-list">
                         <!-- Quick comments will be cloned here -->
                     </div>
                 </div>
 
                 <div id="options-hover-panel" class="sidebar-hover-panel" data-panel="options">
-                    <h3 class="sidebar-section-heading">Options</h3>
-                    <div class="sidebar-actions sidebar-actions-margin-bottom">
+                    <h3 style="margin-bottom: 0.75rem; font-size: 0.85rem; color: var(--text-primary);">Options</h3>
+                    <div class="sidebar-actions">
                         <button id="hover-compile-feedback-btn" class="action-btn primary sidebar-action-btn-fullwidth sidebar-action-btn-margin-bottom">Compile Feedback</button>
                         <button id="hover-save-feedback-btn" class="action-btn secondary sidebar-action-btn-fullwidth">Save Progress</button>
                     </div>
-                    <div class="language-switcher-pane language-switcher-pane-padding m-0">
-                        <h4 class="sidebar-subsection-heading">Language</h4>
+                    <div class="language-switcher-pane" style="margin-bottom: 0;">
+                        <h4 style="font-size: 0.75rem; margin-bottom: 0.4rem; color: var(--text-secondary);">Language</h4>
                         <div class="language-switcher">
                             <button id="hover-lang-en-btn" class="lang-btn active" data-lang="en" title="English">
                                 <i class="fas fa-language"></i> EN
@@ -1260,6 +1260,24 @@
             const hoverPanels = document.querySelectorAll('.sidebar-hover-panel');
             let activePanel = null;
             let hoverTimeout = null;
+            
+            // Height multiplier for sidebar collapse threshold
+            // When content exceeds 1.5x the max height (85% of viewport), collapse the sidebar
+            // to prevent overwhelming the UI and ensure better readability
+            const COLLAPSE_HEIGHT_MULTIPLIER = 1.5;
+
+            // Debounce utility to prevent excessive function calls
+            function debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
 
             // Clone navigation and comments to hover panels
             function syncHoverPanels() {
@@ -1295,11 +1313,14 @@
             }
 
             // Sync hover panels whenever navigation or comments are updated
-            const observer = new MutationObserver(syncHoverPanels);
+            // Use debounced version to prevent excessive re-syncs (300ms delay)
+            const debouncedSyncHoverPanels = debounce(syncHoverPanels, 300);
+            const observer = new MutationObserver(debouncedSyncHoverPanels);
             const navGrid = document.getElementById('section-nav-grid');
             const commentsList = document.getElementById('quick-comments-list');
-            if (navGrid) observer.observe(navGrid, { childList: true, subtree: true });
-            if (commentsList) observer.observe(commentsList, { childList: true, subtree: true });
+            // Only observe direct child changes, not nested subtree changes
+            if (navGrid) observer.observe(navGrid, { childList: true });
+            if (commentsList) observer.observe(commentsList, { childList: true });
             syncHoverPanels(); // Initial sync
 
             // Check if sidebar should be collapsed based on content height
@@ -1314,7 +1335,7 @@
                 const maxContentHeight = viewportHeight * 0.85; // 85% of viewport
 
                 // Collapse if content is too tall
-                if (totalContentHeight > maxContentHeight * 1.5) {
+                if (totalContentHeight > maxContentHeight * COLLAPSE_HEIGHT_MULTIPLIER) {
                     sidebar.classList.add('collapsed');
                 } else {
                     sidebar.classList.remove('collapsed');
