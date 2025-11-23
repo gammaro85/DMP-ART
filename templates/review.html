@@ -1663,60 +1663,86 @@
             checkIfAllItemsProcessed();
         }
 
+        let autoCloseTimeout = null;
+
         function checkIfAllItemsProcessed() {
             const allItems = document.querySelectorAll('.unconnected-item');
             const processedItems = document.querySelectorAll('.unconnected-item.assigned, .unconnected-item.skipped');
 
-            // Show countdown notification before auto-closing
+            // Auto-close when all processed with visual notification
             if (allItems.length === processedItems.length && allItems.length > 0) {
-                const assignedCount = document.querySelectorAll('.unconnected-item.assigned').length;
-                const skippedCount = document.querySelectorAll('.unconnected-item.skipped').length;
-                
-                // Constants for timing
-                const COUNTDOWN_SECONDS = 3;
-                const COUNTDOWN_DURATION_MS = COUNTDOWN_SECONDS * 1000;
-                const FADE_OUT_DURATION_MS = 300;
-                
-                // Create countdown notification using similar pattern to showNotification
-                const notification = document.createElement('div');
-                notification.className = 'notification notification-info';
-                notification.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    padding: 12px 20px;
-                    border-radius: 6px;
-                    color: white;
-                    font-weight: 500;
-                    z-index: 10000;
-                    background: var(--primary-color);
-                    transition: opacity 0.3s ease;
-                `;
-                notification.textContent = `All items processed. Closing in ${COUNTDOWN_SECONDS} seconds...`;
-                document.body.appendChild(notification);
-                
-                let countdown = COUNTDOWN_SECONDS;
-                let countdownInterval = setInterval(() => {
-                    countdown--;
-                    if (countdown > 0) {
-                        notification.textContent = `All items processed. Closing in ${countdown} second${countdown !== 1 ? 's' : ''}...`;
-                    } else {
-                        clearInterval(countdownInterval);
-                        countdownInterval = null;
-                    }
-                }, 1000);
-                
+                showNotification('All items processed. Closing assignment window...', 'success');
                 setTimeout(() => {
-                    if (countdownInterval) {
-                        clearInterval(countdownInterval);
-                    }
-                    notification.style.opacity = '0';
-                    setTimeout(() => {
-                        notification.remove();
-                        closeUnconnectedModal(assignedCount, skippedCount);
-                    }, FADE_OUT_DURATION_MS);
-                }, COUNTDOWN_DURATION_MS);
+                    closeUnconnectedModal();
+                }, 2000);
             }
+        }
+
+        function showAutoCloseNotification() {
+            // Create notification with cancel option
+            const notification = document.createElement('div');
+            notification.className = 'notification notification-info';
+            notification.innerHTML = `
+                <span>All items processed. Closing in 3 seconds...</span>
+                <button onclick="cancelAutoClose()" style="
+                    margin-left: 15px;
+                    padding: 4px 12px;
+                    background: white;
+                    color: var(--primary-color);
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    font-size: 12px;
+                ">Keep Open</button>
+            `;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                border-radius: 6px;
+                color: white;
+                font-weight: 500;
+                z-index: 10000;
+                transition: all 0.3s ease;
+                background: var(--primary-color);
+                display: flex;
+                align-items: center;
+            `;
+            
+            notification.id = 'auto-close-notification';
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => notification.style.transform = 'translateX(0)', 10);
+            
+            // Remove notification when modal closes or after timeout
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.style.opacity = '0';
+                    notification.style.transform = 'translateX(100%)';
+                    setTimeout(() => notification.remove(), 300);
+                }
+            }, 3300);
+        }
+
+        function cancelAutoClose() {
+            // Clear the auto-close timeout
+            if (autoCloseTimeout) {
+                clearTimeout(autoCloseTimeout);
+                autoCloseTimeout = null;
+            }
+            
+            // Remove notification
+            const notification = document.getElementById('auto-close-notification');
+            if (notification) {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => notification.remove(), 300);
+            }
+            
+            showNotification('Modal will stay open', 'success');
         }
 
         function closeUnconnectedModal(assignedCount = 0, skippedCount = 0) {
@@ -1731,6 +1757,18 @@
                     if (skippedCount > 0) summary.push(`${skippedCount} skipped`);
                     showNotification(`Text processing complete: ${summary.join(', ')}`, 'success');
                 }
+            }
+            
+            // Clear auto-close timeout if it exists
+            if (autoCloseTimeout) {
+                clearTimeout(autoCloseTimeout);
+                autoCloseTimeout = null;
+            }
+            
+            // Remove notification if it exists
+            const notification = document.getElementById('auto-close-notification');
+            if (notification) {
+                notification.remove();
             }
         }
 
