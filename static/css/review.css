@@ -946,7 +946,7 @@ body {
     width: clamp(85%, 90vw, 95%);
     max-width: clamp(600px, 80vw, 900px);
     max-height: clamp(60vh, 75vh, 85vh);
-    margin: 0 auto clamp(1rem, 3vh, 2rem); /* Top: 0, Horizontal: centered, Bottom: responsive */
+    margin: 0 auto clamp(1rem, 3vh, 2rem); /* Margin only at bottom */
     display: flex;
     flex-direction: column;
     animation: slideDown 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Slide from top */
@@ -1154,4 +1154,38 @@ body {
 .modal-actions .secondary-btn:hover {
     background: var(--bg-card);
     border-color: var(--border-light);
+}
+
+/* ============================================
+   Review-specific Utility Classes
+   Moved from inline styles for better maintainability
+   ============================================ */
+
+/* Sidebar heading styles */
+.sidebar-section-heading {
+    margin-bottom: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+}
+
+.sidebar-subsection-heading {
+    font-size: 0.75rem;
+    margin-bottom: 0.4rem;
+    color: var(--text-secondary);
+}
+
+.sidebar-description {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0.5rem 0 0 0;
+}
+
+/* Action button utilities */
+.action-btn-full {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.action-btn-full.mb-lg {
+    margin-bottom: 20px;
 }
