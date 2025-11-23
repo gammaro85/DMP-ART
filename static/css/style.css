@@ -26,8 +26,8 @@
   --bg-alt: #e3f6ff;
   --bg-main: #f6fbff;
   --text-primary: #1e3a5f;
-  --text-secondary: #3a8dde;
-  --text-muted: #6b7280;
+  --text-secondary: #2c6ba8;  /* Darkened from #3a8dde for better contrast (WCAG AA) */
+  --text-muted: #5a5f6b;       /* Darkened from #6b7280 for better contrast (WCAG AA) */
   --text-main: #1e3a5f;
   --text-high-contrast: #0a2540;
   --border-light: #b3e0ff;
@@ -114,7 +114,61 @@
   --button-padding-y: var(--spacing-3);
   --button-padding-x: var(--spacing-5);
   --input-padding: var(--spacing-3);
+
+  /* ============================================
+     SEMANTIC SPACING SCALE (T-shirt sizing)
+     Provides intuitive naming for common spacing needs
+     ============================================ */
+
+  --space-xs: var(--spacing-1);    /* 4px - Minimal spacing */
+  --space-sm: var(--spacing-2);    /* 8px - Small spacing */
+  --space-md: var(--spacing-3);    /* 12px - Medium spacing */
+  --space-lg: var(--spacing-4);    /* 16px - Large spacing */
+  --space-xl: var(--spacing-5);    /* 24px - Extra large spacing */
+  --space-2xl: var(--spacing-6);   /* 32px - 2x extra large spacing */
+  --space-3xl: var(--spacing-8);   /* 48px - 3x extra large spacing */
+  --space-4xl: var(--spacing-10);  /* 64px - 4x extra large spacing */
 }
+
+/* ============================================
+   UTILITY CLASSES
+   Common reusable styles to avoid inline styles
+   ============================================ */
+
+/* Display utilities */
+.hidden { display: none !important; }
+.block { display: block !important; }
+.flex { display: flex !important; }
+.inline-block { display: inline-block !important; }
+
+/* Width utilities */
+.full-width { width: 100% !important; }
+.max-width-sm { max-width: 400px; }
+.max-width-md { max-width: 600px; }
+.max-width-lg { max-width: 800px; }
+
+/* Text alignment */
+.text-left { text-align: left !important; }
+.text-center { text-align: center !important; }
+.text-right { text-align: right !important; }
+
+/* Margin utilities */
+.m-0 { margin: 0 !important; }
+.mb-xs { margin-bottom: var(--space-xs) !important; }
+.mb-sm { margin-bottom: var(--space-sm) !important; }
+.mb-md { margin-bottom: var(--space-md) !important; }
+.mb-lg { margin-bottom: var(--space-lg) !important; }
+.mb-xl { margin-bottom: var(--space-xl) !important; }
+.mt-sm { margin-top: var(--space-sm) !important; }
+.mt-md { margin-top: var(--space-md) !important; }
+.mx-auto { margin-left: auto !important; margin-right: auto !important; }
+
+/* Gap utilities */
+.gap-sm { gap: var(--space-sm) !important; }
+.gap-md { gap: var(--space-md) !important; }
+.gap-lg { gap: var(--space-lg) !important; }
+.gap-xl { gap: var(--space-xl) !important; }
+.gap-2xl { gap: var(--space-2xl) !important; }
 *,
 ::after,
 ::before {
@@ -1237,8 +1291,9 @@ textarea,
   display: flex;
   flex-direction: row;
   gap: var(--spacing-6);
-  max-width: 1400px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: none;
+  margin: 0;
   padding: var(--spacing-5);
 }
 
@@ -1252,6 +1307,8 @@ textarea,
 .right-sidebar {
   width: 300px;
   min-width: 300px;
+  max-width: 300px;
+  flex-shrink: 0;
   background: var(--bg-card);
   border-radius: var(--border-radius-md);
   padding: var(--spacing-5);
@@ -1266,13 +1323,14 @@ textarea,
 }
 
 /* On mobile, sidebar goes above main content */
-@media (max-width: 1200px) {
+@media (max-width: 900px) {
   .review-layout {
     flex-direction: column;
   }
   .right-sidebar {
     width: 100%;
     min-width: 0;
+    max-width: none;
     position: static;
     order: -1;
     top: unset;
