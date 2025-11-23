@@ -1702,6 +1702,10 @@
         }
 
         function reopenUnconnectedModal() {
+            // Clear any existing timeouts
+            if (reopenBtnAutoHideTimeout) clearTimeout(reopenBtnAutoHideTimeout);
+            if (reopenBtnFadeTimeout) clearTimeout(reopenBtnFadeTimeout);
+            
             const modal = document.getElementById('unconnected-text-modal');
             if (modal) {
                 modal.style.display = 'flex';
