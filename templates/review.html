@@ -1663,6 +1663,8 @@
             checkIfAllItemsProcessed();
         }
 
+        let autoCloseTimeout = null;
+
         function checkIfAllItemsProcessed() {
             const allItems = document.querySelectorAll('.unconnected-item');
             const processedItems = document.querySelectorAll('.unconnected-item.assigned, .unconnected-item.skipped');
@@ -1676,12 +1678,34 @@
                     showReopenOption();
                 }, 2000);
             }
+            
+            showNotification('Modal will stay open', 'success');
         }
 
-        function closeUnconnectedModal() {
+        function closeUnconnectedModal(assignedCount = 0, skippedCount = 0) {
             const modal = document.getElementById('unconnected-text-modal');
             if (modal) {
                 modal.style.display = 'none';
+                
+                // Show summary notification after closing
+                if (assignedCount > 0 || skippedCount > 0) {
+                    const summary = [];
+                    if (assignedCount > 0) summary.push(`${assignedCount} assigned`);
+                    if (skippedCount > 0) summary.push(`${skippedCount} skipped`);
+                    showNotification(`Text processing complete: ${summary.join(', ')}`, 'success');
+                }
+            }
+            
+            // Clear auto-close timeout if it exists
+            if (autoCloseTimeout) {
+                clearTimeout(autoCloseTimeout);
+                autoCloseTimeout = null;
+            }
+            
+            // Remove notification if it exists
+            const notification = document.getElementById('auto-close-notification');
+            if (notification) {
+                notification.remove();
             }
         }
 
