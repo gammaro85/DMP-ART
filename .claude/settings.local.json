@@ -3,18 +3,27 @@
      "permissions": {
           "allow": [
                "Bash(python:*)",
+               "Bash(python app.py)",
+               "Bash(which python)",
                "Bash(where python)",
-               "Bash(\"C:\\Users\\kraje\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe\" app.py)",
                "Bash(pip --version)",
                "Bash(pip install:*)",
-               "Bash(C:\\Users\\kraje\\OneDrive\\Pulpit\\dmp-extractor\\.venv\\Scripts\\activate)",
+               "Bash(source .venv/bin/activate)",
                "Bash(rm:*)",
                "Bash(git add:*)",
+               "Bash(git commit:*)",
+               "Bash(git push:*)",
+               "Bash(git status)",
+               "Bash(git branch)",
+               "Bash(git log:*)",
                "Bash(mv:*)",
                "Bash(ls:*)",
                "Bash(find:*)",
                "Bash(curl:*)",
-               "Bash(del:*)"
+               "Bash(wc:*)",
+               "Bash(grep:*)",
+               "Bash(cat:*)",
+               "Bash(mkdir:*)"
           ],
           "deny": []
      },
