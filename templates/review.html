@@ -1669,11 +1669,13 @@
             const allItems = document.querySelectorAll('.unconnected-item');
             const processedItems = document.querySelectorAll('.unconnected-item.assigned, .unconnected-item.skipped');
 
-            // Auto-close when all processed with visual notification
+            // Auto-close when all processed with notification
             if (allItems.length === processedItems.length && allItems.length > 0) {
-                showNotification('All items processed. Closing assignment window...', 'success');
+                showNotification('All items processed. Modal closing...', 'success');
                 setTimeout(() => {
                     closeUnconnectedModal();
+                    // Show reopen option after closing
+                    showReopenOption();
                 }, 2000);
             }
             
@@ -1705,6 +1707,78 @@
             if (notification) {
                 notification.remove();
             }
+        }
+
+        function reopenUnconnectedModal() {
+            const modal = document.getElementById('unconnected-text-modal');
+            if (modal) {
+                modal.style.display = 'flex';
+            }
+            // Hide the reopen button
+            const reopenBtn = document.getElementById('reopen-modal-btn');
+            if (reopenBtn) {
+                reopenBtn.style.display = 'none';
+            }
+        }
+
+        // Store timeout IDs to prevent memory leaks
+        let reopenBtnAutoHideTimeout = null;
+        let reopenBtnFadeTimeout = null;
+
+        function showReopenOption() {
+            // Clear any existing timeouts
+            if (reopenBtnAutoHideTimeout) clearTimeout(reopenBtnAutoHideTimeout);
+            if (reopenBtnFadeTimeout) clearTimeout(reopenBtnFadeTimeout);
+
+            // Create or show a reopen button
+            let reopenBtn = document.getElementById('reopen-modal-btn');
+            if (!reopenBtn) {
+                reopenBtn = document.createElement('button');
+                reopenBtn.id = 'reopen-modal-btn';
+                reopenBtn.innerHTML = '<i class="fas fa-redo"></i> Reopen Assignment Modal';
+                reopenBtn.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    padding: 12px 20px;
+                    background: var(--primary-color);
+                    color: white;
+                    border: none;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    z-index: 9999;
+                    font-weight: 500;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                    transition: all 0.3s ease;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                `;
+                reopenBtn.addEventListener('click', reopenUnconnectedModal);
+                reopenBtn.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 6px 16px rgba(0, 0, 0, 0.3)';
+                });
+                reopenBtn.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.2)';
+                });
+                document.body.appendChild(reopenBtn);
+            } else {
+                reopenBtn.style.display = 'flex';
+                reopenBtn.style.opacity = '1';
+            }
+            
+            // Auto-hide the reopen button after 30 seconds
+            reopenBtnAutoHideTimeout = setTimeout(() => {
+                if (reopenBtn) {
+                    reopenBtn.style.opacity = '0';
+                    reopenBtnFadeTimeout = setTimeout(() => {
+                        reopenBtn.style.display = 'none';
+                        reopenBtn.style.opacity = '1';
+                    }, 300);
+                }
+            }, 30000);
         }
 
         // Sidebar functionality
