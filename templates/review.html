@@ -64,8 +64,9 @@
             display: flex !important;
             flex-direction: row !important;
             gap: 30px !important;
-            max-width: 1600px !important;
-            margin: 0 auto !important;
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 !important;
             padding: 20px !important;
             position: relative !important;
             align-items: flex-start !important;
@@ -83,9 +84,9 @@
             position: sticky !important;
             top: 100px !important;
             align-self: flex-start !important;
-            width: 280px !important;
-            min-width: 280px !important;
-            max-width: 280px !important;
+            width: 300px !important;
+            min-width: 300px !important;
+            max-width: 300px !important;
             max-height: calc(100vh - 120px) !important;
             background-color: var(--bg-card) !important;
             border: 1px solid var(--border-light) !important;
@@ -466,7 +467,7 @@
         }
         
         /* Responsive layout for smaller screens */
-        @media (max-width: 1199px) {
+        @media (max-width: 900px) {
             .review-layout {
                 flex-direction: column !important;
             }
@@ -476,6 +477,7 @@
                 top: unset !important;
                 width: 100% !important;
                 min-width: 0 !important;
+                max-width: none !important;
                 max-height: none !important;
                 order: -1 !important;
                 margin-bottom: 20px !important;
@@ -832,7 +834,7 @@
                             </div>
                             
                             <!-- Category Comments Dropdown -->
-                            <div class="category-comments-dropdown" id="category-dropdown-{{ section_id }}" style="display: none;">
+                            <div class="category-comments-dropdown hidden" id="category-dropdown-{{ section_id }}">
                                 <div class="category-comments-container">
                                     <div class="category-comments-list-inline" id="category-comments-{{ section_id }}">
                                         <!-- Comments will be populated here -->
@@ -880,8 +882,8 @@
 
                     <!-- Action Buttons -->
                     <div class="sidebar-actions">
-                        <button id="compile-feedback-btn" class="action-btn primary" style="width: 100%; margin-bottom: 10px;">Compile Feedback</button>
-                        <button id="save-feedback-btn" class="action-btn secondary" style="width: 100%; margin-bottom: 20px;">Save Progress</button>
+                        <button id="compile-feedback-btn" class="action-btn primary action-btn-full">Compile Feedback</button>
+                        <button id="save-feedback-btn" class="action-btn secondary action-btn-full mb-lg">Save Progress</button>
                     </div>
 
                     <div class="navigation-pane">
@@ -957,7 +959,7 @@
                 <div class="compiled-feedback-modal">
                     <div class="modal-header">
                         <h2>Unconnected Text Assignment</h2>
-                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0.5rem 0 0 0;">
+                        <p class="sidebar-description">
                             The following text was found but could not be automatically assigned to any DMP section. Please assign it manually.
                         </p>
                         <button id="close-unconnected-btn" class="close-btn" title="Close modal">×</button>
@@ -1664,9 +1666,9 @@
                 const controls = item.querySelectorAll('select, button');
                 controls.forEach(control => control.disabled = true);
                 
-                // Show success feedback
-                showNotification(`Text assigned to section ${sectionId}`, 'success');
-                
+                // Visual feedback only - no popup notification
+                // showNotification removed to reduce interruptions
+
                 checkIfAllItemsProcessed();
             }
         }
@@ -1674,26 +1676,27 @@
         function skipText(index) {
             const item = document.querySelector(`.unconnected-item[data-index="${index}"]`);
             item.classList.add('skipped');
-            
+
             // Disable controls
             const controls = item.querySelectorAll('select, button');
             controls.forEach(control => control.disabled = true);
-            
-            showNotification('Text skipped', 'info');
-            
+
+            // No notification - visual feedback is enough
+
             checkIfAllItemsProcessed();
         }
+
+        let autoCloseTimeout = null;
 
         function checkIfAllItemsProcessed() {
             const allItems = document.querySelectorAll('.unconnected-item');
             const processedItems = document.querySelectorAll('.unconnected-item.assigned, .unconnected-item.skipped');
-            
-            if (allItems.length === processedItems.length) {
+
+            // Auto-close when all processed - no confirmation needed
+            if (allItems.length === processedItems.length && allItems.length > 0) {
                 setTimeout(() => {
-                    if (confirm('All text items have been processed. Close the assignment window?')) {
-                        closeUnconnectedModal();
-                    }
-                }, 500);
+                    closeUnconnectedModal();
+                }, 800);
             }
         }
 
@@ -1702,6 +1705,94 @@
             if (modal) {
                 modal.style.display = 'none';
             }
+            
+            // Clear auto-close timeout if it exists
+            if (autoCloseTimeout) {
+                clearTimeout(autoCloseTimeout);
+                autoCloseTimeout = null;
+            }
+            
+            // Remove notification if it exists
+            const notification = document.getElementById('auto-close-notification');
+            if (notification) {
+                notification.remove();
+            }
+        }
+
+        // Store timeout IDs to prevent memory leaks
+        let reopenBtnAutoHideTimeout = null;
+        let reopenBtnFadeTimeout = null;
+
+        function reopenUnconnectedModal() {
+            // Clear any existing timeouts
+            if (reopenBtnAutoHideTimeout) clearTimeout(reopenBtnAutoHideTimeout);
+            if (reopenBtnFadeTimeout) clearTimeout(reopenBtnFadeTimeout);
+            
+            const modal = document.getElementById('unconnected-text-modal');
+            if (modal) {
+                modal.style.display = 'flex';
+            }
+            // Hide the reopen button
+            const reopenBtn = document.getElementById('reopen-modal-btn');
+            if (reopenBtn) {
+                reopenBtn.style.display = 'none';
+            }
+        }
+
+        function showReopenOption() {
+            // Clear any existing timeouts
+            if (reopenBtnAutoHideTimeout) clearTimeout(reopenBtnAutoHideTimeout);
+            if (reopenBtnFadeTimeout) clearTimeout(reopenBtnFadeTimeout);
+
+            // Create or show a reopen button
+            let reopenBtn = document.getElementById('reopen-modal-btn');
+            if (!reopenBtn) {
+                reopenBtn = document.createElement('button');
+                reopenBtn.id = 'reopen-modal-btn';
+                reopenBtn.innerHTML = '<i class="fas fa-redo"></i> Reopen Assignment Modal';
+                reopenBtn.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    padding: 12px 20px;
+                    background: var(--primary-color);
+                    color: white;
+                    border: none;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    z-index: 9999;
+                    font-weight: 500;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                    transition: all 0.3s ease;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                `;
+                reopenBtn.addEventListener('click', reopenUnconnectedModal);
+                reopenBtn.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 6px 16px rgba(0, 0, 0, 0.3)';
+                });
+                reopenBtn.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.2)';
+                });
+                document.body.appendChild(reopenBtn);
+            } else {
+                reopenBtn.style.display = 'flex';
+                reopenBtn.style.opacity = '1';
+            }
+            
+            // Auto-hide the reopen button after 30 seconds
+            reopenBtnAutoHideTimeout = setTimeout(() => {
+                if (reopenBtn) {
+                    reopenBtn.style.opacity = '0';
+                    reopenBtnFadeTimeout = setTimeout(() => {
+                        reopenBtn.style.display = 'none';
+                        reopenBtn.style.opacity = '1';
+                    }, 300);
+                }
+            }, 30000);
         }
 
         // Sidebar functionality
