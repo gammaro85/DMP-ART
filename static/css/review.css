@@ -26,35 +26,39 @@
 }
 
 /* Layout and Sidebar */
-/* Responsive Sidebar - 20% smaller than original 280px = ~224px at 100% zoom */
-/* Normal state for 90% of use cases */
+/* Responsive Sidebar - Smaller at 100% zoom, collapsible when needed */
 body[data-page="review"] aside.right-sidebar {
     position: sticky !important;
     top: clamp(4rem, 6vh, 5.5rem) !important;
     align-self: flex-start !important;
-    /* 20% reduction: 280px → 224px, stable width for normal usage */
-    width: 14rem !important; /* Fixed 224px for consistency */
-    min-width: 14rem !important;
-    max-width: 14rem !important;
+    width: clamp(12rem, 15vw, 16rem) !important; /* Reduced from 280px */
+    min-width: clamp(12rem, 15vw, 16rem) !important;
+    max-width: clamp(12rem, 15vw, 16rem) !important;
     max-height: calc(100vh - clamp(5rem, 8vh, 7rem)) !important;
     background-color: var(--bg-card) !important;
     border: 1px solid var(--border-light) !important;
-    border-radius: 0.5rem !important;
-    padding: 0.75rem !important; /* Comfortable padding */
+    border-radius: clamp(0.25rem, 0.5vw, 0.5rem) !important;
+    padding: clamp(0.5rem, 1vw, 0.75rem) !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
     order: 2 !important;
     flex-shrink: 0 !important;
     transition: all 0.3s ease !important;
-    scrollbar-width: thin; /* For Firefox */
+}
+
+/* CSS Variables for sidebar dimensions */
+:root {
+    --sidebar-collapsed-width-min: 2rem;
+    --sidebar-collapsed-width-pref: 3vw;
+    --sidebar-collapsed-width-max: 2.5rem;
 }
 
 /* Collapsed Sidebar State */
 body[data-page="review"] aside.right-sidebar.collapsed {
-    width: clamp(2rem, 3vw, 2.5rem) !important;
-    min-width: clamp(2rem, 3vw, 2.5rem) !important;
-    max-width: clamp(2rem, 3vw, 2.5rem) !important;
+    width: clamp(var(--sidebar-collapsed-width-min), var(--sidebar-collapsed-width-pref), var(--sidebar-collapsed-width-max)) !important;
+    min-width: clamp(var(--sidebar-collapsed-width-min), var(--sidebar-collapsed-width-pref), var(--sidebar-collapsed-width-max)) !important;
+    max-width: clamp(var(--sidebar-collapsed-width-min), var(--sidebar-collapsed-width-pref), var(--sidebar-collapsed-width-max)) !important;
     padding: clamp(0.5rem, 1vh, 0.75rem) clamp(0.25rem, 0.5vw, 0.4rem) !important;
     border-radius: 0 clamp(0.25rem, 0.5vw, 0.5rem) clamp(0.25rem, 0.5vw, 0.5rem) 0 !important;
 }
@@ -108,7 +112,7 @@ body[data-page="review"] aside.right-sidebar.collapsed > *:not(.sidebar-collapse
 .sidebar-hover-panel {
     display: none;
     position: fixed;
-    right: clamp(2.2rem, 3.5vw, 3rem);
+    right: calc(clamp(var(--sidebar-collapsed-width-min), var(--sidebar-collapsed-width-pref), var(--sidebar-collapsed-width-max)) + 0.2rem);
     background: var(--bg-card);
     border: 2px solid var(--border-medium);
     border-radius: clamp(0.25rem, 0.5vw, 0.5rem);
@@ -172,46 +176,21 @@ body[data-page="review"] aside.right-sidebar.collapsed > *:not(.sidebar-collapse
 .question-card {
     margin-bottom: clamp(0.75rem, 2vh, 1.25rem) !important;
     padding: clamp(0.5rem, 1.5vw, 1rem) !important;
-    /* No overall max-height to allow all content to be visible */
-    background: var(--bg-card);
-    border: 1px solid var(--border-light);
-    border-radius: clamp(0.35rem, 0.75vw, 0.5rem);
-}
-
-/* Content area max heights to prevent infinite scrolling */
-.extracted-content {
-    max-height: clamp(15rem, 35vh, 30rem) !important; /* Increased from 25rem */
+    max-height: calc(100vh - clamp(8rem, 15vh, 12rem)) !important; /* Limit card height */
     overflow-y: auto !important;
-    scrollbar-width: thin; /* For Firefox */
 }
 
-.extracted-content::-webkit-scrollbar {
-    width: clamp(4px, 0.5vw, 6px);
-}
-
-.extracted-content::-webkit-scrollbar-thumb {
-    background: var(--border-medium);
-    border-radius: clamp(2px, 0.3vw, 3px);
-}
-
-.extracted-content::-webkit-scrollbar-track {
-    background: var(--bg-secondary);
+/* Content area max heights */
+.extracted-content {
+    max-height: clamp(15rem, 30vh, 25rem) !important;
+    overflow-y: auto !important;
 }
 
 .feedback-text {
-    min-height: clamp(4rem, 12vh, 7rem) !important; /* Increased min-height */
-    max-height: clamp(12rem, 25vh, 18rem) !important; /* Increased max-height */
+    min-height: clamp(4rem, 10vh, 6rem) !important;
+    max-height: clamp(12rem, 20vh, 15rem) !important;
     font-size: clamp(0.8rem, 1vw, 0.9rem) !important;
     padding: clamp(0.5rem, 1vw, 0.75rem) !important;
-    resize: vertical !important;
-    line-height: 1.6 !important;
-}
-
-/* Compiled feedback textarea */
-#compiled-feedback {
-    max-height: clamp(20rem, 50vh, 35rem) !important;
-    overflow-y: auto !important;
-    font-size: clamp(0.8rem, 0.95vw, 0.9rem) !important;
 }
 
 .navigation-pane, .category-comments-pane, .quick-comments-pane {
@@ -253,51 +232,27 @@ h3.subsection-title {
 
 .nav-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(clamp(1.75rem, 3.5vw, 2.5rem), 1fr));
-    gap: clamp(0.2rem, 0.4vw, 0.3rem);
-    max-height: clamp(12rem, 30vh, 20rem); /* Prevent infinite grid */
-    overflow-y: auto;
-    scrollbar-width: thin;
-}
-
-.nav-grid::-webkit-scrollbar {
-    width: clamp(3px, 0.4vw, 4px);
-}
-
-.nav-grid::-webkit-scrollbar-thumb {
-    background: var(--border-medium);
-    border-radius: 2px;
+    grid-template-columns: repeat(auto-fit, minmax(clamp(1.75rem, 3vw, 2.25rem), 1fr));
+    gap: clamp(0.15rem, 0.3vw, 0.25rem);
 }
 
 .nav-grid-btn {
     background-color: var(--bg-tertiary);
     border: 1px solid var(--border-light);
     color: var(--text-primary);
-    padding: clamp(0.4rem, 0.85vw, 0.6rem);
-    border-radius: clamp(0.2rem, 0.4vw, 0.3rem);
+    padding: clamp(0.35rem, 0.75vw, 0.5rem);
+    border-radius: clamp(0.15rem, 0.3vw, 0.25rem);
     cursor: pointer;
-    font-size: clamp(0.7rem, 0.95vw, 0.8rem); /* Clear section numbers */
-    font-weight: 700; /* Bolder for better readability */
+    font-size: clamp(0.65rem, 0.9vw, 0.75rem); /* Smaller responsive font */
+    font-weight: 600;
     transition: all 0.2s ease;
     text-align: center;
-    min-width: clamp(1.75rem, 3.5vw, 2.5rem);
-    min-height: clamp(1.75rem, 3.5vw, 2.5rem);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
 }
 
 .nav-grid-btn:hover {
     background-color: var(--primary-color);
     color: white;
-    transform: scale(1.08);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-    border-color: var(--primary-color);
-}
-
-.nav-grid-btn:active {
-    transform: scale(1.02);
+    transform: scale(1.05);
 }
 
 .category-btn {
@@ -376,8 +331,8 @@ h3.subsection-title {
     transform: scale(1.02);
 }
 
-/* Hide comment text content, show only header */
-.quick-comment-item span {
+/* Hide comment text content (spans with class 'comment-text'), show only header */
+.quick-comment-item .comment-text {
     display: none !important;
 }
 
@@ -841,82 +796,7 @@ body {
     visibility: visible;
 }
 
-/* ==================== DARK MODE ENHANCEMENTS ==================== */
-
-/* Dark mode - Enhanced colors for better contrast */
-:root[data-theme="dark"] .nav-grid-btn {
-    background-color: rgba(71, 85, 105, 0.6);
-    border-color: rgba(148, 163, 184, 0.3);
-    color: #f1f5f9;
-}
-
-:root[data-theme="dark"] .nav-grid-btn:hover {
-    background-color: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
-}
-
-:root[data-theme="dark"] .extracted-content {
-    background-color: rgba(51, 65, 85, 0.5) !important;
-    border-color: rgba(148, 163, 184, 0.2);
-}
-
-:root[data-theme="dark"] .feedback-text {
-    background-color: rgba(30, 41, 59, 0.7);
-    border-color: rgba(148, 163, 184, 0.25);
-    color: #f1f5f9;
-}
-
-:root[data-theme="dark"] .upload-dropzone {
-    border-color: rgba(245, 158, 11, 0.6);
-    background-color: rgba(30, 41, 59, 0.95);
-}
-
-:root[data-theme="dark"] .upload-dropzone:hover,
-:root[data-theme="dark"] .upload-dropzone.dragover {
-    border-color: var(--primary-color);
-    background-color: rgba(44, 72, 102, 0.95);
-}
-
-:root[data-theme="dark"] .question-card {
-    background-color: rgba(30, 41, 59, 0.95);
-    border-color: rgba(148, 163, 184, 0.2);
-}
-
-:root[data-theme="dark"] aside.right-sidebar {
-    background-color: rgba(30, 41, 59, 0.98) !important;
-    border-color: rgba(148, 163, 184, 0.25) !important;
-    box-shadow: -2px 0 12px rgba(0, 0, 0, 0.4) !important;
-}
-
-:root[data-theme="dark"] .sidebar-tab-btn {
-    background-color: rgba(51, 65, 85, 0.7);
-    border-color: rgba(148, 163, 184, 0.3);
-    color: #cbd5e1;
-}
-
-:root[data-theme="dark"] .sidebar-tab-btn:hover {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-:root[data-theme="dark"] .quick-comment-item {
-    background-color: rgba(71, 85, 105, 0.5);
-    border-color: rgba(148, 163, 184, 0.25);
-    color: #e2e8f0;
-}
-
-:root[data-theme="dark"] .quick-comment-item:hover {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-:root[data-theme="dark"] .citation-highlight {
-    background-color: rgba(253, 224, 71, 0.3) !important;
-    color: #fef08a !important;
-}
-
-/* Unconnected Text Modal Styles - Fixed positioning at TOP of viewport */
+/* Unconnected Text Modal Styles - Fixed positioning at viewport */
 .compiled-feedback-container {
     position: fixed !important;
     top: 0 !important;
@@ -928,15 +808,9 @@ body {
     align-items: flex-start !important; /* Align to top instead of center */
     justify-content: center;
     z-index: 10001 !important; /* Above everything */
-    backdrop-filter: blur(clamp(2px, 0.5vw, 3px));
+    backdrop-filter: blur(3px);
     animation: fadeIn 0.3s ease;
     overflow-y: auto; /* Allow scrolling if modal is tall */
-    padding-top: clamp(4rem, 8vh, 6rem) !important; /* Space from top header */
-}
-
-:root[data-theme="dark"] .compiled-feedback-container {
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(clamp(3px, 0.6vw, 4px));
 }
 
 .compiled-feedback-modal {
@@ -946,7 +820,7 @@ body {
     width: clamp(85%, 90vw, 95%);
     max-width: clamp(600px, 80vw, 900px);
     max-height: clamp(60vh, 75vh, 85vh);
-    margin: 0 auto clamp(1rem, 3vh, 2rem); /* Margin only at bottom */
+    margin: clamp(1rem, 3vh, 2rem) auto; /* Center in viewport with spacing */
     display: flex;
     flex-direction: column;
     animation: slideDown 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Slide from top */
