@@ -331,8 +331,8 @@ h3.subsection-title {
     transform: scale(1.02);
 }
 
-/* Hide comment text content, show only header */
-.quick-comment-item span {
+/* Hide comment text content (spans with class 'comment-text'), show only header */
+.quick-comment-item .comment-text {
     display: none !important;
 }
 
