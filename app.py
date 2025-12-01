@@ -1,3 +1,4 @@
+from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for, Response, stream_with_context, send_from_directory
 # app.py - Enhanced Flask application with About page
 import os
 import json
@@ -310,7 +311,7 @@ def upload_file():
             extractor = DMPExtractor()
             result = extractor.process_file(
                 file_path,
-                app.config['CACHE_FOLDER'],
+                app.config['OUTPUT_FOLDER'],
                 progress_callback=progress_callback
             )
 
@@ -413,7 +414,12 @@ def download_file(filename):
 def review_dmp(filename):
     file_path = os.path.join(app.config['OUTPUT_FOLDER'], filename)
     if not os.path.exists(file_path):
-        return "File not found", 404
+        # Try outputs/dmp/ as fallback for DOCX/PDF
+        alt_path = os.path.join(app.config['DMP_FOLDER'], filename)
+        if os.path.exists(alt_path):
+            file_path = alt_path
+        else:
+            return "File not found", 404
     
     cache_id = request.args.get('cache_id', '')
     
@@ -1317,6 +1323,15 @@ def internal_error(e):
         'success': False,
         'message': 'Internal server error. Please try again.'
     }), 500
+
+# Favicon route to fix 404
+@app.route('/favicon.ico')
+def favicon():
+    ico_path = os.path.join(app.root_path, 'static', 'images', 'favicon.ico')
+    if os.path.exists(ico_path):
+        return send_from_directory(os.path.join(app.root_path, 'static', 'images'), 'favicon.ico', mimetype='image/x-icon')
+    # fallback to custom PNG if .ico not present
+    return send_from_directory(os.path.join(app.root_path, 'static', 'images'), 'dmp-art-favicon (Niestandardowe).png', mimetype='image/png')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

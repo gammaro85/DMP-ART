@@ -34,6 +34,12 @@ uploads/*.rtf
 outputs/*.docx
 outputs/cache_*.json
 outputs/analytics_*.json
+outputs/cache/*.json
+outputs/cache/*.docx
+outputs/dmp/*.docx
+outputs/dmp/*.pdf
+outputs/reviews/*.txt
+outputs/reviews/*.json
 test_outputs/*.docx
 test_outputs/cache_*.json
 test_export.json

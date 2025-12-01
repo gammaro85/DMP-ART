@@ -239,7 +239,7 @@ body {
 /* Extra padding for index page to accommodate large logo */
 body[data-page="index"] {
   padding-top: clamp(4rem, 5vh, 5rem);
-  padding-bottom: 80px; /* Fixed footer height + spacing */
+  padding-bottom: 100px; /* Fixed footer height + extra spacing for upload area border */
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -384,7 +384,7 @@ s .light-logo {
     flex-wrap: wrap;
     gap: var(--spacing-2);
     justify-content: center;
-    padding-left: clamp(40px, 6vw, 50px);
+    padding-left: clamp(45px, 6vw, 55px); /* Adjusted for smaller theme toggle */
   }
 
   .nav-links {
@@ -439,10 +439,10 @@ s .light-logo {
   }
 
   .theme-toggle {
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
-    min-height: 40px;
+    width: 36px; /* 40px * 0.9 */
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
   }
 
   .fixed-header {
@@ -584,7 +584,7 @@ s .light-logo {
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
-  padding-left: clamp(60px, 8vw, 80px); /* Space for theme toggle */
+  padding-left: clamp(55px, 7vw, 70px); /* Space for smaller theme toggle (10% reduction) */
 }
 .nav-item,
 .theme-toggle {
@@ -1246,6 +1246,7 @@ textarea,
   width: 100% !important;
   padding: 0 !important;
   box-sizing: border-box !important;
+  overflow: visible !important; /* Ensure border is fully visible */
 }
 
 /* Drop area frame and flexible width for index page */
@@ -1254,7 +1255,7 @@ textarea,
   min-width: clamp(320px, 40vw, 500px); /* Increased by ~10% */
   max-width: clamp(500px, 55vw, 700px); /* Increased by ~10% */
   width: 100%;
-  margin: clamp(1rem, 2vh, 1.5rem) auto clamp(1.5rem, 3vh, 2rem) auto;
+  margin: clamp(1rem, 2vh, 1.5rem) auto clamp(2rem, 4vh, 3rem) auto; /* Increased bottom margin */
   box-sizing: border-box;
   padding: clamp(1.5rem, 3vh, 2.5rem) clamp(1.2rem, 3vw, 2rem);
   display: flex;
@@ -1265,11 +1266,15 @@ textarea,
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   position: relative;
-  z-index: 1;
+  z-index: 10; /* Below footer (z-index: 1000) but above background */
   border-radius: var(--border-radius-lg);
 
-  /* Solid border with glow */
-  border: 3px dashed var(--warning-color);
+  /* Solid border with glow - explicit all borders */
+  border: 3px dashed var(--warning-color) !important;
+  border-top: 3px dashed var(--warning-color) !important;
+  border-right: 3px dashed var(--warning-color) !important;
+  border-bottom: 3px dashed var(--warning-color) !important;
+  border-left: 3px dashed var(--warning-color) !important;
   box-shadow:
     0 4px 16px rgba(245, 158, 11, 0.25),
     inset 0 0 0 1px rgba(255, 255, 255, 0.1);

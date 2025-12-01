@@ -1751,10 +1751,16 @@ class DMPExtractor:
             # Generate smart output filename from metadata
             output_filename = self.generate_smart_filename(metadata, file_type="DMP", extension=".docx")
             self._log_debug(f"Generated smart filename: {output_filename}")
-            
-            # Save the document
+
+            # Create subdirectories for organized file storage
+            dmp_dir = os.path.join(output_dir, 'dmp')
+            cache_dir = os.path.join(output_dir, 'cache')
+            os.makedirs(dmp_dir, exist_ok=True)
+            os.makedirs(cache_dir, exist_ok=True)
+
+            # Save the document to dmp folder
             self._report_progress(progress_callback, "Saving output document...", 85)
-            output_path = os.path.join(output_dir, output_filename)
+            output_path = os.path.join(dmp_dir, output_filename)
             output_doc.save(output_path)
 
             # Add unconnected text to review structure if present
@@ -1785,11 +1791,11 @@ class DMPExtractor:
             review_structure["_metadata"] = metadata
             self._log_debug(f"Added metadata to review structure")
 
-            # Save review structure as JSON
+            # Save review structure as JSON to cache folder
             self._report_progress(progress_callback, "Generating cache file...", 90)
             cache_id = str(uuid.uuid4())
             cache_filename = f"cache_{cache_id}.json"
-            cache_path = os.path.join(output_dir, cache_filename)
+            cache_path = os.path.join(cache_dir, cache_filename)
 
             with open(cache_path, 'w', encoding='utf-8') as f:
                 json.dump(review_structure, f, ensure_ascii=False, indent=2)
@@ -2031,10 +2037,16 @@ class DMPExtractor:
                 # Generate smart output filename from metadata
                 output_filename = self.generate_smart_filename(metadata, file_type="DMP", extension=".docx")
                 self._log_debug(f"Generated smart filename: {output_filename}")
-                
-                # Save the document
+
+                # Create subdirectories for organized file storage
+                dmp_dir = os.path.join(output_dir, 'dmp')
+                cache_dir = os.path.join(output_dir, 'cache')
+                os.makedirs(dmp_dir, exist_ok=True)
+                os.makedirs(cache_dir, exist_ok=True)
+
+                # Save the document to dmp folder
                 self._report_progress(progress_callback, "Saving output document...", 85)
-                output_path = os.path.join(output_dir, output_filename)
+                output_path = os.path.join(dmp_dir, output_filename)
                 doc.save(output_path)
 
                 # Add unconnected text to review structure if present
@@ -2065,11 +2077,11 @@ class DMPExtractor:
                 review_structure["_metadata"] = metadata
                 self._log_debug(f"Added metadata to PDF review structure")
 
-                # Save review structure as JSON for the review interface
+                # Save review structure as JSON to cache folder
                 self._report_progress(progress_callback, "Generating cache file...", 90)
                 cache_id = str(uuid.uuid4())
                 cache_filename = f"cache_{cache_id}.json"
-                cache_path = os.path.join(output_dir, cache_filename)
+                cache_path = os.path.join(cache_dir, cache_filename)
 
                 with open(cache_path, 'w', encoding='utf-8') as f:
                     json.dump(review_structure, f, ensure_ascii=False, indent=2)
