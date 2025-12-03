@@ -1,0 +1,33 @@
+{
+  "1.1": [
+    "Zamiast \"dane badawcze\" należy podać konkretne typy: \"dane ankietowe (200 respondentów, ok. 100 MB)\", \"zdjęcia mikroskopowe (50-100 zdjęć, ok. 500 MB)\", \"wyniki pomiarów spektroskopowych (seria 5 GB)\", \"wywiady (20 nagrań po 60-90 min, ok. 10 GB audio)\". Ile zajmą łącznie zgromadzone dane (szacunkowo, np. do 1 TB albo między 100 a 500 GB)?",
+    "Należy dodać metodologię zbierania: \"Dane zebrane poprzez ankiety online w LimeSurvey\", \"Pomiary wykonane spektrometrem Raman\", \"Wywiady z kwestionariuszem półstrukturowanym\", \"Dane wygenerowane przez symulacje w MATLAB\"."
+  ],
+  "1.2": [
+    "Należy podać konkretne rozszerzenia: \".csv, .txt, .jpg\" lub \"pliki .xlsx (tabele), .pdf (raporty), .png (wykresy)\" z szacunkowym rozmiarem: \".csv do 5 MB każdy\", \".jpg około 20 MB każde\". Formaty można podzielić na dwa typy: specyficzne dla oprogramowania laboratoryjnego oraz powszechnie używane formaty tekstowe, tabelaryczne i graficzne.",
+    "Zalecane formaty otwarte: .csv zamiast .xlsx, .txt, .json, .xml, .png, .tiff, .odt. Jeśli format zastrzeżony konieczny: zapisać końcową wersję również w formacie otwartym. Dane przeznaczone do deponowania w repozytorium należy zapisywać w otwartych formatach, jeśli nie prowadzi to do utraty informacji."
+  ],
+  "2.1": [
+    "Dataset wymaga: (1) README.txt z opisem zmiennych, jednostkami, metodologią, strukturą plików, autorami, datą, ograniczeniami, oprogramowaniem. (2) Metadane generowane przez repozytorium MOST Wiedzy Open Research Data Catalog (Bridge of Data) wg standardu DataCite, przechowywane w formacie JSON-LD.",
+    "W jaki sposób dane będą porządkowane podczas trwania projektu? Czy to będzie jakaś struktura folderów czy może specjalne oprogramowanie? Czy dane będą porządkowane wg rodzajów plików czy etapów badania? Nazwy będą tworzone automatycznie czy według określonego schematu?",
+    "Należy opisać organizację: \"Tabela: wiersze=uczestnicy, kolumny=zmienne (wiek, płeć, wyniki)\" lub \"Foldery: /raw_data, /processed_data, /scripts, /results, /documentation\". Zebrane pliki powinny mieć usystematyzowane nazwy pozwalające na szybką identyfikację zawartości."
+  ],
+  "2.2": [
+    "Zamiast \"dane wysokiej jakości\" należy podać konkretne procedury: \"Podwójne wprowadzenie danych przez dwie osoby\", \"Kalibracja urządzeń co miesiąc zgodnie z protokołami producenta\", \"Automatyczna walidacja zakresów wartości\", \"Prowadzenie notatników laboratoryjnych w wersji papierowej i cyfrowej\"."
+  ],
+  "3.1": [
+    "Jak często będą tworzone kopie zapasowe? Strategia 3-2-1: 3 kopie danych, 2 różne nośniki, 1 kopia poza miejscem pracy. Przykład: dysk komputera + OneDrive (automatycznie codziennie) + dysk zewnętrzny (ręcznie tygodniowo, przechowywany w innej lokalizacji)."
+  ],
+  "4.1": [
+    "Badania z ludźmi: należy sprawdzić regulamin czy potrzebna zgoda komisji. Jeśli tak: podać numer zgody. Jeśli nie: uzasadnić dlaczego nie wymaga (np. badanie nie wymaga zgody zgodnie z regulaminem instytucjonalnym, ankiety anonimowe bez danych osobowych).",
+    "Dane osobowe: imię, nazwisko, PESEL, email, adres. Dane wrażliwe (szczególne kategorie): zdrowie, orientacja seksualna, przekonania religijne, pochodzenie etniczne, dane genetyczne. Jeśli projekt zbiera dane osobowe: szczegółowy opis zgodności z RODO (podstawa prawna, informowanie uczestników, okres przechowywania, anonimizacja, prawa uczestników)."
+  ],
+  "5.1": [
+    "CC BY - wymaga podania autorstwa (standard dla NCN). CC0 - rezygnacja z praw autorskich, domena publiczna. Uwaga: CC0 może kolidować z Regulaminem Własności Intelektualnej Politechniki Gdańskiej (prawa należą do uczelni). Przed wyborem CC0: konsultacja z działem prawnym.",
+    "Uzasadnione gdy: analiza w toku i przygotowanie publikacji, planowane dalsze publikacje, zobowiązania wobec współpracowników, proces patentowy. Max 2 lata od końca projektu NCN. Wymagane konkretne uzasadnienie i konkretna data końca (\"31.12.2026\", nie \"po zakończeniu projektu\").",
+    "Poprzez udostępnianie rozumiemy zdeponowanie danych w repozytorium i umożliwienie pobrania ich przez wszystkich zainteresowanych. Termin udostępnienia danych powinien być skorelowany z procesem publikacji wyników badań."
+  ],
+  "5.2": [
+    "Należy wskazać w którym repozytorium będą przechowywane dane. Jeśli nie podajemy nazwy to trzeba określić kryteria wyboru: dedykowane dla danych badawczych repozytorium, które udostępnia dane zgodnie z zasadami FAIR i spełnia wymogi grantodawcy."
+  ]
+}
