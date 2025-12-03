@@ -959,9 +959,9 @@
                             <div class="category-selection" id="category-selection-{{ section_id }}">
                                 <label>Choose feedback category:</label>
                                 <div class="category-buttons-inline">
-                                    <button class="category-btn-inline" data-category="newcomer" data-section="{{ section_id }}">Newcomer Guidance</button>
-                                    <button class="category-btn-inline" data-category="missing" data-section="{{ section_id }}">Missing Info</button>
-                                    <button class="category-btn-inline" data-category="ready" data-section="{{ section_id }}">Ready to Use</button>
+                                    <button class="category-btn-inline" data-category="for_newbies" data-section="{{ section_id }}">Newcomer Guidance</button>
+                                    <button class="category-btn-inline" data-category="missing_info" data-section="{{ section_id }}">Missing Info</button>
+                                    <button class="category-btn-inline" data-category="ready_to_use" data-section="{{ section_id }}">Ready to Use</button>
                                 </div>
                             </div>
                             
@@ -1457,21 +1457,10 @@
 
             // Check if sidebar should be collapsed based on content height
             function checkSidebarCollapse() {
-                const questionCards = document.querySelectorAll('.question-card');
-                let totalContentHeight = 0;
-                questionCards.forEach(card => {
-                    totalContentHeight += card.scrollHeight;
-                });
-
-                const viewportHeight = window.innerHeight;
-                const maxContentHeight = viewportHeight * 0.85; // 85% of viewport
-
-                // Collapse if content is too tall
-                if (totalContentHeight > maxContentHeight * COLLAPSE_HEIGHT_MULTIPLIER) {
-                    sidebar.classList.add('collapsed');
-                } else {
-                    sidebar.classList.remove('collapsed');
-                }
+                // Sidebar auto-collapse disabled - always show full sidebar
+                // Users can manually interact with sidebar if needed
+                // Previous auto-collapse logic removed to ensure sidebar is always visible
+                sidebar.classList.remove('collapsed');
             }
 
             // Show hover panel
