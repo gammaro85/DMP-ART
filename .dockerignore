@@ -1,0 +1,55 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.spec
+
+# Virtual environments
+env/
+venv/
+.venv/
+ENV/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Application data (will be mounted as volumes)
+uploads/*
+outputs/*
+output/*
+input/*
+*.log
+
+# Documentation (not needed in container)
+*.md
+!README.md
+docs/
+
+# Build artifacts
+build_standalone.py
+DMP-ART.spec
+launcher.py
+
+# Test files
+test_*.py
+tests/
