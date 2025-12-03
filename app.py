@@ -709,7 +709,10 @@ def load_categories():
 
         if os.path.exists(config_dir):
             for filename in os.listdir(config_dir):
-                if filename.endswith('.json') and filename not in ['dmp_structure.json', 'quick_comments.json']:
+                # Skip backup files, dmp_structure, and quick_comments
+                if (filename.endswith('.json') and
+                    filename not in ['dmp_structure.json', 'quick_comments.json'] and
+                    'backup' not in filename.lower()):
                     file_base = filename[:-5]
                     file_path = os.path.join(config_dir, filename)
 
@@ -817,8 +820,8 @@ def discover_categories():
             if filename in ['dmp_structure.json', 'quick_comments.json', 'category_comments.json']:
                 continue
 
-            # Skip backup files
-            if '_backup_' in filename:
+            # Skip backup files (any file containing 'backup')
+            if 'backup' in filename.lower():
                 continue
 
             # Extract category name (remove .json extension)
@@ -1020,22 +1023,25 @@ def list_categories():
     try:
         config_dir = 'config'
         categories = []
-        
+
         if os.path.exists(config_dir):
             for filename in os.listdir(config_dir):
-                if filename.endswith('.json') and filename not in ['dmp_structure.json', 'quick_comments.json']:
+                # Skip backup files, dmp_structure, and quick_comments
+                if (filename.endswith('.json') and
+                    filename not in ['dmp_structure.json', 'quick_comments.json'] and
+                    'backup' not in filename.lower()):
                     file_base = filename[:-5]
                     category_name = file_base.replace('_', ' ').title()
                     categories.append({
                         'file': file_base,
                         'name': category_name
                     })
-        
+
         return jsonify({
             'success': True,
             'categories': categories
         })
-        
+
     except Exception as e:
         return jsonify({
             'success': False,
