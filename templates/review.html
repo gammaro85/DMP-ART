@@ -1130,13 +1130,13 @@
             window.QUICK_COMMENTS.forEach(comment => {
                 const commentDiv = document.createElement('div');
                 commentDiv.className = 'quick-comment-item';
-                commentDiv.innerHTML = `<strong>${comment.name}:</strong> `;
 
+                // Show only the name (short label), not the full text
+                commentDiv.textContent = comment.name;
+
+                // Get localized text for insertion and tooltip
                 const commentText = getLocalizedText(comment.text);
-                const textSpan = document.createElement('span');
-                textSpan.textContent = commentText;
-                commentDiv.appendChild(textSpan);
-
+                commentDiv.title = commentText;
                 commentDiv.addEventListener('click', function() {
                     insertCommentIntoFocusedTextarea(commentText);
                 });
@@ -1850,14 +1850,12 @@
                     data.quick_comments.forEach(commentData => {
                         const item = document.createElement('div');
                         item.className = 'quick-comment-item';
-                        item.innerHTML = `<strong>${commentData.name}:</strong> `;
 
-                        // Get localized text
+                        // Show only the name (short label), not the full text
+                        item.textContent = commentData.name;
+
+                        // Get localized text for insertion and tooltip
                         const commentText = getLocalizedText(commentData.text);
-                        const textSpan = document.createElement('span');
-                        textSpan.textContent = commentText;
-                        item.appendChild(textSpan);
-
                         item.title = commentText;
                         item.addEventListener('click', () => insertQuickComment(commentText));
                         quickCommentsList.appendChild(item);
