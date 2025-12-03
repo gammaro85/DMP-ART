@@ -33,9 +33,36 @@
 
         /* ==================== Template Editor Specific Styling ==================== */
 
-        /* Reduce tab names font size */
+        /* Reduce tab names font size and improve styling */
         .tab-btn {
             font-size: 0.875rem !important; /* 14px - reduced from 16px */
+        }
+
+        /* Category tabs - distinctive color */
+        .tab-btn[data-category] {
+            background: rgba(91, 188, 255, 0.1) !important;
+            border: 1px solid var(--border-color) !important;
+        }
+
+        .tab-btn[data-category].active {
+            background: var(--primary-color) !important;
+            color: white !important;
+            border-color: var(--primary-color) !important;
+        }
+
+        .tab-btn[data-category]:hover:not(.active) {
+            background: rgba(91, 188, 255, 0.2) !important;
+            border-color: var(--primary-color) !important;
+        }
+
+        /* DMP Structure and Quick Comments tabs - default color */
+        .tab-btn:not([data-category]) {
+            background: var(--bg-secondary) !important;
+        }
+
+        .tab-btn:not([data-category]).active {
+            background: var(--primary-color) !important;
+            color: white !important;
         }
 
         /* Reduce font size for text input fields in template editor */
@@ -47,19 +74,39 @@
             font-size: 0.875rem !important; /* 14px - reduced from 16px */
         }
 
-        /* Style Create Category button to match theme */
+        /* Style Create Category button to match tabs but with success color */
         .add-category-btn {
-            background: var(--primary-color) !important;
+            /* Match tab button dimensions */
+            padding: var(--spacing-3) var(--spacing-5) !important;
+            font-size: 0.875rem !important; /* Same as tabs - 14px */
+            font-weight: var(--font-weight-medium) !important;
+            border-radius: 8px 8px 0 0 !important; /* Same rounded top as tabs */
+
+            /* Success/Add color scheme */
+            background: var(--success-color) !important;
             color: white !important;
-            border: 1px solid var(--primary-color) !important;
-            transition: all 0.3s ease !important;
+            border: none !important;
+            box-shadow: var(--shadow-light) !important;
+
+            /* Half width of typical tab */
+            max-width: 120px !important;
+            min-width: 100px !important;
+
+            /* Flexbox for icon + text */
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 6px !important;
+
+            transition: all 0.2s ease !important;
+            cursor: pointer !important;
+            white-space: nowrap !important;
         }
 
         .add-category-btn:hover {
-            background: var(--accent-color) !important;
-            border-color: var(--accent-color) !important;
+            background: #1e8449 !important; /* Darker green */
+            box-shadow: var(--shadow-medium) !important;
             transform: translateY(-1px) !important;
-            box-shadow: 0 4px 12px rgba(91, 188, 255, 0.3) !important;
         }
 
         /* Style Remove Category button (× button) to match theme */
@@ -91,13 +138,13 @@
 
         /* Dark mode adjustments */
         [data-theme="dark"] .add-category-btn {
-            background: var(--primary-color) !important;
-            border-color: var(--primary-color) !important;
+            background: var(--success-color) !important;
+            box-shadow: var(--shadow-light) !important;
         }
 
         [data-theme="dark"] .add-category-btn:hover {
-            background: var(--accent-color) !important;
-            box-shadow: 0 4px 12px rgba(96, 165, 250, 0.4) !important;
+            background: #52c085 !important; /* Lighter green for dark mode */
+            box-shadow: var(--shadow-medium) !important;
         }
 
         [data-theme="dark"] .remove-tab-btn {
