@@ -1,0 +1,162 @@
+name: Build Standalone Executable
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger on version tags (e.g., v0.8.1)
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  build-windows:
+    name: Build Windows Executable
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build standalone executable
+        run: |
+          python build_standalone.py
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DMP-ART-Windows
+          path: DMP-ART-Standalone.zip
+          retention-days: 30
+
+  build-linux:
+    name: Build Linux Executable
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build standalone executable
+        run: |
+          python build_standalone.py
+
+      - name: Make executable
+        run: |
+          chmod +x dist/DMP-ART/DMP-ART
+
+      - name: Rename ZIP for Linux
+        run: |
+          mv DMP-ART-Standalone.zip DMP-ART-Linux.zip
+
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DMP-ART-Linux
+          path: DMP-ART-Linux.zip
+          retention-days: 30
+
+  build-macos:
+    name: Build macOS Executable
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build standalone executable
+        run: |
+          python build_standalone.py
+
+      - name: Make executable
+        run: |
+          chmod +x dist/DMP-ART/DMP-ART
+
+      - name: Rename ZIP for macOS
+        run: |
+          mv DMP-ART-Standalone.zip DMP-ART-macOS.zip
+
+      - name: Upload macOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DMP-ART-macOS
+          path: DMP-ART-macOS.zip
+          retention-days: 30
+
+  create-release:
+    name: Create GitHub Release
+    needs: [build-windows, build-linux, build-macos]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            DMP-ART-Windows/DMP-ART-Standalone.zip
+            DMP-ART-Linux/DMP-ART-Linux.zip
+            DMP-ART-macOS/DMP-ART-macOS.zip
+          body: |
+            ## DMP-ART Standalone Release ${{ github.ref_name }}
+
+            ### 📦 Downloads
+            - **Windows:** DMP-ART-Standalone.zip
+            - **Linux:** DMP-ART-Linux.zip
+            - **macOS:** DMP-ART-macOS.zip
+
+            ### 🚀 Quick Start
+            1. Download the ZIP for your platform
+            2. Extract the archive
+            3. Run `DMP-ART.exe` (Windows) or `./DMP-ART` (Linux/Mac)
+            4. Browser opens automatically at http://localhost:5000
+
+            ### 📝 Documentation
+            - Full instructions inside: `INSTRUKCJA.txt` (Polish)
+            - Build guide: [BUILD.md](BUILD.md)
+            - User guide: [README.md](README.md)
+
+            ### ⚠️ Notes
+            - **OCR Support:** For scanned PDFs, install Tesseract OCR separately
+              - Windows: https://github.com/UB-Mannheim/tesseract/wiki
+              - Linux: `sudo apt-get install tesseract-ocr tesseract-ocr-pol`
+              - macOS: `brew install tesseract tesseract-lang`
+            - **Max file size:** 16 MB
+            - **Supported formats:** PDF, DOCX
+
+            ### 🐛 Issues
+            Report bugs: https://github.com/gammaro85/DMP-ART/issues
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
