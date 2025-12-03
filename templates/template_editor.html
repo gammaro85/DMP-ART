@@ -74,29 +74,29 @@
             font-size: 0.875rem !important; /* 14px - reduced from 16px */
         }
 
-        /* Style Create Category button to match tabs but with success color */
+        /* Style Create Category button - compact with custom color */
         .add-category-btn {
-            /* Match tab button dimensions */
-            padding: var(--spacing-3) var(--spacing-5) !important;
-            font-size: 0.875rem !important; /* Same as tabs - 14px */
+            /* Compact dimensions */
+            padding: var(--spacing-2) var(--spacing-3) !important;
+            font-size: 0.8125rem !important; /* 13px - smaller than tabs */
             font-weight: var(--font-weight-medium) !important;
             border-radius: 8px 8px 0 0 !important; /* Same rounded top as tabs */
 
-            /* Success/Add color scheme */
-            background: var(--success-color) !important;
+            /* Custom color scheme #3766a5 */
+            background: #3766a5 !important;
             color: white !important;
             border: none !important;
             box-shadow: var(--shadow-light) !important;
 
-            /* Half width of typical tab */
-            max-width: 120px !important;
-            min-width: 100px !important;
+            /* Narrower - minimal width */
+            max-width: 80px !important;
+            min-width: 60px !important;
 
             /* Flexbox for icon + text */
             display: inline-flex !important;
             align-items: center !important;
             justify-content: center !important;
-            gap: 6px !important;
+            gap: 4px !important;
 
             transition: all 0.2s ease !important;
             cursor: pointer !important;
@@ -104,7 +104,7 @@
         }
 
         .add-category-btn:hover {
-            background: #1e8449 !important; /* Darker green */
+            background: #2d5280 !important; /* Darker shade of #3766a5 */
             box-shadow: var(--shadow-medium) !important;
             transform: translateY(-1px) !important;
         }
@@ -138,12 +138,12 @@
 
         /* Dark mode adjustments */
         [data-theme="dark"] .add-category-btn {
-            background: var(--success-color) !important;
+            background: #3766a5 !important;
             box-shadow: var(--shadow-light) !important;
         }
 
         [data-theme="dark"] .add-category-btn:hover {
-            background: #52c085 !important; /* Lighter green for dark mode */
+            background: #4a7fc4 !important; /* Lighter shade of #3766a5 for dark mode */
             box-shadow: var(--shadow-medium) !important;
         }
 
@@ -194,7 +194,7 @@
             <button class="tab-btn active" data-tab="dmp-structure"><i class="fas fa-list"></i> DMP Structure</button>
             <button class="tab-btn" data-tab="quick-comments"><i class="fas fa-comment"></i> Quick Comments</button>
             <!-- Category tabs will be injected here -->
-            <button class="add-category-btn" id="add-category-btn"><i class="fas fa-plus"></i> Create Category</button>
+            <button class="add-category-btn" id="add-category-btn"><i class="fas fa-plus"></i> bew</button>
         </div>
 
         <div class="tab-content" id="tab-content">
