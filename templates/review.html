@@ -719,6 +719,138 @@
             opacity: 1;
             visibility: visible;
         }
+
+        /* ==================== Scrollbar Styling ==================== */
+
+        /* Main page scrollbar - Light Mode */
+        body[data-page="review"] {
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) var(--bg-secondary);
+        }
+
+        /* Webkit browsers (Chrome, Safari, Edge) - Light Mode */
+        body[data-page="review"]::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+        }
+
+        body[data-page="review"]::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            margin: 2px;
+        }
+
+        body[data-page="review"]::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 10px;
+            border: 2px solid var(--bg-secondary);
+            transition: background 0.3s ease;
+        }
+
+        body[data-page="review"]::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-color);
+        }
+
+        body[data-page="review"]::-webkit-scrollbar-thumb:active {
+            background: var(--navy);
+        }
+
+        /* Right sidebar scrollbar */
+        .right-sidebar {
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) var(--bg-tertiary);
+        }
+
+        .right-sidebar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .right-sidebar::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+        }
+
+        .right-sidebar::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 10px;
+            border: 1px solid var(--bg-tertiary);
+        }
+
+        .right-sidebar::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-color);
+        }
+
+        /* Textarea scrollbars */
+        textarea {
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-medium) var(--bg-card);
+        }
+
+        textarea::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        textarea::-webkit-scrollbar-track {
+            background: var(--bg-card);
+            border-radius: 6px;
+        }
+
+        textarea::-webkit-scrollbar-thumb {
+            background: var(--border-medium);
+            border-radius: 6px;
+        }
+
+        textarea::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-color);
+        }
+
+        /* Dark mode scrollbar adjustments */
+        [data-theme="dark"] body[data-page="review"] {
+            scrollbar-color: var(--primary-color) rgba(30, 41, 59, 0.6);
+        }
+
+        [data-theme="dark"] body[data-page="review"]::-webkit-scrollbar-track {
+            background: rgba(30, 41, 59, 0.6);
+        }
+
+        [data-theme="dark"] body[data-page="review"]::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-color: rgba(30, 41, 59, 0.6);
+        }
+
+        [data-theme="dark"] body[data-page="review"]::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-color);
+        }
+
+        [data-theme="dark"] .right-sidebar {
+            scrollbar-color: var(--primary-color) rgba(44, 72, 102, 0.4);
+        }
+
+        [data-theme="dark"] .right-sidebar::-webkit-scrollbar-track {
+            background: rgba(44, 72, 102, 0.4);
+        }
+
+        [data-theme="dark"] .right-sidebar::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-color: rgba(44, 72, 102, 0.4);
+        }
+
+        [data-theme="dark"] textarea {
+            scrollbar-color: rgba(148, 163, 184, 0.4) rgba(30, 41, 59, 0.6);
+        }
+
+        [data-theme="dark"] textarea::-webkit-scrollbar-track {
+            background: rgba(30, 41, 59, 0.6);
+        }
+
+        [data-theme="dark"] textarea::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.4);
+        }
+
+        [data-theme="dark"] textarea::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-color);
+        }
     </style>
 </head>
 <body data-page="review">
