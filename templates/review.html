@@ -59,47 +59,98 @@
             border-color: var(--border-medium);
         }
         
-        /* Fixed Right Sidebar Styles - Proper flex layout */
+        /* Fixed Right Sidebar Styles - Two-panel layout */
         .review-layout {
             display: flex !important;
             flex-direction: row !important;
-            gap: 30px !important;
+            gap: 0 !important;
             width: 100% !important;
             max-width: none !important;
             margin: 0 !important;
-            padding: 20px !important;
-            position: relative !important;
-            align-items: flex-start !important;
+            padding: 0 !important;
+            position: fixed !important;
+            top: 60px !important; /* Below header */
+            bottom: 40px !important; /* Above footer */
+            left: 0 !important;
+            right: 0 !important;
+            align-items: stretch !important;
+            overflow: hidden !important;
         }
 
         .main-content {
-            flex: 1 !important;
-            margin-right: 0 !important;
-            min-width: 0 !important;
+            flex: 0 0 75% !important;
+            width: 75% !important;
+            height: 100% !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            padding: 20px 30px !important;
             order: 1 !important;
         }
 
-        /* Sticky Right Sidebar */
+        /* Fixed Right Panel - Always 25% width, no scrolling */
         body[data-page="review"] .right-sidebar {
-            position: sticky !important;
-            top: 100px !important;
-            align-self: flex-start !important;
-            width: 300px !important;
-            min-width: 300px !important;
-            max-width: 300px !important;
-            max-height: calc(100vh - 120px) !important;
+            position: relative !important;
+            flex: 0 0 25% !important;
+            width: 25% !important;
+            min-width: 25% !important;
+            max-width: 25% !important;
+            height: 100% !important;
             background-color: var(--bg-card) !important;
-            border: 1px solid var(--border-light) !important;
-            border-radius: 8px !important;
+            border-left: 1px solid var(--border-light) !important;
+            border-radius: 0 !important;
             padding: 15px !important;
             overflow-y: auto !important;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+            overflow-x: hidden !important;
+            box-shadow: -2px 0 8px rgba(0, 0, 0, 0.08) !important;
             order: 2 !important;
-            flex-shrink: 0 !important;
         }
 
         .navigation-pane, .category-comments-pane {
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Compact sidebar elements for better fit */
+        .sidebar-actions {
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-actions .action-btn {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+
+        .navigation-pane h3,
+        .category-comments-pane h3,
+        .quick-comments-pane h3,
+        .language-switcher-pane h3 {
+            font-size: 0.85rem !important;
+            margin-bottom: 0.5rem !important;
+            padding-bottom: 0.4rem !important;
+        }
+
+        .nav-grid {
+            gap: 3px;
+        }
+
+        .nav-grid-btn {
+            padding: 6px;
+            font-size: 0.75rem;
+        }
+
+        .quick-comment-item {
+            padding: 6px 8px;
+            font-size: 0.75rem;
+            margin: 3px 0;
+        }
+
+        .language-switcher {
+            gap: 5px;
+        }
+
+        .lang-btn {
+            padding: 6px 10px;
+            font-size: 0.75rem;
         }
 
         /* Center the review subtitle to align with logo */
@@ -470,17 +521,39 @@
         @media (max-width: 768px) {
             .review-layout {
                 flex-direction: column !important;
+                position: relative !important;
+                top: auto !important;
+                bottom: auto !important;
+                overflow: visible !important;
+            }
+
+            .review-header {
+                display: block !important;
+            }
+
+            .main-content {
+                flex: 1 !important;
+                width: 100% !important;
+                height: auto !important;
+                overflow-y: visible !important;
+                padding: 15px !important;
             }
 
             body[data-page="review"] .right-sidebar {
                 position: relative !important;
-                top: unset !important;
+                flex: 1 !important;
                 width: 100% !important;
-                min-width: 0 !important;
-                max-width: none !important;
-                max-height: none !important;
+                min-width: 100% !important;
+                max-width: 100% !important;
+                height: auto !important;
+                border-left: none !important;
+                border-top: 1px solid var(--border-light) !important;
                 order: -1 !important;
                 margin-bottom: 20px !important;
+            }
+
+            body[data-page="review"] .site-footer {
+                position: relative !important;
             }
         }
 
@@ -494,30 +567,38 @@
             /* No background or effects here */
         }
 
-        /* Layout with Quick Navigation */
+        /* Layout with Fixed Two-Panel Design */
         .layout-root {
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            position: relative;
         }
-        
-        .has-quick-nav .main-content {
-            padding-right: 240px; /* Reserve space for quick nav */
+
+        /* Review container takes remaining space */
+        .review-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
         }
-        
-        .quick-nav {
+
+        /* Review header - hide for fixed layout */
+        .review-header {
+            display: none;
+        }
+
+        /* Footer positioning for fixed layout */
+        body[data-page="review"] .site-footer {
             position: fixed;
-            top: 80px;
+            bottom: 0;
+            left: 0;
             right: 0;
-            width: 220px;
-            max-height: calc(100vh - 80px);
-            background-color: var(--bg-card);
-            border-left: 1px solid var(--border-light);
-            border-radius: 8px 0 0 8px;
-            padding: 15px;
-            overflow-y: auto;
-            z-index: 10001;
-            box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         /* Feedback Panel Modal Styles */
@@ -870,7 +951,7 @@
         </nav>
     </header>
     
-    <div class="layout-root has-quick-nav">
+    <div class="layout-root">
         <div class="review-container">
             <header class="review-header">
                 <div class="logo-container">
