@@ -122,7 +122,7 @@
             margin-bottom: 8px;
         }
 
-        /* Sidebar pane heading styles - consolidated for consistency */
+        /* Sidebar pane heading styles - base styles for all panes */
         body[data-page="review"] .right-sidebar .navigation-pane h3,
         body[data-page="review"] .right-sidebar .category-comments-pane h3,
         body[data-page="review"] .right-sidebar .quick-comments-pane h3,
@@ -130,6 +130,11 @@
             font-size: 0.85rem;
             margin-bottom: 0.5rem;
             padding-bottom: 0.4rem;
+        }
+
+        /* Additional styles for navigation and category panes only */
+        body[data-page="review"] .right-sidebar .navigation-pane h3,
+        body[data-page="review"] .right-sidebar .category-comments-pane h3 {
             color: var(--text-primary);
             border-bottom: 1px solid var(--border-light);
         }
