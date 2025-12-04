@@ -99,19 +99,46 @@
             border-left: 1px solid var(--border-light) !important;
             border-radius: 0 !important;
             padding: 15px !important;
-            overflow-y: auto !important;
-            overflow-x: hidden !important;
+            overflow: hidden !important;
             box-shadow: -2px 0 8px rgba(0, 0, 0, 0.08) !important;
             order: 2 !important;
+            display: flex !important;
+            flex-direction: column !important;
         }
 
-        .navigation-pane, .category-comments-pane {
-            margin-bottom: 1rem;
-        }
-
-        /* Compact sidebar elements for better fit */
+        /* Sidebar sections - flex to fit available space */
         .sidebar-actions {
-            margin-bottom: 1rem;
+            flex-shrink: 0;
+            margin-bottom: 0.75rem;
+        }
+
+        .navigation-pane {
+            flex-shrink: 0;
+            margin-bottom: 0.75rem;
+        }
+
+        .language-switcher-pane {
+            flex-shrink: 0;
+            margin-bottom: 0.75rem;
+        }
+
+        .quick-comments-pane {
+            flex: 1 1 auto;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .quick-comments-pane h3 {
+            flex-shrink: 0;
+        }
+
+        .quick-comments-list {
+            flex: 1 1 auto;
+            overflow-y: auto;
+            overflow-x: hidden;
+            min-height: 0;
         }
 
         .sidebar-actions .action-btn {
@@ -395,8 +422,6 @@
             border: 1px solid var(--border-light);
             border-radius: 6px;
             background-color: var(--bg-card);
-            max-height: 300px;
-            overflow-y: auto;
         }
         
         .category-comments-container {
@@ -596,9 +621,12 @@
             right: 0;
             z-index: 100;
             height: 40px;
+            min-height: 40px;
+            max-height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 0 var(--spacing-5);
         }
         
         /* Feedback Panel Modal Styles */
@@ -652,7 +680,7 @@
         .panel-content {
             padding: 24px;
             height: calc(100% - 80px);
-            overflow-y: auto;
+            overflow-y: auto; /* Keep scrolling for compiled feedback panel */
             display: flex;
             flex-direction: column;
         }
@@ -836,28 +864,28 @@
             background: var(--navy);
         }
 
-        /* Right sidebar scrollbar */
-        .right-sidebar {
+        /* Quick comments list scrollbar (only this section scrolls within sidebar) */
+        .quick-comments-list {
             scrollbar-width: thin;
             scrollbar-color: var(--primary-color) var(--bg-tertiary);
         }
 
-        .right-sidebar::-webkit-scrollbar {
-            width: 8px;
+        .quick-comments-list::-webkit-scrollbar {
+            width: 6px;
         }
 
-        .right-sidebar::-webkit-scrollbar-track {
+        .quick-comments-list::-webkit-scrollbar-track {
             background: var(--bg-tertiary);
             border-radius: 10px;
         }
 
-        .right-sidebar::-webkit-scrollbar-thumb {
+        .quick-comments-list::-webkit-scrollbar-thumb {
             background: var(--primary-color);
             border-radius: 10px;
             border: 1px solid var(--bg-tertiary);
         }
 
-        .right-sidebar::-webkit-scrollbar-thumb:hover {
+        .quick-comments-list::-webkit-scrollbar-thumb:hover {
             background: var(--accent-color);
         }
 
@@ -904,15 +932,15 @@
             background: var(--accent-color);
         }
 
-        [data-theme="dark"] .right-sidebar {
+        [data-theme="dark"] .quick-comments-list {
             scrollbar-color: var(--primary-color) rgba(44, 72, 102, 0.4);
         }
 
-        [data-theme="dark"] .right-sidebar::-webkit-scrollbar-track {
+        [data-theme="dark"] .quick-comments-list::-webkit-scrollbar-track {
             background: rgba(44, 72, 102, 0.4);
         }
 
-        [data-theme="dark"] .right-sidebar::-webkit-scrollbar-thumb {
+        [data-theme="dark"] .quick-comments-list::-webkit-scrollbar-thumb {
             background: var(--primary-color);
             border-color: rgba(44, 72, 102, 0.4);
         }
