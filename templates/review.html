@@ -60,49 +60,50 @@
         }
         
         /* Fixed Right Sidebar Styles - Two-panel layout */
-        .review-layout {
-            display: flex !important;
-            flex-direction: row !important;
-            gap: 0 !important;
-            width: 100% !important;
-            max-width: none !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            position: fixed !important;
-            top: 60px !important; /* Below header */
-            bottom: 40px !important; /* Above footer */
-            left: 0 !important;
-            right: 0 !important;
-            align-items: stretch !important;
-            overflow: hidden !important;
+        /* Using body[data-page="review"] prefix for specificity instead of !important */
+        body[data-page="review"] .review-layout {
+            display: flex;
+            flex-direction: row;
+            gap: 0;
+            width: 100%;
+            max-width: none;
+            margin: 0;
+            padding: 0;
+            position: fixed;
+            top: 60px; /* Below header */
+            bottom: 40px; /* Above footer */
+            left: 0;
+            right: 0;
+            align-items: stretch;
+            overflow: hidden;
         }
 
-        .main-content {
-            flex: 0 0 75% !important;
-            width: 75% !important;
-            height: 100% !important;
-            overflow-y: auto !important;
-            overflow-x: hidden !important;
-            padding: 20px 30px !important;
-            order: 1 !important;
+        body[data-page="review"] .main-content {
+            flex: 0 0 75%;
+            width: 75%;
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 20px 30px;
+            order: 1;
         }
 
-        /* Fixed Right Panel - Always 25% width, no scrolling */
-        body[data-page="review"] .right-sidebar {
-            position: relative !important;
-            flex: 0 0 25% !important;
-            width: 25% !important;
-            min-width: 25% !important;
-            max-width: 25% !important;
-            height: 100% !important;
-            background-color: var(--bg-card) !important;
-            border-left: 1px solid var(--border-light) !important;
-            border-radius: 0 !important;
-            padding: 15px !important;
-            overflow-y: auto !important;
-            overflow-x: hidden !important;
-            box-shadow: -2px 0 8px rgba(0, 0, 0, 0.08) !important;
-            order: 2 !important;
+        /* Fixed Right Panel - Always 25% width */
+        body[data-page="review"] .review-layout .right-sidebar {
+            position: relative;
+            flex: 0 0 25%;
+            width: 25%;
+            min-width: 25%;
+            max-width: 25%;
+            height: 100%;
+            background-color: var(--bg-card);
+            border-left: 1px solid var(--border-light);
+            border-radius: 0;
+            padding: 15px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            box-shadow: -2px 0 8px rgba(0, 0, 0, 0.08);
+            order: 2;
         }
 
         .navigation-pane, .category-comments-pane {
@@ -120,13 +121,13 @@
             margin-bottom: 8px;
         }
 
-        .navigation-pane h3,
-        .category-comments-pane h3,
-        .quick-comments-pane h3,
-        .language-switcher-pane h3 {
-            font-size: 0.85rem !important;
-            margin-bottom: 0.5rem !important;
-            padding-bottom: 0.4rem !important;
+        body[data-page="review"] .navigation-pane h3,
+        body[data-page="review"] .category-comments-pane h3,
+        body[data-page="review"] .quick-comments-pane h3,
+        body[data-page="review"] .language-switcher-pane h3 {
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.4rem;
         }
 
         .nav-grid {
@@ -154,35 +155,36 @@
         }
 
         /* Center the review subtitle to align with logo */
-        .review-subtitle {
-            text-align: center !important;
-            margin: 0 auto !important;
-            font-size: 1.2rem !important;
-            color: var(--text-secondary) !important;
-            margin-bottom: 2rem !important;
+        body[data-page="review"] .review-subtitle {
+            text-align: center;
+            margin: 0 auto;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
         }
 
         /* Section and subsection title colors */
-        .question-card h2,
-        .question-card .section-title,
-        h2.section-title {
-            color: var(--section-title-color) !important;
-            font-weight: 600 !important;
+        body[data-page="review"] .question-card h2,
+        body[data-page="review"] .question-card .section-title,
+        body[data-page="review"] h2.section-title {
+            color: var(--section-title-color);
+            font-weight: 600;
         }
 
-        .question-card h3,
-        .question-card .subsection-title,
-        h3.subsection-title {
-            color: var(--subsection-title-color) !important;
-            font-weight: 500 !important;
+        body[data-page="review"] .question-card h3,
+        body[data-page="review"] .question-card .subsection-title,
+        body[data-page="review"] h3.subsection-title {
+            color: var(--subsection-title-color);
+            font-weight: 500;
         }
         
-        .navigation-pane h3, .category-comments-pane h3 {
-            color: var(--text-primary) !important;
-            font-size: 0.9rem !important;
-            margin-bottom: 0.5rem !important;
-            padding-bottom: 0.5rem !important;
-            border-bottom: 1px solid var(--border-light) !important;
+        body[data-page="review"] .navigation-pane h3,
+        body[data-page="review"] .category-comments-pane h3 {
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-light);
         }
         
         .nav-grid {
@@ -279,68 +281,68 @@
         }
         
         /* Paragraph Layout Improvements */
-        .extracted-content {
-            background-color: var(--bg-secondary) !important;
-            border-radius: 8px !important;
-            padding: 20px !important;
-            margin: 15px 0 !important;
-            border: none !important;
-            box-shadow: none !important;
+        body[data-page="review"] .extracted-content {
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            border: none;
+            box-shadow: none;
         }
         
-        .continuous-text {
-            margin: 0 !important;
-            padding: 0 !important;
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
+        body[data-page="review"] .continuous-text {
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            border: none;
+            box-shadow: none;
         }
         
-        .continuous-text p {
-            margin: 0 !important;
-            padding: 0 !important;
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            line-height: 1.6 !important;
-            color: var(--text-primary) !important;
+        body[data-page="review"] .continuous-text p {
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            line-height: 1.6;
+            color: var(--text-primary);
             text-align: justify;
             word-spacing: normal;
         }
         
         /* Feedback textarea improvements */
-        .feedback-text {
-            min-height: 100px !important;
-            max-height: 300px !important;
-            resize: vertical !important;
-            transition: height 0.2s ease !important;
+        body[data-page="review"] .feedback-text {
+            min-height: 100px;
+            max-height: 300px;
+            resize: vertical;
+            transition: height 0.2s ease;
         }
         
         /* Legacy styles for backward compatibility */
-        .enhanced-paragraph {
-            margin-bottom: 0 !important;
-            border: none !important;
-            background: transparent !important;
-            padding: 0 !important;
-            box-shadow: none !important;
+        body[data-page="review"] .enhanced-paragraph {
+            margin-bottom: 0;
+            border: none;
+            background: transparent;
+            padding: 0;
+            box-shadow: none;
         }
         
-        .enhanced-paragraph:not(:last-child) {
-            margin-bottom: 15px !important;
+        body[data-page="review"] .enhanced-paragraph:not(:last-child) {
+            margin-bottom: 15px;
         }
         
-        .paragraph-metadata {
-            display: none !important;
+        body[data-page="review"] .paragraph-metadata {
+            display: none;
         }
         
-        .enhanced-paragraph p {
-            margin: 0 !important;
-            padding: 0 !important;
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            line-height: 1.6 !important;
-            color: var(--text-primary) !important;
+        body[data-page="review"] .enhanced-paragraph p {
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            line-height: 1.6;
+            color: var(--text-primary);
         }
         
         /* Category Selection Styles */
@@ -427,11 +429,11 @@
         }
         
         /* Header Navigation Layout */
-        .header-nav {
-            display: flex !important;
-            justify-content: space-between !important;
-            align-items: center !important;
-            width: 100% !important;
+        body[data-page="review"] .header-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
         }
         
         .nav-left {
@@ -495,8 +497,8 @@
         }
 
         /* Highlighted citation style */
-        .citation-highlight {
-            background-color: #ffe066 !important;
+        body[data-page="review"] .citation-highlight {
+            background-color: #ffe066;
             border-radius: 3px;
             padding: 0 2px;
             transition: background 0.3s;
@@ -519,41 +521,41 @@
         
         /* Responsive layout for mobile screens only */
         @media (max-width: 768px) {
-            .review-layout {
-                flex-direction: column !important;
-                position: relative !important;
-                top: auto !important;
-                bottom: auto !important;
-                overflow: visible !important;
+            body[data-page="review"] .review-layout {
+                flex-direction: column;
+                position: relative;
+                top: auto;
+                bottom: auto;
+                overflow: visible;
             }
 
-            .review-header {
-                display: block !important;
+            body[data-page="review"] .review-header {
+                display: block;
             }
 
-            .main-content {
-                flex: 1 !important;
-                width: 100% !important;
-                height: auto !important;
-                overflow-y: visible !important;
-                padding: 15px !important;
+            body[data-page="review"] .main-content {
+                flex: 1;
+                width: 100%;
+                height: auto;
+                overflow-y: visible;
+                padding: 15px;
             }
 
-            body[data-page="review"] .right-sidebar {
-                position: relative !important;
-                flex: 1 !important;
-                width: 100% !important;
-                min-width: 100% !important;
-                max-width: 100% !important;
-                height: auto !important;
-                border-left: none !important;
-                border-top: 1px solid var(--border-light) !important;
-                order: -1 !important;
-                margin-bottom: 20px !important;
+            body[data-page="review"] .review-layout .right-sidebar {
+                position: relative;
+                flex: 1;
+                width: 100%;
+                min-width: 100%;
+                max-width: 100%;
+                height: auto;
+                border-left: none;
+                border-top: 1px solid var(--border-light);
+                order: -1;
+                margin-bottom: 20px;
             }
 
             body[data-page="review"] .site-footer {
-                position: relative !important;
+                position: relative;
             }
         }
 
