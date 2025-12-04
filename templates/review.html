@@ -89,6 +89,7 @@
         }
 
         /* Fixed Right Panel - Always 25% width */
+        /* Using .review-layout .right-sidebar for higher specificity to override external CSS */
         body[data-page="review"] .review-layout .right-sidebar {
             position: relative;
             flex: 0 0 25%;
@@ -128,6 +129,13 @@
             font-size: 0.85rem;
             margin-bottom: 0.5rem;
             padding-bottom: 0.4rem;
+        }
+
+        /* Additional heading styles for navigation and category panes */
+        body[data-page="review"] .right-sidebar .navigation-pane h3,
+        body[data-page="review"] .right-sidebar .category-comments-pane h3 {
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-light);
         }
 
         .nav-grid {
@@ -176,15 +184,6 @@
         body[data-page="review"] h3.subsection-title {
             color: var(--subsection-title-color);
             font-weight: 500;
-        }
-        
-        body[data-page="review"] .navigation-pane h3,
-        body[data-page="review"] .category-comments-pane h3 {
-            color: var(--text-primary);
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid var(--border-light);
         }
         
         .nav-grid {
