@@ -15,6 +15,7 @@ DMP-ART (Data Management Plan Assessment and Response Tool) is a web application
 **Core Function:** Extract DMP section from grant proposal (PDF/DOCX) → Split into 14 Science Europe sections → Enable fast review with pre-configured comments
 
 **Target Users:** Data stewards at Polish research institutions
+**Target Platform:** Desktop only (no mobile device support required)
 **Success Metric:** Reduce review time from 2 hours to 30 minutes (75% reduction)
 **Current Success Rate:** 94.1% on real NCN proposals (tested on 17 files)
 
@@ -130,6 +131,21 @@ outputs/
 ---
 
 ## Code Patterns and Conventions
+
+### UI/Layout Development Guidelines
+
+**IMPORTANT: Desktop-Only Application**
+
+DMP-ART is designed exclusively for desktop use. When developing or adjusting layouts:
+
+- ❌ **DO NOT** optimize for mobile devices or small screens
+- ❌ **DO NOT** add mobile-responsive breakpoints or touch-specific features
+- ❌ **DO NOT** consider tablet or smartphone viewports in design decisions
+- ✅ **DO** optimize for desktop browsers at standard zoom levels (80%-100%)
+- ✅ **DO** focus on desktop workflow efficiency and productivity
+- ✅ **DO** assume users have large screens, mouse/keyboard input, and stable internet
+
+**Rationale:** Target users (data stewards) work exclusively on desktop computers in office environments. Mobile support would add unnecessary complexity without providing value.
 
 ### Flask Route Pattern
 
@@ -653,6 +669,13 @@ git push -u origin <branch-name>
 **Decision:** No build tools, vanilla JS
 **Rationale:** Simple deployment, fast iteration, low complexity
 **Trade-offs:** ❌ No tree-shaking, ✅ Zero build complexity
+
+### ADR 5: Desktop-Only vs Responsive Design
+
+**Decision:** Desktop-only application, no mobile device support
+**Rationale:** Target users (data stewards) work exclusively on desktop computers in office environments. Mobile support would add significant complexity without providing value to the core user base.
+**Trade-offs:** ❌ No mobile access, ✅ Simplified development, optimized desktop UX, faster iteration
+**Implementation:** Focus on desktop browsers at 80%-100% zoom levels, no responsive breakpoints needed
 
 ---
 
