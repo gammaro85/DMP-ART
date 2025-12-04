@@ -338,7 +338,7 @@ function handleFileSelection(file, elements) {
     }
 
     if (fileInfo) {
-        fileInfo.style.display = 'block';
+        fileInfo.classList.remove('hidden');
     }
 
     if (uploadBtn) {
@@ -378,7 +378,7 @@ function setupClearButton(elements) {
             updateButtonStates(elements, 'initial');
 
             if (fileInput) fileInput.value = '';
-            if (fileInfo) fileInfo.style.display = 'none';
+            if (fileInfo) fileInfo.classList.add('hidden');
             if (fileName) fileName.textContent = '';
 
             showToast('File cleared');
