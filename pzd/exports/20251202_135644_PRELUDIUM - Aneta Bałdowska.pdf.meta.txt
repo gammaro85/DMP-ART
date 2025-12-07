@@ -1,0 +1,5 @@
+original_filename: PRELUDIUM - Aneta Bałdowska.pdf
+email_subject: ODP: Sprawdzenie planu zarządzania danymi
+email_date: 20250609_123750
+exported_date: 2025-12-02 13:56:44
+file_size: 1832830

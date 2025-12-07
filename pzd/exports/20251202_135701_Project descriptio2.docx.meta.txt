@@ -1,0 +1,5 @@
+original_filename: Project descriptio2.docx
+email_subject: ODP: Grudzień - data sety i PZD - przypominajka,
+email_date: 20241231_122138
+exported_date: 2025-12-02 13:57:01
+file_size: 28470

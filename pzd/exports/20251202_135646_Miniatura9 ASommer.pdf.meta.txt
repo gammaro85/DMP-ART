@@ -1,0 +1,5 @@
+original_filename: Miniatura9 ASommer.pdf
+email_subject: Prośba o weryfikację planu zarządzania danymi – wniosek MINIATURA 9
+email_date: 20250605_112255
+exported_date: 2025-12-02 13:56:46
+file_size: 924863

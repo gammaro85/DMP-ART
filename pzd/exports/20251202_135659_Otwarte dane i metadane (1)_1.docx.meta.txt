@@ -1,0 +1,5 @@
+original_filename: Otwarte dane i metadane (1).docx
+email_subject: Otwarte dane - raport grant NCN
+email_date: 20250313_095451
+exported_date: 2025-12-02 13:56:59
+file_size: 31903

@@ -1,0 +1,5 @@
+original_filename: DMP_PRELUDIUM_mb.docx
+email_subject: DMP NCN
+email_date: 20250529_171535
+exported_date: 2025-12-02 13:56:50
+file_size: 25747

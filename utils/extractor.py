@@ -13,6 +13,18 @@ import logging
 try:
     from pdf2image import convert_from_path
     import pytesseract
+
+    # Configure Tesseract path for Windows (if needed)
+    if os.name == 'nt':  # Windows
+        tesseract_paths = [
+            r"C:\Program Files\Tesseract-OCR\tesseract.exe",
+            r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe"
+        ]
+        for path in tesseract_paths:
+            if os.path.exists(path):
+                pytesseract.pytesseract.tesseract_cmd = path
+                break
+
     HAS_OCR = True
 except ImportError:
     HAS_OCR = False
@@ -767,13 +779,18 @@ class DMPExtractor:
 
     def _is_scanned_pdf(self, pdf_path):
         """
-        Check if PDF is scanned (no extractable text)
+        Check if PDF is scanned (no extractable text) or has garbled text extraction.
+
+        Enhanced detection that checks for:
+        1. Low character count (< 50 chars/page)
+        2. High ratio of non-standard Unicode characters (garbled text)
+        3. Lack of recognizable words
 
         Args:
             pdf_path (str): Path to PDF file
 
         Returns:
-            bool: True if PDF appears to be scanned, False otherwise
+            bool: True if PDF appears to be scanned or has unreadable text, False otherwise
         """
         try:
             with open(pdf_path, 'rb') as file:
@@ -782,19 +799,50 @@ class DMPExtractor:
                 # Check first 3 pages for text
                 pages_to_check = min(3, len(pdf_reader.pages))
                 total_chars = 0
+                total_ascii = 0
+                total_readable_words = 0
+                all_sample_text = ""
 
                 for i in range(pages_to_check):
                     text = pdf_reader.pages[i].extract_text()
                     total_chars += len(text.strip())
 
-                # If very little text (< 50 chars per page on average), likely scanned
+                    # Count ASCII printable characters
+                    ascii_chars = sum(1 for c in text if 32 <= ord(c) <= 126)
+                    total_ascii += ascii_chars
+
+                    # Check for recognizable English/Polish words
+                    common_words = ['the', 'and', 'data', 'plan', 'management', 'project',
+                                   'badania', 'danych', 'plan', 'projektu', 'oraz']
+                    text_lower = text.lower()
+                    total_readable_words += sum(1 for word in common_words if word in text_lower)
+
+                    # Keep sample for debugging
+                    if i == 0:
+                        all_sample_text = text[:200]
+
+                # Calculate metrics
                 avg_chars_per_page = total_chars / pages_to_check if pages_to_check > 0 else 0
-                is_scanned = avg_chars_per_page < 50
+
+                # Check if text is garbled (high ratio of non-ASCII chars)
+                ascii_ratio = total_ascii / total_chars if total_chars > 0 else 0
+                has_garbled_text = ascii_ratio < 0.5 and total_chars > 100  # More than 50% non-ASCII
+
+                # Check if we found any recognizable words
+                has_readable_content = total_readable_words > 0
+
+                # Determine if scanned
+                is_scanned = (avg_chars_per_page < 50) or (has_garbled_text) or (not has_readable_content and total_chars > 0)
 
                 if is_scanned:
-                    self._log_debug(f"PDF appears to be scanned ({avg_chars_per_page:.0f} chars/page)")
+                    if avg_chars_per_page < 50:
+                        self._log_debug(f"PDF appears to be scanned (low char count: {avg_chars_per_page:.0f} chars/page)")
+                    elif has_garbled_text:
+                        self._log_debug(f"PDF has garbled text extraction (ASCII ratio: {ascii_ratio:.1%}, sample: '{all_sample_text[:50]}...')")
+                    else:
+                        self._log_debug(f"PDF has no recognizable text (no common words found)")
                 else:
-                    self._log_debug(f"PDF has extractable text ({avg_chars_per_page:.0f} chars/page)")
+                    self._log_debug(f"PDF has extractable text ({avg_chars_per_page:.0f} chars/page, ASCII: {ascii_ratio:.1%})")
 
                 return is_scanned
 
@@ -1634,9 +1682,11 @@ class DMPExtractor:
                             break
             
             if start_idx == -1:
+                # Provide helpful error message with sample text
+                sample_text = " ".join(formatted_paragraphs[:5])[:200] if formatted_paragraphs else "No text found"
                 return {
                     "success": False,
-                    "message": "Could not find the start marker or section 1 in the document."
+                    "message": f"Could not find the DMP section start marker ('PLAN ZARZĄDZANIA DANYMI' or 'DATA MANAGEMENT PLAN') or section 1 keywords. Please ensure the document follows the NCN/OSF DMP format. Text sample: '{sample_text[:100]}...'"
                 }
             
             # Find end marker
@@ -1873,7 +1923,7 @@ class DMPExtractor:
 
                 # Check if PDF is scanned and use OCR if needed
                 if self._is_scanned_pdf(pdf_path):
-                    self._report_progress(progress_callback, "Scanned PDF detected, running OCR...", 35)
+                    self._report_progress(progress_callback, "Scanned PDF or garbled text detected, running OCR...", 35)
                     ocr_text = self._extract_pdf_with_ocr(pdf_path)
                     if ocr_text:
                         self._log_debug("Using OCR extracted text instead of standard extraction")
@@ -1881,7 +1931,7 @@ class DMPExtractor:
                     else:
                         return {
                             "success": False,
-                            "message": "PDF appears to be scanned but OCR extraction failed. Install pytesseract and pdf2image for OCR support."
+                            "message": "This PDF appears to be scanned or has custom font encoding that prevents text extraction. OCR is required but not available. Please install Tesseract OCR (https://github.com/tesseract-ocr/tesseract) and the required Python packages: pip install pytesseract pdf2image"
                         }
 
                 # Extract metadata from PDF
@@ -1924,12 +1974,23 @@ class DMPExtractor:
                             start_pos = match.start()
                             self._log_debug(f"Fallback Strategy 3: Found English section 1 keywords at position {start_pos}")
 
-                    # If still not found, fail
+                    # If still not found, provide detailed error
                     if start_pos == -1:
-                        return {
-                            "success": False,
-                            "message": "Could not find the start marker or section 1 in the document."
-                        }
+                        # Check if text looks garbled (high non-ASCII ratio)
+                        ascii_chars = sum(1 for c in all_text if 32 <= ord(c) <= 126)
+                        ascii_ratio = ascii_chars / len(all_text) if len(all_text) > 0 else 0
+                        text_sample = all_text[:200].strip()
+
+                        if ascii_ratio < 0.5 and len(all_text) > 100:
+                            return {
+                                "success": False,
+                                "message": f"Could not find the DMP section. The extracted text appears garbled (possibly scanned PDF or custom font encoding). Install Tesseract OCR for better extraction: pip install pytesseract pdf2image. Text sample: '{text_sample[:50]}...'"
+                            }
+                        else:
+                            return {
+                                "success": False,
+                                "message": f"Could not find the DMP section start marker ('PLAN ZARZĄDZANIA DANYMI' or 'DATA MANAGEMENT PLAN') or section 1 keywords. Please ensure the document follows the NCN/OSF DMP format. Text sample: '{text_sample[:50]}...'"
+                            }
                 
                 for mark in self.end_marks:
                     pos = all_text.find(mark, start_pos)

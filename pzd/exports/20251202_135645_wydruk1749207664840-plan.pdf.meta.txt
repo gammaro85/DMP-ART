@@ -1,0 +1,5 @@
+original_filename: wydruk1749207664840-plan.pdf
+email_subject: ODP: Plan zarządzania danymi - preludium
+email_date: 20250606_131124
+exported_date: 2025-12-02 13:56:45
+file_size: 123301

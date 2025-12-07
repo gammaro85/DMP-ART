@@ -1,0 +1,5 @@
+original_filename: plan_zarzadzania_danymi_Pestka_Anna.docx
+email_subject: ODP: Plan zarządzania danymi - raport końcowy Miniatura 7
+email_date: 20250606_122937
+exported_date: 2025-12-02 13:56:45
+file_size: 26625

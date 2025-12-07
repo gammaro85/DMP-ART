@@ -1,0 +1,5 @@
+original_filename: plan_zarządzania_danymi.docx
+email_subject: PD: Plan zarządzania danymi
+email_date: 20251117_080242
+exported_date: 2025-12-02 13:56:38
+file_size: 21060

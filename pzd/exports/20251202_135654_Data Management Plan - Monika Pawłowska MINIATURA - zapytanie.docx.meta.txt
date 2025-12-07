@@ -1,0 +1,5 @@
+original_filename: Data Management Plan - Monika Pawłowska MINIATURA - zapytanie.docx
+email_subject: ODP: Plan zarządzania danymi - raport do NCN z grantu Miniatura - zapytanie
+email_date: 20250423_132826
+exported_date: 2025-12-02 13:56:54
+file_size: 21445
