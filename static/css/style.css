@@ -589,8 +589,9 @@ s .light-logo {
   padding-left: var(--spacing-5);
   padding-right: var(--spacing-5);
   z-index: 1000;
+  height: 60px;
   min-height: 60px;
-  height: auto;
+  max-height: 60px;
   display: flex;
   align-items: center;
   justify-content: flex-end;

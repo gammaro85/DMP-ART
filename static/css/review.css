@@ -26,26 +26,9 @@
 }
 
 /* Layout and Sidebar */
-/* Responsive Sidebar - Smaller at 100% zoom, collapsible when needed */
-body[data-page="review"] aside.right-sidebar {
-    position: sticky !important;
-    top: clamp(4rem, 6vh, 5.5rem) !important;
-    align-self: flex-start !important;
-    width: clamp(12rem, 15vw, 16rem) !important; /* Reduced from 280px */
-    min-width: clamp(12rem, 15vw, 16rem) !important;
-    max-width: clamp(12rem, 15vw, 16rem) !important;
-    max-height: calc(100vh - clamp(5rem, 8vh, 7rem)) !important;
-    background-color: var(--bg-card) !important;
-    border: 1px solid var(--border-light) !important;
-    border-radius: clamp(0.25rem, 0.5vw, 0.5rem) !important;
-    padding: clamp(0.5rem, 1vw, 0.75rem) !important;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
-    order: 2 !important;
-    flex-shrink: 0 !important;
-    transition: all 0.3s ease !important;
-}
+/* FIXED TWO-PANEL LAYOUT - 75% left, 25% right, desktop only */
+/* NOTE: Main layout styles are in review.html <style> tag for fixed positioning */
+/* This file provides supplementary responsive sizing for elements WITHIN the panels */
 
 /* CSS Variables for sidebar dimensions */
 :root {
@@ -152,39 +135,18 @@ body[data-page="review"] aside.right-sidebar.collapsed > *:not(.sidebar-collapse
     border-color: var(--border-light);
 }
 
-/* Fixed Right Sidebar Styles - Proper flex layout with responsive sizing */
-.review-layout {
-    display: flex !important;
-    flex-direction: row !important;
-    gap: clamp(0.75rem, 2vw, 1.5rem) !important; /* Responsive gap */
-    max-width: 100% !important;
-    margin: 0 auto !important;
-    padding: clamp(0.5rem, 1.5vw, 1rem) !important; /* Responsive padding */
-    position: relative !important;
-    align-items: flex-start !important;
-}
+/* Fixed Right Sidebar Styles - Defined in review.html for proper positioning */
+/* NOTE: .review-layout and .main-content styles moved to review.html <style> tag */
+/* This ensures fixed positioning with exact 75/25 split that doesn't change with zoom */
 
-.main-content {
-    flex: 1 1 auto !important;
-    margin-right: 0 !important;
-    min-width: 0 !important;
-    order: 1 !important;
-    max-width: 100% !important;
-}
-
-/* Question cards with max height to prevent infinite scrolling */
+/* Question cards - no max-height restrictions, scrolls naturally in left panel */
 .question-card {
     margin-bottom: clamp(0.75rem, 2vh, 1.25rem) !important;
     padding: clamp(0.5rem, 1.5vw, 1rem) !important;
-    max-height: calc(100vh - clamp(8rem, 15vh, 12rem)) !important; /* Limit card height */
-    overflow-y: auto !important;
 }
 
-/* Content area max heights */
-.extracted-content {
-    max-height: clamp(15rem, 30vh, 25rem) !important;
-    overflow-y: auto !important;
-}
+/* Content areas - no individual scrolling, content flows naturally */
+/* Scrolling is handled by the main-content container (left panel) */
 
 .feedback-text {
     min-height: clamp(4rem, 10vh, 6rem) !important;
@@ -475,14 +437,12 @@ h3.subsection-title {
     border-color: var(--primary-color);
 }
 
-/* Category Comments Dropdown */
+/* Category Comments Dropdown - no fixed max-height */
 .category-comments-dropdown {
     margin: 10px 0;
     border: 1px solid var(--border-light);
     border-radius: 6px;
     background-color: var(--bg-card);
-    max-height: 300px;
-    overflow-y: auto;
 }
 
 .category-comments-container {
@@ -603,34 +563,9 @@ h3.subsection-title {
     transition: opacity 0.2s;
 }
 
-/* Responsive adjustments - Desktop main content spacing */
-@media (min-width: 1200px) {
-    body[data-page="review"] .main-content {
-        margin-right: 0 !important;
-    }
-}
-
-/* Responsive layout for tablets and small desktops (up to 1199px) */
-@media (max-width: 1199px) {
-    .review-layout {
-        flex-direction: column !important;
-    }
-
-    body[data-page="review"] aside.right-sidebar {
-        position: relative !important;
-        top: unset !important;
-        width: 100% !important;
-        min-width: 0 !important;
-        max-width: 100% !important;
-        max-height: none !important;
-        order: -1 !important;
-        margin-bottom: 20px !important;
-    }
-
-    body[data-page="review"] .main-content {
-        margin-right: 0 !important;
-    }
-}
+/* Desktop-only application - no responsive breakpoints needed */
+/* The fixed 75/25 layout is maintained at all desktop zoom levels (80-100%) */
+/* Mobile layouts defined in review.html for viewport widths < 768px only */
 
 /* Add texture background to html instead of body */
 html {
