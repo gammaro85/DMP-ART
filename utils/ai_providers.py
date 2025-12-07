@@ -161,12 +161,33 @@ class OpenAIProvider(AIProvider):
 
             return self._parse_response(response.choices[0].message.content)
 
+        except openai.AuthenticationError:
+            return {
+                "selected_comments": [],
+                "ai_suggestions": [],
+                "quality_score": 0,
+                "issues": ["Błąd autoryzacji: nieprawidłowy klucz API OpenAI"]
+            }
+        except openai.RateLimitError:
+            return {
+                "selected_comments": [],
+                "ai_suggestions": [],
+                "quality_score": 0,
+                "issues": ["Przekroczono limit zapytań API OpenAI"]
+            }
+        except openai.APIError as e:
+            return {
+                "selected_comments": [],
+                "ai_suggestions": [],
+                "quality_score": 0,
+                "issues": [f"Błąd API OpenAI: {str(e)}"]
+            }
         except Exception as e:
             return {
                 "selected_comments": [],
                 "ai_suggestions": [],
                 "quality_score": 0,
-                "issues": [f"Błąd OpenAI API: {str(e)}"]
+                "issues": [f"Nieoczekiwany błąd OpenAI: {str(e)}"]
             }
 
     def test_connection(self) -> Tuple[bool, str]:
@@ -228,12 +249,33 @@ class AnthropicProvider(AIProvider):
 
             return self._parse_response(message.content[0].text)
 
+        except anthropic.AuthenticationError:
+            return {
+                "selected_comments": [],
+                "ai_suggestions": [],
+                "quality_score": 0,
+                "issues": ["Błąd autoryzacji: nieprawidłowy klucz API Anthropic"]
+            }
+        except anthropic.RateLimitError:
+            return {
+                "selected_comments": [],
+                "ai_suggestions": [],
+                "quality_score": 0,
+                "issues": ["Przekroczono limit zapytań API Anthropic"]
+            }
+        except anthropic.APIError as e:
+            return {
+                "selected_comments": [],
+                "ai_suggestions": [],
+                "quality_score": 0,
+                "issues": [f"Błąd API Anthropic: {str(e)}"]
+            }
         except Exception as e:
             return {
                 "selected_comments": [],
                 "ai_suggestions": [],
                 "quality_score": 0,
-                "issues": [f"Błąd Anthropic API: {str(e)}"]
+                "issues": [f"Nieoczekiwany błąd Anthropic: {str(e)}"]
             }
 
     def test_connection(self) -> Tuple[bool, str]:
