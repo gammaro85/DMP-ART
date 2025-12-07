@@ -59,68 +59,65 @@
             border-color: var(--border-medium);
         }
         
-        /* Fixed Two-Panel Layout */
-        /* Left panel: 75% width, scrolls with page */
-        /* Right panel: 25% width, fixed position, no scrolling */
+        /* ============================================
+           FIXED TWO-PANEL LAYOUT
+           Left: 75% width, scrolls with page
+           Right: 25% width, FIXED position, no scroll
+           ============================================ */
         
         body[data-page="review"] {
-            overflow-x: hidden;
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
         }
         
-        /* Disable hover transform effects on review page elements */
+        /* Disable ALL hover effects that change size/position */
         body[data-page="review"] .question-card:hover,
         body[data-page="review"] .feedback-text:hover,
-        body[data-page="review"] .extracted-content:hover {
+        body[data-page="review"] .extracted-content:hover,
+        body[data-page="review"] .right-sidebar:hover {
             transform: none !important;
+            box-shadow: inherit !important;
         }
         
-        /* CRITICAL: Lock right sidebar dimensions - prevent ANY changes on hover */
-        body[data-page="review"] .right-sidebar,
-        body[data-page="review"] .right-sidebar:hover,
-        body[data-page="review"] .review-layout .right-sidebar,
-        body[data-page="review"] .review-layout .right-sidebar:hover {
-            width: 25% !important;
-            min-width: 25% !important;
-            max-width: 25% !important;
-            padding: 10px !important;
-            transform: none !important;
-            box-shadow: -2px 0 8px rgba(0, 0, 0, 0.08) !important;
-            border-color: var(--border-light) !important;
-            border-width: 0 0 0 1px !important;
-            overflow: hidden !important;
-            overflow-x: hidden !important;
-            overflow-y: hidden !important;
-            scrollbar-width: none !important;
-            transition: none !important;
-        }
-        
-        /* Hide scrollbar in webkit browsers */
-        body[data-page="review"] .right-sidebar::-webkit-scrollbar,
-        body[data-page="review"] .review-layout .right-sidebar::-webkit-scrollbar {
-            display: none !important;
-            width: 0 !important;
-        }
-        
+        /* Main layout container */
         body[data-page="review"] .review-layout {
-            display: block;
-            width: 100%;
-            max-width: none;
-            margin: 0;
-            padding: 0;
-            position: relative;
+            display: block !important;
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            position: relative !important;
         }
 
+        /* ============================================
+           LEFT PANEL - 75% width, page scroll
+           Elements stretch to full width
+           ============================================ */
         body[data-page="review"] .main-content {
             width: 75% !important;
             min-width: 75% !important;
             max-width: 75% !important;
             margin: 0 !important;
-            padding: 20px 30px !important;
-            padding-bottom: 80px !important;
+            padding: 20px 30px 80px 30px !important;
+            box-sizing: border-box !important;
+        }
+        
+        /* Left panel elements - full width */
+        body[data-page="review"] .main-content .question-card,
+        body[data-page="review"] .main-content .feedback-section,
+        body[data-page="review"] .main-content .extracted-content,
+        body[data-page="review"] .main-content .category-selection,
+        body[data-page="review"] .main-content textarea {
+            width: 100% !important;
+            max-width: 100% !important;
             box-sizing: border-box !important;
         }
 
-        /* Fixed Right Panel - Always visible, no scrolling, scales content */
+        /* ============================================
+           RIGHT PANEL - 25% width, FIXED position
+           Elements scale to fit width AND height
+           ============================================ */
+        body[data-page="review"] .right-sidebar,
         body[data-page="review"] .review-layout .right-sidebar {
             position: fixed !important;
             right: 0 !important;
@@ -129,69 +126,119 @@
             min-width: 25% !important;
             max-width: 25% !important;
             height: calc(100vh - 60px) !important;
+            min-height: calc(100vh - 60px) !important;
+            max-height: calc(100vh - 60px) !important;
             background-color: var(--bg-card) !important;
             border-left: 1px solid var(--border-light) !important;
             border-radius: 0 !important;
             padding: 10px !important;
+            margin: 0 !important;
             overflow: hidden !important;
             box-shadow: -2px 0 8px rgba(0, 0, 0, 0.08) !important;
             display: flex !important;
             flex-direction: column !important;
             box-sizing: border-box !important;
+            z-index: 100 !important;
+            /* Disable all transitions/animations */
+            transition: none !important;
+            animation: none !important;
+        }
+        
+        /* Hide scrollbars */
+        body[data-page="review"] .right-sidebar::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+        }
+        body[data-page="review"] .right-sidebar {
+            -ms-overflow-style: none !important;
+            scrollbar-width: none !important;
         }
 
-        /* Sidebar sections - scale to fit without scrolling */
+        /* ============================================
+           RIGHT PANEL SECTIONS - Flex layout
+           Scale to available height
+           ============================================ */
+        
+        /* Action buttons - fixed height */
         body[data-page="review"] .sidebar-actions {
-            flex: 0 0 auto;
-            margin-bottom: 8px;
-        }
-
-        body[data-page="review"] .navigation-pane {
-            flex: 0 0 auto;
-            margin-bottom: 8px;
-            max-height: 25%;
-            overflow: hidden;
-        }
-
-        body[data-page="review"] .quick-comments-pane {
-            flex: 1 1 auto;
-            min-height: 0;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            margin-bottom: 0;
-        }
-
-        body[data-page="review"] .quick-comments-pane h3 {
-            flex: 0 0 auto;
-            margin-bottom: 6px;
-            font-size: 0.75rem;
-        }
-
-        body[data-page="review"] .quick-comments-list {
-            flex: 1 1 auto;
-            overflow: hidden !important;
-            min-height: 0;
-        }
-        
-        body[data-page="review"] .quick-comment-item {
-            font-size: clamp(0.6rem, 1.2vw, 0.75rem);
-            padding: 4px 6px;
-            margin: 2px 0;
-        }
-        
-        body[data-page="review"] .nav-grid {
-            gap: 2px;
-        }
-        
-        body[data-page="review"] .nav-grid-btn {
-            padding: 4px;
-            font-size: clamp(0.6rem, 1.2vw, 0.75rem);
+            flex: 0 0 auto !important;
+            width: 100% !important;
+            margin-bottom: 8px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 4px !important;
         }
         
         body[data-page="review"] .sidebar-actions .action-btn {
-            padding: 6px 10px;
-            font-size: clamp(0.65rem, 1.3vw, 0.8rem);
+            width: 100% !important;
+            padding: 8px 10px !important;
+            font-size: clamp(0.65rem, 1.2vw, 0.8rem) !important;
+            margin: 0 !important;
+        }
+        
+        /* Navigation pane - proportional height */
+        body[data-page="review"] .navigation-pane {
+            flex: 0 0 auto !important;
+            width: 100% !important;
+            margin-bottom: 8px !important;
+            max-height: 20vh !important;
+            overflow: hidden !important;
+        }
+        
+        body[data-page="review"] .navigation-pane h3 {
+            font-size: clamp(0.6rem, 1vw, 0.75rem) !important;
+            margin-bottom: 4px !important;
+            padding-bottom: 4px !important;
+        }
+        
+        body[data-page="review"] .nav-grid {
+            display: grid !important;
+            grid-template-columns: repeat(auto-fill, minmax(28px, 1fr)) !important;
+            gap: 2px !important;
+            width: 100% !important;
+        }
+        
+        body[data-page="review"] .nav-grid-btn {
+            padding: 4px 2px !important;
+            font-size: clamp(0.55rem, 1vw, 0.7rem) !important;
+            width: 100% !important;
+        }
+        
+        /* Quick comments pane - fills remaining space */
+        body[data-page="review"] .quick-comments-pane {
+            flex: 1 1 auto !important;
+            width: 100% !important;
+            min-height: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            overflow: hidden !important;
+            margin: 0 !important;
+        }
+        
+        body[data-page="review"] .quick-comments-pane h3 {
+            flex: 0 0 auto !important;
+            font-size: clamp(0.6rem, 1vw, 0.75rem) !important;
+            margin-bottom: 4px !important;
+            padding-bottom: 4px !important;
+        }
+        
+        body[data-page="review"] .quick-comments-list {
+            flex: 1 1 auto !important;
+            width: 100% !important;
+            min-height: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 2px !important;
+            overflow: hidden !important;
+        }
+        
+        body[data-page="review"] .quick-comment-item {
+            width: 100% !important;
+            padding: 4px 6px !important;
+            font-size: clamp(0.55rem, 1vw, 0.7rem) !important;
+            margin: 0 !important;
+            flex-shrink: 0 !important;
+            box-sizing: border-box !important;
         }
 
         .sidebar-actions .action-btn {
