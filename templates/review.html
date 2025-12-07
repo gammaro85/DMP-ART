@@ -69,77 +69,72 @@
             max-width: none;
             margin: 0;
             padding: 0;
-            position: fixed;
-            top: 60px; /* Below header */
-            bottom: 40px; /* Above footer */
-            left: 0;
-            right: 0;
-            align-items: stretch;
-            overflow: hidden;
+            position: relative;
+            min-height: calc(100vh - 60px);
         }
 
         body[data-page="review"] .main-content {
-            flex: 0 0 75%;
-            width: 75%;
-            height: 100%;
+            flex: 1;
+            width: calc(100% - 300px);
+            min-height: calc(100vh - 60px);
             overflow-y: auto;
             overflow-x: hidden;
             padding: 20px 30px;
+            padding-bottom: 80px;
             order: 1;
         }
 
-        /* Fixed Right Panel - Always 25% width */
+        /* Fixed Right Panel - Always visible, no scrolling */
         /* Using .review-layout .right-sidebar for higher specificity to override external CSS */
         body[data-page="review"] .review-layout .right-sidebar {
-            position: relative;
-            flex: 0 0 25%;
-            width: 25%;
-            min-width: 25%;
-            max-width: 25%;
-            height: 100%;
+            position: fixed;
+            right: 0;
+            top: 60px;
+            width: 300px;
+            height: calc(100vh - 60px);
             background-color: var(--bg-card);
             border-left: 1px solid var(--border-light);
             border-radius: 0;
-            padding: 15px;
-            overflow-y: auto;
-            overflow-x: hidden;
+            padding: 12px;
+            overflow: hidden;
             box-shadow: -2px 0 8px rgba(0, 0, 0, 0.08);
             order: 2;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Sidebar sections - flex to fit available space */
-        .sidebar-actions {
+        /* Sidebar sections - flex to fit available space without scrolling */
+        body[data-page="review"] .sidebar-actions {
             flex-shrink: 0;
-            margin-bottom: 0.75rem;
+            margin-bottom: 10px;
         }
 
-        .navigation-pane {
+        body[data-page="review"] .navigation-pane {
             flex-shrink: 0;
-            margin-bottom: 0.75rem;
+            margin-bottom: 10px;
         }
 
-        .language-switcher-pane {
-            flex-shrink: 0;
-            margin-bottom: 0.75rem;
-        }
-
-        .quick-comments-pane {
+        body[data-page="review"] .quick-comments-pane {
             flex: 1 1 auto;
             min-height: 0;
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            margin-bottom: 0;
         }
 
-        .quick-comments-pane h3 {
+        body[data-page="review"] .quick-comments-pane h3 {
             flex-shrink: 0;
+            margin-bottom: 8px;
+            font-size: 0.8rem;
         }
 
-        .quick-comments-list {
+        body[data-page="review"] .quick-comments-list {
             flex: 1 1 auto;
             overflow-y: auto;
             overflow-x: hidden;
             min-height: 0;
+            padding-right: 4px;
         }
 
         .sidebar-actions .action-btn {
@@ -462,17 +457,94 @@
             align-items: center;
             width: 100%;
         }
-        
+
         .nav-left {
             display: flex;
             gap: 20px;
             align-items: center;
         }
-        
+
         .nav-right {
             display: flex;
             gap: 15px;
             align-items: center;
+        }
+
+        /* Header Controls (Language Switcher + Theme Toggle) */
+        .header-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        /* Header Language Switcher */
+        .header-language-switcher {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            padding: 4px;
+            background: rgba(107,114,128,.06);
+            border: 1px solid rgba(107,114,128,.15);
+            border-radius: var(--border-radius-md);
+        }
+
+        .header-lang-btn {
+            padding: 6px 12px;
+            background: rgba(249,250,251,.8);
+            border: 1px solid rgba(107,114,128,.15);
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: var(--border-radius-sm);
+            font-weight: var(--font-weight-medium);
+            font-size: calc(var(--font-size-sm) * 0.9);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            min-width: 50px;
+            min-height: 32px;
+        }
+
+        .header-lang-btn:hover {
+            background: rgba(107,114,128,.08);
+            border-color: rgba(107,114,128,.25);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,.08);
+        }
+
+        .header-lang-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(var(--primary-rgb), 0.3);
+        }
+
+        .header-lang-btn i {
+            font-size: var(--font-size-sm);
+        }
+
+        /* Dark mode adjustments for header language switcher */
+        [data-theme="dark"] .header-language-switcher {
+            background: rgba(71,85,105,.6);
+            border-color: rgba(107,114,128,.2);
+        }
+
+        [data-theme="dark"] .header-lang-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
+            color: var(--text-secondary);
+        }
+
+        [data-theme="dark"] .header-lang-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        [data-theme="dark"] .header-lang-btn.active {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
         }
         
         /* Header Action Buttons - Distinguished Style */
@@ -977,9 +1049,21 @@
                 <a href="/template_editor" class="nav-item" data-page="template-editor">Template Editor</a>
                 <a href="/documentation" class="nav-item" data-page="documentation">Documentation</a>
             </div>
-            <button class="theme-toggle" aria-label="Toggle theme">
-                <i class="fas fa-moon"></i>
-            </button>
+            <div class="header-controls">
+                <!-- Language Switcher -->
+                <div class="header-language-switcher">
+                    <button id="header-lang-en-btn" class="header-lang-btn active" data-lang="en" title="English comments">
+                        <i class="fas fa-language"></i> EN
+                    </button>
+                    <button id="header-lang-pl-btn" class="header-lang-btn" data-lang="pl" title="Polski komentarze">
+                        <i class="fas fa-language"></i> PL
+                    </button>
+                </div>
+                <!-- Theme Toggle -->
+                <button class="theme-toggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
         </nav>
     </header>
     
@@ -1136,20 +1220,6 @@
                         <div class="nav-grid" id="section-nav-grid">
                             <!-- Navigation buttons will be generated by JavaScript -->
                         </div>
-                    </div>
-
-                    <!-- Language Switcher for Comments -->
-                    <div class="language-switcher-pane">
-                        <h3>Comment Language</h3>
-                        <div class="language-switcher">
-                            <button id="lang-en-btn" class="lang-btn active" data-lang="en" title="English comments">
-                                <i class="fas fa-language"></i> EN
-                            </button>
-                            <button id="lang-pl-btn" class="lang-btn" data-lang="pl" title="Polski komentarze">
-                                <i class="fas fa-language"></i> PL
-                            </button>
-                        </div>
-                        <p class="lang-note">Switch comment language only</p>
                     </div>
 
                     <!-- Quick Comments -->
@@ -1324,11 +1394,13 @@
             currentCommentLanguage = lang;
             localStorage.setItem('dmp-art-comment-language', lang);
 
-            // Update button states
-            document.querySelectorAll('.lang-btn').forEach(btn => {
+            // Update button states for all language buttons (header and hover panel)
+            document.querySelectorAll('.lang-btn, .header-lang-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            document.querySelector(`[data-lang="${lang}"]`).classList.add('active');
+            document.querySelectorAll(`[data-lang="${lang}"]`).forEach(btn => {
+                btn.classList.add('active');
+            });
 
             // Refresh quick comments
             refreshQuickComments();
@@ -1392,20 +1464,37 @@
 
         // Initialize language switcher
         function initializeLanguageSwitcher() {
-            const langEnBtn = document.getElementById('lang-en-btn');
-            const langPlBtn = document.getElementById('lang-pl-btn');
+            // Header language buttons
+            const headerLangEnBtn = document.getElementById('header-lang-en-btn');
+            const headerLangPlBtn = document.getElementById('header-lang-pl-btn');
 
-            if (!langEnBtn || !langPlBtn) return;
+            // Hover panel language buttons (if sidebar is collapsed)
+            const hoverLangEnBtn = document.getElementById('hover-lang-en-btn');
+            const hoverLangPlBtn = document.getElementById('hover-lang-pl-btn');
 
-            // Set initial state
-            document.querySelectorAll('.lang-btn').forEach(btn => {
+            // Set initial state for all language buttons
+            document.querySelectorAll('.lang-btn, .header-lang-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            document.querySelector(`[data-lang="${currentCommentLanguage}"]`)?.classList.add('active');
+            document.querySelectorAll(`[data-lang="${currentCommentLanguage}"]`).forEach(btn => {
+                btn.classList.add('active');
+            });
 
-            // Add event listeners
-            langEnBtn.addEventListener('click', () => setCommentLanguage('en'));
-            langPlBtn.addEventListener('click', () => setCommentLanguage('pl'));
+            // Add event listeners for header buttons
+            if (headerLangEnBtn) {
+                headerLangEnBtn.addEventListener('click', () => setCommentLanguage('en'));
+            }
+            if (headerLangPlBtn) {
+                headerLangPlBtn.addEventListener('click', () => setCommentLanguage('pl'));
+            }
+
+            // Add event listeners for hover panel buttons
+            if (hoverLangEnBtn) {
+                hoverLangEnBtn.addEventListener('click', () => setCommentLanguage('en'));
+            }
+            if (hoverLangPlBtn) {
+                hoverLangPlBtn.addEventListener('click', () => setCommentLanguage('pl'));
+            }
 
             console.log(`Language switcher initialized. Current: ${currentCommentLanguage.toUpperCase()}`);
         }
@@ -1637,8 +1726,6 @@
             // Connect hover buttons to main actions
             const hoverCompileBtn = document.getElementById('hover-compile-feedback-btn');
             const hoverSaveBtn = document.getElementById('hover-save-feedback-btn');
-            const hoverLangEnBtn = document.getElementById('hover-lang-en-btn');
-            const hoverLangPlBtn = document.getElementById('hover-lang-pl-btn');
 
             if (hoverCompileBtn) {
                 hoverCompileBtn.addEventListener('click', () => {
@@ -1652,20 +1739,8 @@
                     hideAllHoverPanels();
                 });
             }
-            if (hoverLangEnBtn) {
-                hoverLangEnBtn.addEventListener('click', () => {
-                    document.getElementById('lang-en-btn').click();
-                    hoverLangEnBtn.classList.add('active');
-                    hoverLangPlBtn.classList.remove('active');
-                });
-            }
-            if (hoverLangPlBtn) {
-                hoverLangPlBtn.addEventListener('click', () => {
-                    document.getElementById('lang-pl-btn').click();
-                    hoverLangPlBtn.classList.add('active');
-                    hoverLangEnBtn.classList.remove('active');
-                });
-            }
+
+            // Language buttons are now handled by initializeLanguageSwitcher()
 
             // Check on load and resize
             checkSidebarCollapse();
@@ -2049,12 +2124,15 @@
                 return;
             }
 
-            // Get all section containers
-            const sections = document.querySelectorAll('[id^="section-"]');
-            console.log('Found sections:', sections.length);
-            
+            // Get only review sections (question-card elements), exclude unconnected text and other non-review elements
+            const sections = document.querySelectorAll('.question-card[data-id]');
+            console.log('Found review sections:', sections.length);
+
             sections.forEach(section => {
-                const sectionId = section.id.replace('section-', '');
+                const sectionId = section.getAttribute('data-id');
+                // Skip if no section ID
+                if (!sectionId) return;
+
                 console.log('Creating nav button for section:', sectionId);
                 const btn = document.createElement('button');
                 btn.className = 'nav-grid-btn';
