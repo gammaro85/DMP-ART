@@ -67,3 +67,6 @@ logs/
 # Environment variables
 .env
 .env.local
+
+# AI Configuration (contains API keys)
+config/ai_config.json
