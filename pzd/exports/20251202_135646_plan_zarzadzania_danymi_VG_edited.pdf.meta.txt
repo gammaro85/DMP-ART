@@ -1,0 +1,5 @@
+original_filename: plan_zarzadzania_danymi_VG_edited.pdf
+email_subject: Plan zarządzania danymi- Viola Gierszewska
+email_date: 20250603_162759
+exported_date: 2025-12-02 13:56:46
+file_size: 569395

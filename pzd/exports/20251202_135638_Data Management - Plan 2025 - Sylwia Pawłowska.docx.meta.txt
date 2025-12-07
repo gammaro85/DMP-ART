@@ -1,0 +1,5 @@
+original_filename: Data Management - Plan 2025 - Sylwia Pawłowska.docx
+email_subject: pawłowska - wersja ostateczna Plan zarządzania danymi
+email_date: 20250908_095651
+exported_date: 2025-12-02 13:56:38
+file_size: 22726

@@ -1,0 +1,5 @@
+original_filename: Opus-MK.pdf
+email_subject: Michał Klugmann - Opus - skonsultowany
+email_date: 20250603_110506
+exported_date: 2025-12-02 13:56:47
+file_size: 91630

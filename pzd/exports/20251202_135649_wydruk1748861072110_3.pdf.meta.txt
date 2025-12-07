@@ -1,0 +1,5 @@
+original_filename: wydruk1748861072110.pdf
+email_subject: PD: DMP do wniosku projektowego OPUS29
+email_date: 20250602_130946
+exported_date: 2025-12-02 13:56:49
+file_size: 1125479

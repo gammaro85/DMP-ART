@@ -1,0 +1,5 @@
+original_filename: Opus-JS.pdf
+email_subject: Plan zarządzania danymi
+email_date: 20250530_225405
+exported_date: 2025-12-02 13:56:50
+file_size: 69670

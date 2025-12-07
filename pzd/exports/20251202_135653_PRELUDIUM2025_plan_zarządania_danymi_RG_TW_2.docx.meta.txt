@@ -1,0 +1,5 @@
+original_filename: PRELUDIUM2025_plan_zarządania_danymi_RG_TW.docx
+email_subject: Prośba o konsultację planu zarządzania danymi – wniosek PRELUDIUM
+email_date: 20250522_140727
+exported_date: 2025-12-02 13:56:53
+file_size: 24059

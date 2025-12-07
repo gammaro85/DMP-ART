@@ -1,0 +1,5 @@
+original_filename: otwarte_dane_lub_metadane OPUS 24.docx
+email_subject: ODP: Datasety
+email_date: 20250205_132219
+exported_date: 2025-12-02 13:57:00
+file_size: 18076

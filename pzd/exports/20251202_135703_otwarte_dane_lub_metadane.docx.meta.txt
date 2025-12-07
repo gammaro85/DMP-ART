@@ -1,0 +1,5 @@
+original_filename: otwarte_dane_lub_metadane.docx
+email_subject: Otwarte dane lub metadane" projektu NCN Miniatura 6
+email_date: 20241205_124357
+exported_date: 2025-12-02 13:57:03
+file_size: 18285

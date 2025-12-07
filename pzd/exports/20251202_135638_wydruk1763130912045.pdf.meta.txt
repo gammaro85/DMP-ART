@@ -1,0 +1,5 @@
+original_filename: wydruk1763130912045.pdf
+email_subject: PD: DMP Opus 2025
+email_date: 20251117_080228
+exported_date: 2025-12-02 13:56:38
+file_size: 1481604
