@@ -1300,6 +1300,502 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // ===========================================
+// AUTOSAVE FUNCTIONALITY
+// ===========================================
+
+const AUTOSAVE_INTERVAL = 30000; // 30 seconds
+const AUTOSAVE_KEY_PREFIX = 'dmp-art-autosave-';
+let autosaveTimer = null;
+
+/**
+ * Initialize autosave for review page
+ */
+function initializeAutosave() {
+    console.log('Initializing autosave...');
+
+    const feedbackTexts = document.querySelectorAll('.feedback-text');
+    if (feedbackTexts.length === 0) {
+        return;
+    }
+
+    // Get cache_id from URL or page
+    const cacheId = getCacheId();
+    if (!cacheId) {
+        console.log('No cache_id found, autosave disabled');
+        return;
+    }
+
+    // Try to restore from autosave
+    restoreFromAutosave(cacheId);
+
+    // Set up autosave on input with debounce
+    feedbackTexts.forEach(textarea => {
+        textarea.addEventListener('input', debounce(() => {
+            saveToAutosave(cacheId);
+        }, 2000)); // Save 2 seconds after last input
+    });
+
+    // Periodic autosave
+    autosaveTimer = setInterval(() => {
+        saveToAutosave(cacheId);
+    }, AUTOSAVE_INTERVAL);
+
+    // Save before leaving page
+    window.addEventListener('beforeunload', () => {
+        saveToAutosave(cacheId);
+    });
+
+    console.log('Autosave initialized for cache_id:', cacheId);
+}
+
+/**
+ * Get cache_id from URL or data attribute
+ */
+function getCacheId() {
+    const urlParams = new URLSearchParams(window.location.search);
+    let cacheId = urlParams.get('cache_id');
+
+    if (!cacheId) {
+        const cacheIdElement = document.querySelector('[data-cache-id]');
+        if (cacheIdElement) {
+            cacheId = cacheIdElement.getAttribute('data-cache-id');
+        }
+    }
+
+    return cacheId;
+}
+
+/**
+ * Save feedback to localStorage
+ */
+function saveToAutosave(cacheId) {
+    const feedbackData = {};
+    let hasContent = false;
+
+    document.querySelectorAll('.feedback-text').forEach(textarea => {
+        const sectionId = textarea.id.replace('feedback-', '');
+        const value = textarea.value.trim();
+        if (value) {
+            feedbackData[sectionId] = value;
+            hasContent = true;
+        }
+    });
+
+    if (hasContent) {
+        const saveData = {
+            feedback: feedbackData,
+            timestamp: Date.now(),
+            url: window.location.href
+        };
+
+        try {
+            localStorage.setItem(AUTOSAVE_KEY_PREFIX + cacheId, JSON.stringify(saveData));
+            updateAutosaveIndicator('saved');
+        } catch (e) {
+            console.error('Autosave failed:', e);
+        }
+    }
+}
+
+/**
+ * Restore feedback from localStorage
+ */
+function restoreFromAutosave(cacheId) {
+    const savedData = localStorage.getItem(AUTOSAVE_KEY_PREFIX + cacheId);
+
+    if (!savedData) {
+        return false;
+    }
+
+    try {
+        const data = JSON.parse(savedData);
+        const feedback = data.feedback;
+        const timestamp = data.timestamp;
+
+        // Check if saved data is less than 24 hours old
+        const hoursSinceSave = (Date.now() - timestamp) / (1000 * 60 * 60);
+        if (hoursSinceSave > 24) {
+            localStorage.removeItem(AUTOSAVE_KEY_PREFIX + cacheId);
+            return false;
+        }
+
+        // Check if any feedback areas are currently empty
+        let hasEmptyFeedback = false;
+        document.querySelectorAll('.feedback-text').forEach(textarea => {
+            if (!textarea.value.trim()) {
+                hasEmptyFeedback = true;
+            }
+        });
+
+        if (!hasEmptyFeedback) {
+            return false; // Don't overwrite existing content
+        }
+
+        // Ask user if they want to restore
+        const saveTime = new Date(timestamp).toLocaleString();
+        if (confirm(`Znaleziono autozapis z ${saveTime}. Czy przywrócić?`)) {
+            Object.entries(feedback).forEach(([sectionId, value]) => {
+                const textarea = document.getElementById(`feedback-${sectionId}`);
+                if (textarea && !textarea.value.trim()) {
+                    textarea.value = value;
+                    updateCharacterCounter(sectionId);
+                }
+            });
+            showToast('Przywrócono autozapis');
+            return true;
+        }
+    } catch (e) {
+        console.error('Error restoring autosave:', e);
+    }
+
+    return false;
+}
+
+/**
+ * Update autosave indicator in UI
+ */
+function updateAutosaveIndicator(status) {
+    let indicator = document.getElementById('autosave-indicator');
+
+    if (!indicator) {
+        indicator = document.createElement('div');
+        indicator.id = 'autosave-indicator';
+        indicator.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            z-index: 1000;
+            transition: opacity 0.3s ease;
+        `;
+        document.body.appendChild(indicator);
+    }
+
+    if (status === 'saved') {
+        indicator.textContent = '✓ Autozapis';
+        indicator.style.backgroundColor = 'var(--success-color)';
+        indicator.style.color = 'white';
+        indicator.style.opacity = '1';
+
+        setTimeout(() => {
+            indicator.style.opacity = '0';
+        }, 2000);
+    }
+}
+
+/**
+ * Clear autosave for current document
+ */
+function clearAutosave() {
+    const cacheId = getCacheId();
+    if (cacheId) {
+        localStorage.removeItem(AUTOSAVE_KEY_PREFIX + cacheId);
+    }
+}
+
+// ===========================================
+// DMP HISTORY FUNCTIONALITY
+// ===========================================
+
+const HISTORY_KEY = 'dmp-art-history';
+const MAX_HISTORY_ITEMS = 20;
+
+/**
+ * Add current DMP to history
+ */
+function addToHistory(filename, cacheId) {
+    const history = getHistory();
+
+    const newEntry = {
+        filename: filename,
+        cacheId: cacheId,
+        timestamp: Date.now(),
+        url: window.location.href
+    };
+
+    // Remove duplicate if exists
+    const filteredHistory = history.filter(item => item.cacheId !== cacheId);
+
+    // Add new entry at the beginning
+    filteredHistory.unshift(newEntry);
+
+    // Keep only last MAX_HISTORY_ITEMS
+    const trimmedHistory = filteredHistory.slice(0, MAX_HISTORY_ITEMS);
+
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(trimmedHistory));
+}
+
+/**
+ * Get DMP history
+ */
+function getHistory() {
+    try {
+        const history = localStorage.getItem(HISTORY_KEY);
+        return history ? JSON.parse(history) : [];
+    } catch (e) {
+        return [];
+    }
+}
+
+/**
+ * Render history dropdown in navigation
+ */
+function renderHistoryDropdown() {
+    const historyContainer = document.getElementById('history-dropdown');
+    if (!historyContainer) return;
+
+    const history = getHistory();
+
+    if (history.length === 0) {
+        historyContainer.innerHTML = '<div class="no-history">Brak historii</div>';
+        return;
+    }
+
+    const html = history.map(item => {
+        const date = new Date(item.timestamp);
+        const dateStr = date.toLocaleDateString('pl-PL');
+        const timeStr = date.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+
+        return `
+            <a href="${item.url}" class="history-item" title="${item.filename}">
+                <span class="history-filename">${item.filename.substring(0, 30)}${item.filename.length > 30 ? '...' : ''}</span>
+                <span class="history-date">${dateStr} ${timeStr}</span>
+            </a>
+        `;
+    }).join('');
+
+    historyContainer.innerHTML = html;
+}
+
+// ===========================================
+// COMMENT SEARCH FUNCTIONALITY
+// ===========================================
+
+/**
+ * Initialize comment search
+ */
+function initializeCommentSearch() {
+    const searchContainer = document.querySelector('.quick-comments-pane');
+    if (!searchContainer) return;
+
+    // Check if search already exists
+    if (document.getElementById('comment-search-input')) return;
+
+    // Create search input
+    const searchHtml = `
+        <div class="comment-search-wrapper" style="margin-bottom: 8px;">
+            <input type="text"
+                   id="comment-search-input"
+                   placeholder="Szukaj komentarzy..."
+                   style="width: 100%; padding: 6px 8px; font-size: 0.75rem; border: 1px solid var(--border-light); border-radius: 4px; background: var(--bg-secondary); color: var(--text-primary);">
+        </div>
+    `;
+
+    // Insert search before the comments list
+    const commentsListHeader = searchContainer.querySelector('h3');
+    if (commentsListHeader) {
+        commentsListHeader.insertAdjacentHTML('afterend', searchHtml);
+    }
+
+    // Add search event listener
+    const searchInput = document.getElementById('comment-search-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce(function() {
+            filterComments(this.value.toLowerCase());
+        }, 200));
+    }
+}
+
+/**
+ * Filter comments based on search term
+ */
+function filterComments(searchTerm) {
+    const commentItems = document.querySelectorAll('.quick-comment-item, .category-comment-item');
+
+    commentItems.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        if (!searchTerm || text.includes(searchTerm)) {
+            item.style.display = '';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+
+// ===========================================
+// COMMENT USAGE STATISTICS (TAG CLOUD)
+// ===========================================
+
+const COMMENT_STATS_KEY = 'dmp-art-comment-stats';
+
+/**
+ * Track comment usage
+ */
+function trackCommentUsage(commentName) {
+    const stats = getCommentStats();
+    stats[commentName] = (stats[commentName] || 0) + 1;
+    localStorage.setItem(COMMENT_STATS_KEY, JSON.stringify(stats));
+}
+
+/**
+ * Get comment usage statistics
+ */
+function getCommentStats() {
+    try {
+        const stats = localStorage.getItem(COMMENT_STATS_KEY);
+        return stats ? JSON.parse(stats) : {};
+    } catch (e) {
+        return {};
+    }
+}
+
+/**
+ * Initialize tag cloud for quick comments
+ */
+function initializeTagCloud() {
+    const quickCommentsPane = document.querySelector('.quick-comments-pane');
+    if (!quickCommentsPane) return;
+
+    const stats = getCommentStats();
+    if (Object.keys(stats).length === 0) return;
+
+    // Find or create tag cloud container
+    let tagCloudContainer = document.getElementById('comment-tag-cloud');
+    if (!tagCloudContainer) {
+        tagCloudContainer = document.createElement('div');
+        tagCloudContainer.id = 'comment-tag-cloud';
+        tagCloudContainer.className = 'tag-cloud-container';
+        tagCloudContainer.style.cssText = `
+            margin-bottom: 12px;
+            padding: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            border: 1px solid var(--border-light);
+        `;
+
+        const header = document.createElement('div');
+        header.style.cssText = 'font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 6px;';
+        header.textContent = 'Często używane:';
+        tagCloudContainer.appendChild(header);
+
+        const tagsWrapper = document.createElement('div');
+        tagsWrapper.id = 'tag-cloud-tags';
+        tagsWrapper.style.cssText = 'display: flex; flex-wrap: wrap; gap: 4px;';
+        tagCloudContainer.appendChild(tagsWrapper);
+
+        // Insert after search (if exists) or after h3
+        const searchWrapper = quickCommentsPane.querySelector('.comment-search-wrapper');
+        if (searchWrapper) {
+            searchWrapper.after(tagCloudContainer);
+        } else {
+            const h3 = quickCommentsPane.querySelector('h3');
+            if (h3) h3.after(tagCloudContainer);
+        }
+    }
+
+    renderTagCloud(stats);
+}
+
+/**
+ * Render tag cloud based on usage stats
+ */
+function renderTagCloud(stats) {
+    const tagsWrapper = document.getElementById('tag-cloud-tags');
+    if (!tagsWrapper) return;
+
+    // Sort by usage count and take top 10
+    const sortedStats = Object.entries(stats)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10);
+
+    if (sortedStats.length === 0) {
+        tagsWrapper.innerHTML = '<span style="font-size: 0.7rem; color: var(--text-secondary);">Brak statystyk</span>';
+        return;
+    }
+
+    // Calculate font sizes based on usage
+    const maxCount = sortedStats[0][1];
+    const minCount = sortedStats[sortedStats.length - 1][1];
+    const fontRange = { min: 0.65, max: 0.9 }; // rem
+
+    const html = sortedStats.map(([name, count]) => {
+        let fontSize = fontRange.min;
+        if (maxCount > minCount) {
+            fontSize = fontRange.min + ((count - minCount) / (maxCount - minCount)) * (fontRange.max - fontRange.min);
+        }
+
+        return `
+            <span class="tag-cloud-item"
+                  data-comment-name="${escapeHtml(name)}"
+                  style="font-size: ${fontSize}rem; padding: 2px 6px; background: var(--primary-color); color: white; border-radius: 3px; cursor: pointer; white-space: nowrap;"
+                  title="Użyto ${count} razy">
+                ${escapeHtml(name.substring(0, 20))}${name.length > 20 ? '...' : ''}
+            </span>
+        `;
+    }).join('');
+
+    tagsWrapper.innerHTML = html;
+
+    // Add click handlers to tags
+    tagsWrapper.querySelectorAll('.tag-cloud-item').forEach(tag => {
+        tag.addEventListener('click', function() {
+            const commentName = this.getAttribute('data-comment-name');
+            const commentItem = document.querySelector(`.quick-comment-item[data-name="${commentName}"]`);
+            if (commentItem) {
+                commentItem.click();
+            }
+        });
+    });
+}
+
+/**
+ * Escape HTML to prevent XSS
+ */
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// ===========================================
+// ENHANCED INITIALIZATION
+// ===========================================
+
+// Initialize new features when review page loads
+document.addEventListener('DOMContentLoaded', function () {
+    // Initialize autosave on review page
+    if (document.querySelectorAll('.feedback-text').length > 0) {
+        setTimeout(() => {
+            initializeAutosave();
+            initializeCommentSearch();
+            initializeTagCloud();
+
+            // Track comment usage when comments are clicked
+            document.querySelectorAll('.quick-comment-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const name = this.getAttribute('data-name') || this.textContent.trim().substring(0, 30);
+                    trackCommentUsage(name);
+                    // Update tag cloud after use
+                    setTimeout(initializeTagCloud, 100);
+                });
+            });
+
+            // Add current DMP to history
+            const filename = document.querySelector('[data-filename]')?.getAttribute('data-filename');
+            const cacheId = getCacheId();
+            if (filename && cacheId) {
+                addToHistory(filename, cacheId);
+            }
+        }, 200);
+    }
+
+    // Render history dropdown if it exists
+    renderHistoryDropdown();
+});
+
+// ===========================================
 // GLOBAL EXPORTS
 // ===========================================
 
@@ -1309,6 +1805,10 @@ window.scrollToSection = scrollToSection;
 window.insertCommentWithAnimation = insertCommentWithAnimation;
 window.showToast = showToast;
 window.copyToClipboard = copyToClipboard;
+window.trackCommentUsage = trackCommentUsage;
+window.getCommentStats = getCommentStats;
+window.getHistory = getHistory;
+window.clearAutosave = clearAutosave;
 
 // Export dark mode API
 window.DarkMode = {
@@ -1324,4 +1824,18 @@ window.DarkMode = {
     }
 };
 
-console.log('DMP ART script.js loaded successfully');
+// Export Autosave API
+window.Autosave = {
+    save: () => saveToAutosave(getCacheId()),
+    clear: clearAutosave,
+    getCacheId: getCacheId
+};
+
+// Export History API
+window.DMPHistory = {
+    get: getHistory,
+    add: addToHistory,
+    render: renderHistoryDropdown
+};
+
+console.log('DMP ART script.js loaded successfully (v0.9.0 with autosave, history, search, tag cloud)');
