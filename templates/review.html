@@ -59,35 +59,41 @@
             border-color: var(--border-medium);
         }
         
-        /* Fixed Right Sidebar Styles - Two-panel layout */
-        /* Using body[data-page="review"] prefix for specificity instead of !important */
+        /* Fixed Two-Panel Layout */
+        /* Left panel: 75% width, scrolls with page */
+        /* Right panel: 25% width, fixed position, no scrolling */
+        
+        body[data-page="review"] {
+            overflow-x: hidden;
+        }
+        
+        /* Disable hover transform effects on review page elements */
+        body[data-page="review"] .question-card:hover,
+        body[data-page="review"] .feedback-text:hover,
+        body[data-page="review"] .extracted-content:hover {
+            transform: none !important;
+        }
+        
         body[data-page="review"] .review-layout {
-            display: flex;
-            flex-direction: row;
-            gap: 0;
+            display: block;
             width: 100%;
             max-width: none;
             margin: 0;
             padding: 0;
             position: relative;
-            min-height: calc(100vh - 60px);
         }
 
         body[data-page="review"] .main-content {
-            flex: 1 !important;
             width: 75% !important;
-            min-width: 0 !important;
+            min-width: 75% !important;
             max-width: 75% !important;
-            min-height: calc(100vh - 60px) !important;
-            overflow-y: auto !important;
-            overflow-x: hidden !important;
+            margin: 0 !important;
             padding: 20px 30px !important;
             padding-bottom: 80px !important;
-            order: 1 !important;
+            box-sizing: border-box !important;
         }
 
-        /* Fixed Right Panel - Always visible, no scrolling */
-        /* Using .review-layout .right-sidebar for higher specificity to override external CSS */
+        /* Fixed Right Panel - Always visible, no scrolling, scales content */
         body[data-page="review"] .review-layout .right-sidebar {
             position: fixed !important;
             right: 0 !important;
@@ -99,27 +105,25 @@
             background-color: var(--bg-card) !important;
             border-left: 1px solid var(--border-light) !important;
             border-radius: 0 !important;
-            padding: 12px !important;
+            padding: 10px !important;
             overflow: hidden !important;
-            overflow-y: hidden !important;
-            overflow-x: hidden !important;
             box-shadow: -2px 0 8px rgba(0, 0, 0, 0.08) !important;
-            order: 2 !important;
             display: flex !important;
             flex-direction: column !important;
-            flex-shrink: 0 !important;
-            margin-left: 0 !important;
+            box-sizing: border-box !important;
         }
 
-        /* Sidebar sections - flex to fit available space without scrolling */
+        /* Sidebar sections - scale to fit without scrolling */
         body[data-page="review"] .sidebar-actions {
-            flex-shrink: 0;
-            margin-bottom: 10px;
+            flex: 0 0 auto;
+            margin-bottom: 8px;
         }
 
         body[data-page="review"] .navigation-pane {
-            flex-shrink: 0;
-            margin-bottom: 10px;
+            flex: 0 0 auto;
+            margin-bottom: 8px;
+            max-height: 25%;
+            overflow: hidden;
         }
 
         body[data-page="review"] .quick-comments-pane {
@@ -132,17 +136,35 @@
         }
 
         body[data-page="review"] .quick-comments-pane h3 {
-            flex-shrink: 0;
-            margin-bottom: 8px;
-            font-size: 0.8rem;
+            flex: 0 0 auto;
+            margin-bottom: 6px;
+            font-size: 0.75rem;
         }
 
         body[data-page="review"] .quick-comments-list {
             flex: 1 1 auto;
-            overflow-y: auto;
-            overflow-x: hidden;
+            overflow: hidden !important;
             min-height: 0;
-            padding-right: 4px;
+        }
+        
+        body[data-page="review"] .quick-comment-item {
+            font-size: clamp(0.6rem, 1.2vw, 0.75rem);
+            padding: 4px 6px;
+            margin: 2px 0;
+        }
+        
+        body[data-page="review"] .nav-grid {
+            gap: 2px;
+        }
+        
+        body[data-page="review"] .nav-grid-btn {
+            padding: 4px;
+            font-size: clamp(0.6rem, 1.2vw, 0.75rem);
+        }
+        
+        body[data-page="review"] .sidebar-actions .action-btn {
+            padding: 6px 10px;
+            font-size: clamp(0.65rem, 1.3vw, 0.8rem);
         }
 
         .sidebar-actions .action-btn {
@@ -948,29 +970,9 @@
             background: var(--navy);
         }
 
-        /* Quick comments list scrollbar (only this section scrolls within sidebar) */
+        /* Quick comments list - no scrolling */
         .quick-comments-list {
-            scrollbar-width: thin;
-            scrollbar-color: var(--primary-color) var(--bg-tertiary);
-        }
-
-        .quick-comments-list::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .quick-comments-list::-webkit-scrollbar-track {
-            background: var(--bg-tertiary);
-            border-radius: 10px;
-        }
-
-        .quick-comments-list::-webkit-scrollbar-thumb {
-            background: var(--primary-color);
-            border-radius: 10px;
-            border: 1px solid var(--bg-tertiary);
-        }
-
-        .quick-comments-list::-webkit-scrollbar-thumb:hover {
-            background: var(--accent-color);
+            overflow: hidden !important;
         }
 
         /* Textarea scrollbars */
@@ -1016,18 +1018,7 @@
             background: var(--accent-color);
         }
 
-        [data-theme="dark"] .quick-comments-list {
-            scrollbar-color: var(--primary-color) rgba(44, 72, 102, 0.4);
-        }
-
-        [data-theme="dark"] .quick-comments-list::-webkit-scrollbar-track {
-            background: rgba(44, 72, 102, 0.4);
-        }
-
-        [data-theme="dark"] .quick-comments-list::-webkit-scrollbar-thumb {
-            background: var(--primary-color);
-            border-color: rgba(44, 72, 102, 0.4);
-        }
+        /* Dark mode - no scrollbar changes needed for quick-comments-list */
 
         [data-theme="dark"] textarea {
             scrollbar-color: rgba(148, 163, 184, 0.4) rgba(30, 41, 59, 0.6);
