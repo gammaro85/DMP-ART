@@ -1434,56 +1434,82 @@ textarea,
   display: none;
 }
 
-/* Review layout with sidebar */
+/* Review layout with sidebar - grid-based for reliable 75:25 ratio */
 .review-layout {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: 1fr 300px;
   gap: var(--spacing-6);
   width: 100%;
   max-width: none;
   margin: 0;
   padding: var(--spacing-5);
+  min-height: calc(100vh - 150px);
 }
 
-/* Ensure main-content is left and sidebar is right */
+/* Main content area */
 .main-content {
-  flex: 1 1 0;
   min-width: 0;
-  order: 1;
+  overflow-x: hidden;
 }
 
+/* Right sidebar - sticky within grid cell */
 .right-sidebar {
-  width: 300px;
-  min-width: 300px;
+  width: 100%;
   max-width: 300px;
-  flex-shrink: 0;
   background: var(--bg-card);
   border-radius: var(--border-radius-md);
   padding: var(--spacing-5);
   box-shadow: var(--shadow-light);
   border: 1px solid var(--border-light);
   height: fit-content;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
   position: sticky;
-  top: 80px; /* below header */
+  top: 80px;
   align-self: flex-start;
-  order: 2;
-  margin-left: auto; /* push sidebar to the far right */
 }
 
-/* On mobile, sidebar goes above main content */
-@media (max-width: 900px) {
+/* Scrollbar styling for sidebar */
+.right-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.right-sidebar::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 3px;
+}
+
+.right-sidebar::-webkit-scrollbar-thumb {
+  background: var(--border-medium);
+  border-radius: 3px;
+}
+
+.right-sidebar::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color);
+}
+
+/* Responsive: stack on narrow screens */
+@media (max-width: 1100px) {
   .review-layout {
-    flex-direction: column;
+    grid-template-columns: 1fr 280px;
   }
   .right-sidebar {
-    width: 100%;
-    min-width: 0;
-    max-width: none;
+    max-width: 280px;
+  }
+}
+
+@media (max-width: 900px) {
+  .review-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+  .right-sidebar {
     position: static;
+    max-width: none;
+    width: 100%;
+    max-height: none;
+    overflow-y: visible;
     order: -1;
-    top: unset;
-    align-self: unset;
-    margin-left: 0;
     margin-bottom: var(--spacing-5);
   }
 }

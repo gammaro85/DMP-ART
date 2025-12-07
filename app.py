@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for, Response, stream_with_context, send_from_directory
-# app.py - Enhanced Flask application with About page
+# app.py - Enhanced Flask application with About page and AI Module
 import os
 import json
 import time
@@ -11,6 +11,7 @@ from datetime import datetime
 from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for, Response, stream_with_context
 from werkzeug.utils import secure_filename
 from utils.extractor import DMPExtractor
+from utils.ai_module import AIReviewAssistant
 # Comments are now managed through JSON files in config/ directory
 
 # Global progress state for real-time SSE updates
@@ -33,65 +34,61 @@ os.makedirs(app.config['CACHE_FOLDER'], exist_ok=True)
 os.makedirs(app.config['DMP_FOLDER'], exist_ok=True)
 os.makedirs(app.config['REVIEWS_FOLDER'], exist_ok=True)
 
-# DMP question templates with default text
-DMP_TEMPLATES = {
-    "1.1": {
-        "question": "How will new data be collected or produced and/or how will existing data be re-used?",
-        "template": "The data collection methodology needs more detail. Please specify the exact sources and collection methods."
-    },
-    "1.2": {
-        "question": "What data (for example the types, formats, and volumes) will be collected or produced?",
-        "template": "Please provide more specific information about data formats and expected volumes."
-    },
-    "2.1": {
-        "question": "What metadata and documentation will accompany data?",
-        "template": "The metadata standards should be clearly specified. Consider using established standards in your field."
-    },
-    "2.2": {
-        "question": "What data quality control measures will be used?",
-        "template": "More rigorous quality control measures should be implemented. Consider validation procedures."
-    },
-    "3.1": {
-        "question": "How will data and metadata be stored and backed up during the research process?",
-        "template": "Your backup strategy needs improvement. Consider redundant storage solutions."
-    },
-    "3.2": {
-        "question": "How will data security and protection of sensitive data be taken care of during the research?",
-        "template": "The security measures seem inadequate. Please detail encryption methods and access controls."
-    },
-    "4.1": {
-        "question": "If personal data are processed, how will compliance with legislation be ensured?",
-        "template": "Your GDPR compliance plan needs more detail. Specify consent procedures and data minimization strategies."
-    },
-    "4.2": {
-        "question": "How will other legal issues, such as intellectual property rights and ownership, be managed?",
-        "template": "Intellectual property considerations are unclear. Please specify licensing arrangements."
-    },
-    "5.1": {
-        "question": "How and when will data be shared? Are there possible restrictions?",
-        "template": "Data sharing timeline is vague. Please provide specific milestones for data publication."
-    },
-    "5.2": {
-        "question": "How will data for preservation be selected, and where will data be preserved long-term?",
-        "template": "Long-term preservation strategy needs more detail. Specify repository selection criteria."
-    },
-    "5.3": {
-        "question": "What methods or software tools will be needed to access and use the data?",
-        "template": "Software documentation is insufficient. Please list all required tools and versions."
-    },
-    "5.4": {
-        "question": "How will the application of a unique and persistent identifier to each data set be ensured?",
-        "template": "Your DOI implementation plan lacks detail. Specify exactly how and when identifiers will be assigned."
-    },
-    "6.1": {
-        "question": "Who will be responsible for data management?",
-        "template": "Data stewardship responsibilities are unclear. Please designate specific roles and responsibilities."
-    },
-    "6.2": {
-        "question": "What resources will be dedicated to data management and ensuring the data will be FAIR?",
-        "template": "Resource allocation for data management seems insufficient. Consider budgeting for dedicated staff time."
-    }
+# Initialize AI Module
+ai_assistant = AIReviewAssistant()
+
+# Default templates for feedback (loaded once at startup)
+DEFAULT_FEEDBACK_TEMPLATES = {
+    "1.1": "The data collection methodology needs more detail. Please specify the exact sources and collection methods.",
+    "1.2": "Please provide more specific information about data formats and expected volumes.",
+    "2.1": "The metadata standards should be clearly specified. Consider using established standards in your field.",
+    "2.2": "More rigorous quality control measures should be implemented. Consider validation procedures.",
+    "3.1": "Your backup strategy needs improvement. Consider redundant storage solutions.",
+    "3.2": "The security measures seem inadequate. Please detail encryption methods and access controls.",
+    "4.1": "Your GDPR compliance plan needs more detail. Specify consent procedures and data minimization strategies.",
+    "4.2": "Intellectual property considerations are unclear. Please specify licensing arrangements.",
+    "5.1": "Data sharing timeline is vague. Please provide specific milestones for data publication.",
+    "5.2": "Long-term preservation strategy needs more detail. Specify repository selection criteria.",
+    "5.3": "Software documentation is insufficient. Please list all required tools and versions.",
+    "5.4": "Your DOI implementation plan lacks detail. Specify exactly how and when identifiers will be assigned.",
+    "6.1": "Data stewardship responsibilities are unclear. Please designate specific roles and responsibilities.",
+    "6.2": "Resource allocation for data management seems insufficient. Consider budgeting for dedicated staff time."
 }
+
+def load_dmp_templates():
+    """
+    Load DMP templates from dmp_structure.json (single source of truth).
+    Combines questions from JSON with default feedback templates.
+    """
+    templates = {}
+
+    try:
+        with open('config/dmp_structure.json', 'r', encoding='utf-8') as f:
+            dmp_structure = json.load(f)
+
+        for section in dmp_structure.get('structure', []):
+            for subsection in section.get('subsections', []):
+                section_id = subsection.get('id')
+                question = subsection.get('question', '')
+
+                templates[section_id] = {
+                    'question': question,
+                    'template': DEFAULT_FEEDBACK_TEMPLATES.get(section_id, '')
+                }
+
+    except Exception as e:
+        print(f"Warning: Could not load dmp_structure.json: {e}")
+        # Fallback to defaults if file not found
+        for section_id, template in DEFAULT_FEEDBACK_TEMPLATES.items():
+            templates[section_id] = {
+                'question': f"Section {section_id}",
+                'template': template
+            }
+
+    return templates
+
+# Load DMP templates at startup (single source of truth from dmp_structure.json)
+DMP_TEMPLATES = load_dmp_templates()
 
 # Template categories will be managed through template editor
 
@@ -713,27 +710,46 @@ def load_categories():
         config_dir = 'config'
         categories = {}
 
+        # Files to skip
+        skip_files = [
+            'dmp_structure.json', 'quick_comments.json', 'ai_config.json',
+            'knowledge_base.json', 'category_comments.json'
+        ]
+
         if os.path.exists(config_dir):
             for filename in os.listdir(config_dir):
-                # Skip backup files, dmp_structure, and quick_comments
-                if (filename.endswith('.json') and
-                    filename not in ['dmp_structure.json', 'quick_comments.json'] and
-                    'backup' not in filename.lower()):
-                    file_base = filename[:-5]
-                    file_path = os.path.join(config_dir, filename)
+                # Skip non-JSON, backup, and system files
+                if not filename.endswith('.json'):
+                    continue
+                if filename in skip_files:
+                    continue
+                if 'backup' in filename.lower():
+                    continue
 
-                    try:
-                        with open(file_path, 'r', encoding='utf-8') as f:
-                            data = json.load(f)
-                            # Ensure data is not None and is a dict before calling items
-                            if data is not None and isinstance(data, dict):
-                                for key, value in (data.items() if data else []):
-                                    if not key.startswith('_') and isinstance(value, dict):
-                                        categories[key] = value
-                                        break
-                    except Exception as e:
-                        print(f"Error loading category file {filename}: {str(e)}")
-                        continue
+                file_base = filename[:-5]
+                file_path = os.path.join(config_dir, filename)
+
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        data = json.load(f)
+
+                        # Check if data is a valid category (dict with section keys)
+                        if data and isinstance(data, dict):
+                            # Check if it has DMP section keys (like "1.1", "1.2", etc.)
+                            has_section_keys = any(
+                                key.replace('.', '').replace('GENERAL', '').isdigit() or key == 'GENERAL'
+                                for key in data.keys()
+                                if not key.startswith('_')
+                            )
+
+                            if has_section_keys:
+                                # Format category name for display
+                                display_name = format_category_name(file_base)
+                                categories[display_name] = data
+
+                except Exception as e:
+                    print(f"Error loading category file {filename}: {str(e)}")
+                    continue
 
         return jsonify({
             'success': True,
@@ -859,16 +875,19 @@ def format_category_name(category_id):
     Format category ID for display.
 
     Examples:
-        'newcomer' -> 'Newcomer'
-        'mising' -> 'Missing Info'
-        'ready' -> 'Ready to Use'
+        'for_newbies' -> 'For Newbies'
+        'missing_info' -> 'Missing Info'
+        'ready_to_use' -> 'Ready to Use'
         'my_custom_category' -> 'My Custom Category'
     """
-    # Special cases for existing categories
+    # Special cases for existing categories (handle both old and new naming)
     special_names = {
         'newcomer': 'Newcomer',
         'mising': 'Missing Info',
-        'ready': 'Ready to Use'
+        'ready': 'Ready to Use',
+        'for_newbies': 'For Newbies',
+        'missing_info': 'Missing Info',
+        'ready_to_use': 'Ready to Use'
     }
 
     if category_id in special_names:
@@ -1308,6 +1327,210 @@ def health_check():
         'allowed_extensions': list(app.config['ALLOWED_EXTENSIONS']),
         'max_content_length': app.config['MAX_CONTENT_LENGTH']
     })
+
+# ============================================================
+# AI Module Routes
+# ============================================================
+
+@app.route('/ai-settings')
+def ai_settings_page():
+    """AI Settings page"""
+    return render_template('ai_settings.html', config=ai_assistant.get_config())
+
+@app.route('/api/ai/config', methods=['GET'])
+def get_ai_config():
+    """Get AI configuration (without API keys)"""
+    config = ai_assistant.get_config(hide_keys=True)
+    return jsonify({'success': True, 'config': config})
+
+@app.route('/api/ai/config', methods=['POST'])
+def update_ai_config():
+    """Update AI configuration"""
+    try:
+        data = request.json or {}
+        ai_assistant.update_settings(data)
+        return jsonify({'success': True, 'message': 'Ustawienia zapisane'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/ai/test-connection', methods=['POST'])
+def test_ai_connection():
+    """Test connection to AI API"""
+    success, message = ai_assistant.test_connection()
+    return jsonify({'success': success, 'message': message})
+
+@app.route('/api/ai/toggle', methods=['POST'])
+def toggle_ai():
+    """Enable/disable AI module"""
+    data = request.json or {}
+    if data.get('enabled'):
+        ai_assistant.enable()
+    else:
+        ai_assistant.disable()
+    return jsonify({'success': True, 'enabled': ai_assistant.is_enabled()})
+
+@app.route('/api/ai/suggest', methods=['POST'])
+def ai_suggest_feedback():
+    """Generate AI suggestions for DMP review"""
+    if not ai_assistant.is_enabled():
+        return jsonify({'success': False, 'message': 'Moduł AI jest wyłączony'})
+
+    try:
+        data = request.json or {}
+        cache_id = data.get('cache_id')
+        section_id = data.get('section_id')  # Optional - for single section
+
+        if not cache_id:
+            return jsonify({'success': False, 'message': 'Brak cache_id'})
+
+        # Load DMP from cache
+        cache_path = os.path.join(app.config['CACHE_FOLDER'], f"cache_{cache_id}.json")
+        if not os.path.exists(cache_path):
+            return jsonify({'success': False, 'message': 'Cache nie znaleziony'})
+
+        with open(cache_path, 'r', encoding='utf-8') as f:
+            dmp_content = json.load(f)
+
+        # Load available comments from categories
+        available_comments = load_all_category_comments()
+
+        if section_id:
+            # Single section suggestion
+            section_content = dmp_content.get(section_id, {})
+            if isinstance(section_content, dict):
+                content_text = "\n".join(section_content.get('paragraphs', []))
+            else:
+                content_text = str(section_content)
+
+            section_comments = get_comments_for_section(section_id, available_comments)
+
+            suggestions = ai_assistant.generate_section_suggestion(
+                section_id=section_id,
+                content=content_text,
+                available_comments=section_comments
+            )
+        else:
+            # All sections suggestion
+            suggestions = ai_assistant.generate_review_suggestions(
+                dmp_content=dmp_content,
+                available_comments=available_comments
+            )
+
+        return jsonify({'success': True, 'suggestions': suggestions})
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/ai/learn', methods=['POST'])
+def ai_learn_from_feedback():
+    """Learn from user's saved feedback"""
+    try:
+        data = request.json or {}
+        section_id = data.get('section_id')
+        dmp_content = data.get('dmp_content', '')
+        feedback_text = data.get('feedback_text', '')
+        used_comments = data.get('used_comments', [])
+
+        ai_assistant.learn_from_saved_feedback(
+            section_id=section_id,
+            dmp_content=dmp_content,
+            feedback_text=feedback_text,
+            used_comments=used_comments
+        )
+
+        return jsonify({'success': True, 'message': 'Wzorce zapisane'})
+
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/ai/knowledge', methods=['GET'])
+def get_knowledge_base():
+    """Get knowledge base"""
+    return jsonify({
+        'success': True,
+        'knowledge_base': ai_assistant.get_knowledge_base()
+    })
+
+@app.route('/api/ai/knowledge/<section_id>/<issue_id>', methods=['PUT'])
+def update_knowledge_entry(section_id, issue_id):
+    """Update knowledge base entry"""
+    try:
+        updates = request.json or {}
+        success = ai_assistant.update_knowledge_entry(section_id, issue_id, updates)
+        return jsonify({'success': success})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/ai/knowledge/<section_id>/<issue_id>', methods=['DELETE'])
+def delete_knowledge_entry(section_id, issue_id):
+    """Delete knowledge base entry"""
+    try:
+        success = ai_assistant.delete_knowledge_entry(section_id, issue_id)
+        return jsonify({'success': success})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/ai/statistics', methods=['GET'])
+def get_ai_statistics():
+    """Get AI usage statistics"""
+    return jsonify({
+        'success': True,
+        'statistics': ai_assistant.get_statistics()
+    })
+
+def load_all_category_comments():
+    """Load all comments from category files"""
+    comments = {}
+    config_dir = 'config'
+
+    if not os.path.exists(config_dir):
+        return comments
+
+    skip_files = ['dmp_structure.json', 'quick_comments.json', 'ai_config.json',
+                  'knowledge_base.json', 'category_comments.json']
+
+    for filename in os.listdir(config_dir):
+        if not filename.endswith('.json'):
+            continue
+        if filename in skip_files:
+            continue
+        if 'backup' in filename.lower():
+            continue
+
+        try:
+            file_path = os.path.join(config_dir, filename)
+            with open(file_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                if data and isinstance(data, dict):
+                    category_name = filename[:-5]
+                    comments[category_name] = data
+        except Exception:
+            continue
+
+    return comments
+
+def get_comments_for_section(section_id, all_comments):
+    """Get comments for a specific section"""
+    section_comments = []
+
+    for category, sections in all_comments.items():
+        if isinstance(sections, dict) and section_id in sections:
+            section_data = sections[section_id]
+            if isinstance(section_data, list):
+                for i, comment in enumerate(section_data):
+                    section_comments.append({
+                        'id': f"{category}_{section_id}_{i:03d}",
+                        'text': comment if isinstance(comment, str) else str(comment),
+                        'category': category
+                    })
+
+    return section_comments
+
+# ============================================================
+# End AI Module Routes
+# ============================================================
 
 @app.errorhandler(413)
 def too_large(e):

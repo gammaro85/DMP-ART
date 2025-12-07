@@ -47,11 +47,15 @@ DMP-ART (Data Management Plan Assessment and Response Tool) is a web application
 ### Critical Files (Edit These Most Often)
 
 ```
-app.py                              # Flask routes, upload handling, main logic
+app.py                              # Flask routes, upload handling, main logic (~1,550 lines)
 utils/extractor.py                  # Core DMP extraction engine (2,101 lines)
+utils/ai_module.py                  # AI review assistant orchestration (NEW)
+utils/ai_providers.py               # OpenAI/Anthropic API adapters (NEW)
+utils/knowledge_manager.py          # Knowledge base management (NEW)
 templates/review.html               # Main review interface (2,341 lines)
 static/css/style.css                # Unified styling (1,596 lines, dark/light themes)
 static/js/script.js                 # Main JavaScript functionality (42KB)
+static/js/ai_assistant.js           # AI frontend integration (NEW)
 static/js/template_editor.js        # Template editor logic (28KB)
 static/js/dark-mode.js              # Theme management (4KB)
 ```
@@ -62,9 +66,11 @@ static/js/dark-mode.js              # Theme management (4KB)
 config/
 ├── dmp_structure.json              # 14 DMP section definitions
 ├── quick_comments.json             # Reusable comment templates
-├── newcomer.json                   # Category: Guidance for newcomers
-├── mising.json                     # Category: Missing information
-├── ready.json                      # Category: Ready to use feedback
+├── ai_config.json                  # AI module settings (NEW)
+├── knowledge_base.json             # AI knowledge base (NEW)
+├── for_newbies.json                # Category: Guidance for newcomers
+├── missing_info.json               # Category: Missing information
+├── ready_to_use.json               # Category: Ready to use feedback
 └── [custom].json                   # User can create unlimited categories
 ```
 
@@ -82,12 +88,16 @@ static/
 ├── css/style.css                   # Main stylesheet
 ├── js/
 │   ├── script.js                   # Main application logic
+│   ├── ai_assistant.js             # AI frontend integration (NEW)
 │   ├── template_editor.js          # Template editor functionality
 │   └── dark-mode.js                # Theme switching logic
 └── images/                         # Logos and assets
 
 utils/
 ├── extractor.py                    # DMPExtractor class
+├── ai_module.py                    # AIReviewAssistant - main orchestration (NEW)
+├── ai_providers.py                 # OpenAI/Anthropic API adapters (NEW)
+├── knowledge_manager.py            # Knowledge base management (NEW)
 └── dmp-three-categories.py         # Category migration utility
 
 uploads/                            # Temporary file storage (cleaned on processing)
@@ -760,15 +770,130 @@ git push -u origin <branch-name>
 
 ---
 
-**Last Updated:** 2025-11-23
-**Codebase Version:** 0.8.1
+**Last Updated:** 2025-12-07
+**Codebase Version:** 0.9.0
 **Extraction Success Rate:** 94.1% (tested on 17 real NCN proposals)
 **Target Users:** Data stewards at Polish research institutions
 **Core Value:** 75% time reduction in DMP review process
 
 ---
 
+## AI Module (NEW in v0.9.0)
+
+### Overview
+
+Optional AI-powered review assistant supporting OpenAI (ChatGPT) and Anthropic (Claude) APIs.
+
+**Features:**
+- Generate review suggestions using 75% ready comments + 25% AI suggestions
+- Editable knowledge base with auto-learning from user feedback
+- Per-section or full DMP analysis
+- Configurable via UI at `/ai-settings`
+
+### Architecture
+
+```
+config/
+├── ai_config.json          # AI module configuration
+└── knowledge_base.json     # Auto-learning knowledge base
+
+utils/
+├── ai_providers.py         # OpenAI/Anthropic API adapters
+├── knowledge_manager.py    # Knowledge base CRUD + auto-learning
+└── ai_module.py            # Main orchestration module
+
+static/js/
+└── ai_assistant.js         # Frontend integration
+
+templates/
+└── ai_settings.html        # AI settings page
+```
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `utils/ai_providers.py` | Abstract provider + OpenAI/Anthropic implementations |
+| `utils/knowledge_manager.py` | Knowledge base management, pattern extraction |
+| `utils/ai_module.py` | `AIReviewAssistant` class - main orchestration |
+| `config/ai_config.json` | API keys, model settings, ratio configuration |
+| `config/knowledge_base.json` | Patterns, issues, good practices per section |
+
+### API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/ai-settings` | GET | AI settings page |
+| `/api/ai/config` | GET/POST | Get/update AI config |
+| `/api/ai/toggle` | POST | Enable/disable AI |
+| `/api/ai/test-connection` | POST | Test API connection |
+| `/api/ai/suggest` | POST | Generate suggestions |
+| `/api/ai/learn` | POST | Learn from feedback |
+| `/api/ai/knowledge` | GET | Get knowledge base |
+| `/api/ai/statistics` | GET | Get usage statistics |
+
+### Usage Example
+
+```python
+from utils.ai_module import AIReviewAssistant
+
+assistant = AIReviewAssistant()
+
+# Enable and configure
+assistant.update_settings({
+    'enabled': True,
+    'provider': 'openai',
+    'api_keys': {'openai': 'sk-...'}
+})
+
+# Generate suggestions
+suggestions = assistant.generate_section_suggestion(
+    section_id='1.1',
+    content='DMP content here...',
+    available_comments=[...]
+)
+```
+
+### Knowledge Base Structure
+
+```json
+{
+  "sections": {
+    "1.1": {
+      "section_name": "Data Collection Methods",
+      "common_issues": [
+        {
+          "id": "1.1_issue_001",
+          "pattern": "brak metod zbierania",
+          "keywords": ["nie określono", "brak"],
+          "ai_suggestion_template": "Proszę opisać metody..."
+        }
+      ],
+      "good_practices": [...]
+    }
+  },
+  "global_patterns": {
+    "empty_section": {...},
+    "too_generic": {...}
+  }
+}
+```
+
+---
+
 ## Recent Changes (Since Last Update)
+
+### 2025-12-07 Update (v0.9.0)
+
+**New Features:**
+- ✅ AI Module with OpenAI/Anthropic support
+- ✅ Knowledge base with auto-learning
+- ✅ 75/25 ratio for ready comments vs AI suggestions
+- ✅ AI settings page at `/ai-settings`
+
+**New Dependencies:**
+- `openai` - OpenAI API client
+- `anthropic` - Anthropic API client
 
 ### 2025-11-23 Update
 
