@@ -74,6 +74,33 @@
             transform: none !important;
         }
         
+        /* CRITICAL: Lock right sidebar dimensions - prevent ANY changes on hover */
+        body[data-page="review"] .right-sidebar,
+        body[data-page="review"] .right-sidebar:hover,
+        body[data-page="review"] .review-layout .right-sidebar,
+        body[data-page="review"] .review-layout .right-sidebar:hover {
+            width: 25% !important;
+            min-width: 25% !important;
+            max-width: 25% !important;
+            padding: 10px !important;
+            transform: none !important;
+            box-shadow: -2px 0 8px rgba(0, 0, 0, 0.08) !important;
+            border-color: var(--border-light) !important;
+            border-width: 0 0 0 1px !important;
+            overflow: hidden !important;
+            overflow-x: hidden !important;
+            overflow-y: hidden !important;
+            scrollbar-width: none !important;
+            transition: none !important;
+        }
+        
+        /* Hide scrollbar in webkit browsers */
+        body[data-page="review"] .right-sidebar::-webkit-scrollbar,
+        body[data-page="review"] .review-layout .right-sidebar::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+        }
+        
         body[data-page="review"] .review-layout {
             display: block;
             width: 100%;
