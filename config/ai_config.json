@@ -1,0 +1,27 @@
+{
+  "enabled": false,
+  "provider": "openai",
+  "api_keys": {
+    "openai": "",
+    "anthropic": ""
+  },
+  "model_settings": {
+    "openai": {
+      "model": "gpt-4",
+      "temperature": 0.3,
+      "max_tokens": 2000
+    },
+    "anthropic": {
+      "model": "claude-3-sonnet-20240229",
+      "temperature": 0.3,
+      "max_tokens": 2000
+    }
+  },
+  "review_settings": {
+    "ready_comments_ratio": 0.75,
+    "ai_suggestions_ratio": 0.25,
+    "auto_learn_enabled": true,
+    "min_confidence_threshold": 0.7
+  },
+  "knowledge_base_path": "config/knowledge_base.json"
+}

@@ -1,0 +1,194 @@
+{
+  "_metadata": {
+    "version": "1.0",
+    "last_updated": "2025-01-07T00:00:00",
+    "total_entries": 0
+  },
+  "sections": {
+    "1.1": {
+      "section_name": "Data Collection Methods",
+      "common_issues": [
+        {
+          "id": "1.1_issue_001",
+          "pattern": "brak metod zbierania",
+          "keywords": ["nie określono", "brak informacji", "puste"],
+          "suggested_comment_ids": ["missing_info_1.1_001"],
+          "ai_suggestion_template": "Proszę opisać dokładnie metody zbierania danych.",
+          "usage_count": 0,
+          "last_used": null
+        },
+        {
+          "id": "1.1_issue_002",
+          "pattern": "niespecyficzne źródła",
+          "keywords": ["różne źródła", "wiele metod", "ogólnie"],
+          "suggested_comment_ids": ["newcomer_1.1_002"],
+          "ai_suggestion_template": "Proszę wymienić konkretne źródła danych zamiast ogólnego opisu.",
+          "usage_count": 0,
+          "last_used": null
+        }
+      ],
+      "good_practices": [
+        {
+          "pattern": "ankiety online",
+          "keywords": ["Google Forms", "SurveyMonkey", "Qualtrics"],
+          "feedback": "Dobrze opisana metoda zbierania danych ankietowych."
+        }
+      ]
+    },
+    "1.2": {
+      "section_name": "Data Types and Formats",
+      "common_issues": [
+        {
+          "id": "1.2_issue_001",
+          "pattern": "brak formatów plików",
+          "keywords": ["nie podano", "różne formaty", "brak"],
+          "suggested_comment_ids": ["missing_info_1.2_001"],
+          "ai_suggestion_template": "Proszę wymienić konkretne formaty plików (np. CSV, JSON, TIFF).",
+          "usage_count": 0,
+          "last_used": null
+        }
+      ],
+      "good_practices": [
+        {
+          "pattern": "otwarte formaty",
+          "keywords": ["CSV", "JSON", "XML", "TIFF", "PNG"],
+          "feedback": "Dobrze wybrane otwarte formaty danych."
+        }
+      ]
+    },
+    "2.1": {
+      "section_name": "Documentation and Metadata",
+      "common_issues": [
+        {
+          "id": "2.1_issue_001",
+          "pattern": "brak standardu metadanych",
+          "keywords": ["nie określono", "własny format", "brak standardu"],
+          "suggested_comment_ids": ["missing_info_2.1_001"],
+          "ai_suggestion_template": "Proszę wskazać standard metadanych (np. Dublin Core, DataCite).",
+          "usage_count": 0,
+          "last_used": null
+        }
+      ],
+      "good_practices": []
+    },
+    "2.2": {
+      "section_name": "Data Quality Assurance",
+      "common_issues": [],
+      "good_practices": []
+    },
+    "3.1": {
+      "section_name": "Storage During Project",
+      "common_issues": [
+        {
+          "id": "3.1_issue_001",
+          "pattern": "brak informacji o bezpieczeństwie",
+          "keywords": ["nie podano", "brak zabezpieczeń", "dysk lokalny"],
+          "suggested_comment_ids": ["missing_info_3.1_001"],
+          "ai_suggestion_template": "Proszę opisać sposób zabezpieczenia danych podczas projektu.",
+          "usage_count": 0,
+          "last_used": null
+        }
+      ],
+      "good_practices": []
+    },
+    "3.2": {
+      "section_name": "Backup Strategy",
+      "common_issues": [],
+      "good_practices": []
+    },
+    "4.1": {
+      "section_name": "Legal and Ethical Requirements",
+      "common_issues": [
+        {
+          "id": "4.1_issue_001",
+          "pattern": "brak RODO",
+          "keywords": ["nie dotyczy", "brak danych osobowych", "anonimowe"],
+          "suggested_comment_ids": ["missing_info_4.1_001"],
+          "ai_suggestion_template": "Nawet jeśli dane są anonimowe, proszę potwierdzić zgodność z RODO.",
+          "usage_count": 0,
+          "last_used": null
+        }
+      ],
+      "good_practices": []
+    },
+    "4.2": {
+      "section_name": "Data Access and Sharing Restrictions",
+      "common_issues": [],
+      "good_practices": []
+    },
+    "5.1": {
+      "section_name": "Data Sharing Strategy",
+      "common_issues": [
+        {
+          "id": "5.1_issue_001",
+          "pattern": "brak repozytorium",
+          "keywords": ["nie określono", "później", "po projekcie"],
+          "suggested_comment_ids": ["missing_info_5.1_001"],
+          "ai_suggestion_template": "Proszę wskazać konkretne repozytorium do udostępnienia danych.",
+          "usage_count": 0,
+          "last_used": null
+        }
+      ],
+      "good_practices": [
+        {
+          "pattern": "Zenodo",
+          "keywords": ["Zenodo", "CERN", "DOI"],
+          "feedback": "Zenodo to dobre repozytorium z przyznawaniem DOI."
+        }
+      ]
+    },
+    "5.2": {
+      "section_name": "Long-term Preservation",
+      "common_issues": [],
+      "good_practices": []
+    },
+    "6.1": {
+      "section_name": "Roles and Responsibilities",
+      "common_issues": [
+        {
+          "id": "6.1_issue_001",
+          "pattern": "brak przypisania odpowiedzialności",
+          "keywords": ["zespół", "wszyscy", "nie określono"],
+          "suggested_comment_ids": ["missing_info_6.1_001"],
+          "ai_suggestion_template": "Proszę wskazać konkretną osobę odpowiedzialną za zarządzanie danymi.",
+          "usage_count": 0,
+          "last_used": null
+        }
+      ],
+      "good_practices": []
+    },
+    "6.2": {
+      "section_name": "Resources and Costs",
+      "common_issues": [
+        {
+          "id": "6.2_issue_001",
+          "pattern": "brak kosztów",
+          "keywords": ["bezpłatnie", "nie dotyczy", "0 zł"],
+          "suggested_comment_ids": ["missing_info_6.2_001"],
+          "ai_suggestion_template": "Proszę oszacować koszty związane z zarządzaniem danymi.",
+          "usage_count": 0,
+          "last_used": null
+        }
+      ],
+      "good_practices": []
+    }
+  },
+  "global_patterns": {
+    "empty_section": {
+      "pattern": "sekcja pusta lub zbyt krótka",
+      "min_chars_threshold": 50,
+      "suggested_comment": "Ta sekcja wymaga uzupełnienia. Proszę podać szczegółowe informacje."
+    },
+    "copy_paste_detected": {
+      "pattern": "skopiowany tekst z szablonu",
+      "indicators": ["[wpisz tutaj]", "[uzupełnij]", "Lorem ipsum", "[...]"],
+      "suggested_comment": "Wykryto tekst szablonowy. Proszę uzupełnić właściwymi danymi."
+    },
+    "too_generic": {
+      "pattern": "zbyt ogólnikowy opis",
+      "indicators": ["różne", "wiele", "odpowiednie", "standardowe"],
+      "suggested_comment": "Opis jest zbyt ogólnikowy. Proszę podać konkretne szczegóły."
+    }
+  },
+  "custom_rules": []
+}
