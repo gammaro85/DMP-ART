@@ -477,7 +477,7 @@ class AIAssistant {
             const escapedComment = this.escapeHtml(c);
             return `
                 <li onclick="aiAssistant.insertCommentToSection('${sectionId}', '${escapedComment}')">
-                    <span>${c}</span>
+                    <span>${escapedComment}</span>
                     <button class="insert-btn">+ Wstaw</button>
                 </li>
             `;
@@ -501,7 +501,7 @@ class AIAssistant {
             const escapedSuggestion = this.escapeHtml(s);
             return `
                 <li onclick="aiAssistant.insertCommentToSection('${sectionId}', '${escapedSuggestion}')">
-                    <span>${s}</span>
+                    <span>${escapedSuggestion}</span>
                     <button class="insert-btn">+ Wstaw</button>
                 </li>
             `;
@@ -521,7 +521,7 @@ class AIAssistant {
     renderIssues(issues) {
         if (!issues || issues.length === 0) return '';
 
-        const items = issues.map(i => `<li><i class="fas fa-exclamation-circle"></i> ${i}</li>`).join('');
+        const items = issues.map(i => `<li><i class="fas fa-exclamation-circle"></i> ${this.escapeHtml(i)}</li>`).join('');
 
         return `
             <div class="ai-section ai-issues">
