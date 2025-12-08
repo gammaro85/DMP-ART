@@ -14,7 +14,7 @@ from typing import Optional, List, Tuple
 class KnowledgeManager:
     """Manages the AI knowledge base for DMP review patterns"""
 
-    def __init__(self, knowledge_path: str = "config/knowledge_base.json"):
+    def __init__(self, knowledge_path: str = "config/ai/knowledge_base.json"):
         self.knowledge_path = knowledge_path
         self.knowledge = self._load_knowledge()
 
