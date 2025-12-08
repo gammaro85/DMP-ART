@@ -226,7 +226,7 @@ body {
   margin: 0 !important; /* Remove side margins for full-width content */
   margin-left: 0 !important;
   margin-right: 0 !important;
-  /* REMOVED: backdrop-filter: blur(20px); - this breaks position:fixed on children */
+  backdrop-filter: blur(20px);
   overscroll-behavior: none;
   overscroll-behavior-x: none;
   overscroll-behavior-y: none;
@@ -712,7 +712,7 @@ s .light-logo {
   box-shadow: var(--text-box-shadow);
   padding: var(--spacing-6);
   transition: .4s cubic-bezier(.4,0,.2,1);
-  /* REMOVED: backdrop-filter - breaks position:fixed on descendants */
+  backdrop-filter: var(--glass-backdrop);
   position: relative;
   overflow: hidden
 }
@@ -758,25 +758,8 @@ s .light-logo {
 .text-content:hover,
 .unconnected-item:hover {
   box-shadow: var(--text-box-hover-shadow);
-  /* REMOVED transform - breaks position:fixed on siblings */
+  transform: translateY(-2px);
   border-color: var(--primary-color)
-}
-
-/* Review page: completely disable hover transforms to preserve fixed sidebar */
-body[data-page="review"] .question-card:hover,
-body[data-page="review"] .review-container:hover,
-body[data-page="review"] .text-content:hover,
-body[data-page="review"] .feedback-text:hover {
-  transform: none !important;
-  box-shadow: var(--text-box-shadow) !important;
-}
-
-/* Review page: disable ::before effects that could affect layout */
-body[data-page="review"] .container::before,
-body[data-page="review"] .question-card::before,
-body[data-page="review"] .review-container::before,
-body[data-page="review"] .text-content::before {
-  display: none !important;
 }
 
 .container:hover::before,
@@ -1182,7 +1165,7 @@ body,
   border-radius: 0 !important;
   /* Remove glass effect */
   backdrop-filter: none !important;
-  /* NOTE: position removed - handled per-page */
+  position: static !important;
   overflow: visible !important;
 }
 
@@ -1451,86 +1434,83 @@ textarea,
   display: none;
 }
 
-/* Review layout with sidebar */
+/* Review layout with sidebar - grid-based for reliable 75:25 ratio */
 .review-layout {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: 1fr 300px;
   gap: var(--spacing-6);
   width: 100%;
   max-width: none;
   margin: 0;
   padding: var(--spacing-5);
+  min-height: calc(100vh - 150px);
 }
 
-/* Ensure main-content is left and sidebar is right */
+/* Main content area */
 .main-content {
-  flex: 1 1 0;
   min-width: 0;
-  order: 1;
+  overflow-x: hidden;
 }
 
+/* Right sidebar - sticky within grid cell */
 .right-sidebar {
-  width: 300px;
-  min-width: 300px;
+  width: 100%;
   max-width: 300px;
-  flex-shrink: 0;
   background: var(--bg-card);
   border-radius: var(--border-radius-md);
   padding: var(--spacing-5);
   box-shadow: var(--shadow-light);
   border: 1px solid var(--border-light);
   height: fit-content;
-  /* Default: sticky for non-review pages */
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
   position: sticky;
-  top: 80px; /* below header */
+  top: 80px;
   align-self: flex-start;
-  order: 2;
-  margin-left: auto; /* push sidebar to the far right */
 }
 
-/* CRITICAL: Review page uses FIXED position for sidebar */
-body[data-page="review"] .right-sidebar {
-  position: fixed !important;
-  right: 0 !important;
-  top: 60px !important;
-  width: 25% !important;
-  min-width: 25% !important;
-  max-width: 25% !important;
-  height: calc(100vh - 60px) !important;
-  border-radius: 0 !important;
-  margin: 0 !important;
-  z-index: 100 !important;
-  overflow: hidden !important;
-  padding: 10px !important;
-  display: flex !important;
-  flex-direction: column !important;
-  box-sizing: border-box !important;
+/* Scrollbar styling for sidebar */
+.right-sidebar::-webkit-scrollbar {
+  width: 6px;
 }
 
-/* On mobile, sidebar goes above main content */
-@media (max-width: 768px) {
+.right-sidebar::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 3px;
+}
+
+.right-sidebar::-webkit-scrollbar-thumb {
+  background: var(--border-medium);
+  border-radius: 3px;
+}
+
+.right-sidebar::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color);
+}
+
+/* Responsive: stack on narrow screens */
+@media (max-width: 1100px) {
   .review-layout {
-    flex-direction: column;
+    grid-template-columns: 1fr 280px;
   }
-  /* Only on mobile - remove fixed positioning */
-  body[data-page="review"] .right-sidebar,
   .right-sidebar {
-    width: 100% !important;
-    min-width: 100% !important;
-    max-width: 100% !important;
-    position: static !important;
-    order: -1;
-    top: unset !important;
-    right: unset !important;
-    height: auto !important;
-    align-self: unset;
-    margin-left: 0;
-    margin-bottom: var(--spacing-5);
+    max-width: 280px;
   }
-  body[data-page="review"] .main-content {
-    width: 100% !important;
-    min-width: 100% !important;
-    max-width: 100% !important;
+}
+
+@media (max-width: 900px) {
+  .review-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+  .right-sidebar {
+    position: static;
+    max-width: none;
+    width: 100%;
+    max-height: none;
+    overflow-y: visible;
+    order: -1;
+    margin-bottom: var(--spacing-5);
   }
 }
 /* ==================== Language Switcher (Review Page) ==================== */

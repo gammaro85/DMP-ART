@@ -1082,7 +1082,7 @@
         }
     </style>
 </head>
-<body data-page="review">
+<body data-page="review" data-cache-id="{{ cache_id }}" data-filename="{{ filename }}">
     <!-- Fixed Header Navigation -->
     <header class="fixed-header">
         <nav class="header-nav">
@@ -1402,6 +1402,7 @@
 
     <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ai_assistant.js') }}"></script>
 
     <script>
         // Enhanced navigation functionality
