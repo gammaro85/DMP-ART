@@ -18,17 +18,75 @@
     </script>
     <style>
         .ai-settings-container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 2rem;
         }
 
         .ai-settings-container h1 {
             color: var(--text-primary);
-            margin-bottom: 2rem;
+            margin-bottom: 0.5rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            font-size: 2rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Quick Start Guide */
+        .quick-start {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #2563eb 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .quick-start h2 {
+            color: white;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 0.5rem;
+        }
+
+        .quick-start-steps {
+            list-style: none;
+            padding: 0;
+        }
+
+        .quick-start-steps li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .quick-start-steps li .step-number {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .quick-start-steps li a {
+            color: white;
+            text-decoration: underline;
+            font-weight: 500;
+        }
+
+        .quick-start-steps li a:hover {
+            color: rgba(255, 255, 255, 0.8);
         }
 
         .settings-card {
@@ -64,6 +122,35 @@
             margin-top: 0.25rem;
         }
 
+        /* Main Toggle - Large and Prominent */
+        .main-toggle-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border-medium);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+
+        .main-toggle-card.enabled {
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.05) 0%, rgba(var(--primary-color-rgb), 0.02) 100%);
+        }
+
+        .main-toggle-info h2 {
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .main-toggle-info p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
         /* Toggle Switch */
         .toggle-container {
             display: flex;
@@ -73,8 +160,13 @@
 
         .toggle-switch {
             position: relative;
-            width: 50px;
-            height: 26px;
+            width: 70px;
+            height: 38px;
+        }
+
+        .toggle-switch.large {
+            width: 90px;
+            height: 48px;
         }
 
         .toggle-switch input {
@@ -90,32 +182,54 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: var(--bg-tertiary);
-            border: 1px solid var(--border-medium);
+            background-color: #cbd5e1;
+            border: 2px solid #94a3b8;
             transition: 0.3s;
-            border-radius: 26px;
+            border-radius: 48px;
         }
 
         .slider:before {
             position: absolute;
             content: "";
-            height: 20px;
-            width: 20px;
-            left: 2px;
-            bottom: 2px;
-            background-color: var(--text-secondary);
+            height: 30px;
+            width: 30px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
             transition: 0.3s;
             border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-switch.large .slider:before {
+            height: 38px;
+            width: 38px;
+            left: 5px;
+            bottom: 3px;
         }
 
         input:checked + .slider {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
+            background-color: #10b981;
+            border-color: #059669;
         }
 
         input:checked + .slider:before {
-            transform: translateX(24px);
-            background-color: white;
+            transform: translateX(32px);
+        }
+
+        .toggle-switch.large input:checked + .slider:before {
+            transform: translateX(42px);
+        }
+
+        /* Toggle labels */
+        .toggle-label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .toggle-switch.large + .toggle-label {
+            font-size: 1.2rem;
         }
 
         /* Select */
@@ -341,55 +455,67 @@
 </head>
 <body data-page="ai-settings">
     <!-- Header -->
-    <header class="main-header">
+    <header class="fixed-header">
         <nav class="header-nav">
-            <div class="nav-left">
-                <a href="/" class="nav-item" data-page="upload">
-                    <i class="fas fa-upload"></i> Upload
-                </a>
-                <span class="nav-item disabled" data-page="review">
-                    <i class="fas fa-file-alt"></i> Review
-                </span>
-                <a href="/template_editor" class="nav-item" data-page="template_editor">
-                    <i class="fas fa-cog"></i> Templates
-                </a>
-                <a href="/documentation" class="nav-item" data-page="documentation">
-                    <i class="fas fa-book"></i> Docs
-                </a>
-                <a href="/ai-settings" class="nav-item active" data-page="ai-settings">
-                    <i class="fas fa-robot"></i> AI Settings
-                </a>
+            <div class="nav-links">
+                <a href="/" class="nav-item" data-page="index">Home</a>
+                <span class="nav-item disabled" data-page="review"
+                      title="Upload and process a document first to access review">Review</span>
+                <a href="/template_editor" class="nav-item" data-page="template-editor">Template Editor</a>
+                <a href="/ai-settings" class="nav-item" data-page="ai-settings">AI Settings</a>
+                <a href="/documentation" class="nav-item" data-page="documentation">Documentation</a>
             </div>
-            <div class="nav-right">
-                <button class="theme-toggle" onclick="toggleTheme()">
-                    <i class="fas fa-moon"></i>
-                    <span id="theme-text">Dark Mode</span>
-                </button>
-            </div>
+            <button class="theme-toggle" aria-label="Toggle theme">
+                <i class="fas fa-moon"></i>
+            </button>
         </nav>
     </header>
 
     <!-- Main Content -->
     <main class="ai-settings-container">
         <h1>
-            <i class="fas fa-robot"></i> Ustawienia Asystenta AI
-            <span id="ai-status" class="status-indicator disabled">
-                <i class="fas fa-circle"></i> Wyłączony
-            </span>
+            <i class="fas fa-robot"></i> Asystent AI
         </h1>
+        <p class="page-subtitle">Skonfiguruj AI do automatycznego sugerowania komentarzy podczas recenzji DMP</p>
 
-        <!-- Main Toggle -->
-        <div class="settings-card">
-            <h2><i class="fas fa-power-off"></i> Włączenie modułu AI</h2>
-            <div class="setting-group">
-                <div class="toggle-container">
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="ai-enabled" onchange="toggleAI()">
-                        <span class="slider"></span>
-                    </label>
-                    <span>Włącz asystenta AI do recenzji DMP</span>
-                </div>
-                <p class="hint">Po włączeniu AI będzie analizować treść DMP i sugerować komentarze.</p>
+        <!-- Quick Start Guide -->
+        <div class="quick-start">
+            <h2><i class="fas fa-rocket"></i> Jak skonfigurować AI w 3 krokach?</h2>
+            <ol class="quick-start-steps">
+                <li>
+                    <span class="step-number">1</span>
+                    <span><strong>Uzyskaj klucz API:</strong> Wybierz dostawcę (OpenAI lub Anthropic) i stwórz konto:<br>
+                    • OpenAI: <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com/api-keys</a><br>
+                    • Anthropic: <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com/settings/keys</a>
+                    </span>
+                </li>
+                <li>
+                    <span class="step-number">2</span>
+                    <span><strong>Wklej klucz API</strong> poniżej i kliknij "Test" aby sprawdzić połączenie</span>
+                </li>
+                <li>
+                    <span class="step-number">3</span>
+                    <span><strong>Włącz AI</strong> używając dużego przełącznika poniżej i zapisz ustawienia</span>
+                </li>
+            </ol>
+        </div>
+
+        <!-- Main Toggle - Large and Prominent -->
+        <div class="main-toggle-card" id="main-toggle-card">
+            <div class="main-toggle-info">
+                <h2>
+                    <i class="fas fa-power-off"></i> Asystent AI
+                    <span id="ai-status" class="status-indicator disabled">
+                        <i class="fas fa-circle"></i> Wyłączony
+                    </span>
+                </h2>
+                <p>Włącz AI aby automatycznie generować sugestie komentarzy podczas recenzji</p>
+            </div>
+            <div class="toggle-container">
+                <label class="toggle-switch large">
+                    <input type="checkbox" id="ai-enabled" onchange="toggleAI()">
+                    <span class="slider"></span>
+                </label>
             </div>
         </div>
 
@@ -524,7 +650,7 @@
     </main>
 
     <!-- Scripts -->
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
     <script>
         // Load current configuration on page load
         document.addEventListener('DOMContentLoaded', async function() {
@@ -603,12 +729,16 @@
 
         function updateStatusIndicator(enabled) {
             const status = document.getElementById('ai-status');
+            const toggleCard = document.getElementById('main-toggle-card');
+
             if (enabled) {
                 status.className = 'status-indicator enabled';
                 status.innerHTML = '<i class="fas fa-circle"></i> Włączony';
+                toggleCard.classList.add('enabled');
             } else {
                 status.className = 'status-indicator disabled';
                 status.innerHTML = '<i class="fas fa-circle"></i> Wyłączony';
+                toggleCard.classList.remove('enabled');
             }
         }
 
