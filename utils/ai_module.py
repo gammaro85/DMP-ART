@@ -329,6 +329,9 @@ class AIReviewAssistant:
             dmp_content: Original DMP content
             feedback_text: User's feedback text
             used_comments: List of comment IDs used
+            
+        Returns:
+            None
         """
         if not self.config.get("review_settings", {}).get("auto_learn_enabled", True):
             return

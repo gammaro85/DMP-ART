@@ -586,7 +586,7 @@
                     let totalPractices = 0;
                     let totalSections = 0;
 
-                    for (const [sectionId, sectionData] of Object.entries(kb.sections || {})) {
+                    for (const sectionData of Object.values(kb.sections || {})) {
                         totalSections++;
                         totalIssues += (sectionData.common_issues || []).length;
                         totalPractices += (sectionData.good_practices || []).length;

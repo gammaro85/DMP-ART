@@ -1383,6 +1383,10 @@ def ai_suggest_feedback():
         if not cache_id:
             return jsonify({'success': False, 'message': 'Brak cache_id'})
 
+        # Validate cache_id format (should be UUID)
+        if not re.match(r'^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$', cache_id):
+            return jsonify({'success': False, 'message': 'Nieprawidłowy format cache_id'})
+
         # Load DMP from cache
         cache_path = os.path.join(app.config['CACHE_FOLDER'], f"cache_{cache_id}.json")
         if not os.path.exists(cache_path):
