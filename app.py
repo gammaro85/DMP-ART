@@ -838,8 +838,9 @@ def discover_categories():
             if not filename.endswith('.json'):
                 continue
 
-            # Skip system files
-            if filename in ['dmp_structure.json', 'quick_comments.json', 'category_comments.json']:
+            # Skip system files and AI configuration files
+            if filename in ['dmp_structure.json', 'quick_comments.json', 'category_comments.json',
+                           'ai_config.json', 'knowledge_base.json']:
                 continue
 
             # Skip backup files (any file containing 'backup')

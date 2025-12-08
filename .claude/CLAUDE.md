@@ -66,12 +66,13 @@ static/js/dark-mode.js              # Theme management (4KB)
 config/
 ├── dmp_structure.json              # 14 DMP section definitions
 ├── quick_comments.json             # Reusable comment templates
-├── ai_config.json                  # AI module settings (NEW)
-├── knowledge_base.json             # AI knowledge base (NEW)
 ├── for_newbies.json                # Category: Guidance for newcomers
 ├── missing_info.json               # Category: Missing information
 ├── ready_to_use.json               # Category: Ready to use feedback
-└── [custom].json                   # User can create unlimited categories
+├── [custom].json                   # User can create unlimited categories
+└── ai/                             # AI module configuration (separate folder)
+    ├── ai_config.json              # AI module settings
+    └── knowledge_base.json         # AI knowledge base
 ```
 
 ### Key Directories
@@ -793,7 +794,7 @@ Optional AI-powered review assistant supporting OpenAI (ChatGPT) and Anthropic (
 ### Architecture
 
 ```
-config/
+config/ai/
 ├── ai_config.json          # AI module configuration
 └── knowledge_base.json     # Auto-learning knowledge base
 
@@ -816,8 +817,8 @@ templates/
 | `utils/ai_providers.py` | Abstract provider + OpenAI/Anthropic implementations |
 | `utils/knowledge_manager.py` | Knowledge base management, pattern extraction |
 | `utils/ai_module.py` | `AIReviewAssistant` class - main orchestration |
-| `config/ai_config.json` | API keys, model settings, ratio configuration |
-| `config/knowledge_base.json` | Patterns, issues, good practices per section |
+| `config/ai/ai_config.json` | API keys, model settings, ratio configuration |
+| `config/ai/knowledge_base.json` | Patterns, issues, good practices per section |
 
 ### API Endpoints
 
