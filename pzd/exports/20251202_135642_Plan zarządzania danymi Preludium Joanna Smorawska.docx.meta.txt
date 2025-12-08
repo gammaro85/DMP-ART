@@ -1,5 +1,0 @@
-original_filename: Plan zarządzania danymi Preludium Joanna Smorawska.docx
-email_subject: Re: Konsultacja Planu Zarządzania Danymi - projekt Preludium 
-email_date: 20250611_125459
-exported_date: 2025-12-02 13:56:42
-file_size: 16385

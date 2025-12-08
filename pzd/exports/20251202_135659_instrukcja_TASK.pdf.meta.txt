@@ -1,5 +1,0 @@
-original_filename: instrukcja_TASK.pdf
-email_subject: Re: [DSCC-PL] - pytania o możliwości repozytorium i "kto pobrał moje dane"
-email_date: 20250307_122847
-exported_date: 2025-12-02 13:56:59
-file_size: 441589

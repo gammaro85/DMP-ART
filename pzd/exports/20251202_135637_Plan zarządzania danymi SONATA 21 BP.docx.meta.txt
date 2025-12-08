@@ -1,5 +1,0 @@
-original_filename: Plan zarządzania danymi SONATA 21 BP.docx
-email_subject: Plan Zarządzania Danymi do wniosku Sonata 21 NCN_prośba o weryfikację 
-email_date: 20251124_140345
-exported_date: 2025-12-02 13:56:37
-file_size: 19468

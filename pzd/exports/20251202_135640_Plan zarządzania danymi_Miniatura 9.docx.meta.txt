@@ -1,5 +1,0 @@
-original_filename: Plan zarządzania danymi_Miniatura 9.docx
-email_subject: Prośba o sprawdzenie Planu Zarządzania Danymi – wniosek MINIATURA 9
-email_date: 20250716_143401
-exported_date: 2025-12-02 13:56:40
-file_size: 24656

@@ -1,5 +1,0 @@
-original_filename: SHENG-data_management_plan-001.docx
-email_subject: SHENG - plan zarządzania danymi - Bekasiewicz
-email_date: 20250311_091838
-exported_date: 2025-12-02 13:56:59
-file_size: 27204

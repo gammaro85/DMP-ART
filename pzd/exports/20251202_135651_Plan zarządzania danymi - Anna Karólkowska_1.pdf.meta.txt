@@ -1,5 +1,0 @@
-original_filename: Plan zarządzania danymi - Anna Karólkowska.pdf
-email_subject: Plan zarządzania danymi - PRELUDIUM
-email_date: 20250529_112411
-exported_date: 2025-12-02 13:56:51
-file_size: 88082

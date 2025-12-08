@@ -1,5 +1,0 @@
-original_filename: Data_management_plan.docx
-email_subject:  plan zarządzania danymi PRELUDIUM
-email_date: 20250609_164838
-exported_date: 2025-12-02 13:56:43
-file_size: 43081

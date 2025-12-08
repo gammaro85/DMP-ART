@@ -1,5 +1,0 @@
-original_filename: Data Management Plan Ewa Augustin OPUS 29.docx
-email_subject: plan zarządzania danymi do grantu OPUS 29
-email_date: 20250605_125453
-exported_date: 2025-12-02 13:56:45
-file_size: 23566

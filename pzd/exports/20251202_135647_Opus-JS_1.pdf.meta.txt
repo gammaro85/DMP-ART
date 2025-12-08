@@ -1,5 +1,0 @@
-original_filename: Opus-JS.pdf
-email_subject: opus Jan Stąsiek - skonsultowany
-email_date: 20250603_140616
-exported_date: 2025-12-02 13:56:47
-file_size: 81813

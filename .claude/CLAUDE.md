@@ -1,7 +1,7 @@
 # DMP-ART: AI Agent Development Guide
 
-**Version:** 0.8.1
-**Last Updated:** 2025-11-23
+**Version:** 0.9.0
+**Last Updated:** 2025-12-08
 **Purpose:** Context and instructions for AI agents working on this codebase
 
 ---
@@ -83,36 +83,42 @@ templates/                          # Jinja2 HTML templates
 ├── review.html                     # Review interface (main UI)
 ├── template_editor.html            # Configuration management
 ├── documentation.html              # User documentation
+├── ai_settings.html                # AI module settings
 └── test_categories.html            # Category testing interface
 
 static/
-├── css/style.css                   # Main stylesheet
+├── css/
+│   ├── style.css                   # Main stylesheet
+│   └── review.css                  # Review page specific styles
 ├── js/
 │   ├── script.js                   # Main application logic
-│   ├── ai_assistant.js             # AI frontend integration (NEW)
+│   ├── ai_assistant.js             # AI frontend integration
 │   ├── template_editor.js          # Template editor functionality
 │   └── dark-mode.js                # Theme switching logic
 └── images/                         # Logos and assets
 
 utils/
 ├── extractor.py                    # DMPExtractor class
-├── ai_module.py                    # AIReviewAssistant - main orchestration (NEW)
-├── ai_providers.py                 # OpenAI/Anthropic API adapters (NEW)
-├── knowledge_manager.py            # Knowledge base management (NEW)
-└── dmp-three-categories.py         # Category migration utility
+├── ai_module.py                    # AIReviewAssistant - main orchestration
+├── ai_providers.py                 # OpenAI/Anthropic API adapters
+└── knowledge_manager.py            # Knowledge base management
+
+tests/                              # Test files
+├── fixtures/                       # Test data files
+└── test_*.py                       # Test scripts
 
 uploads/                            # Temporary file storage (cleaned on processing)
 outputs/
-├── cache/                          # JSON cache files (cache_*.json)
-├── dmp/                            # Extracted DMP files
-└── reviews/                        # Feedback/review files
+└── cache/                          # JSON cache files (cache_*.json)
+
+old/                                # Archived/unused files (not part of core app)
 ```
 
 ---
 
 ## Development Context
 
-### Current State (v0.8.1)
+### Current State (v0.9.0)
 
 **Completed Features:**
 - ✅ PDF/DOCX upload and processing (max 16MB)
@@ -771,7 +777,7 @@ git push -u origin <branch-name>
 
 ---
 
-**Last Updated:** 2025-12-07
+**Last Updated:** 2025-12-08
 **Codebase Version:** 0.9.0
 **Extraction Success Rate:** 94.1% (tested on 17 real NCN proposals)
 **Target Users:** Data stewards at Polish research institutions

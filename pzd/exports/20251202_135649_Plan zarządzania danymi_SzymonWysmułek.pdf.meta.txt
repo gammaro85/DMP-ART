@@ -1,5 +1,0 @@
-original_filename: Plan zarządzania danymi_SzymonWysmułek.pdf
-email_subject: PZD - Preludium 
-email_date: 20250602_111020
-exported_date: 2025-12-02 13:56:49
-file_size: 77862

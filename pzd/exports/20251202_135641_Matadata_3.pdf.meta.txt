@@ -1,5 +1,0 @@
-original_filename: Matadata.pdf
-email_subject: Zmiana pliku z metadnymi w portalu MostWiedzy
-email_date: 20250704_143023
-exported_date: 2025-12-02 13:56:42
-file_size: 179884
