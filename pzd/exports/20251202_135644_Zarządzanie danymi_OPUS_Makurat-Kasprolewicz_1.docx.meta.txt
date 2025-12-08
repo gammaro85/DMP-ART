@@ -1,5 +1,0 @@
-original_filename: Zarządzanie danymi_OPUS_Makurat-Kasprolewicz.docx
-email_subject: Zarządzanie danymi badawczymi - OPUS
-email_date: 20250609_114706
-exported_date: 2025-12-02 13:56:44
-file_size: 21763

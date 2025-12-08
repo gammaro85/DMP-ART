@@ -1,5 +1,0 @@
-original_filename: PLAN ZARZĄDZANIA DANYMI_OPUS _Grochowski.docx
-email_subject: grochowski OPUS29 skonsultowany
-email_date: 20250609_134857
-exported_date: 2025-12-02 13:56:44
-file_size: 27810

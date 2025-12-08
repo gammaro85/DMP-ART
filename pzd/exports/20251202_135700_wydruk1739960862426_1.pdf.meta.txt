@@ -1,5 +1,0 @@
-original_filename: wydruk1739960862426.pdf
-email_subject: Plan zarządzania danymi - MINIATURA
-email_date: 20250219_113624
-exported_date: 2025-12-02 13:57:00
-file_size: 85524

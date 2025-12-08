@@ -1,5 +1,0 @@
-original_filename: 20241125_SONATA20_PZD_WW.docx
-email_subject: PD: [SONATA 20] Plan zarządzania danymi Wojciech Wojnowski
-email_date: 20241203_094916
-exported_date: 2025-12-02 13:57:03
-file_size: 24701

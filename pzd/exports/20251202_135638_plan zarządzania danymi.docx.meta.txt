@@ -1,5 +1,0 @@
-original_filename: plan zarządzania danymi.docx
-email_subject: Prośba o sprawdzenie planu zarządzania danych do wniosku grantowego OPUS
-email_date: 20251112_113504
-exported_date: 2025-12-02 13:56:38
-file_size: 17801

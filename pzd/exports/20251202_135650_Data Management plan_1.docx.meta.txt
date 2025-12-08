@@ -1,5 +1,0 @@
-original_filename: Data Management plan.docx
-email_subject: Request to analyze the PRELUDIUM  application for data management plan 
-email_date: 20250530_090539
-exported_date: 2025-12-02 13:56:50
-file_size: 18185

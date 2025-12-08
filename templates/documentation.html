@@ -339,7 +339,7 @@
             <h1>DMP ART Documentation</h1>
             <p>Data Management Plan Assessment and Response Tool</p>
             <div>
-                <span class="badge version">Version 0.8.1</span>
+                <span class="badge version">Version 0.9.0</span>
                 <span class="badge status">Active Development</span>
                 <span class="badge">Web Application</span>
                 <span class="badge">94.1% Success Rate</span>
@@ -778,27 +778,47 @@
                 
                 <h3>Application Structure</h3>
                 <div class="code-block">
-dmp-extractor/
+DMP-ART/
 ├── app.py                     # Main Flask application
 ├── requirements.txt           # Python dependencies
+├── launcher.py                # Application launcher
+├── build_standalone.py        # Standalone build script
 ├── config/                    # Configuration files
 │   ├── dmp_structure.json    # DMP section definitions
 │   ├── quick_comments.json   # Quick comment templates
-│   └── *.json               # Category-specific templates
+│   ├── for_newbies.json      # Newcomer guidance category
+│   ├── missing_info.json     # Missing information category
+│   ├── ready_to_use.json     # Ready to use category
+│   └── ai/                   # AI module configuration
+│       ├── ai_config.json    # AI settings
+│       └── knowledge_base.json # AI knowledge base
 ├── templates/                # HTML templates
 │   ├── index.html           # Main upload page
 │   ├── review.html          # Review interface
 │   ├── template_editor.html # Template management
+│   ├── ai_settings.html     # AI configuration page
 │   └── documentation.html   # This documentation
 ├── static/                   # Static assets
-│   ├── css/style.css        # Main stylesheet
-│   ├── js/dark-mode.js     # Theme functionality
-│   └── images/             # Logos and icons
+│   ├── css/
+│   │   ├── style.css        # Main stylesheet
+│   │   └── review.css       # Review page styles
+│   ├── js/
+│   │   ├── script.js        # Main application logic
+│   │   ├── ai_assistant.js  # AI frontend integration
+│   │   ├── template_editor.js # Template editor
+│   │   └── dark-mode.js     # Theme functionality
+│   └── images/              # Logos and icons
 ├── utils/                    # Core processing modules
 │   ├── extractor.py         # Document processing logic
-│   └── dmp_comments.py     # Comment management
+│   ├── ai_module.py         # AI review assistant
+│   ├── ai_providers.py      # OpenAI/Anthropic adapters
+│   └── knowledge_manager.py # Knowledge base management
+├── tests/                    # Test files
+│   ├── fixtures/            # Test data
+│   └── test_*.py            # Test scripts
 ├── uploads/                  # Temporary upload storage
 └── outputs/                  # Generated reports and cache
+    └── cache/               # Session cache files
                 </div>
                 
                 <h3>Data Flow Architecture</h3>

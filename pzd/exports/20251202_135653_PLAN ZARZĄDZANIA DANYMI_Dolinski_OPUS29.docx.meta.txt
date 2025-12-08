@@ -1,5 +1,0 @@
-original_filename: PLAN ZARZĄDZANIA DANYMI_Dolinski_OPUS29.docx
-email_subject: ODP: Prośba o sprawdzenie planu zarządzania danymi - OPUS27
-email_date: 20250522_120537
-exported_date: 2025-12-02 13:56:53
-file_size: 21196

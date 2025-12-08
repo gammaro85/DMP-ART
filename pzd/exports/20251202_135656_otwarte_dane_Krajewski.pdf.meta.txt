@@ -1,5 +1,0 @@
-original_filename: otwarte_dane_Krajewski.pdf
-email_subject: PD: Raport końcowy Miniatura NCN
-email_date: 20250408_144113
-exported_date: 2025-12-02 13:56:56
-file_size: 96472
