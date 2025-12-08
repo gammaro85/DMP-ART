@@ -1,5 +1,0 @@
-original_filename: DMP_19112025.docx
-email_subject: ODP: DMP do sprawdzenia - opus 30
-email_date: 20251119_102650
-exported_date: 2025-12-02 13:56:37
-file_size: 3524069

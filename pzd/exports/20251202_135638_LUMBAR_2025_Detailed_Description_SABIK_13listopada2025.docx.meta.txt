@@ -1,5 +1,0 @@
-original_filename: LUMBAR_2025_Detailed_Description_SABIK_13listopada2025.docx
-email_subject: OPUS30 - Plan zarzadzania danymi (Id 661068)
-email_date: 20251114_075142
-exported_date: 2025-12-02 13:56:38
-file_size: 2965288
