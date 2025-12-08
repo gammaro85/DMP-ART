@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="pl" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+    <title>Ustawienia AI - DMP ART</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/dmp-art-favicon (Niestandardowe).png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        (function() {
+            const saved = localStorage.getItem('dmp-art-theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = saved || (prefersDark ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    <style>
+        .ai-settings-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .ai-settings-container h1 {
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .settings-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-medium);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .settings-card h2 {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .setting-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .setting-group label {
+            display: block;
+            color: var(--text-primary);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .setting-group .hint {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Toggle Switch */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-medium);
+            transition: 0.3s;
+            border-radius: 26px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 2px;
+            bottom: 2px;
+            background-color: var(--text-secondary);
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+            background-color: white;
+        }
+
+        /* Select */
+        .setting-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-medium);
+            border-radius: 6px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        /* Input */
+        .setting-group input[type="text"],
+        .setting-group input[type="password"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-medium);
+            border-radius: 6px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .setting-group input[type="range"] {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        /* API Key Group */
+        .api-key-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: flex-start;
+        }
+
+        .api-key-group input {
+            flex: 1;
+        }
+
+        .api-key-group button {
+            padding: 0.75rem 1rem;
+            white-space: nowrap;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-medium);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card);
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        /* Status indicator */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-left: 1rem;
+        }
+
+        .status-indicator.enabled {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+
+        .status-indicator.disabled {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        /* Connection status */
+        .connection-status {
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .connection-status.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid #10b981;
+        }
+
+        .connection-status.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+
+        .connection-status.loading {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            border: 1px solid #3b82f6;
+        }
+
+        /* Knowledge Base Section */
+        .knowledge-entry {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .knowledge-entry h4 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .knowledge-entry p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .knowledge-entry .keywords {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+        }
+
+        .keyword-tag {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+
+        .knowledge-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .knowledge-actions button {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        /* Ratio display */
+        .ratio-display {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Statistics */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-box {
+            background: var(--bg-tertiary);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-box .value {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .stat-box .label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Footer actions */
+        .footer-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-light);
+        }
+    </style>
+</head>
+<body data-page="ai-settings">
+    <!-- Header -->
+    <header class="main-header">
+        <nav class="header-nav">
+            <div class="nav-left">
+                <a href="/" class="nav-item" data-page="upload">
+                    <i class="fas fa-upload"></i> Upload
+                </a>
+                <span class="nav-item disabled" data-page="review">
+                    <i class="fas fa-file-alt"></i> Review
+                </span>
+                <a href="/template_editor" class="nav-item" data-page="template_editor">
+                    <i class="fas fa-cog"></i> Templates
+                </a>
+                <a href="/documentation" class="nav-item" data-page="documentation">
+                    <i class="fas fa-book"></i> Docs
+                </a>
+                <a href="/ai-settings" class="nav-item active" data-page="ai-settings">
+                    <i class="fas fa-robot"></i> AI Settings
+                </a>
+            </div>
+            <div class="nav-right">
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <i class="fas fa-moon"></i>
+                    <span id="theme-text">Dark Mode</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="ai-settings-container">
+        <h1>
+            <i class="fas fa-robot"></i> Ustawienia Asystenta AI
+            <span id="ai-status" class="status-indicator disabled">
+                <i class="fas fa-circle"></i> Wyłączony
+            </span>
+        </h1>
+
+        <!-- Main Toggle -->
+        <div class="settings-card">
+            <h2><i class="fas fa-power-off"></i> Włączenie modułu AI</h2>
+            <div class="setting-group">
+                <div class="toggle-container">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="ai-enabled" onchange="toggleAI()">
+                        <span class="slider"></span>
+                    </label>
+                    <span>Włącz asystenta AI do recenzji DMP</span>
+                </div>
+                <p class="hint">Po włączeniu AI będzie analizować treść DMP i sugerować komentarze.</p>
+            </div>
+        </div>
+
+        <!-- Provider Selection -->
+        <div class="settings-card">
+            <h2><i class="fas fa-server"></i> Provider API</h2>
+            <div class="setting-group">
+                <label>Wybierz dostawcę AI:</label>
+                <select id="ai-provider" onchange="updateProviderUI()">
+                    <option value="openai">OpenAI (ChatGPT)</option>
+                    <option value="anthropic">Anthropic (Claude)</option>
+                </select>
+            </div>
+
+            <!-- OpenAI Settings -->
+            <div id="openai-settings" class="provider-settings">
+                <div class="setting-group">
+                    <label>OpenAI API Key:</label>
+                    <div class="api-key-group">
+                        <input type="password" id="openai-api-key" placeholder="sk-...">
+                        <button class="btn btn-secondary" onclick="testConnection('openai')">
+                            <i class="fas fa-plug"></i> Test
+                        </button>
+                    </div>
+                    <div id="openai-status" class="connection-status" style="display: none;"></div>
+                </div>
+                <div class="setting-group">
+                    <label>Model:</label>
+                    <select id="openai-model">
+                        <option value="gpt-4">GPT-4 (najdokładniejszy)</option>
+                        <option value="gpt-4-turbo">GPT-4 Turbo (szybszy)</option>
+                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo (najtańszy)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Anthropic Settings -->
+            <div id="anthropic-settings" class="provider-settings" style="display: none;">
+                <div class="setting-group">
+                    <label>Anthropic API Key:</label>
+                    <div class="api-key-group">
+                        <input type="password" id="anthropic-api-key" placeholder="sk-ant-...">
+                        <button class="btn btn-secondary" onclick="testConnection('anthropic')">
+                            <i class="fas fa-plug"></i> Test
+                        </button>
+                    </div>
+                    <div id="anthropic-status" class="connection-status" style="display: none;"></div>
+                </div>
+                <div class="setting-group">
+                    <label>Model:</label>
+                    <select id="anthropic-model">
+                        <option value="claude-3-sonnet-20240229">Claude 3 Sonnet (zbalansowany)</option>
+                        <option value="claude-3-opus-20240229">Claude 3 Opus (najpotężniejszy)</option>
+                        <option value="claude-3-haiku-20240307">Claude 3 Haiku (najszybszy)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Review Settings -->
+        <div class="settings-card">
+            <h2><i class="fas fa-sliders-h"></i> Ustawienia recenzji</h2>
+            <div class="setting-group">
+                <label>Proporcja gotowych komentarzy: <strong id="ratio-value">75%</strong></label>
+                <input type="range" id="ready-comments-ratio" min="50" max="100" value="75" oninput="updateRatioDisplay()">
+                <div class="ratio-display">
+                    <span>Gotowe komentarze: <span id="ready-pct">75%</span></span>
+                    <span>Sugestie AI: <span id="ai-pct">25%</span></span>
+                </div>
+                <p class="hint">AI będzie preferować gotowe komentarze z biblioteki w podanej proporcji.</p>
+            </div>
+
+            <div class="setting-group">
+                <div class="toggle-container">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="auto-learn-enabled" checked>
+                        <span class="slider"></span>
+                    </label>
+                    <span>Automatyczne uczenie z Twoich feedbacków</span>
+                </div>
+                <p class="hint">AI będzie analizować zapisane recenzje i uczyć się nowych wzorców.</p>
+            </div>
+
+            <div class="setting-group">
+                <label>Temperatura (kreatywność):</label>
+                <input type="range" id="temperature" min="0" max="100" value="30" oninput="updateTempDisplay()">
+                <div class="ratio-display">
+                    <span>Deterministyczne</span>
+                    <span id="temp-value">0.3</span>
+                    <span>Kreatywne</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Knowledge Base Preview -->
+        <div class="settings-card">
+            <h2><i class="fas fa-brain"></i> Baza wiedzy</h2>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="value" id="total-issues">0</div>
+                    <div class="label">Wzorców problemów</div>
+                </div>
+                <div class="stat-box">
+                    <div class="value" id="total-practices">0</div>
+                    <div class="label">Dobrych praktyk</div>
+                </div>
+                <div class="stat-box">
+                    <div class="value" id="total-sections">0</div>
+                    <div class="label">Sekcji</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 1rem;">
+                <button class="btn btn-secondary" onclick="viewKnowledgeBase()">
+                    <i class="fas fa-eye"></i> Przeglądaj bazę wiedzy
+                </button>
+                <button class="btn btn-secondary" onclick="exportKnowledge()">
+                    <i class="fas fa-download"></i> Eksportuj
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="footer-actions">
+            <button class="btn btn-secondary" onclick="resetSettings()">
+                <i class="fas fa-undo"></i> Przywróć domyślne
+            </button>
+            <button class="btn btn-primary" onclick="saveSettings()">
+                <i class="fas fa-save"></i> Zapisz ustawienia
+            </button>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        // Load current configuration on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadConfig();
+            await loadStatistics();
+        });
+
+        async function loadConfig() {
+            try {
+                const response = await fetch('/api/ai/config');
+                const data = await response.json();
+
+                if (data.success) {
+                    const config = data.config;
+
+                    // Set main toggle
+                    document.getElementById('ai-enabled').checked = config.enabled;
+                    updateStatusIndicator(config.enabled);
+
+                    // Set provider
+                    document.getElementById('ai-provider').value = config.provider || 'openai';
+                    updateProviderUI();
+
+                    // Set model settings
+                    const modelSettings = config.model_settings || {};
+                    if (modelSettings.openai) {
+                        document.getElementById('openai-model').value = modelSettings.openai.model || 'gpt-4';
+                    }
+                    if (modelSettings.anthropic) {
+                        document.getElementById('anthropic-model').value = modelSettings.anthropic.model || 'claude-3-sonnet-20240229';
+                    }
+
+                    // Set review settings
+                    const reviewSettings = config.review_settings || {};
+                    const ratio = (reviewSettings.ready_comments_ratio || 0.75) * 100;
+                    document.getElementById('ready-comments-ratio').value = ratio;
+                    updateRatioDisplay();
+
+                    document.getElementById('auto-learn-enabled').checked =
+                        reviewSettings.auto_learn_enabled !== false;
+
+                    const temp = (modelSettings[config.provider]?.temperature || 0.3) * 100;
+                    document.getElementById('temperature').value = temp;
+                    updateTempDisplay();
+                }
+            } catch (e) {
+                console.error('Error loading config:', e);
+            }
+        }
+
+        async function loadStatistics() {
+            try {
+                const response = await fetch('/api/ai/knowledge');
+                const data = await response.json();
+
+                if (data.success) {
+                    const kb = data.knowledge_base;
+                    let totalIssues = 0;
+                    let totalPractices = 0;
+                    let totalSections = 0;
+
+                    for (const [sectionId, sectionData] of Object.entries(kb.sections || {})) {
+                        totalSections++;
+                        totalIssues += (sectionData.common_issues || []).length;
+                        totalPractices += (sectionData.good_practices || []).length;
+                    }
+
+                    document.getElementById('total-issues').textContent = totalIssues;
+                    document.getElementById('total-practices').textContent = totalPractices;
+                    document.getElementById('total-sections').textContent = totalSections;
+                }
+            } catch (e) {
+                console.error('Error loading statistics:', e);
+            }
+        }
+
+        function updateStatusIndicator(enabled) {
+            const status = document.getElementById('ai-status');
+            if (enabled) {
+                status.className = 'status-indicator enabled';
+                status.innerHTML = '<i class="fas fa-circle"></i> Włączony';
+            } else {
+                status.className = 'status-indicator disabled';
+                status.innerHTML = '<i class="fas fa-circle"></i> Wyłączony';
+            }
+        }
+
+        function updateProviderUI() {
+            const provider = document.getElementById('ai-provider').value;
+            document.getElementById('openai-settings').style.display =
+                provider === 'openai' ? 'block' : 'none';
+            document.getElementById('anthropic-settings').style.display =
+                provider === 'anthropic' ? 'block' : 'none';
+        }
+
+        function updateRatioDisplay() {
+            const ratio = document.getElementById('ready-comments-ratio').value;
+            document.getElementById('ratio-value').textContent = ratio + '%';
+            document.getElementById('ready-pct').textContent = ratio + '%';
+            document.getElementById('ai-pct').textContent = (100 - ratio) + '%';
+        }
+
+        function updateTempDisplay() {
+            const temp = document.getElementById('temperature').value / 100;
+            document.getElementById('temp-value').textContent = temp.toFixed(1);
+        }
+
+        async function toggleAI() {
+            const enabled = document.getElementById('ai-enabled').checked;
+
+            try {
+                const response = await fetch('/api/ai/toggle', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ enabled: enabled })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    updateStatusIndicator(data.enabled);
+                    showToast(data.enabled ? 'AI włączone' : 'AI wyłączone', 'success');
+                } else {
+                    showToast('Błąd: ' + data.message, 'error');
+                }
+            } catch (e) {
+                showToast('Błąd połączenia', 'error');
+            }
+        }
+
+        async function testConnection(provider) {
+            const statusEl = document.getElementById(provider + '-status');
+            const apiKey = document.getElementById(provider + '-api-key').value;
+
+            if (!apiKey) {
+                statusEl.style.display = 'block';
+                statusEl.className = 'connection-status error';
+                statusEl.innerHTML = '<i class="fas fa-times"></i> Wprowadź klucz API';
+                return;
+            }
+
+            statusEl.style.display = 'block';
+            statusEl.className = 'connection-status loading';
+            statusEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testowanie połączenia...';
+
+            try {
+                // First save the API key
+                await saveSettings(false);
+
+                // Then test connection
+                const response = await fetch('/api/ai/test-connection', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    statusEl.className = 'connection-status success';
+                    statusEl.innerHTML = '<i class="fas fa-check"></i> ' + data.message;
+                } else {
+                    statusEl.className = 'connection-status error';
+                    statusEl.innerHTML = '<i class="fas fa-times"></i> ' + data.message;
+                }
+            } catch (e) {
+                statusEl.className = 'connection-status error';
+                statusEl.innerHTML = '<i class="fas fa-times"></i> Błąd połączenia z serwerem';
+            }
+        }
+
+        async function saveSettings(showNotification = true) {
+            const provider = document.getElementById('ai-provider').value;
+
+            const settings = {
+                provider: provider,
+                api_keys: {
+                    openai: document.getElementById('openai-api-key').value,
+                    anthropic: document.getElementById('anthropic-api-key').value
+                },
+                model_settings: {
+                    openai: {
+                        model: document.getElementById('openai-model').value,
+                        temperature: document.getElementById('temperature').value / 100,
+                        max_tokens: 2000
+                    },
+                    anthropic: {
+                        model: document.getElementById('anthropic-model').value,
+                        temperature: document.getElementById('temperature').value / 100,
+                        max_tokens: 2000
+                    }
+                },
+                review_settings: {
+                    ready_comments_ratio: document.getElementById('ready-comments-ratio').value / 100,
+                    ai_suggestions_ratio: (100 - document.getElementById('ready-comments-ratio').value) / 100,
+                    auto_learn_enabled: document.getElementById('auto-learn-enabled').checked
+                }
+            };
+
+            try {
+                const response = await fetch('/api/ai/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(settings)
+                });
+
+                const data = await response.json();
+
+                if (showNotification) {
+                    if (data.success) {
+                        showToast('Ustawienia zapisane!', 'success');
+                    } else {
+                        showToast('Błąd: ' + data.message, 'error');
+                    }
+                }
+            } catch (e) {
+                if (showNotification) {
+                    showToast('Błąd połączenia', 'error');
+                }
+            }
+        }
+
+        function resetSettings() {
+            if (confirm('Czy na pewno chcesz przywrócić domyślne ustawienia?')) {
+                document.getElementById('ai-enabled').checked = false;
+                document.getElementById('ai-provider').value = 'openai';
+                document.getElementById('openai-api-key').value = '';
+                document.getElementById('anthropic-api-key').value = '';
+                document.getElementById('openai-model').value = 'gpt-4';
+                document.getElementById('anthropic-model').value = 'claude-3-sonnet-20240229';
+                document.getElementById('ready-comments-ratio').value = 75;
+                document.getElementById('auto-learn-enabled').checked = true;
+                document.getElementById('temperature').value = 30;
+
+                updateProviderUI();
+                updateRatioDisplay();
+                updateTempDisplay();
+                updateStatusIndicator(false);
+
+                showToast('Przywrócono domyślne ustawienia', 'info');
+            }
+        }
+
+        function viewKnowledgeBase() {
+            // TODO: Implement knowledge base viewer modal
+            showToast('Funkcja w przygotowaniu', 'info');
+        }
+
+        function exportKnowledge() {
+            window.location.href = '/api/ai/knowledge';
+        }
+    </script>
+</body>
+</html>
