@@ -8,7 +8,7 @@ import json
 import os
 import re
 from datetime import datetime
-from typing import Optional, List, Dict, Tuple
+from typing import Optional, List, Tuple
 
 
 class KnowledgeManager:
@@ -64,11 +64,15 @@ class KnowledgeManager:
         data["_metadata"]["last_updated"] = datetime.now().isoformat()
         data["_metadata"]["total_entries"] = self._count_entries(data)
 
-        # Ensure directory exists
-        os.makedirs(os.path.dirname(self.knowledge_path), exist_ok=True)
+        try:
+            # Ensure directory exists
+            os.makedirs(os.path.dirname(self.knowledge_path), exist_ok=True)
 
-        with open(self.knowledge_path, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
+            with open(self.knowledge_path, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+        except (OSError, IOError) as e:
+            print(f"Error saving knowledge base: {e}")
+            raise
 
     def _count_entries(self, data: dict) -> int:
         """Count total entries in knowledge base"""
@@ -228,7 +232,7 @@ class KnowledgeManager:
                            feedback_text: str, selected_comments: List[str]):
         """
         Learn patterns from user feedback
-
+        
         Args:
             section_id: Section that was reviewed
             dmp_content: Original DMP content
@@ -238,6 +242,7 @@ class KnowledgeManager:
         # Extract patterns from the feedback
         patterns = self._extract_patterns(dmp_content, feedback_text)
 
+        patterns_added = 0
         for pattern, keywords in patterns:
             # Check if pattern already exists
             if not self._pattern_exists(section_id, pattern):
@@ -247,6 +252,21 @@ class KnowledgeManager:
                     keywords=keywords,
                     suggested_comments=selected_comments
                 )
+                patterns_added += 1
+        
+        # Perform periodic cleanup after adding patterns
+        if patterns_added > 0:
+            # Check if cleanup is needed based on section size
+            size_info = self.get_knowledge_base_size()
+            section_size = size_info["section_sizes"].get(section_id, 0)
+            
+            # If section has too many entries, enforce limits
+            if section_size > 100:
+                self.enforce_max_entries_per_section(max_entries=100)
+            
+            # Cleanup old unused patterns periodically
+            if size_info["total_entries"] > 500:
+                self.cleanup_low_usage_patterns(min_usage_threshold=0, max_age_days=90)
 
     def _extract_patterns(self, dmp_content: str, feedback_text: str) -> List[Tuple[str, List[str]]]:
         """
@@ -467,3 +487,110 @@ class KnowledgeManager:
 
         except (IOError, json.JSONDecodeError):
             return False
+
+    def get_knowledge_base_size(self) -> dict:
+        """
+        Get knowledge base size statistics
+        
+        Returns:
+            Dictionary with size metrics
+        """
+        total_entries = 0
+        total_sections = len(self.knowledge.get("sections", {}))
+        section_sizes = {}
+        
+        for section_id, section_data in self.knowledge.get("sections", {}).items():
+            section_entries = len(section_data.get("common_issues", []))
+            total_entries += section_entries
+            section_sizes[section_id] = section_entries
+            
+        try:
+            file_size = os.path.getsize(self.knowledge_path)
+        except OSError:
+            file_size = 0
+            
+        return {
+            "total_entries": total_entries,
+            "total_sections": total_sections,
+            "file_size_bytes": file_size,
+            "file_size_kb": round(file_size / 1024, 2),
+            "section_sizes": section_sizes
+        }
+
+    def cleanup_low_usage_patterns(self, min_usage_threshold: int = 0, 
+                                   max_age_days: int = 90) -> int:
+        """
+        Remove low-usage patterns to prevent unbounded growth
+        
+        Args:
+            min_usage_threshold: Minimum usage count to keep (default 0, keeps all)
+            max_age_days: Remove unused patterns older than this (default 90 days)
+            
+        Returns:
+            Number of patterns removed
+        """
+        from datetime import datetime, timedelta
+        
+        removed_count = 0
+        cutoff_date = datetime.now() - timedelta(days=max_age_days)
+        
+        for section_id, section_data in self.knowledge.get("sections", {}).items():
+            issues = section_data.get("common_issues", [])
+            initial_count = len(issues)
+            
+            # Filter out low-usage old patterns
+            filtered_issues = []
+            for issue in issues:
+                usage_count = issue.get("usage_count", 0)
+                created_at = issue.get("created_at", "")
+                
+                # Keep if used above threshold OR recently created
+                try:
+                    created_date = datetime.fromisoformat(created_at)
+                    is_recent = created_date > cutoff_date
+                except (ValueError, TypeError):
+                    is_recent = True  # Keep if date parsing fails
+                    
+                if usage_count > min_usage_threshold or is_recent:
+                    filtered_issues.append(issue)
+                else:
+                    removed_count += 1
+                    
+            section_data["common_issues"] = filtered_issues
+            
+        if removed_count > 0:
+            self._save_knowledge()
+            
+        return removed_count
+
+    def enforce_max_entries_per_section(self, max_entries: int = 100) -> int:
+        """
+        Enforce maximum entries per section, keeping most-used patterns
+        
+        Args:
+            max_entries: Maximum entries per section (default 100)
+            
+        Returns:
+            Number of patterns removed
+        """
+        removed_count = 0
+        
+        for section_id, section_data in self.knowledge.get("sections", {}).items():
+            issues = section_data.get("common_issues", [])
+            
+            if len(issues) > max_entries:
+                # Sort by usage count (descending) and recency
+                issues.sort(key=lambda x: (
+                    x.get("usage_count", 0),
+                    x.get("last_used") or x.get("created_at", "")
+                ), reverse=True)
+                
+                # Keep only top max_entries
+                removed = len(issues) - max_entries
+                section_data["common_issues"] = issues[:max_entries]
+                removed_count += removed
+                
+        if removed_count > 0:
+            self._save_knowledge()
+            
+        return removed_count
