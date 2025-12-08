@@ -418,38 +418,77 @@
     }
 
     // --- Quick Comments Management ---
+
+    // Helper function to get text value (handles both string and bilingual object)
+    function getTextValue(text, lang = 'en') {
+        if (typeof text === 'string') {
+            return text;
+        } else if (typeof text === 'object' && text !== null) {
+            return text[lang] || text['en'] || '';
+        }
+        return '';
+    }
+
+    // Helper function to ensure bilingual text structure
+    function ensureBilingualText(text) {
+        if (typeof text === 'string') {
+            // Convert string to bilingual object
+            return { en: text, pl: text };
+        } else if (typeof text === 'object' && text !== null && (text.en || text.pl)) {
+            // Already bilingual, ensure both languages exist
+            return {
+                en: text.en || text.pl || '',
+                pl: text.pl || text.en || ''
+            };
+        }
+        // Default empty bilingual object
+        return { en: '', pl: '' };
+    }
+
     function renderQuickComments() {
         const list = document.getElementById('quick-comments-list');
         if (!list) return;
-        
+
         list.innerHTML = '';
-        
+
         if (!dataLoaded.quickComments) {
             list.innerHTML = '<div class="loading">Loading quick comments...</div>';
             return;
         }
-        
+
         if (!quickComments.length) {
             list.innerHTML = '<div class="empty-state">No quick comments yet. Click "Add Quick Comment" to get started.</div>';
             return;
         }
-        
+
         quickComments.forEach((comment, idx) => {
+            // Ensure text is in bilingual format
+            const bilingualText = ensureBilingualText(comment.text);
+            const textEn = escapeHtml(bilingualText.en || '');
+            const textPl = escapeHtml(bilingualText.pl || '');
+
             const row = document.createElement('div');
             row.className = 'comment-row';
             row.innerHTML = `
                 <div class="comment-info">
-                    <input type="text" class="comment-name-input" value="${escapeHtml(comment.name)}" 
-                           placeholder="Comment name" onchange="updateQuickComment(${idx}, 'name', this.value)">
-                    <textarea class="comment-text-input" rows="3" 
-                              placeholder="Comment text" onchange="updateQuickComment(${idx}, 'text', this.value)">${escapeHtml(comment.text)}</textarea>
+                    <input type="text" class="comment-name-input" value="${escapeHtml(comment.name || '')}"
+                           placeholder="Comment name" data-idx="${idx}" data-field="name">
+                    <div style="display: flex; gap: 10px; margin-top: 5px;">
+                        <div style="flex: 1;">
+                            <label style="font-size: 0.75rem; color: var(--text-secondary); display: block; margin-bottom: 3px;">English (EN)</label>
+                            <textarea class="comment-text-input" rows="3"
+                                      placeholder="English text" data-idx="${idx}" data-field="text_en">${textEn}</textarea>
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="font-size: 0.75rem; color: var(--text-secondary); display: block; margin-bottom: 3px;">Polish (PL)</label>
+                            <textarea class="comment-text-input" rows="3"
+                                      placeholder="Polish text" data-idx="${idx}" data-field="text_pl">${textPl}</textarea>
+                        </div>
+                    </div>
                 </div>
                 <div class="comment-actions">
                     <button class="btn btn-sm btn-success" title="Save This Comment" onclick="saveIndividualComment(${idx})">
                         <i class="fas fa-save"></i>
-                    </button>
-                    <button class="btn btn-sm btn-secondary" title="Edit" onclick="editQuickComment(${idx})">
-                        <i class="fas fa-edit"></i>
                     </button>
                     <button class="btn btn-sm btn-danger" title="Delete" onclick="removeQuickComment(${idx})">
                         <i class="fas fa-trash"></i>
@@ -458,25 +497,38 @@
             `;
             list.appendChild(row);
         });
+
+        // Add event listeners for inline editing
+        document.querySelectorAll('.comment-name-input, .comment-text-input').forEach(input => {
+            input.addEventListener('change', function() {
+                const idx = parseInt(this.getAttribute('data-idx'));
+                const field = this.getAttribute('data-field');
+                updateQuickCommentField(idx, field, this.value);
+            });
+        });
     }
 
     function openCommentModal(index = -1) {
+        // Note: This modal is no longer used for editing since we do inline editing
+        // Keeping it for potential future use or adding new comments via button
         editingCommentIndex = index;
         const modal = document.getElementById('add-comment-modal');
         const title = document.getElementById('comment-modal-title');
         const nameInput = document.getElementById('comment-name');
         const textInput = document.getElementById('comment-text');
-        
-        if (index >= 0) {
+
+        if (index >= 0 && quickComments[index]) {
             title.textContent = 'Edit Quick Comment';
-            nameInput.value = quickComments[index].name;
-            textInput.value = quickComments[index].text;
+            nameInput.value = quickComments[index].name || '';
+            // Show English version by default in modal
+            const bilingualText = ensureBilingualText(quickComments[index].text);
+            textInput.value = bilingualText.en || '';
         } else {
             title.textContent = 'Add Quick Comment';
             nameInput.value = '';
             textInput.value = '';
         }
-        
+
         modal.style.display = 'flex';
         nameInput.focus();
     }
@@ -489,24 +541,23 @@
     function saveQuickComment() {
         const name = document.getElementById('comment-name').value.trim();
         const text = document.getElementById('comment-text').value.trim();
-        
+
         if (!name || !text) {
             alert('Please fill in both fields');
             return;
         }
-        
+
+        // Create bilingual text object (use same text for both languages initially)
+        const bilingualText = { en: text, pl: text };
+
         if (editingCommentIndex >= 0) {
-            quickComments[editingCommentIndex] = { name, text };
+            quickComments[editingCommentIndex] = { name, text: bilingualText };
         } else {
-            quickComments.push({ name, text });
+            quickComments.push({ name, text: bilingualText });
         }
-        
+
         renderQuickComments();
         closeCommentModal();
-    }
-
-    function editQuickComment(index) {
-        openCommentModal(index);
     }
 
     function removeQuickComment(index) {
@@ -516,25 +567,48 @@
         }
     }
 
-    function updateQuickComment(index, field, value) {
-        if (quickComments[index]) {
-            quickComments[index][field] = value;
+    // Update individual field (handles name, text_en, text_pl)
+    function updateQuickCommentField(index, field, value) {
+        if (!quickComments[index]) return;
+
+        if (field === 'name') {
+            quickComments[index].name = value;
+        } else if (field === 'text_en') {
+            // Ensure text is bilingual object
+            const bilingualText = ensureBilingualText(quickComments[index].text);
+            bilingualText.en = value;
+            quickComments[index].text = bilingualText;
+        } else if (field === 'text_pl') {
+            // Ensure text is bilingual object
+            const bilingualText = ensureBilingualText(quickComments[index].text);
+            bilingualText.pl = value;
+            quickComments[index].text = bilingualText;
         }
     }
 
     function saveIndividualComment(index) {
         const comment = quickComments[index];
         if (!comment) return;
-        
-        if (!comment.name.trim()) {
+
+        // Validate name
+        if (!comment.name || !comment.name.trim()) {
             showMessage('Comment name is required', 'error');
             return;
         }
-        if (!comment.text.trim()) {
-            showMessage('Comment text is required', 'error');
+
+        // Validate text (check both languages)
+        const bilingualText = ensureBilingualText(comment.text);
+        const hasEnglish = bilingualText.en && bilingualText.en.trim();
+        const hasPolish = bilingualText.pl && bilingualText.pl.trim();
+
+        if (!hasEnglish && !hasPolish) {
+            showMessage('At least one language text is required', 'error');
             return;
         }
-        
+
+        // Ensure comment has proper bilingual structure before saving
+        quickComments[index].text = bilingualText;
+
         // Save the entire quick comments array (since the backend expects the full array)
         postJSON('/save_quick_comments', { quick_comments: quickComments })
             .then(data => {
@@ -551,6 +625,29 @@
     }
 
     function saveQuickComments() {
+        // Validate all comments before saving
+        for (let i = 0; i < quickComments.length; i++) {
+            const comment = quickComments[i];
+
+            if (!comment.name || !comment.name.trim()) {
+                showMessage(`Comment #${i + 1} is missing a name`, 'error');
+                return;
+            }
+
+            // Ensure bilingual structure
+            const bilingualText = ensureBilingualText(comment.text);
+            const hasEnglish = bilingualText.en && bilingualText.en.trim();
+            const hasPolish = bilingualText.pl && bilingualText.pl.trim();
+
+            if (!hasEnglish && !hasPolish) {
+                showMessage(`Comment "${comment.name}" needs at least one language text`, 'error');
+                return;
+            }
+
+            // Update to bilingual structure
+            quickComments[i].text = bilingualText;
+        }
+
         postJSON('/save_quick_comments', { quick_comments: quickComments })
             .then(data => {
                 if (data.success) {
