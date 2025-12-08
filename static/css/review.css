@@ -158,6 +158,8 @@ body[data-page="review"] aside.right-sidebar.collapsed > *:not(.sidebar-collapse
 .navigation-pane, .category-comments-pane, .quick-comments-pane {
     margin-bottom: 6px;
     overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* Center the review subtitle to align with logo */
@@ -197,6 +199,8 @@ h3.subsection-title {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(28px, 1fr));
     gap: 2px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .nav-grid-btn {
@@ -210,6 +214,8 @@ h3.subsection-title {
     font-weight: 600;
     transition: all 0.2s ease;
     text-align: center;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .nav-grid-btn:hover {
@@ -271,6 +277,8 @@ h3.subsection-title {
     flex-direction: column;
     gap: 2px;
     overflow: hidden !important;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .quick-comment-item {
@@ -288,6 +296,8 @@ h3.subsection-title {
     overflow: hidden;
     text-overflow: ellipsis;
     flex-shrink: 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .quick-comment-item:hover {
@@ -309,13 +319,19 @@ h3.subsection-title {
 /* Sidebar action buttons - compact sizing */
 .sidebar-actions {
     margin-bottom: 6px;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .sidebar-actions button {
     width: 100%;
-    margin-bottom: 4px !important;
-    padding: 5px 8px !important;
+    margin: 0 !important;
+    padding: 6px 10px !important;
     font-size: clamp(0.6rem, 1vw, 0.75rem) !important;
+    box-sizing: border-box;
 }
 
 /* Language switcher - compact sizing */
