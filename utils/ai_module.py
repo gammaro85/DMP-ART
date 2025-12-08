@@ -14,7 +14,7 @@ from .knowledge_manager import KnowledgeManager
 class AIReviewAssistant:
     """Main AI assistant module for DMP review"""
 
-    def __init__(self, config_path: str = "config/ai_config.json"):
+    def __init__(self, config_path: str = "config/ai/ai_config.json"):
         """
         Initialize the AI Review Assistant
 
@@ -24,7 +24,7 @@ class AIReviewAssistant:
         self.config_path = config_path
         self.config = self._load_config()
         self.knowledge_manager = KnowledgeManager(
-            self.config.get("knowledge_base_path", "config/knowledge_base.json")
+            self.config.get("knowledge_base_path", "config/ai/knowledge_base.json")
         )
         self.provider: Optional[AIProvider] = None
 
@@ -69,7 +69,7 @@ class AIReviewAssistant:
                 "auto_learn_enabled": True,
                 "min_confidence_threshold": 0.7
             },
-            "knowledge_base_path": "config/knowledge_base.json"
+            "knowledge_base_path": "config/ai/knowledge_base.json"
         }
 
     def _save_config(self):
