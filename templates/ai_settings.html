@@ -545,10 +545,13 @@
                 <div class="setting-group">
                     <label>Model:</label>
                     <select id="openai-model">
-                        <option value="gpt-4">GPT-4 (najdokładniejszy)</option>
-                        <option value="gpt-4-turbo">GPT-4 Turbo (szybszy)</option>
-                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo (najtańszy)</option>
+                        <option value="gpt-4o">GPT-4o (najnowszy - REKOMENDOWANY)</option>
+                        <option value="gpt-4o-mini">GPT-4o Mini (szybki i tani)</option>
+                        <option value="gpt-4-turbo">GPT-4 Turbo (stary)</option>
+                        <option value="gpt-4">GPT-4 (stary)</option>
+                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo (przestarzały, tani)</option>
                     </select>
+                    <p class="hint">GPT-4o to najnowszy model OpenAI - oferuje najlepszą jakość za rozsądną cenę</p>
                 </div>
             </div>
 
@@ -567,10 +570,13 @@
                 <div class="setting-group">
                     <label>Model:</label>
                     <select id="anthropic-model">
-                        <option value="claude-3-sonnet-20240229">Claude 3 Sonnet (zbalansowany)</option>
-                        <option value="claude-3-opus-20240229">Claude 3 Opus (najpotężniejszy)</option>
-                        <option value="claude-3-haiku-20240307">Claude 3 Haiku (najszybszy)</option>
+                        <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet (najnowszy - REKOMENDOWANY)</option>
+                        <option value="claude-3-5-haiku-20241022">Claude 3.5 Haiku (szybki i tani)</option>
+                        <option value="claude-3-opus-20240229">Claude 3 Opus (stary, ale potężny)</option>
+                        <option value="claude-3-sonnet-20240229">Claude 3 Sonnet (stary)</option>
+                        <option value="claude-3-haiku-20240307">Claude 3 Haiku (stary)</option>
                     </select>
+                    <p class="hint">Claude 3.5 Sonnet to najnowszy model z października 2024 - oferuje najlepszą jakość</p>
                 </div>
             </div>
         </div>
@@ -677,10 +683,10 @@
                     // Set model settings
                     const modelSettings = config.model_settings || {};
                     if (modelSettings.openai) {
-                        document.getElementById('openai-model').value = modelSettings.openai.model || 'gpt-4';
+                        document.getElementById('openai-model').value = modelSettings.openai.model || 'gpt-4o';
                     }
                     if (modelSettings.anthropic) {
-                        document.getElementById('anthropic-model').value = modelSettings.anthropic.model || 'claude-3-sonnet-20240229';
+                        document.getElementById('anthropic-model').value = modelSettings.anthropic.model || 'claude-3-5-sonnet-20241022';
                     }
 
                     // Set review settings
@@ -881,8 +887,8 @@
                 document.getElementById('ai-provider').value = 'openai';
                 document.getElementById('openai-api-key').value = '';
                 document.getElementById('anthropic-api-key').value = '';
-                document.getElementById('openai-model').value = 'gpt-4';
-                document.getElementById('anthropic-model').value = 'claude-3-sonnet-20240229';
+                document.getElementById('openai-model').value = 'gpt-4o';
+                document.getElementById('anthropic-model').value = 'claude-3-5-sonnet-20241022';
                 document.getElementById('ready-comments-ratio').value = 75;
                 document.getElementById('auto-learn-enabled').checked = true;
                 document.getElementById('temperature').value = 30;
