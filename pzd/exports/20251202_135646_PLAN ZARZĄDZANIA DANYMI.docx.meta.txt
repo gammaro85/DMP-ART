@@ -1,5 +1,0 @@
-original_filename: PLAN ZARZĄDZANIA DANYMI.docx
-email_subject: PZD - prośba o weryfikację
-email_date: 20250603_195530
-exported_date: 2025-12-02 13:56:46
-file_size: 24778

@@ -1,5 +1,0 @@
-original_filename: PZD - Sonata 21 MGZ_2025.docx
-email_subject: Sonata 2025 - prośba o sprawdzenie PZD
-email_date: 20251202_113012
-exported_date: 2025-12-02 13:57:04
-file_size: 36091

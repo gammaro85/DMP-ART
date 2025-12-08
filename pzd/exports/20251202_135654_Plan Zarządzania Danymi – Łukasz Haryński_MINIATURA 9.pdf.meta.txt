@@ -1,5 +1,0 @@
-original_filename: Plan Zarządzania Danymi – Łukasz Haryński_MINIATURA 9.pdf
-email_subject: PD: Plan Zarządzania Danymi do wniosku w konkursie MINIATURA 9
-email_date: 20250428_084256
-exported_date: 2025-12-02 13:56:54
-file_size: 1765928

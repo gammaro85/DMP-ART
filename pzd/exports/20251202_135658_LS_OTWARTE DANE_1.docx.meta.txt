@@ -1,5 +1,0 @@
-original_filename: LS_OTWARTE DANE.docx
-email_subject: Raport z MINIATURY - plan zarządzania danymi i otwarte dane 
-email_date: 20250318_085950
-exported_date: 2025-12-02 13:56:58
-file_size: 28931

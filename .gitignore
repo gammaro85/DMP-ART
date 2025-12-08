@@ -69,4 +69,7 @@ logs/
 .env.local
 
 # AI Configuration (contains API keys)
-config/ai_config.json
+config/ai/ai_config.json
+
+# Archived/unused files
+old/

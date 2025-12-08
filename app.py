@@ -497,10 +497,6 @@ def save_dmp_structure():
             'message': f'Error saving DMP structure: {str(e)}'
         })
 
-@app.route('/results')
-def results():
-    return render_template('results.html')
-
 @app.route('/template_editor')
 def template_editor():
     try:

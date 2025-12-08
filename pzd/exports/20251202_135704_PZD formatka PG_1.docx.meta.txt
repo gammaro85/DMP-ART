@@ -1,5 +1,0 @@
-original_filename: PZD formatka PG.docx
-email_subject: PD: formatka PZD dla pracowników PG
-email_date: 20241202_130851
-exported_date: 2025-12-02 13:57:04
-file_size: 422603

@@ -1,5 +1,0 @@
-original_filename: plan_zarządzania_OPUS29.pdf
-email_subject: wniosek OPUS 29
-email_date: 20250605_133019
-exported_date: 2025-12-02 13:56:45
-file_size: 277227

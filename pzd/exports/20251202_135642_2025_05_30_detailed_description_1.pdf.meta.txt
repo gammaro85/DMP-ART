@@ -1,5 +1,0 @@
-original_filename: 2025_05_30_detailed_description.pdf
-email_subject: ODP:  plan zarządzania danymi PRELUDIUM
-email_date: 20250611_130411
-exported_date: 2025-12-02 13:56:42
-file_size: 1025519

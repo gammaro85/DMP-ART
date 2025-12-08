@@ -1,5 +1,0 @@
-original_filename: 20241206_Bruski_Sonata_Data management plan.docx
-email_subject: SONATA NCN - Plan Zarzadzania Danymi
-email_date: 20241206_142446
-exported_date: 2025-12-02 13:57:03
-file_size: 42956

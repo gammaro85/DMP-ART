@@ -1,5 +1,0 @@
-original_filename: Plan zarządzania danymi_BK.docx
-email_subject: PD: plan zarządzania danymi OPUS
-email_date: 20250610_102900
-exported_date: 2025-12-02 13:56:43
-file_size: 17531

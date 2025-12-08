@@ -1,5 +1,0 @@
-original_filename: PRELUDIUM2025_plan_zarządania_danymi_RG_TW.docx
-email_subject: PD: Prośba o sprawdzenie planu zarządzania danymi - OPUS27
-email_date: 20250526_103719
-exported_date: 2025-12-02 13:56:52
-file_size: 25235
