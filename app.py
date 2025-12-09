@@ -1434,6 +1434,9 @@ def ai_learn_from_feedback():
         feedback_text = data.get('feedback_text', '')
         used_comments = data.get('used_comments', [])
 
+        if not section_id:
+            return jsonify({'success': False, 'message': 'section_id is required'}), 400
+
         ai_assistant.learn_from_saved_feedback(
             section_id=section_id,
             dmp_content=dmp_content,
