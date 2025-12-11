@@ -33,7 +33,8 @@
       "Bash(winget --version:*)",
       "Bash(winget install:*)",
       "Bash(\"C:\\Program Files\\Tesseract-OCR\\tesseract.exe\" --version)",
-      "Bash(powershell:*)"
+      "Bash(powershell:*)",
+      "Bash(timeout 5 bash -c 'until curl -s http://localhost:5000 > nul 2>&1; do sleep 1; done && echo \"\"Flask started\"\"')"
     ],
     "deny": []
   },
