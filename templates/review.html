@@ -300,45 +300,6 @@
             color: white;
         }
         
-        .category-btn {
-            background-color: var(--bg-tertiary);
-            border: 1px solid var(--border-light);
-            color: var(--text-primary);
-            padding: 6px 12px;
-            border-radius: 4px;
-            margin: 2px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: all 0.2s ease;
-        }
-        
-        .category-btn:hover, .category-btn.active {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        
-        .category-comment-item {
-            background-color: var(--bg-tertiary);
-            border: 1px solid var(--border-light);
-            padding: 8px;
-            margin: 4px 0;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: all 0.2s ease;
-        }
-        
-        .category-comment-item:hover {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        
-        .category-comment-section {
-            font-weight: bold;
-            font-size: 0.7rem;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-        }
         
         .no-comments {
             color: var(--text-secondary);
@@ -1200,10 +1161,8 @@
                             <!-- Category Selection -->
                             <div class="category-selection" id="category-selection-{{ section_id }}">
                                 <label>Choose feedback category:</label>
-                                <div class="category-buttons-inline">
-                                    <button class="category-btn-inline" data-category="for_newbies" data-section="{{ section_id }}">Newcomer Guidance</button>
-                                    <button class="category-btn-inline" data-category="missing_info" data-section="{{ section_id }}">Missing Info</button>
-                                    <button class="category-btn-inline" data-category="ready_to_use" data-section="{{ section_id }}">Ready to Use</button>
+                                <div class="category-buttons-inline" id="category-buttons-{{ section_id }}">
+                                    <!-- Category buttons will be dynamically loaded -->
                                 </div>
                             </div>
                             
@@ -1795,26 +1754,59 @@
 
         // Category buttons and comments functionality
         function initializeCategoryButtons() {
-            // Add event listeners to all category buttons
-            document.querySelectorAll('.category-btn-inline').forEach(button => {
-                button.addEventListener('click', function() {
-                    const category = this.getAttribute('data-category');
-                    const section = this.getAttribute('data-section');
-                    
-                    // Toggle active state
-                    const sectionButtons = document.querySelectorAll(`[data-section="${section}"].category-btn-inline`);
-                    sectionButtons.forEach(btn => btn.classList.remove('active'));
-                    
-                    if (this.classList.contains('active')) {
-                        // If clicking active button, hide dropdown
-                        hideDropdown(section);
-                    } else {
-                        // Show dropdown with category comments
-                        this.classList.add('active');
-                        showCategoryComments(category, section);
-                    }
+            console.log('Initializing category buttons...');
+
+            // Wait for categories to be loaded
+            if (!CATEGORY_COMMENTS || Object.keys(CATEGORY_COMMENTS).length === 0) {
+                console.log('Categories not loaded yet, waiting...');
+                setTimeout(initializeCategoryButtons, 100);
+                return;
+            }
+
+            console.log('Categories loaded:', Object.keys(CATEGORY_COMMENTS));
+
+            // Find all section feedback areas
+            const sections = document.querySelectorAll('[id^="category-buttons-"]');
+            console.log(`Found ${sections.length} sections to populate with category buttons`);
+
+            sections.forEach(container => {
+                const sectionId = container.id.replace('category-buttons-', '');
+                console.log(`Creating category buttons for section: ${sectionId}`);
+
+                // Clear existing buttons
+                container.innerHTML = '';
+
+                // Create button for each category
+                Object.keys(CATEGORY_COMMENTS).forEach(categoryName => {
+                    const button = document.createElement('button');
+                    button.className = 'category-btn-inline';
+                    button.setAttribute('data-category', categoryName);
+                    button.setAttribute('data-section', sectionId);
+                    button.textContent = categoryName;
+
+                    button.addEventListener('click', function() {
+                        const category = this.getAttribute('data-category');
+                        const section = this.getAttribute('data-section');
+
+                        // Toggle active state
+                        const sectionButtons = document.querySelectorAll(`[data-section="${section}"].category-btn-inline`);
+                        sectionButtons.forEach(btn => btn.classList.remove('active'));
+
+                        if (this.classList.contains('active')) {
+                            // If clicking active button, hide dropdown
+                            hideDropdown(section);
+                        } else {
+                            // Show dropdown with category comments
+                            this.classList.add('active');
+                            showCategoryComments(category, section);
+                        }
+                    });
+
+                    container.appendChild(button);
                 });
             });
+
+            console.log('Category buttons initialized successfully');
         }
         
         function showCategoryComments(category, section) {
@@ -2154,12 +2146,9 @@
         function initializeSidebar() {
             // Generate navigation grid
             generateNavigationGrid();
-            
+
             // Load quick comments
             loadQuickComments();
-            
-            // Initialize category selector
-            initializeCategorySelector();
         }
 
         function generateNavigationGrid() {
@@ -2276,95 +2265,6 @@
             }
         }
 
-        function initializeCategorySelector() {
-            const categoryButtons = document.getElementById('category-buttons');
-            const categoryCommentsList = document.getElementById('category-comments-list');
-            
-            if (!categoryButtons || !categoryCommentsList) return;
-            
-            // Load categories from backend
-            fetch('/load_categories')
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const categories = data.categories;
-                    
-                    // Clear existing buttons
-                    categoryButtons.innerHTML = '';
-                    
-                    Object.keys(categories).forEach(categoryName => {
-                        const button = document.createElement('button');
-                        button.className = 'category-btn';
-                        button.textContent = categoryName;
-                        button.addEventListener('click', function() {
-                            // Remove active class from all buttons
-                            document.querySelectorAll('.category-btn').forEach(btn => {
-                                btn.classList.remove('active');
-                            });
-                            // Add active class to clicked button
-                            this.classList.add('active');
-                            // Load comments for this category
-                            loadCategoryComments(categoryName, categories);
-                        });
-                        categoryButtons.appendChild(button);
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error loading categories:', error);
-            });
-        }
-
-        function loadCategoryComments(categoryName, allCategories) {
-            const categoryCommentsList = document.getElementById('category-comments-list');
-            if (!categoryCommentsList || !categoryName) {
-                categoryCommentsList.innerHTML = '<div class="no-comments">Select a category to view comments.</div>';
-                return;
-            }
-            
-            const categoryData = allCategories[categoryName];
-            if (!categoryData || Object.keys(categoryData).length === 0) {
-                categoryCommentsList.innerHTML = '<div class="no-comments">No comments available for this category.</div>';
-                return;
-            }
-            
-            categoryCommentsList.innerHTML = '';
-            
-            Object.keys(categoryData).forEach(sectionId => {
-                const comments = categoryData[sectionId];
-                
-                comments.forEach(comment => {
-                    const item = document.createElement('div');
-                    item.className = 'category-comment-item';
-                    item.innerHTML = `
-                        <div class="category-comment-section">Section ${sectionId}</div>
-                        <div>${comment}</div>
-                    `;
-                    item.addEventListener('click', () => insertCategoryComment(sectionId, comment));
-                    categoryCommentsList.appendChild(item);
-                });
-            });
-        }
-
-        function insertCategoryComment(sectionId, comment) {
-            const targetTextarea = document.getElementById(`feedback-${sectionId}`);
-            
-            if (targetTextarea) {
-                const currentValue = targetTextarea.value;
-                const newValue = currentValue ? currentValue + '\n\n' + comment : comment;
-                targetTextarea.value = newValue;
-                
-                // Update character counter
-                const event = new Event('input', { bubbles: true });
-                targetTextarea.dispatchEvent(event);
-                
-                // Scroll to section and focus
-                scrollToSection(sectionId);
-                setTimeout(() => targetTextarea.focus(), 500);
-                
-                showNotification(`Comment inserted into section ${sectionId}!`, 'success');
-            }
-        }
 
         function showNotification(message, type = 'info') {
             // Create a simple notification
