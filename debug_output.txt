@@ -1,0 +1,24 @@
+Traceback (most recent call last):
+  File "C:\VSCode\DMP-ART\DMP-ART\utils\extractor.py", line 300, in _load_extraction_rules
+    self._log_debug(f"\u2713 Loaded extraction rules from {rules_path}")
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\VSCode\DMP-ART\DMP-ART\utils\extractor.py", line 379, in _log_debug
+    print(message)
+    ~~~~~^^^^^^^^^
+  File "C:\Program Files\Python313\Lib\encodings\cp1250.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2713' in position 0: character maps to <undefined>
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    from utils.extractor import DMPExtractor; extractor = DMPExtractor(debug_mode=True); result = extractor.process_file('uploads/Data Management Plan_S2025.docx', 'outputs')
+                                                          ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\VSCode\DMP-ART\DMP-ART\utils\extractor.py", line 104, in __init__
+    self.extraction_rules = self._load_extraction_rules()
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\VSCode\DMP-ART\DMP-ART\utils\extractor.py", line 310, in _load_extraction_rules
+    raise Exception(f"Error loading extraction rules: {str(e)}")
+Exception: Error loading extraction rules: 'charmap' codec can't encode character '\u2713' in position 0: character maps to <undefined>

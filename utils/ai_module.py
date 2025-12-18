@@ -58,7 +58,7 @@ class AIReviewAssistant:
                     "max_tokens": 2000
                 },
                 "anthropic": {
-                    "model": "claude-3-5-sonnet-20241022",
+                    "model": "claude-sonnet-4-5-20250929",
                     "temperature": 0.3,
                     "max_tokens": 2000
                 }
@@ -149,6 +149,26 @@ class AIReviewAssistant:
         if not self.provider:
             return False, "AI provider nie jest zainicjalizowany. Sprawdź klucz API."
         return self.provider.test_connection()
+
+    def list_available_models(self) -> dict:
+        """
+        Get list of available models from current AI provider
+
+        Returns:
+            Dictionary with success status and list of models
+        """
+        if not self.provider:
+            # Initialize provider if not already done
+            self._init_provider()
+
+        if not self.provider:
+            return {
+                "success": False,
+                "models": [],
+                "error": "AI provider nie jest zainicjalizowany. Sprawdź klucz API."
+            }
+
+        return self.provider.list_models()
 
     def generate_review_suggestions(self, dmp_content: Dict[str, Any],
                                    available_comments: Dict[str, Any]) -> dict:

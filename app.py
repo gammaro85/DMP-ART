@@ -1356,6 +1356,19 @@ def test_ai_connection():
     success, message = ai_assistant.test_connection()
     return jsonify({'success': success, 'message': message})
 
+@app.route('/api/ai/models', methods=['GET'])
+def get_ai_models():
+    """Get list of available models from current AI provider"""
+    try:
+        result = ai_assistant.list_available_models()
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'models': [],
+            'error': str(e)
+        }), 500
+
 @app.route('/api/ai/toggle', methods=['POST'])
 def toggle_ai():
     """Enable/disable AI module"""
