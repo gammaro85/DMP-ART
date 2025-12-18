@@ -740,16 +740,11 @@
         if (!container) return;
         
         container.innerHTML = '';
-        
-        // Find the main category data (skip _comment and other metadata)
-        let categoryData = {};
-        for (const [key, value] of Object.entries(catData)) {
-            if (!key.startsWith('_') && typeof value === 'object' && value !== null) {
-                categoryData = value;
-                break;
-            }
-        }
-        
+
+        // Use catData directly - category JSON files have section IDs at top level
+        // Structure: {"GENERAL": [...], "1.1": [...], "1.2": [...], ...}
+        const categoryData = catData || {};
+
         console.log(`Loading category data for ${file}:`, categoryData);
         
         // Flatten DMP structure for rendering

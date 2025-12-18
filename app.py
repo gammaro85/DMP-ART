@@ -739,9 +739,9 @@ def load_categories():
                             )
 
                             if has_section_keys:
-                                # Format category name for display
-                                display_name = format_category_name(file_base)
-                                categories[display_name] = data
+                                # Use file_base (filename without .json) as key to match data-category attributes in HTML
+                                # This allows review.html to access categories using the filename
+                                categories[file_base] = data
 
                 except Exception as e:
                     print(f"Error loading category file {filename}: {str(e)}")
@@ -1046,11 +1046,17 @@ def list_categories():
         config_dir = 'config'
         categories = []
 
+        # Files to skip - same as /load_categories for consistency
+        skip_files = [
+            'dmp_structure.json', 'quick_comments.json', 'ai_config.json',
+            'knowledge_base.json', 'category_comments.json'
+        ]
+
         if os.path.exists(config_dir):
             for filename in os.listdir(config_dir):
-                # Skip backup files, dmp_structure, and quick_comments
+                # Skip system files and backup files
                 if (filename.endswith('.json') and
-                    filename not in ['dmp_structure.json', 'quick_comments.json'] and
+                    filename not in skip_files and
                     'backup' not in filename.lower()):
                     file_base = filename[:-5]
                     category_name = file_base.replace('_', ' ').title()
