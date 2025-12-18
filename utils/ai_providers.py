@@ -38,6 +38,16 @@ class AIProvider(ABC):
         """
         pass
 
+    @abstractmethod
+    def list_models(self) -> dict:
+        """
+        List available models from the provider
+
+        Returns:
+            dict with keys: success (bool), models (list of dicts with id, name, description)
+        """
+        pass
+
     def _get_system_prompt(self) -> str:
         """Get the system prompt for DMP review"""
         return """Jesteś doświadczonym data stewardem recenzującym Plan Zarządzania Danymi (DMP)
@@ -209,11 +219,71 @@ class OpenAIProvider(AIProvider):
         except Exception as e:
             return False, f"Błąd połączenia: {str(e)}"
 
+    def list_models(self) -> dict:
+        """List available OpenAI models"""
+        try:
+            import openai
+        except ImportError:
+            return {
+                "success": False,
+                "models": [],
+                "error": "Biblioteka openai nie jest zainstalowana"
+            }
+
+        try:
+            client = openai.OpenAI(api_key=self.api_key)
+            models_response = client.models.list()
+
+            # Filter only chat models (gpt-* models)
+            chat_models = []
+            model_descriptions = {
+                "gpt-4o": "GPT-4o (najnowszy - REKOMENDOWANY)",
+                "gpt-4o-mini": "GPT-4o Mini (szybki i tani)",
+                "gpt-4-turbo": "GPT-4 Turbo",
+                "gpt-4-turbo-preview": "GPT-4 Turbo Preview",
+                "gpt-4": "GPT-4",
+                "gpt-3.5-turbo": "GPT-3.5 Turbo (przestarzały, tani)",
+                "gpt-3.5-turbo-16k": "GPT-3.5 Turbo 16K"
+            }
+
+            for model in models_response.data:
+                model_id = model.id
+                # Filter for chat completion models
+                if model_id.startswith("gpt-") and not model_id.endswith(":latest"):
+                    # Use known descriptions or generate from ID
+                    description = model_descriptions.get(model_id, model_id.upper())
+                    chat_models.append({
+                        "id": model_id,
+                        "name": description,
+                        "recommended": model_id == "gpt-4o"
+                    })
+
+            # Sort: recommended first, then by name
+            chat_models.sort(key=lambda x: (not x["recommended"], x["id"]))
+
+            return {
+                "success": True,
+                "models": chat_models
+            }
+
+        except openai.AuthenticationError:
+            return {
+                "success": False,
+                "models": [],
+                "error": "Błąd autoryzacji: nieprawidłowy klucz API"
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "models": [],
+                "error": f"Błąd podczas pobierania modeli: {str(e)}"
+            }
+
 
 class AnthropicProvider(AIProvider):
     """Adapter for Anthropic Claude API"""
 
-    def __init__(self, api_key: str, model: str = "claude-3-sonnet-20240229",
+    def __init__(self, api_key: str, model: str = "claude-sonnet-4-5-20250929",
                  temperature: float = 0.3, max_tokens: int = 2000):
         self.api_key = api_key
         self.model = model
@@ -301,6 +371,57 @@ class AnthropicProvider(AIProvider):
         except Exception as e:
             return False, f"Błąd połączenia: {str(e)}"
 
+    def list_models(self) -> dict:
+        """List available Anthropic Claude models (static list)"""
+        # Anthropic API doesn't have a models.list() endpoint
+        # We maintain a static list of available models based on official docs
+        # Source: https://platform.claude.com/docs/en/about-claude/models
+        models = [
+            # Claude 4.5 - Latest models (December 2025)
+            {
+                "id": "claude-sonnet-4-5-20250929",
+                "name": "Claude Sonnet 4.5 (wrzesień 2025 - REKOMENDOWANY)",
+                "recommended": True,
+                "description": "Najnowszy model - najlepsza równowaga inteligencji, szybkości i ceny"
+            },
+            {
+                "id": "claude-haiku-4-5-20251001",
+                "name": "Claude Haiku 4.5 (październik 2025)",
+                "recommended": False,
+                "description": "Najszybszy model z wysoką inteligencją"
+            },
+            {
+                "id": "claude-opus-4-5-20251101",
+                "name": "Claude Opus 4.5 (listopad 2025)",
+                "recommended": False,
+                "description": "Premium - maksymalna inteligencja"
+            },
+            # Legacy models - still available
+            {
+                "id": "claude-3-5-haiku-20241022",
+                "name": "Claude 3.5 Haiku (październik 2024 - Legacy)",
+                "recommended": False,
+                "description": "Starszy szybki model"
+            },
+            {
+                "id": "claude-sonnet-4-20250514",
+                "name": "Claude Sonnet 4 (maj 2025 - Legacy)",
+                "recommended": False,
+                "description": "Poprzednia wersja Sonnet"
+            },
+            {
+                "id": "claude-3-haiku-20240307",
+                "name": "Claude 3 Haiku (marzec 2024 - Legacy)",
+                "recommended": False,
+                "description": "Stary tani model"
+            }
+        ]
+
+        return {
+            "success": True,
+            "models": models
+        }
+
 
 def get_provider(config: dict) -> Optional[AIProvider]:
     """
@@ -330,7 +451,7 @@ def get_provider(config: dict) -> Optional[AIProvider]:
     elif provider_name == "anthropic":
         return AnthropicProvider(
             api_key=api_key,
-            model=model_settings.get("model", "claude-3-sonnet-20240229"),
+            model=model_settings.get("model", "claude-sonnet-4-5-20250929"),
             temperature=model_settings.get("temperature", 0.3),
             max_tokens=model_settings.get("max_tokens", 2000)
         )

@@ -100,16 +100,12 @@ class DMPExtractor:
         """
         self.debug_mode = debug_mode
 
-        # Define start and end markers for extraction
-        self.start_marks = [
-            "DATA MANAGEMENT PLAN",
-            "DATA MANAGEMENT PLAN [in English]",
-            "PLAN ZARZĄDZANIA DANYMI",
-            ]
-        self.end_marks = [
-            "ADMINISTRATIVE DECLARATIONS",
-            "OŚWIADCZENIA ADMINISTRACYJNE"
-        ]
+        # Load extraction rules from configuration file
+        self.extraction_rules = self._load_extraction_rules()
+
+        # Define start and end markers for extraction (loaded from config)
+        self.start_marks = [marker['pattern'] for marker in self.extraction_rules['boundary_markers']['start_markers'] if marker.get('enabled', True)]
+        self.end_marks = [marker['pattern'] for marker in self.extraction_rules['boundary_markers']['end_markers'] if marker.get('enabled', True)]
 
         # Performance optimization: Pre-compile regex patterns
         self._compile_regex_patterns()
@@ -268,55 +264,103 @@ class DMPExtractor:
         self._log_debug(f"Built subsection word index with {len(index)} entries")
         return index
 
+    def _load_extraction_rules(self, rules_path='config/extraction_rules.json'):
+        """Load extraction rules from JSON configuration file
+
+        Args:
+            rules_path (str): Path to extraction rules JSON file
+
+        Returns:
+            dict: Loaded extraction rules
+        """
+        import json
+        from datetime import datetime
+
+        # Support both absolute and relative paths
+        if not os.path.isabs(rules_path):
+            # Get the directory where extractor.py is located
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            # Go up one level to project root, then to config
+            rules_path = os.path.join(current_dir, '..', rules_path)
+            rules_path = os.path.normpath(rules_path)
+
+        if not os.path.exists(rules_path):
+            raise FileNotFoundError(f"Extraction rules file not found: {rules_path}")
+
+        try:
+            with open(rules_path, 'r', encoding='utf-8') as f:
+                rules = json.load(f)
+
+            # Validate required keys
+            required_keys = ['skip_patterns', 'prefix_strip_rules', 'section_detection', 'subsection_detection', 'thresholds']
+            missing_keys = [key for key in required_keys if key not in rules]
+            if missing_keys:
+                raise ValueError(f"Extraction rules file missing required keys: {', '.join(missing_keys)}")
+
+            self._log_debug(f"Loaded extraction rules from {rules_path}")
+            self._log_debug(f"  - {len(rules['skip_patterns']['general']['patterns'])} general skip patterns")
+            self._log_debug(f"  - {len(rules['skip_patterns']['pdf_specific']['patterns'])} PDF-specific skip patterns")
+            self._log_debug(f"  - {len(rules['prefix_strip_rules']['global_rules'])} global prefix strip rules")
+
+            return rules
+
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Invalid JSON in extraction rules file: {str(e)}")
+        except Exception as e:
+            raise Exception(f"Error loading extraction rules: {str(e)}")
+
     def _compile_regex_patterns(self):
-        """Pre-compile regex patterns for better performance"""
-        # Skip patterns - compiled once at initialization
-        self.skip_patterns_compiled = [
-            re.compile(r"Strona \d+", re.IGNORECASE),
-            re.compile(r"Page \d+", re.IGNORECASE),
-            re.compile(r"ID:\s*\d+", re.IGNORECASE),
-            re.compile(r"\[wydruk roboczy\]", re.IGNORECASE),
-            re.compile(r"WZÓR", re.IGNORECASE),
-            re.compile(r"W Z Ó R", re.IGNORECASE),
-            re.compile(r"OSF,", re.IGNORECASE),
-            re.compile(r"^\d+$"),
-            re.compile(r"^\+[-=]+\+$"),
-            re.compile(r"^\|[\s\|]*\|$"),
-            re.compile(r"Dół formularza", re.IGNORECASE),
-            re.compile(r"Początek formularza", re.IGNORECASE),
-            re.compile(r"^\s*Dół\s+formularza\s*$", re.IGNORECASE),
-            re.compile(r"^\s*Początek\s+formularza\s*$", re.IGNORECASE),
-        ]
+        """Pre-compile regex patterns for better performance - loaded from config"""
+        rules = self.extraction_rules
 
-        # PDF-specific patterns
-        self.pdf_skip_patterns_compiled = [
-            re.compile(r"wydruk roboczy", re.IGNORECASE),
-            re.compile(r"Strona \d+ z \d+", re.IGNORECASE),
-            re.compile(r"TAK\s*NIE\s*$", re.IGNORECASE),
-            re.compile(r"^\s*[✓✗×]\s*$"),
-            re.compile(r"^\s*\[\s*[Xx]?\s*\]\s*$"),
-            re.compile(r"^\s*_{3,}\s*$"),
-            re.compile(r"^\.{3,}$"),
-            re.compile(r"^\s*data\s*:\s*$", re.IGNORECASE),
-            re.compile(r"^\s*podpis\s*:\s*$", re.IGNORECASE),
-            re.compile(r"OSF,?\s*OPUS-\d+\s*Strona\s+\d+\s*ID:\s*\d+,?\s*\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}", re.IGNORECASE),
-            re.compile(r"OSF,?\s*OPUS-\d+\s*Strona", re.IGNORECASE),
-            re.compile(r"\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}"),
-        ]
+        # Compile general skip patterns from config
+        self.skip_patterns_compiled = []
+        if rules['skip_patterns']['general']['enabled']:
+            for pattern_rule in rules['skip_patterns']['general']['patterns']:
+                if pattern_rule.get('enabled', True):
+                    self.skip_patterns_compiled.append(
+                        re.compile(pattern_rule['pattern'], re.IGNORECASE)
+                    )
 
-        # Header/footer component patterns
-        self.header_component_patterns = {
-            'osf': re.compile(r'OSF,?\s*', re.IGNORECASE),
-            'opus': re.compile(r'OPUS-\d+', re.IGNORECASE),
-            'page': re.compile(r'Strona\s+\d+', re.IGNORECASE),
-            'id': re.compile(r'ID:\s*\d+', re.IGNORECASE),
-            'date': re.compile(r'\d{4}-\d{2}-\d{2}'),
-            'time': re.compile(r'\d{2}:\d{2}:\d{2}'),
-            'timestamp': re.compile(r'\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}'),
-        }
+        # Compile PDF-specific skip patterns from config
+        self.pdf_skip_patterns_compiled = []
+        if rules['skip_patterns']['pdf_specific']['enabled']:
+            for pattern_rule in rules['skip_patterns']['pdf_specific']['patterns']:
+                if pattern_rule.get('enabled', True):
+                    self.pdf_skip_patterns_compiled.append(
+                        re.compile(pattern_rule['pattern'], re.IGNORECASE)
+                    )
 
-        # Other useful patterns
-        self.numbered_section_pattern = re.compile(r'^\s*(\d+)\.\s*(.*?)$')
+        # Compile header/footer component patterns from config
+        self.header_component_patterns = {}
+        if rules['header_footer_detection']['enabled']:
+            for name, pattern_data in rules['header_footer_detection']['component_patterns'].items():
+                self.header_component_patterns[name] = re.compile(pattern_data['pattern'], re.IGNORECASE)
+
+        # Compile prefix strip patterns
+        self.prefix_strip_patterns_compiled = []
+        if rules['prefix_strip_rules']['enabled']:
+            for pattern_rule in rules['prefix_strip_rules']['global_rules']:
+                if pattern_rule.get('enabled', True):
+                    self.prefix_strip_patterns_compiled.append({
+                        'id': pattern_rule['id'],
+                        'pattern': re.compile(pattern_rule['pattern'], re.IGNORECASE),
+                        'description': pattern_rule['description']
+                    })
+
+        # Compile inline strip patterns (footnotes, etc.)
+        self.inline_strip_patterns_compiled = []
+        if rules['inline_strip_rules']['enabled']:
+            for pattern_rule in rules['inline_strip_rules']['global_rules']:
+                if pattern_rule.get('enabled', True):
+                    self.inline_strip_patterns_compiled.append({
+                        'id': pattern_rule['id'],
+                        'pattern': re.compile(pattern_rule['pattern']),
+                        'description': pattern_rule['description']
+                    })
+
+        # Other useful patterns (keep these for now)
+        self.numbered_section_pattern = re.compile(rules['section_detection']['tier_2_numbered_sections']['pattern'])
         self.markup_patterns = {
             'underline': re.compile(r'\[([^]]+)\]\{\.underline\}'),
             'bold': re.compile(r'\*\*([^*]+)\*\*'),
@@ -324,10 +368,67 @@ class DMPExtractor:
             'mark': re.compile(r'\{\.mark\}'),
         }
 
+        self._log_debug(f"Compiled {len(self.skip_patterns_compiled)} general skip patterns")
+        self._log_debug(f"Compiled {len(self.pdf_skip_patterns_compiled)} PDF-specific skip patterns")
+        self._log_debug(f"Compiled {len(self.prefix_strip_patterns_compiled)} prefix strip patterns")
+        self._log_debug(f"Compiled {len(self.inline_strip_patterns_compiled)} inline strip patterns")
+
     def _log_debug(self, message):
         """Log debug messages only if debug_mode is enabled"""
         if self.debug_mode:
             print(message)
+
+    def _apply_strip_rules(self, text, section_id=None):
+        """Apply prefix, suffix, and inline strip rules to text
+
+        This is the KEY method that fixes the BOLD: prefix problem
+
+        Args:
+            text (str): Text to clean
+            section_id (str): Optional section ID for per-section rules (e.g., "1.1")
+
+        Returns:
+            str: Cleaned text with prefixes/suffixes/inline patterns removed
+        """
+        if not text or not isinstance(text, str):
+            return text
+
+        original_text = text
+        rules = self.extraction_rules
+
+        # Apply global prefix strip rules (BOLD:, ITALIC:, etc.)
+        if rules['prefix_strip_rules']['enabled']:
+            for compiled_rule in self.prefix_strip_patterns_compiled:
+                text = compiled_rule['pattern'].sub('', text)
+
+        # Apply per-section prefix rules (if section_id provided)
+        if section_id and rules['prefix_strip_rules']['enabled']:
+            per_section_rules = rules['prefix_strip_rules'].get('per_section_rules', {})
+            if section_id in per_section_rules:
+                for rule in per_section_rules[section_id]:
+                    if rule.get('enabled', True):
+                        pattern = re.compile(rule['pattern'], re.IGNORECASE)
+                        text = pattern.sub('', text)
+
+        # Apply inline strip rules (footnote references, superscripts, etc.)
+        if rules['inline_strip_rules']['enabled']:
+            for compiled_rule in self.inline_strip_patterns_compiled:
+                text = compiled_rule['pattern'].sub('', text)
+
+        # Apply global suffix strip rules
+        if rules['suffix_strip_rules']['enabled']:
+            for rule in rules['suffix_strip_rules']['global_rules']:
+                if rule.get('enabled', True):
+                    pattern = re.compile(rule['pattern'] + '$', re.IGNORECASE)
+                    text = pattern.sub('', text)
+
+        text = text.strip()
+
+        # Log if anything was stripped (debug mode only)
+        if self.debug_mode and text != original_text:
+            self._log_debug(f"  Strip rules applied: '{original_text[:50]}...' -> '{text[:50]}...'")
+
+        return text
 
     def validate_docx_file(self, file_path):
         """Validate DOCX file integrity"""
@@ -1149,8 +1250,10 @@ class DMPExtractor:
                             self._log_debug(f"PDF form section detected: '{text}' -> '{english}'")
                             return english
         
-        # Try numbered section (e.g. "1. Section title")
-        section_match = re.match(r'^\s*(\d+)\.\s*(.*?)$', text)
+        # Try numbered section (e.g. "1. Section title" or "1 Section title")
+        # Allow both dot and space after number, but NOT subsection numbers like "1.2"
+        # Use negative lookahead (?!\d+\.) to exclude patterns like "1.2" from matching
+        section_match = re.match(r'^\s*(\d+)[\.\s](?!\d+\.)\s*(.*?)$', text)
         if section_match:
             section_num = section_match.group(1)
             section_title = section_match.group(2).strip()
@@ -1170,9 +1273,10 @@ class DMPExtractor:
                     return english
         
         # Try direct section title matching (formatting prefixes already stripped above)
+        threshold = self.extraction_rules['thresholds']['section_title_similarity']
         for polish, english in self.section_mapping.items():
-            if self._text_similarity(polish.lower(), text.lower()) > 0.6:
-                self._log_debug(f"Direct title match: {polish} -> {english}")
+            if self._text_similarity(polish.lower(), text.lower()) > threshold:
+                self._log_debug(f"Direct title match: {polish} -> {english} (threshold: {threshold})")
                 return english
         
         return None
@@ -1206,15 +1310,15 @@ class DMPExtractor:
     
     def detect_subsection_from_text(self, text, current_section, is_pdf=False):
         """Detect subsection from text content, supporting multiple languages and partial matching"""
-        # CRITICAL FIX: Strip formatting prefixes FIRST
+        # CRITICAL FIX: Apply strip rules from config FIRST (replaces old hardcoded prefix removal)
         original_text = text
 
-        # Remove formatting prefixes (BOLD:, UNDERLINED:, etc.)
-        formatting_prefixes = ["BOLD:", "UNDERLINED:", "UNDERLINED_BOLD:"]
-        for prefix in formatting_prefixes:
-            if text.startswith(prefix):
-                text = text[len(prefix):].strip()
-                break
+        # Check if text has formatting markers (for later use)
+        is_underlined = "UNDERLINED:" in original_text or "UNDERLINE:" in original_text
+        is_bold = "BOLD:" in original_text
+
+        # Apply all strip rules (BOLD:, ITALIC:, footnotes, etc.) from config
+        text = self._apply_strip_rules(text, section_id=current_section)
 
         # Clean the text of any markup
         text = self.clean_markup(text)
@@ -1229,15 +1333,6 @@ class DMPExtractor:
                     if polish.lower() in text.lower():
                         self._log_debug(f"Found embedded subsection header: '{polish}' in '{text[:80]}...'")
                         return english
-
-        # Check if this is an underlined text which is often a subsection header
-        is_underlined = text.startswith("UNDERLINED:")
-        if is_underlined:
-            text = text.replace("UNDERLINED:", "").strip()
-
-        # Check if this is bold text
-        if text.startswith("BOLD:"):
-            text = text.replace("BOLD:", "").strip()
         
         # Normalize text - remove trailing colon and convert to lowercase
         normalized_text = text.lower()
@@ -1252,9 +1347,10 @@ class DMPExtractor:
             return None
         
         # 1. Check for direct match with English subsections (case insensitive)
+        english_threshold = self.extraction_rules['thresholds']['english_subsection_similarity']
         for subsection in self.dmp_structure.get(current_section, []):
-            if self._text_similarity(text.lower(), subsection.lower()) > 0.8:
-                self._log_debug(f"High similarity English match: '{text}' ~ '{subsection}'")
+            if self._text_similarity(text.lower(), subsection.lower()) > english_threshold:
+                self._log_debug(f"High similarity English match: '{text}' ~ '{subsection}' (threshold: {english_threshold})")
                 return subsection
         
         # 2. Try enhanced Polish subsection matching with similarity scoring
@@ -1277,9 +1373,10 @@ class DMPExtractor:
                     best_match = english
                     self._log_debug(f"Polish mapping candidate: '{text}' ~ '{polish}' -> '{english}' (score: {similarity:.2f})")
         
-        # ENHANCED: Lower threshold from 0.5 to 0.4 for better matching
-        if best_match and best_score > 0.4:
-            self._log_debug(f"Best Polish match: '{text}' -> '{best_match}' (score: {best_score:.2f})")
+        # ENHANCED: Use configurable threshold for Polish matching
+        polish_threshold = self.extraction_rules['thresholds']['polish_subsection_similarity']
+        if best_match and best_score > polish_threshold:
+            self._log_debug(f"Best Polish match: '{text}' -> '{best_match}' (score: {best_score:.2f}, threshold: {polish_threshold})")
             return best_match
         
         # 3. Enhanced word-based matching for formatted text (OPTIMIZED with pre-computed index)
@@ -1316,8 +1413,10 @@ class DMPExtractor:
                     best_word_match = subsection
                     self._log_debug(f"Word match candidate: '{text}' ~ '{subsection}' ({matching_words} words, {match_ratio:.2f} ratio)")
 
-            if best_word_match and max_match_ratio > 0.15:  # Lower threshold for better extraction
-                self._log_debug(f"Best word match: '{text}' -> '{best_word_match}' (ratio: {max_match_ratio:.2f})")
+            # Use configurable threshold for word-based matching
+            word_threshold = self.extraction_rules['thresholds']['word_match_ratio']
+            if best_word_match and max_match_ratio > word_threshold:
+                self._log_debug(f"Best word match: '{text}' -> '{best_word_match}' (ratio: {max_match_ratio:.2f}, threshold: {word_threshold})")
                 return best_word_match
         
         # 4. PDF-specific subsection detection for form fields
@@ -1498,9 +1597,25 @@ class DMPExtractor:
                 self._log_debug(f"Section changed to: {current_section}")
                 continue
             
+            # FALLBACK: Try to detect subsection even without current_section
+            # This handles documents that start with subsections (e.g., "1.1") without section headers
+            if not current_section:
+                detection_text = content_item.split('\n')[0] if '\n' in content_item else content_item
+                detected_subsection, inferred_section = self._detect_subsection_with_section_inference(detection_text, is_pdf=is_pdf)
+                if detected_subsection and inferred_section:
+                    self._log_debug(f"FALLBACK: Inferred section '{inferred_section}' from subsection '{detected_subsection}'")
+                    current_section = inferred_section
+                    current_subsection = detected_subsection
+                    self._log_debug(f"Section set to: {current_section}, Subsection set to: {current_subsection}")
+                    # DON'T continue - let content fall through to assignment
+                    # This ensures content is actually assigned to the detected section/subsection
+
             # Try to detect subsection
+            # IMPORTANT: For multi-line content, check only first line for subsection header
+            # This handles cases where header and content are in same paragraph
             if current_section:
-                detected_subsection = self.detect_subsection_from_text(content_item, current_section, is_pdf=is_pdf)
+                detection_text = content_item.split('\n')[0] if '\n' in content_item else content_item
+                detected_subsection = self.detect_subsection_from_text(detection_text, current_section, is_pdf=is_pdf)
 
                 # Only change subsection if it's different from the current one
                 if detected_subsection and detected_subsection != current_subsection:
@@ -1522,7 +1637,9 @@ class DMPExtractor:
 
                     current_subsection = detected_subsection
                     self._log_debug(f"Subsection changed to: {current_subsection}")
-                    continue
+                    # DON'T continue - let content fall through to assignment
+                    # This handles cases where subsection header and content are in same paragraph
+                    # continue
                 elif detected_subsection and detected_subsection == current_subsection:
                     # Same subsection detected - this is probably content, not a header
                     # Don't continue, let it fall through to content assignment
@@ -1557,7 +1674,30 @@ class DMPExtractor:
                     unconnected_text.append({"text": buffered_content, "type": "buffered"})
         
         return section_content, tagged_content, unconnected_text
-    
+
+    def _detect_subsection_with_section_inference(self, text, is_pdf=False):
+        """Detect subsection and infer parent section when current_section is None
+
+        This is a FALLBACK for documents that start with subsections without section headers.
+        For example: document starts with "1.1" without "1. Data description..."
+
+        Args:
+            text (str): Text to analyze
+            is_pdf (bool): Whether this is PDF content
+
+        Returns:
+            tuple: (detected_subsection, inferred_parent_section) or (None, None)
+        """
+        # Try to detect subsection against ALL sections
+        for section in self.dmp_structure:
+            detected_subsection = self.detect_subsection_from_text(text, section, is_pdf=is_pdf)
+            if detected_subsection:
+                # Found a match! Return the subsection and its parent section
+                self._log_debug(f"Subsection inference: '{text[:50]}...' → '{detected_subsection}' in section '{section}'")
+                return detected_subsection, section
+
+        return None, None
+
     def _assign_content_safely(self, section_content, tagged_content, section, subsection, content):
         """Safely assign content to section/subsection with error handling"""
         try:
@@ -1645,13 +1785,14 @@ class DMPExtractor:
                 # ENHANCED FALLBACK: Try multiple strategies to find DMP content
                 self._log_debug("Standard markers not found, trying fallback detection...")
 
-                # Strategy 1: Look for "1." pattern (numbered section 1)
+                # Strategy 1: Look for "1." or "1 " pattern (numbered section 1)
+                # Use negative lookahead to exclude "1.2", "1.3", etc
                 for i, para in enumerate(formatted_paragraphs):
                     clean_para = para.replace("UNDERLINED:", "").replace("BOLD:", "").replace("UNDERLINED_BOLD:", "").strip()
-                    # More flexible pattern - just look for "1." anywhere near the start
-                    if re.search(r'^\s*1\.\s*', clean_para):
+                    # Match "1." or "1 " but NOT "1.2" (use negative lookahead (?!\d))
+                    if re.search(r'^\s*1[\.\s](?!\d)', clean_para):
                         start_idx = i
-                        self._log_debug(f"Fallback Strategy 1: Found '1.' pattern at paragraph {i}")
+                        self._log_debug(f"Fallback Strategy 1: Found '1' pattern at paragraph {i}")
                         break
 
                 # Strategy 2: Look for Polish section 1 keywords
