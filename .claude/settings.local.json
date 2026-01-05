@@ -36,7 +36,8 @@
       "Bash(powershell:*)",
       "Bash(timeout 5 bash -c 'until curl -s http://localhost:5000 > nul 2>&1; do sleep 1; done && echo \"\"Flask started\"\"')",
       "Bash(timeout /t 3)",
-      "Bash(del:*)"
+      "Bash(del:*)",
+      "Bash(timeout 5 python:*)"
     ],
     "deny": []
   },
