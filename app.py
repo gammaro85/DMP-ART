@@ -8,6 +8,10 @@ import zipfile
 import uuid
 import re
 from datetime import datetime
+from io import BytesIO
+from docx import Document
+from docx.shared import Pt, RGBColor, Inches
+from docx.enum.text import WD_ALIGN_PARAGRAPH
 from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for, Response, stream_with_context
 from werkzeug.utils import secure_filename
 from utils.extractor import DMPExtractor
@@ -34,8 +38,50 @@ os.makedirs(app.config['CACHE_FOLDER'], exist_ok=True)
 os.makedirs(app.config['DMP_FOLDER'], exist_ok=True)
 os.makedirs(app.config['REVIEWS_FOLDER'], exist_ok=True)
 
+def get_dated_folder(base_folder):
+    """Create and return a date-based subfolder (YYYY-MM format)"""
+    today = datetime.now()
+    dated_folder = os.path.join(base_folder, today.strftime('%Y-%m'))
+    os.makedirs(dated_folder, exist_ok=True)
+    return dated_folder
+
+def cleanup_old_cache_files(max_age_days=7):
+    """Delete cache files older than max_age_days"""
+    try:
+        cache_folder = app.config['CACHE_FOLDER']
+        cutoff_time = time.time() - (max_age_days * 24 * 60 * 60)
+        cleaned_count = 0
+
+        for filename in os.listdir(cache_folder):
+            if filename.startswith('cache_') and filename.endswith('.json'):
+                file_path = os.path.join(cache_folder, filename)
+                if os.path.getmtime(file_path) < cutoff_time:
+                    os.remove(file_path)
+                    cleaned_count += 1
+
+        if cleaned_count > 0:
+            app.logger.info(f'Cleaned up {cleaned_count} old cache files')
+
+        return cleaned_count
+    except Exception as e:
+        app.logger.error(f'Error cleaning cache: {str(e)}')
+        return 0
+
 # Initialize AI Module
 ai_assistant = AIReviewAssistant()
+
+# Auto-cleanup old cache files on startup (async to not block)
+def startup_cleanup():
+    """Run cleanup tasks on application startup"""
+    try:
+        cleanup_old_cache_files(max_age_days=7)
+    except Exception as e:
+        app.logger.error(f'Startup cleanup failed: {str(e)}')
+
+# Run cleanup in a background thread to not block startup
+cleanup_thread = threading.Thread(target=startup_cleanup)
+cleanup_thread.daemon = True
+cleanup_thread.start()
 
 # Default templates for feedback (loaded once at startup)
 DEFAULT_FEEDBACK_TEMPLATES = {
@@ -543,22 +589,25 @@ def template_editor():
 def save_feedback():
     try:
         data = request.json or {}
-        
+
         filename = data.get('filename', '')
         feedback = data.get('feedback', '')
-        
+
         if not filename or not feedback:
             return jsonify({
                 'success': False,
                 'message': 'Missing filename or feedback text'
             })
-        
-        feedback_filename = f"feedback_{os.path.splitext(filename)[0]}.txt"
-        feedback_path = os.path.join(app.config['REVIEWS_FOLDER'], feedback_filename)
-        
+
+        # Use dated folder for organization
+        dated_folder = get_dated_folder(app.config['REVIEWS_FOLDER'])
+
+        feedback_filename = f"feedback_{os.path.splitext(filename)[0]}_{datetime.now().strftime('%d%m%y_%H%M')}.txt"
+        feedback_path = os.path.join(dated_folder, feedback_filename)
+
         with open(feedback_path, 'w', encoding='utf-8') as f:
             f.write(feedback)
-        
+
         return jsonify({
             'success': True,
             'filename': feedback_filename,
@@ -647,7 +696,10 @@ def export_json():
             json_filename = f"Review_{cache_id[:8]}"
 
         json_filename += f"_{datetime.now().strftime('%d%m%y')}.json"
-        json_path = os.path.join(app.config['REVIEWS_FOLDER'], json_filename)
+
+        # Use dated folder for organization
+        dated_folder = get_dated_folder(app.config['REVIEWS_FOLDER'])
+        json_path = os.path.join(dated_folder, json_filename)
 
         # Save JSON file
         with open(json_path, 'w', encoding='utf-8') as f:
@@ -669,6 +721,175 @@ def export_json():
             'message': f'Error exporting JSON: {str(e)}'
         })
 
+@app.route('/export_docx', methods=['POST'])
+def export_docx():
+    """Export review as professionally formatted DOCX document"""
+    try:
+        data = request.json or {}
+        cache_id = data.get('cache_id', '')
+        feedback_data = data.get('feedback', {})
+
+        if not cache_id:
+            return jsonify({
+                'success': False,
+                'message': 'Missing cache_id'
+            })
+
+        # Load cache file
+        cache_filename = f"cache_{cache_id}.json"
+        cache_path = os.path.join(app.config['CACHE_FOLDER'], cache_filename)
+
+        if not os.path.exists(cache_path):
+            return jsonify({
+                'success': False,
+                'message': 'Cache file not found'
+            })
+
+        with open(cache_path, 'r', encoding='utf-8') as f:
+            cache_data = json.load(f)
+
+        # Extract metadata
+        metadata = cache_data.get('_metadata', {})
+
+        # Create DOCX document
+        doc = Document()
+
+        # Set document margins
+        sections = doc.sections
+        for section in sections:
+            section.top_margin = Inches(1)
+            section.bottom_margin = Inches(1)
+            section.left_margin = Inches(1)
+            section.right_margin = Inches(1)
+
+        # Title
+        title = doc.add_paragraph()
+        title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        title_run = title.add_run('DMP ART - Review Report')
+        title_run.font.size = Pt(18)
+        title_run.font.bold = True
+        title_run.font.color.rgb = RGBColor(52, 152, 219)
+
+        # Add metadata section
+        doc.add_paragraph()
+        meta_heading = doc.add_heading('Document Information', level=1)
+        meta_heading.runs[0].font.color.rgb = RGBColor(41, 128, 185)
+
+        # Metadata table
+        meta_table = doc.add_table(rows=0, cols=2)
+        meta_table.style = 'Light Grid Accent 1'
+
+        def add_meta_row(label, value):
+            if value:
+                row = meta_table.add_row()
+                row.cells[0].text = label
+                row.cells[1].text = str(value)
+                row.cells[0].paragraphs[0].runs[0].font.bold = True
+
+        add_meta_row('Researcher Name:', f"{metadata.get('researcher_firstname', '')} {metadata.get('researcher_surname', '')}".strip())
+        add_meta_row('Competition:', metadata.get('competition_name', ''))
+        add_meta_row('Edition:', metadata.get('competition_edition', ''))
+        add_meta_row('Original File:', metadata.get('filename_original', ''))
+        add_meta_row('Review Date:', datetime.now().strftime('%d-%m-%Y'))
+        add_meta_row('DMP Creation Date:', metadata.get('creation_date', ''))
+
+        doc.add_page_break()
+
+        # DMP sections
+        section_order = ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2',
+                        '4.1', '4.2', '5.1', '5.2', '5.3', '5.4', '6.1', '6.2']
+
+        for section_id in section_order:
+            if section_id not in cache_data:
+                continue
+
+            section_info = cache_data[section_id]
+            section_name = section_info.get('section', f'Section {section_id}')
+            question = section_info.get('question', '')
+            content = '\n'.join(section_info.get('paragraphs', []))
+
+            # Section heading
+            heading = doc.add_heading(f'{section_id}. {section_name}', level=1)
+            heading.runs[0].font.color.rgb = RGBColor(41, 128, 185)
+
+            # Question
+            if question:
+                q_para = doc.add_paragraph()
+                q_run = q_para.add_run(f'Question: {question}')
+                q_run.font.italic = True
+                q_run.font.color.rgb = RGBColor(127, 140, 141)
+                q_run.font.size = Pt(11)
+
+            # DMP Content
+            doc.add_heading('DMP Content:', level=2)
+            content_para = doc.add_paragraph(content if content else '[No content provided]')
+            content_para.paragraph_format.left_indent = Inches(0.3)
+            if not content:
+                content_para.runs[0].font.italic = True
+                content_para.runs[0].font.color.rgb = RGBColor(192, 192, 192)
+
+            # Review Feedback
+            if section_id in feedback_data:
+                doc.add_heading('Review Feedback:', level=2)
+                feedback_para = doc.add_paragraph(feedback_data[section_id])
+                feedback_para.paragraph_format.left_indent = Inches(0.3)
+                # Highlight feedback in different color
+                for run in feedback_para.runs:
+                    run.font.color.rgb = RGBColor(231, 76, 60)
+
+            doc.add_paragraph()  # Spacing
+
+        # Footer
+        doc.add_page_break()
+        footer_para = doc.add_paragraph()
+        footer_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        footer_run = footer_para.add_run(f'Generated by DMP ART on {datetime.now().strftime("%d-%m-%Y %H:%M")}')
+        footer_run.font.size = Pt(9)
+        footer_run.font.italic = True
+        footer_run.font.color.rgb = RGBColor(127, 140, 141)
+
+        # Save to BytesIO
+        docx_buffer = BytesIO()
+        doc.save(docx_buffer)
+        docx_buffer.seek(0)
+
+        # Generate filename
+        if metadata.get('researcher_surname'):
+            docx_filename = f"Review_{metadata['researcher_surname']}"
+            if metadata.get('researcher_firstname'):
+                docx_filename += f"_{metadata['researcher_firstname'][0]}"
+            if metadata.get('competition_name'):
+                docx_filename += f"_{metadata['competition_name']}"
+            if metadata.get('competition_edition'):
+                docx_filename += f"_{metadata['competition_edition']}"
+        else:
+            docx_filename = f"Review_{cache_id[:8]}"
+
+        docx_filename += f"_{datetime.now().strftime('%d%m%y')}.docx"
+
+        # Save to dated reviews folder for record
+        dated_folder = get_dated_folder(app.config['REVIEWS_FOLDER'])
+        docx_path = os.path.join(dated_folder, docx_filename)
+        with open(docx_path, 'wb') as f:
+            f.write(docx_buffer.getvalue())
+
+        docx_buffer.seek(0)
+
+        return send_file(
+            docx_buffer,
+            as_attachment=True,
+            download_name=docx_filename,
+            mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        )
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'success': False,
+            'message': f'Error exporting DOCX: {str(e)}'
+        }), 500
+
 @app.route('/save_category', methods=['POST'])
 def save_category():
     """Save category with its comments"""
@@ -676,23 +897,23 @@ def save_category():
         data = request.json or {}
         file = data.get('file')
         category_data = data.get('data', {})
-        
+
         if not file:
             return jsonify({
                 'success': False,
                 'message': 'File name is required'
             })
-        
+
         category_path = os.path.join('config', f'{file}.json')
-        
+
         with open(category_path, 'w', encoding='utf-8') as f:
             json.dump(category_data, f, indent=2, ensure_ascii=False)
-        
+
         return jsonify({
             'success': True,
             'message': f'Category "{file}" saved successfully'
         })
-        
+
     except Exception as e:
         return jsonify({
             'success': False,
@@ -1016,27 +1237,118 @@ def load_quick_comments():
     """Load quick comments"""
     try:
         quick_comments_path = os.path.join('config', 'quick_comments.json')
-        
+
         if not os.path.exists(quick_comments_path):
             return jsonify({
                 'success': True,
                 'quick_comments': []
             })
-        
+
         with open(quick_comments_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
             if data is None:
                 data = {}
-        
+
         return jsonify({
             'success': True,
             'quick_comments': data.get('quick_comments', [])
         })
-        
+
     except Exception as e:
         return jsonify({
             'success': False,
             'message': f'Error loading quick comments: {str(e)}'
+        })
+
+@app.route('/api/track_comment_usage', methods=['POST'])
+def track_comment_usage():
+    """Track comment usage for smart suggestions"""
+    try:
+        data = request.json or {}
+        section_id = data.get('section_id')
+        comment_text = data.get('comment_text', '').strip()
+
+        if not section_id or not comment_text:
+            return jsonify({
+                'success': False,
+                'message': 'Missing section_id or comment_text'
+            })
+
+        stats_path = os.path.join('config', 'comment_usage_stats.json')
+
+        # Load existing stats
+        if os.path.exists(stats_path):
+            with open(stats_path, 'r', encoding='utf-8') as f:
+                stats = json.load(f)
+        else:
+            stats = {}
+
+        # Initialize section if not exists
+        if section_id not in stats:
+            stats[section_id] = {}
+
+        # Increment usage count
+        if comment_text in stats[section_id]:
+            stats[section_id][comment_text] += 1
+        else:
+            stats[section_id][comment_text] = 1
+
+        # Save updated stats
+        with open(stats_path, 'w', encoding='utf-8') as f:
+            json.dump(stats, f, indent=2, ensure_ascii=False)
+
+        return jsonify({
+            'success': True,
+            'message': 'Usage tracked'
+        })
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error tracking usage: {str(e)}'
+        })
+
+@app.route('/api/get_suggested_comments/<section_id>', methods=['GET'])
+def get_suggested_comments(section_id):
+    """Get top 3 most used comments for a section"""
+    try:
+        stats_path = os.path.join('config', 'comment_usage_stats.json')
+
+        if not os.path.exists(stats_path):
+            return jsonify({
+                'success': True,
+                'suggestions': []
+            })
+
+        with open(stats_path, 'r', encoding='utf-8') as f:
+            stats = json.load(f)
+
+        section_stats = stats.get(section_id, {})
+
+        # Sort by usage count and get top 3
+        sorted_comments = sorted(
+            section_stats.items(),
+            key=lambda x: x[1],
+            reverse=True
+        )[:3]
+
+        suggestions = [
+            {
+                'text': comment,
+                'usage_count': count
+            }
+            for comment, count in sorted_comments
+        ]
+
+        return jsonify({
+            'success': True,
+            'suggestions': suggestions
+        })
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error getting suggestions: {str(e)}'
         })
 
 @app.route('/list_categories', methods=['GET'])
@@ -1324,6 +1636,26 @@ def health_check():
         'allowed_extensions': list(app.config['ALLOWED_EXTENSIONS']),
         'max_content_length': app.config['MAX_CONTENT_LENGTH']
     })
+
+@app.route('/api/cleanup_cache', methods=['POST'])
+def api_cleanup_cache():
+    """Manually trigger cache cleanup"""
+    try:
+        data = request.json or {}
+        max_age_days = data.get('max_age_days', 7)
+
+        cleaned_count = cleanup_old_cache_files(max_age_days)
+
+        return jsonify({
+            'success': True,
+            'cleaned_count': cleaned_count,
+            'message': f'Cleaned {cleaned_count} cache file(s) older than {max_age_days} days'
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error: {str(e)}'
+        }), 500
 
 # ============================================================
 # AI Module Routes

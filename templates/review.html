@@ -1213,6 +1213,20 @@
                         </button>
                     </div>
 
+                    <!-- Progress Indicator -->
+                    <div class="progress-indicator" style="margin-bottom: 12px; padding: 10px; background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-primary);">Review Progress</span>
+                            <span id="progress-percentage" style="font-size: 0.75rem; font-weight: bold; color: var(--primary-color);">0%</span>
+                        </div>
+                        <div style="width: 100%; height: 6px; background: var(--bg-main); border-radius: 3px; overflow: hidden;">
+                            <div id="progress-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--primary-color), #5dade2); transition: width 0.3s ease;"></div>
+                        </div>
+                        <div style="margin-top: 4px; font-size: 0.65rem; color: var(--text-secondary); text-align: center;">
+                            <span id="progress-text">0 of 14 sections completed</span>
+                        </div>
+                    </div>
+
                     <!-- Action Buttons -->
                     <div class="sidebar-actions">
                         <button id="compile-feedback-btn" class="action-btn primary action-btn-full">Compile Feedback</button>
@@ -1226,9 +1240,30 @@
                         </div>
                     </div>
 
+                    <!-- Suggested Comments (based on usage) -->
+                    <div class="suggested-comments-pane" id="suggested-comments-pane" style="display:none;">
+                        <h3 style="font-size: 0.75rem; margin-bottom: 0.5rem;">
+                            <i class="fas fa-star" style="color: #f39c12;"></i> Suggested for This Section
+                        </h3>
+                        <div class="quick-comments-list" id="suggested-comments-list">
+                            <!-- Suggested comments will be loaded here -->
+                        </div>
+                    </div>
+
                     <!-- Quick Comments -->
                     <div class="quick-comments-pane">
                         <h3>Quick Comments</h3>
+                        <!-- Search input -->
+                        <input type="text" id="quick-comments-search" placeholder="🔍 Search comments..." style="
+                            width: 100%;
+                            padding: 6px 10px;
+                            margin-bottom: 8px;
+                            border: 1px solid var(--border-color);
+                            border-radius: 4px;
+                            background: var(--bg-main);
+                            color: var(--text-primary);
+                            font-size: 0.75rem;
+                        ">
                         <div class="quick-comments-list" id="quick-comments-list">
                             <!-- Quick comments will be loaded here -->
                             <div class="no-comments">No quick comments available. Add them in Template Editor.</div>
@@ -1528,11 +1563,21 @@
                 // Track when textarea receives focus
                 textarea.addEventListener('focus', function() {
                     lastFocusedTextarea = this;
+                    // Load suggested comments for this section
+                    const sectionId = this.getAttribute('data-section-id');
+                    if (sectionId) {
+                        loadSuggestedComments(sectionId);
+                    }
                 });
-                
+
                 // Track when textarea is clicked
                 textarea.addEventListener('click', function() {
                     lastFocusedTextarea = this;
+                    // Load suggested comments for this section
+                    const sectionId = this.getAttribute('data-section-id');
+                    if (sectionId) {
+                        loadSuggestedComments(sectionId);
+                    }
                 });
             });
 
@@ -1547,6 +1592,18 @@
 
             // Initialize language switcher
             initializeLanguageSwitcher();
+
+            // Initialize progress tracking
+            initializeProgressTracking();
+
+            // Initialize search functionality
+            initializeQuickCommentsSearch();
+
+            // Initialize collapsible sections
+            initializeCollapsibleSections();
+
+            // Initialize frontend caching
+            initializeFrontendCaching();
 
         });
         
@@ -2218,6 +2275,54 @@
             });
         }
 
+        function loadSuggestedComments(sectionId) {
+            const suggestedPane = document.getElementById('suggested-comments-pane');
+            const suggestedList = document.getElementById('suggested-comments-list');
+
+            if (!suggestedList) return;
+
+            // Fetch suggestions for this section
+            fetch(`/api/get_suggested_comments/${sectionId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.suggestions && data.suggestions.length > 0) {
+                    // Clear and populate suggested comments
+                    suggestedList.innerHTML = '';
+                    data.suggestions.forEach(suggestion => {
+                        const item = document.createElement('div');
+                        item.className = 'quick-comment-item';
+                        item.style.borderLeft = '3px solid #f39c12';  // Golden border for suggestions
+
+                        // Truncate long comments for display
+                        const displayText = suggestion.text.length > 50
+                            ? suggestion.text.substring(0, 50) + '...'
+                            : suggestion.text;
+
+                        item.textContent = `${displayText} (${suggestion.usage_count}×)`;
+                        item.title = `${suggestion.text}\n\nUsed ${suggestion.usage_count} time(s)`;
+                        item.addEventListener('click', () => insertQuickComment(suggestion.text));
+                        suggestedList.appendChild(item);
+                    });
+
+                    // Show the suggested comments pane
+                    if (suggestedPane) {
+                        suggestedPane.style.display = 'block';
+                    }
+                } else {
+                    // Hide pane if no suggestions
+                    if (suggestedPane) {
+                        suggestedPane.style.display = 'none';
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error loading suggested comments:', error);
+                if (suggestedPane) {
+                    suggestedPane.style.display = 'none';
+                }
+            });
+        }
+
         function insertQuickComment(comment) {
             // Use the last focused textarea, or fall back to currently active element
             let targetTextarea = lastFocusedTextarea;
@@ -2262,6 +2367,20 @@
                 // Get section ID for notification
                 const sectionId = targetTextarea.getAttribute('data-section-id');
                 showNotification(`Quick comment inserted in section ${sectionId}!`, 'success');
+
+                // Track comment usage for smart suggestions
+                if (sectionId) {
+                    fetch('/api/track_comment_usage', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            section_id: sectionId,
+                            comment_text: comment
+                        })
+                    }).catch(err => console.error('Error tracking usage:', err));
+                }
             }
         }
 
@@ -2596,7 +2715,74 @@
             
             if (generateDocxBtn) {
                 generateDocxBtn.addEventListener('click', function() {
-                    alert('DOCX generation feature coming soon!');
+                    // Collect all feedback data
+                    const feedbackData = {};
+                    document.querySelectorAll('.feedback-section').forEach(section => {
+                        const sectionId = section.getAttribute('data-section-id');
+                        const textarea = section.querySelector('.feedback-textarea');
+                        if (textarea && textarea.value.trim()) {
+                            feedbackData[sectionId] = textarea.value.trim();
+                        }
+                    });
+
+                    // Get cache_id from page
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const cacheId = urlParams.get('cache_id');
+
+                    if (!cacheId) {
+                        showToast('Error: Cache ID not found', 'error');
+                        return;
+                    }
+
+                    // Disable button and show loading state
+                    generateDocxBtn.disabled = true;
+                    const originalText = generateDocxBtn.innerHTML;
+                    generateDocxBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+
+                    // Send request to backend
+                    fetch('/export_docx', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            cache_id: cacheId,
+                            feedback: feedbackData
+                        })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(data => {
+                                throw new Error(data.message || 'Export failed');
+                            });
+                        }
+                        return response.blob();
+                    })
+                    .then(blob => {
+                        // Create download link
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `Review_${cacheId.substring(0, 8)}_${new Date().toISOString().split('T')[0]}.docx`;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+
+                        showToast('DOCX exported successfully!', 'success');
+
+                        // Re-enable button
+                        generateDocxBtn.disabled = false;
+                        generateDocxBtn.innerHTML = originalText;
+                    })
+                    .catch(error => {
+                        console.error('Error exporting DOCX:', error);
+                        showToast('Error: ' + error.message, 'error');
+
+                        // Re-enable button
+                        generateDocxBtn.disabled = false;
+                        generateDocxBtn.innerHTML = originalText;
+                    });
                 });
             }
 
@@ -2613,6 +2799,421 @@
 
             // Panel is now a centered modal, no dragging needed
         })();
+
+        // ========================================
+        // Global Keyboard Shortcuts
+        // ========================================
+        document.addEventListener('keydown', function(e) {
+            // Ignore if typing in textarea or input
+            const isTyping = e.target.tagName === 'TEXTAREA' ||
+                           e.target.tagName === 'INPUT' ||
+                           e.target.isContentEditable;
+
+            // Ctrl+S: Save Progress
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                const saveBtn = document.getElementById('save-feedback-btn');
+                if (saveBtn) {
+                    saveBtn.click();
+                    showToast('Feedback saved!', 'success');
+                }
+                return false;
+            }
+
+            // Ctrl+Enter: Compile Feedback
+            if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault();
+                const compileBtn = document.getElementById('compile-feedback-btn');
+                if (compileBtn) {
+                    compileBtn.click();
+                }
+                return false;
+            }
+
+            // Ctrl+1 through Ctrl+9: Insert quick comments
+            if (e.ctrlKey && !isTyping && e.key >= '1' && e.key <= '9') {
+                e.preventDefault();
+                const index = parseInt(e.key) - 1;
+                if (window.QUICK_COMMENTS && window.QUICK_COMMENTS[index]) {
+                    const commentData = window.QUICK_COMMENTS[index];
+                    const commentText = getLocalizedText(commentData.text);
+                    insertQuickComment(commentText);
+                    showToast(`Quick comment ${e.key} inserted!`, 'success');
+                }
+                return false;
+            }
+
+            // Ctrl+Up/Down: Navigate between sections
+            if (e.ctrlKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+                e.preventDefault();
+                const sections = Array.from(document.querySelectorAll('.feedback-section'));
+                const currentIndex = sections.findIndex(section => {
+                    const textarea = section.querySelector('.feedback-textarea');
+                    return textarea === document.activeElement || textarea === lastFocusedTextarea;
+                });
+
+                let targetIndex;
+                if (e.key === 'ArrowUp') {
+                    targetIndex = currentIndex > 0 ? currentIndex - 1 : sections.length - 1;
+                } else {
+                    targetIndex = currentIndex < sections.length - 1 ? currentIndex + 1 : 0;
+                }
+
+                const targetSection = sections[targetIndex];
+                if (targetSection) {
+                    const textarea = targetSection.querySelector('.feedback-textarea');
+                    if (textarea) {
+                        // Scroll to section
+                        targetSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        // Focus textarea after scrolling
+                        setTimeout(() => {
+                            textarea.focus();
+                        }, 300);
+                    }
+                }
+                return false;
+            }
+
+            // Ctrl+B: Toggle sidebar
+            if (e.ctrlKey && e.key === 'b') {
+                e.preventDefault();
+                const sidebar = document.getElementById('sidebar');
+                const toggleBtn = document.getElementById('sidebar-toggle-btn');
+                if (sidebar && toggleBtn) {
+                    toggleBtn.click();
+                }
+                return false;
+            }
+
+            // Ctrl+F: Focus search in quick comments (if search is implemented)
+            if (e.ctrlKey && e.key === 'f' && !isTyping) {
+                e.preventDefault();
+                const searchInput = document.getElementById('quick-comments-search');
+                if (searchInput) {
+                    searchInput.focus();
+                    searchInput.select();
+                }
+                return false;
+            }
+
+            // Ctrl+D: Download DOCX
+            if (e.ctrlKey && e.key === 'd') {
+                e.preventDefault();
+                const compileBtn = document.getElementById('compile-feedback-btn');
+                if (compileBtn) {
+                    compileBtn.click();
+                    setTimeout(() => {
+                        const docxBtn = document.getElementById('generate-docx-btn');
+                        if (docxBtn) {
+                            docxBtn.click();
+                        }
+                    }, 500);
+                }
+                return false;
+            }
+        });
+
+        // Show keyboard shortcuts help on Ctrl+?
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.shiftKey && e.key === '?') {
+                e.preventDefault();
+                const helpText = `
+DMP-ART Keyboard Shortcuts:
+
+Navigation:
+• Ctrl+↑/↓ - Navigate between sections
+• Ctrl+B - Toggle sidebar
+
+Quick Actions:
+• Ctrl+S - Save progress
+• Ctrl+Enter - Compile feedback
+• Ctrl+D - Compile & download DOCX
+• Ctrl+1-9 - Insert quick comment 1-9
+
+Editing:
+• Ctrl+F - Search quick comments
+
+General:
+• Esc - Close panels
+• Ctrl+Shift+? - Show this help
+                `;
+                alert(helpText.trim());
+            }
+        });
+
+        // Show subtle notification when page loads about keyboard shortcuts
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                const hint = document.createElement('div');
+                hint.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    background: var(--bg-card);
+                    color: var(--text-primary);
+                    padding: 12px 16px;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    font-size: 0.85rem;
+                    z-index: 1000;
+                    opacity: 0;
+                    transition: opacity 0.3s;
+                    border-left: 3px solid var(--primary-color);
+                `;
+                hint.innerHTML = '💡 Press <kbd>Ctrl+Shift+?</kbd> for keyboard shortcuts';
+                document.body.appendChild(hint);
+
+                // Fade in
+                setTimeout(() => hint.style.opacity = '1', 100);
+
+                // Fade out and remove after 5 seconds
+                setTimeout(() => {
+                    hint.style.opacity = '0';
+                    setTimeout(() => hint.remove(), 300);
+                }, 5000);
+            }, 2000);
+        });
+
+        // ========================================
+        // Progress Tracking
+        // ========================================
+        function initializeProgressTracking() {
+            const progressBar = document.getElementById('progress-bar');
+            const progressPercentage = document.getElementById('progress-percentage');
+            const progressText = document.getElementById('progress-text');
+
+            function updateProgress() {
+                const textareas = document.querySelectorAll('.feedback-textarea');
+                const total = textareas.length;
+                let completed = 0;
+
+                textareas.forEach(textarea => {
+                    if (textarea.value.trim().length > 0) {
+                        completed++;
+                    }
+                });
+
+                const percentage = Math.round((completed / total) * 100);
+
+                if (progressBar) progressBar.style.width = percentage + '%';
+                if (progressPercentage) progressPercentage.textContent = percentage + '%';
+                if (progressText) progressText.textContent = `${completed} of ${total} sections completed`;
+
+                // Update navigation buttons to show completed state
+                textareas.forEach(textarea => {
+                    const sectionId = textarea.getAttribute('data-section-id');
+                    const navBtn = document.querySelector(`.nav-btn[data-section-id="${sectionId}"]`);
+                    if (navBtn) {
+                        if (textarea.value.trim().length > 0) {
+                            navBtn.classList.add('completed');
+                            navBtn.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+                        } else {
+                            navBtn.classList.remove('completed');
+                            navBtn.style.background = '';
+                        }
+                    }
+                });
+            }
+
+            // Update on any textarea change
+            document.querySelectorAll('.feedback-textarea').forEach(textarea => {
+                textarea.addEventListener('input', updateProgress);
+                textarea.addEventListener('change', updateProgress);
+            });
+
+            // Initial update
+            updateProgress();
+        }
+
+        // ========================================
+        // Quick Comments Search
+        // ========================================
+        function initializeQuickCommentsSearch() {
+            const searchInput = document.getElementById('quick-comments-search');
+            const commentsList = document.getElementById('quick-comments-list');
+
+            if (!searchInput || !commentsList) return;
+
+            searchInput.addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                const items = commentsList.querySelectorAll('.quick-comment-item');
+
+                items.forEach(item => {
+                    const text = item.textContent.toLowerCase();
+                    const title = (item.title || '').toLowerCase();
+
+                    if (text.includes(searchTerm) || title.includes(searchTerm)) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                // Show "no results" message if all hidden
+                const visibleItems = Array.from(items).filter(item => item.style.display !== 'none');
+                const noResults = commentsList.querySelector('.no-results');
+
+                if (visibleItems.length === 0 && searchTerm) {
+                    if (!noResults) {
+                        const msg = document.createElement('div');
+                        msg.className = 'no-results';
+                        msg.textContent = 'No comments found';
+                        msg.style.cssText = 'text-align: center; padding: 1rem; color: var(--text-secondary); font-size: 0.75rem;';
+                        commentsList.appendChild(msg);
+                    }
+                } else if (noResults) {
+                    noResults.remove();
+                }
+            });
+        }
+
+        // ========================================
+        // Collapsible Sections
+        // ========================================
+        function initializeCollapsibleSections() {
+            const sections = document.querySelectorAll('.dmp-section');
+
+            sections.forEach(section => {
+                const header = section.querySelector('.section-header, h2');
+                if (!header) return;
+
+                // Add collapse button
+                const collapseBtn = document.createElement('button');
+                collapseBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
+                collapseBtn.className = 'collapse-btn';
+                collapseBtn.style.cssText = `
+                    background: none;
+                    border: none;
+                    color: var(--primary-color);
+                    cursor: pointer;
+                    padding: 4px 8px;
+                    margin-left: 8px;
+                    font-size: 0.9rem;
+                    transition: transform 0.3s;
+                `;
+                collapseBtn.title = 'Collapse/Expand section';
+
+                header.style.cursor = 'pointer';
+                header.style.display = 'flex';
+                header.style.justifyContent = 'space-between';
+                header.style.alignItems = 'center';
+                header.appendChild(collapseBtn);
+
+                const content = section.querySelector('.dmp-content, .feedback-section, .section-content');
+
+                const toggleCollapse = () => {
+                    if (content.style.display === 'none') {
+                        content.style.display = '';
+                        collapseBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
+                        collapseBtn.style.transform = 'rotate(0deg)';
+                    } else {
+                        content.style.display = 'none';
+                        collapseBtn.innerHTML = '<i class="fas fa-chevron-down"></i>';
+                        collapseBtn.style.transform = 'rotate(180deg)';
+                    }
+                };
+
+                header.addEventListener('click', toggleCollapse);
+            });
+        }
+
+        // ========================================
+        // Frontend Caching
+        // ========================================
+        function initializeFrontendCaching() {
+            const CACHE_KEY_CATEGORIES = 'dmp-art-categories-cache';
+            const CACHE_KEY_QUICK_COMMENTS = 'dmp-art-quick-comments-cache';
+            const CACHE_EXPIRY = 1000 * 60 * 30; // 30 minutes
+
+            // Cache helper functions
+            function setCache(key, data) {
+                try {
+                    localStorage.setItem(key, JSON.stringify({
+                        data: data,
+                        timestamp: Date.now()
+                    }));
+                } catch (e) {
+                    console.warn('Could not cache data:', e);
+                }
+            }
+
+            function getCache(key) {
+                try {
+                    const cached = localStorage.getItem(key);
+                    if (!cached) return null;
+
+                    const parsed = JSON.parse(cached);
+                    const age = Date.now() - parsed.timestamp;
+
+                    if (age > CACHE_EXPIRY) {
+                        localStorage.removeItem(key);
+                        return null;
+                    }
+
+                    return parsed.data;
+                } catch (e) {
+                    console.warn('Could not read cache:', e);
+                    return null;
+                }
+            }
+
+            // Override fetch to use cache
+            const originalFetchCategories = window.fetchCategoryComments;
+            if (originalFetchCategories) {
+                window.fetchCategoryComments = function() {
+                    const cached = getCache(CACHE_KEY_CATEGORIES);
+                    if (cached) {
+                        console.log('Using cached categories');
+                        window.CATEGORY_COMMENTS = cached;
+                        return Promise.resolve(cached);
+                    }
+
+                    return originalFetchCategories().then(data => {
+                        setCache(CACHE_KEY_CATEGORIES, data);
+                        return data;
+                    });
+                };
+            }
+
+            // Cache quick comments
+            const originalLoadQuickComments = window.loadQuickComments;
+            if (originalLoadQuickComments) {
+                window.loadQuickComments = function() {
+                    const cached = getCache(CACHE_KEY_QUICK_COMMENTS);
+                    if (cached) {
+                        console.log('Using cached quick comments');
+                        window.QUICK_COMMENTS = cached;
+                        // Render cached comments
+                        const quickCommentsList = document.getElementById('quick-comments-list');
+                        if (quickCommentsList && cached.length > 0) {
+                            quickCommentsList.innerHTML = '';
+                            cached.forEach(commentData => {
+                                const item = document.createElement('div');
+                                item.className = 'quick-comment-item';
+                                item.textContent = commentData.name;
+                                const commentText = getLocalizedText(commentData.text);
+                                item.title = commentText;
+                                item.addEventListener('click', () => insertQuickComment(commentText));
+                                quickCommentsList.appendChild(item);
+                            });
+                        }
+                        return Promise.resolve(cached);
+                    }
+
+                    return fetch('/load_quick_comments')
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success && data.quick_comments) {
+                                setCache(CACHE_KEY_QUICK_COMMENTS, data.quick_comments);
+                                window.QUICK_COMMENTS = data.quick_comments;
+                            }
+                            return data.quick_comments || [];
+                        });
+                };
+            }
+
+            console.log('Frontend caching initialized');
+        }
     </script>
 </body>
 </html>
