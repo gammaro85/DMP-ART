@@ -166,15 +166,116 @@
         if (!contentDiv) return;
 
         try {
-            const response = await fetch(`/config/${categoryId}.json`);
-            const data = await response.json();
+            const response = await fetch(`/api/load-category/${categoryId}`);
+            const result = await response.json();
 
-            // Render category content here
-            contentDiv.innerHTML = '<p>Category content loaded (feature in development)</p>';
-            // TODO: Render editable sections based on data
+            if (!result.success) {
+                contentDiv.innerHTML = `<p class="error">Error: ${result.message}</p>`;
+                return;
+            }
+
+            const data = result.data;
+
+            // Render editable sections based on data
+            let html = '';
+
+            // Get all sections from dmp_structure to maintain order
+            const dmpSections = {
+                '1.1': 'Data Collection Methods',
+                '1.2': 'Data Types and Formats',
+                '2.1': 'Metadata and Documentation',
+                '2.2': 'Data Quality',
+                '3.1': 'Storage and Backup',
+                '3.2': 'Data Security',
+                '4.1': 'Legal and Ethical Requirements',
+                '4.2': 'Intellectual Property',
+                '5.1': 'Data Sharing',
+                '5.2': 'Data Preservation',
+                '5.3': 'Data Formats for Sharing',
+                '5.4': 'Persistent Identifiers',
+                '6.1': 'Resources and Costs',
+                '6.2': 'Responsibilities'
+            };
+
+            html += '<div class="category-sections">';
+
+            for (const [sectionId, sectionName] of Object.entries(dmpSections)) {
+                const comments = data[sectionId] || [];
+
+                html += `
+                    <div class="category-section">
+                        <h3>${sectionId} - ${sectionName}</h3>
+                        <div class="comments-list" id="comments-${categoryId}-${sectionId}">
+                `;
+
+                if (comments.length === 0) {
+                    html += '<p class="no-comments">No comments for this section</p>';
+                } else {
+                    comments.forEach((comment, index) => {
+                        html += `
+                            <div class="comment-item">
+                                <textarea class="comment-textarea" data-section="${sectionId}" data-index="${index}">${comment}</textarea>
+                                <button class="delete-comment-btn" onclick="deleteComment('${categoryId}', '${sectionId}', ${index})">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        `;
+                    });
+                }
+
+                html += `
+                        </div>
+                        <button class="add-comment-btn" onclick="addComment('${categoryId}', '${sectionId}')">
+                            <i class="fas fa-plus"></i> Add Comment
+                        </button>
+                    </div>
+                `;
+            }
+
+            // Add GENERAL section if exists
+            if (data['GENERAL']) {
+                const generalComments = data['GENERAL'];
+                html += `
+                    <div class="category-section">
+                        <h3>GENERAL - General Comments</h3>
+                        <div class="comments-list" id="comments-${categoryId}-GENERAL">
+                `;
+
+                generalComments.forEach((comment, index) => {
+                    html += `
+                        <div class="comment-item">
+                            <textarea class="comment-textarea" data-section="GENERAL" data-index="${index}">${comment}</textarea>
+                            <button class="delete-comment-btn" onclick="deleteComment('${categoryId}', 'GENERAL', ${index})">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    `;
+                });
+
+                html += `
+                        </div>
+                        <button class="add-comment-btn" onclick="addComment('${categoryId}', 'GENERAL')">
+                            <i class="fas fa-plus"></i> Add Comment
+                        </button>
+                    </div>
+                `;
+            }
+
+            html += '</div>';
+
+            html += `
+                <div class="save-category-actions">
+                    <button class="btn-save" onclick="saveCategoryData('${categoryId}')">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+            `;
+
+            contentDiv.innerHTML = html;
+
         } catch (error) {
             console.error(`Error loading category ${categoryId}:`, error);
-            contentDiv.innerHTML = '<p class="error">Error loading category content</p>';
+            contentDiv.innerHTML = `<p class="error">Error loading category: ${error.message}</p>`;
         }
     }
 
@@ -742,4 +843,122 @@
             text.textContent = isDark ? 'Light Mode' : 'Dark Mode';
         }
     }
+
+    // CATEGORY EDITOR HELPER FUNCTIONS
+    // These functions are called from the dynamically generated HTML in loadCategoryContent()
+    // They need to be exposed globally
+
+    window.addComment = function(categoryId, sectionId) {
+        const commentsList = document.getElementById(`comments-${categoryId}-${sectionId}`);
+        if (!commentsList) return;
+
+        // Remove "no comments" message if it exists
+        const noCommentsMsg = commentsList.querySelector('.no-comments');
+        if (noCommentsMsg) {
+            noCommentsMsg.remove();
+        }
+
+        // Create new comment item
+        const commentIndex = commentsList.querySelectorAll('.comment-item').length;
+        const commentDiv = document.createElement('div');
+        commentDiv.className = 'comment-item';
+        commentDiv.innerHTML = `
+            <textarea class="comment-textarea" data-section="${sectionId}" data-index="${commentIndex}" placeholder="Enter new comment..."></textarea>
+            <button class="delete-comment-btn" onclick="deleteComment('${categoryId}', '${sectionId}', ${commentIndex})">
+                <i class="fas fa-trash"></i> Delete
+            </button>
+        `;
+
+        commentsList.appendChild(commentDiv);
+
+        // Focus the new textarea
+        const textarea = commentDiv.querySelector('textarea');
+        if (textarea) {
+            textarea.focus();
+        }
+    };
+
+    window.deleteComment = function(categoryId, sectionId, commentIndex) {
+        if (!confirm('Are you sure you want to delete this comment?')) {
+            return;
+        }
+
+        const commentsList = document.getElementById(`comments-${categoryId}-${sectionId}`);
+        if (!commentsList) return;
+
+        const commentItems = commentsList.querySelectorAll('.comment-item');
+        if (commentItems[commentIndex]) {
+            commentItems[commentIndex].remove();
+
+            // If no comments left, show "no comments" message
+            if (commentsList.querySelectorAll('.comment-item').length === 0) {
+                commentsList.innerHTML = '<p class="no-comments">No comments for this section</p>';
+            } else {
+                // Re-index remaining comments
+                commentsList.querySelectorAll('.comment-item').forEach((item, newIndex) => {
+                    const textarea = item.querySelector('textarea');
+                    const deleteBtn = item.querySelector('.delete-comment-btn');
+
+                    if (textarea) {
+                        textarea.setAttribute('data-index', newIndex);
+                    }
+                    if (deleteBtn) {
+                        deleteBtn.setAttribute('onclick', `deleteComment('${categoryId}', '${sectionId}', ${newIndex})`);
+                    }
+                });
+            }
+        }
+    };
+
+    window.saveCategoryData = async function(categoryId) {
+        try {
+            // Collect all comments from textareas
+            const categoryData = {};
+            const contentDiv = document.getElementById(`${categoryId}-content`);
+
+            if (!contentDiv) {
+                showNotification('Error: Content container not found', 'error');
+                return;
+            }
+
+            // Get all textareas
+            const textareas = contentDiv.querySelectorAll('.comment-textarea');
+
+            textareas.forEach(textarea => {
+                const sectionId = textarea.getAttribute('data-section');
+                const commentText = textarea.value.trim();
+
+                if (commentText) {
+                    if (!categoryData[sectionId]) {
+                        categoryData[sectionId] = [];
+                    }
+                    categoryData[sectionId].push(commentText);
+                }
+            });
+
+            // Save to server using existing save endpoint
+            const response = await fetch('/save_category', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    category_name: categoryId,
+                    comments: categoryData
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                showNotification('Category saved successfully!', 'success');
+            } else {
+                showNotification('Error saving category: ' + result.message, 'error');
+            }
+
+        } catch (error) {
+            console.error('Error saving category:', error);
+            showNotification('Error saving category: ' + error.message, 'error');
+        }
+    };
 })();

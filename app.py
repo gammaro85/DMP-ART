@@ -836,7 +836,7 @@ def discover_categories():
 
             # Skip system files and AI configuration files
             if filename in ['dmp_structure.json', 'quick_comments.json', 'category_comments.json',
-                           'ai_config.json', 'knowledge_base.json']:
+                           'ai_config.json', 'knowledge_base.json', 'extraction_rules.json']:
                 continue
 
             # Skip backup files (any file containing 'backup')
@@ -864,6 +864,64 @@ def discover_categories():
         return jsonify({
             'success': False,
             'message': str(e)
+        }), 500
+
+@app.route('/api/load-category/<category_id>', methods=['GET'])
+def load_single_category(category_id):
+    """
+    Load a single category JSON file by ID.
+
+    Used by Template Editor to load category content for editing.
+    Returns the full category data structure with all sections and comments.
+    """
+    try:
+        # Validate category_id to prevent directory traversal
+        if '..' in category_id or '/' in category_id or '\\' in category_id:
+            return jsonify({
+                'success': False,
+                'message': 'Invalid category ID'
+            }), 400
+
+        # Build file path
+        config_dir = 'config'
+        filename = f"{category_id}.json"
+        file_path = os.path.join(config_dir, filename)
+
+        # Check if file exists
+        if not os.path.exists(file_path):
+            return jsonify({
+                'success': False,
+                'message': f'Category file not found: {filename}'
+            }), 404
+
+        # Skip system files
+        if filename in ['dmp_structure.json', 'quick_comments.json', 'category_comments.json',
+                       'ai_config.json', 'knowledge_base.json', 'extraction_rules.json']:
+            return jsonify({
+                'success': False,
+                'message': 'Cannot load system configuration files'
+            }), 403
+
+        # Load and return the category data
+        with open(file_path, 'r', encoding='utf-8') as f:
+            category_data = json.load(f)
+
+        return jsonify({
+            'success': True,
+            'category_id': category_id,
+            'display_name': format_category_name(category_id),
+            'data': category_data
+        })
+
+    except json.JSONDecodeError as e:
+        return jsonify({
+            'success': False,
+            'message': f'Invalid JSON in category file: {str(e)}'
+        }), 500
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error loading category: {str(e)}'
         }), 500
 
 
