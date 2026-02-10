@@ -726,11 +726,18 @@
         `;
         
         // Load category data
-        fetchJSON(`/config/${cat.file}.json`)
-            .then(data => renderCategoryQuestions(cat.file, data))
+        fetchJSON(`/api/load-category/${cat.file}`)
+            .then(result => {
+                if (result.success) {
+                    renderCategoryQuestions(cat.file, result.data);
+                } else {
+                    document.getElementById(`catq-${cat.file}`).innerHTML =
+                        `<div class="error-state">Error: ${result.message}</div>`;
+                }
+            })
             .catch(err => {
                 console.error('Error loading category data:', err);
-                document.getElementById(`catq-${cat.file}`).innerHTML = 
+                document.getElementById(`catq-${cat.file}`).innerHTML =
                     '<div class="error-state">Error loading category data</div>';
             });
     }
@@ -738,18 +745,17 @@
     function renderCategoryQuestions(file, catData) {
         const container = document.getElementById(`catq-${file}`);
         if (!container) return;
-        
+
         container.innerHTML = '';
-        
-        // Find the main category data (skip _comment and other metadata)
+
+        // Use category data directly - keys are section IDs like "1.1", "1.2", etc.
         let categoryData = {};
         for (const [key, value] of Object.entries(catData)) {
-            if (!key.startsWith('_') && typeof value === 'object' && value !== null) {
-                categoryData = value;
-                break;
+            if (!key.startsWith('_')) {
+                categoryData[key] = value;
             }
         }
-        
+
         console.log(`Loading category data for ${file}:`, categoryData);
         
         // Flatten DMP structure for rendering
@@ -766,7 +772,8 @@
             block.className = 'cat-question-block';
             block.setAttribute('data-section-id', item.id);
             
-            const comments = categoryData[item.id] || [];
+            const rawComments = categoryData[item.id] || [];
+            const comments = Array.isArray(rawComments) ? rawComments : [];
             
             block.innerHTML = `
                 <div class="question-header">
