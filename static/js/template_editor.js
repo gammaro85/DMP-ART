@@ -5,6 +5,16 @@
     // Global state for dynamic categories
     let availableCategories = [];
 
+    // Current comment language (synced with localStorage)
+    function getCurrentLang() {
+        return localStorage.getItem('dmp-art-comment-language') || 'pl';
+    }
+
+    // Allow external code (language switcher) to reload categories
+    window.reloadCategoriesWithLang = async function(lang) {
+        await loadDynamicCategories();
+    };
+
     // Wait for DOM to be ready
     document.addEventListener('DOMContentLoaded', function () {
         initializeTemplateEditor();
@@ -29,7 +39,8 @@
     // DYNAMIC CATEGORY LOADING
     async function loadDynamicCategories() {
         try {
-            const response = await fetch('/api/discover-categories');
+            const lang = getCurrentLang();
+            const response = await fetch(`/api/discover-categories?lang=${lang}`);
             const data = await response.json();
 
             if (data.success) {
@@ -166,7 +177,8 @@
         if (!contentDiv) return;
 
         try {
-            const response = await fetch(`/api/load-category/${categoryId}`);
+            const lang = getCurrentLang();
+            const response = await fetch(`/api/load-category/${categoryId}?lang=${lang}`);
             const result = await response.json();
 
             if (!result.success) {
