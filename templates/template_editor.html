@@ -54,6 +54,19 @@
             background: #a71d2a !important;
             border-color: #a71d2a !important;
         }
+        /* DMP Structure & category spacing */
+        .structure-section {
+            margin-top: 12px;
+        }
+        .structure-subsection {
+            margin-top: 6px;
+            padding-left: 20px;
+        }
+        .cat-question-block {
+            margin-top: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-light);
+        }
         /* Language switcher */
         .header-language-switcher {
             display: flex;
@@ -330,10 +343,7 @@
             const sectionDiv = document.createElement('div');
             sectionDiv.className = 'structure-section';
             sectionDiv.innerHTML = `
-                <div class="structure-header">
-                    <h3 class="section-id">${section.id}.</h3>
-                    <h3 class="section-title">${section.question}</h3>
-                </div>
+                <h3 class="structure-header">${section.id}. ${section.question}</h3>
             `;
             container.appendChild(sectionDiv);
             
@@ -342,10 +352,7 @@
                     const subDiv = document.createElement('div');
                     subDiv.className = 'structure-subsection';
                     subDiv.innerHTML = `
-                        <div class="subsection-header">
-                            <span class="subsection-id">${sub.id}</span>
-                            <span class="subsection-question">${sub.question}</span>
-                        </div>
+                        <div class="subsection-header">${sub.id} ${sub.question}</div>
                     `;
                     container.appendChild(subDiv);
                 });
@@ -711,10 +718,7 @@
             const comments = Array.isArray(rawComments) ? rawComments : [];
             
             block.innerHTML = `
-                <div class="question-header">
-                    <h4>Section ${item.id}</h4>
-                    <p class="question-text">${escapeHtml(item.question)}</p>
-                </div>
+                <h4 class="question-header">${item.id} — ${escapeHtml(item.question)}</h4>
                 <div class="question-comments" id="comments-wrap-${file}-${item.id}">
                     ${comments.map((comment, idx) => `
                         <div class="category-comment-item">
