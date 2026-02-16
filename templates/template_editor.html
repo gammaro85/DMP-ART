@@ -9,107 +9,29 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Fix template editor layout issues */
+        /* Template editor layout */
         .template-editor-container {
             padding: 20px !important;
-            padding-bottom: 100px !important; /* Extra space for footer */
+            padding-bottom: 100px !important;
             min-height: calc(100vh - 120px) !important;
         }
-
-        /* Add some breathing room to tab content */
         .tab-content {
             padding-bottom: 30px !important;
         }
-
-        /* Make sure comment rows have proper spacing */
         .comment-row {
             margin-bottom: 15px !important;
         }
-
-        /* Add padding to category content */
         .category-questions {
             padding-bottom: 20px !important;
         }
-
-        /* ==================== Template Editor Specific Styling ==================== */
-
-        /* Reduce tab names font size and improve styling */
-        .tab-btn {
-            font-size: 0.875rem !important; /* 14px - reduced from 16px */
-        }
-
-        /* Category tabs - distinctive color */
-        .tab-btn[data-category] {
-            background: rgba(91, 188, 255, 0.1) !important;
-            border: 1px solid var(--border-color) !important;
-        }
-
-        .tab-btn[data-category].active {
-            background: var(--primary-color) !important;
-            color: white !important;
-            border-color: var(--primary-color) !important;
-        }
-
-        .tab-btn[data-category]:hover:not(.active) {
-            background: rgba(91, 188, 255, 0.2) !important;
-            border-color: var(--primary-color) !important;
-        }
-
-        /* DMP Structure and Quick Comments tabs - default color */
-        .tab-btn:not([data-category]) {
-            background: var(--bg-secondary) !important;
-        }
-
-        .tab-btn:not([data-category]).active {
-            background: var(--primary-color) !important;
-            color: white !important;
-        }
-
-        /* Reduce font size for text input fields in template editor */
         .template-editor-container input[type="text"],
         .template-editor-container textarea,
         .comment-name-input,
         .comment-text-input,
         .category-comment-textarea {
-            font-size: 0.875rem !important; /* 14px - reduced from 16px */
+            font-size: 0.875rem !important;
         }
-
-        /* Style Create Category button - compact with custom color */
-        .add-category-btn {
-            /* Match tab height exactly */
-            padding: var(--spacing-3) var(--spacing-4) !important;
-            font-size: 0.875rem !important; /* Same as tabs - 14px */
-            font-weight: var(--font-weight-medium) !important;
-            border-radius: 8px 8px 0 0 !important; /* Same rounded top as tabs */
-
-            /* Custom color scheme #3766a5 */
-            background: #3766a5 !important;
-            color: white !important;
-            border: none !important;
-            box-shadow: var(--shadow-light) !important;
-
-            /* Narrower - minimal width */
-            max-width: 80px !important;
-            min-width: 60px !important;
-
-            /* Flexbox for icon + text */
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            gap: 4px !important;
-
-            transition: all 0.2s ease !important;
-            cursor: pointer !important;
-            white-space: nowrap !important;
-        }
-
-        .add-category-btn:hover {
-            background: #2d5280 !important; /* Darker shade of #3766a5 */
-            box-shadow: var(--shadow-medium) !important;
-            transform: translateY(-1px) !important;
-        }
-
-        /* Style Remove Category button (× button) to match theme */
+        /* Remove tab button - keep existing colors */
         .remove-tab-btn {
             background: var(--error-color) !important;
             color: white !important;
@@ -124,37 +46,13 @@
             font-size: 14px !important;
             font-weight: bold !important;
             cursor: pointer !important;
-            transition: all 0.3s ease !important;
+            transition: all 0.2s ease !important;
             padding: 0 !important;
             line-height: 1 !important;
         }
-
         .remove-tab-btn:hover {
             background: #a71d2a !important;
             border-color: #a71d2a !important;
-            transform: scale(1.1) !important;
-            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.4) !important;
-        }
-
-        /* Dark mode adjustments */
-        [data-theme="dark"] .add-category-btn {
-            background: #3766a5 !important;
-            box-shadow: var(--shadow-light) !important;
-        }
-
-        [data-theme="dark"] .add-category-btn:hover {
-            background: #4a7fc4 !important; /* Lighter shade of #3766a5 for dark mode */
-            box-shadow: var(--shadow-medium) !important;
-        }
-
-        [data-theme="dark"] .remove-tab-btn {
-            background: var(--error-color) !important;
-            border-color: var(--error-color) !important;
-        }
-
-        [data-theme="dark"] .remove-tab-btn:hover {
-            background: #f87171 !important;
-            box-shadow: 0 2px 8px rgba(248, 113, 113, 0.5) !important;
         }
     </style>
     <script>
@@ -171,6 +69,9 @@
 <body data-page="template-editor">
     <header class="fixed-header">
         <nav class="header-nav">
+            <button class="theme-toggle" aria-label="Toggle theme">
+                <i class="fas fa-moon"></i>
+            </button>
             <div class="nav-links">
                 <a href="/" class="nav-item" data-page="index">Home</a>
                 <span class="nav-item disabled" data-page="review"
@@ -179,9 +80,9 @@
                 <a href="/ai-settings" class="nav-item" data-page="ai-settings">AI Settings</a>
                 <a href="/documentation" class="nav-item" data-page="documentation">Documentation</a>
             </div>
-            <button class="theme-toggle" aria-label="Toggle theme">
-                <i class="fas fa-moon"></i>
-            </button>
+            <div class="lang-selector">
+                <i class="fas fa-globe"></i> EN
+            </div>
         </nav>
     </header>
 

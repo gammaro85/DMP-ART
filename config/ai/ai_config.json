@@ -1,5 +1,5 @@
 {
-  "enabled": true,
+  "enabled": false,
   "provider": "anthropic",
   "api_keys": {
     "openai": "",
@@ -12,7 +12,7 @@
       "max_tokens": 2000
     },
     "anthropic": {
-      "model": "claude-sonnet-4-5-20250929",
+      "model": "",
       "temperature": 0.89,
       "max_tokens": 2000
     }
