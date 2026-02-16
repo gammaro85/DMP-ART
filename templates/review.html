@@ -146,13 +146,13 @@
         body[data-page="review"] .review-layout .right-sidebar {
             position: fixed !important;
             right: 0 !important;
-            top: 60px !important;
+            top: 50px !important;
             width: 25% !important;
             min-width: 25% !important;
             max-width: 25% !important;
-            height: calc(100vh - 60px) !important;
-            min-height: calc(100vh - 60px) !important;
-            max-height: calc(100vh - 60px) !important;
+            height: calc(100vh - 50px) !important;
+            min-height: calc(100vh - 50px) !important;
+            max-height: calc(100vh - 50px) !important;
             background-color: var(--bg-card) !important;
             border-left: 1px solid var(--border-light) !important;
             border-radius: 0 !important;
@@ -508,37 +508,35 @@
         /* Header Language Switcher */
         .header-language-switcher {
             display: flex;
-            gap: 6px;
+            gap: 4px;
             align-items: center;
-            padding: 4px;
-            background: rgba(107,114,128,.06);
-            border: 1px solid rgba(107,114,128,.15);
+            padding: 3px;
+            background: transparent;
+            border: 1px solid var(--border-light);
             border-radius: var(--border-radius-md);
         }
 
         .header-lang-btn {
-            padding: 6px 12px;
-            background: rgba(249,250,251,.8);
-            border: 1px solid rgba(107,114,128,.15);
+            padding: 4px 10px;
+            background: transparent;
+            border: 1px solid transparent;
             color: var(--text-secondary);
             cursor: pointer;
             border-radius: var(--border-radius-sm);
             font-weight: var(--font-weight-medium);
-            font-size: calc(var(--font-size-sm) * 0.9);
+            font-size: 0.8rem;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
-            min-width: 50px;
-            min-height: 32px;
+            gap: 4px;
+            min-width: 44px;
+            min-height: 28px;
         }
 
         .header-lang-btn:hover {
-            background: rgba(107,114,128,.08);
-            border-color: rgba(107,114,128,.25);
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(0,0,0,.08);
+            background: var(--bg-hover);
+            color: var(--text-primary);
         }
 
         .header-lang-btn.active {
@@ -546,27 +544,23 @@
             color: white;
             border-color: var(--primary-color);
             font-weight: bold;
-            box-shadow: 0 2px 8px rgba(var(--primary-rgb), 0.3);
         }
 
         .header-lang-btn i {
-            font-size: var(--font-size-sm);
+            font-size: 0.8rem;
         }
 
         /* Dark mode adjustments for header language switcher */
         [data-theme="dark"] .header-language-switcher {
-            background: rgba(71,85,105,.6);
-            border-color: rgba(107,114,128,.2);
+            border-color: #4b5563;
         }
 
         [data-theme="dark"] .header-lang-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.15);
             color: var(--text-secondary);
         }
 
         [data-theme="dark"] .header-lang-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: #4b5563;
         }
 
         [data-theme="dark"] .header-lang-btn.active {
@@ -1047,6 +1041,9 @@
     <!-- Fixed Header Navigation -->
     <header class="fixed-header">
         <nav class="header-nav">
+            <button class="theme-toggle" aria-label="Toggle theme">
+                <i class="fas fa-moon"></i>
+            </button>
             <div class="nav-links">
                 <a href="/" class="nav-item" data-page="index">Home</a>
                 <span class="nav-item disabled" data-page="review"
@@ -1065,10 +1062,6 @@
                         <i class="fas fa-language"></i> PL
                     </button>
                 </div>
-                <!-- Theme Toggle -->
-                <button class="theme-toggle" aria-label="Toggle theme">
-                    <i class="fas fa-moon"></i>
-                </button>
             </div>
         </nav>
     </header>
