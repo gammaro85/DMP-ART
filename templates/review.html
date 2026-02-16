@@ -1055,10 +1055,10 @@
             <div class="header-controls">
                 <!-- Language Switcher -->
                 <div class="header-language-switcher">
-                    <button id="header-lang-en-btn" class="header-lang-btn active" data-lang="en" title="English comments">
-                        <i class="fas fa-language"></i> EN
+                    <button id="header-lang-pl-btn" class="header-lang-btn active" data-lang="pl" title="Komentarze po polsku">
+                        <i class="fas fa-language"></i> PL
                     </button>
-                    <button id="header-lang-pl-btn" class="header-lang-btn" data-lang="pl" title="Polski komentarze">
+                    <button id="header-lang-en-btn" class="header-lang-btn" data-lang="en" title="English comments">
                         <i class="fas fa-language"></i> PL
                     </button>
                 </div>
@@ -1384,8 +1384,8 @@
         // Global variable to track the last focused textarea
         let lastFocusedTextarea = null;
 
-        // Language preference for comments (EN/PL)
-        let currentCommentLanguage = localStorage.getItem('dmp-art-comment-language') || 'en';
+        // Language preference for comments (PL/EN)
+        let currentCommentLanguage = localStorage.getItem('dmp-art-comment-language') || 'pl';
 
         // Set comment language
         function setCommentLanguage(lang) {
@@ -1403,7 +1403,7 @@
             // Refresh quick comments
             refreshQuickComments();
 
-            // Close all category dropdowns (they'll show new language when reopened)
+            // Close all category dropdowns
             document.querySelectorAll('[id^="category-dropdown-"]').forEach(dropdown => {
                 dropdown.style.display = 'none';
             });
@@ -1412,6 +1412,9 @@
             document.querySelectorAll('.category-btn-inline').forEach(btn => {
                 btn.classList.remove('active');
             });
+
+            // Reload categories with new language
+            fetchCategoryComments();
 
             console.log(`Comment language switched to: ${lang.toUpperCase()}`);
         }
@@ -1548,8 +1551,9 @@
 
         // Load category comments from backend on page load
         function fetchCategoryComments() {
-            console.log('Fetching category comments...');
-            fetch('/load_categories')
+            const lang = currentCommentLanguage || localStorage.getItem('dmp-art-comment-language') || 'pl';
+            console.log('Fetching category comments for lang:', lang);
+            fetch(`/load_categories?lang=${lang}`)
                 .then(response => response.json())
                 .then(data => {
                     console.log('Category comments loaded:', data);

@@ -1,0 +1,81 @@
+{
+  "1.1": [
+    "No existing data will be reused. All data will be newly collected specifically for this research.",
+    "During the project, four main types of data generated can be distinguished: raw data from microarray experiments, primarily gene images obtained from scanning microplates; data from ontological analysis, which aims to find a common biological context for groups of genes; working data generated during laboratory work, e.g. digital lab notebooks, data from experiments verifying the accuracy of the obtained results; secondary data resulting from the interpretation and processing of raw and statistical data.",
+    "The project will generate: survey responses from approximately 200 participants collected through online questionnaires, resulting in tabular data of approximately 50 MB; interview recordings: 20 semi-structured interviews (60-90 minutes each), approximately 10 GB of audio files; transcriptions and coded data from qualitative analysis.",
+    "The research will produce microscopic images of biological samples: approximately 500 images captured using confocal microscope at 100x and 400x magnification, stored as TIFF files, total size approximately 2 GB.",
+    "Measurement data from spectroscopic analysis: time-series data from approximately 100 samples, resulting in approximately 5 GB of data in CSV format."
+  ],
+  "1.2": [
+    "The formats of the saved files can be divided into two types: formats specific to laboratory equipment software, such as .ndf (NimbleScan), .ixo (Light Cycler 96) or software for analysing results obtained during experiments, e.g. .cep (ContigExpress), .irf (iRegulation).",
+    "Additionally, during the processing, analysis, and preparation of results for publication, files will be generated in commonly used text formats (.txt, .docx), tabular formats (.csv, .xlsx), and graphical formats (.tiff, .png). In total, all files will not exceed 50 GB.",
+    "Data will be stored in the following formats: .csv for tabular data (survey responses and measurement results), .txt for transcriptions and documentation, .py for Python analysis scripts, .pdf for final reports, .tiff for microscopy images, .png for figures and visualizations.",
+    "Working data will be maintained in Microsoft Excel format (.xlsx) during active analysis. Upon project completion, all datasets will be converted to open CSV format (.csv) to ensure long-term accessibility and platform independence.",
+    "To ensure the broadest possible access to data, data intended for deposition in the repository, both raw and analysed, will be saved in open file formats. However, this will only be done when it is inevitable that no information will be lost and that researchers in this field of science commonly use such a file format."
+  ],
+  "2.1": [
+    "Raw data, due to the specifics and configuration of laboratory equipment software, may have different sets of metadata, which, however, will not be modified in any way. The most important measure for keeping consistency in the recording of individual samples and the precise tracking and potential repetition of each stage of the research process will be laboratory notebooks, both in paper and digital versions.",
+    "All data deposited in the MOST Wiedzy Open Research Data Catalog (Bridge of Data), a service provided by the Gdansk University of Technology, will be described using attributes compatible with general metadata standards and schemas, such as DataCite. Metadata descriptions will be stored in JSON-LD format and include, whenever possible, Persistent Identifiers (PID), such as ORCID or GRID.",
+    "Moreover, every dataset will have a README file attached, providing all necessary information for data replication.",
+    "A comprehensive README.txt file will accompany the dataset containing: description of research methodology, explanation of all variables with units of measurement and value ranges, data collection procedures, structure of files and folders, software requirements for data access, known limitations or quality issues, and contact information for data-related inquiries.",
+    "The collected files will have standardized names enabling identification of the data contained therein. For example, statistical data will be signed with the source and date of creation/collection as well as photos and other materials.",
+    "Due to the fact that the MOST Wiedzy Open Research Data Catalog (Bridge of Data) repository is indexed in the Web of Science Data Citation Index, the metadata descriptions for project datasets will also be findable in this well-known service from Clarivate Analytics."
+  ],
+  "2.2": [
+    "To ensure the quality of data obtained in the laboratory, standard procedures and good laboratory practices have been applied, primarily meticulously keeping laboratory notebooks in paper and digital versions. To verify microarray experiments, bisulfite conversion techniques of DNA and the application of restriction enzymes sensitive to CpG methylation will be used. Any statistical corrections in the ontological analysis of gene sequences will be consulted with a bioinformatics statistician.",
+    "Data quality will be ensured through: double-entry verification for all survey responses by two independent researchers, automated validation scripts checking for out-of-range values and missing data, monthly calibration of measurement equipment according to manufacturer protocols with records maintained.",
+    "The data will be collected in accordance with the applicable protocols and rules. Each measurement will be verified, and in case of doubts as to the correctness, repeated.",
+    "The data will be catalogued in a standardized way, fulfilling the requirements of FAIR standards. The data available in an open repository will have DOI assigned and positioned to ensure its accessibility."
+  ],
+  "3.1": [
+    "All data recorded on computers connected to laboratory equipment will be transferred automatically or manually to the connected NAS server, which automatically backs up all files using network protocols. Additionally, the data that will be ongoing analysed on the personal computers of the team members will be secured through automatic backups performed in the OneDrive cloud from Microsoft (Office 365 A1 for faculty license).",
+    "Data will be stored on Gdansk Tech institutional network drives with automated daily backups managed by university IT department. Working copies maintained on encrypted, password-protected researcher computers. Additional weekly backups to external encrypted drive stored off-campus.",
+    "During the project, data will be stored on: primary researcher's password-protected workstation at Gdansk University of Technology, institutional OneDrive with daily automated synchronization, weekly manual backups to encrypted external hard drive stored in separate secure location off-site."
+  ],
+  "3.2": [
+    "No research data containing personal information requiring additional security measures will be collected or processed during the project. Standard methods will be applied to protect the data from leaks and unauthorised use and ensure data integrity. Although, due to the procedures and practices in the laboratory, staff members not directly involved in the project may temporarily get access to individual results, access to all collected data and the results of its analysis will be exclusively for the principal investigator and project team members designated by them. The security of the data storage system will be the responsibility of the Gdansk Tech IT Services Center and the software provider (Microsoft). Team members will be responsible for systematically changing security passwords and installing the latest updates to the software used.",
+    "All data stored on password-protected and encrypted devices. Access restricted to authorized project members only. Cloud storage secured through institutional IT security protocols including two-factor authentication."
+  ],
+  "4.1": [
+    "No personal data will be collected during the project.",
+    "The study received approval from the Bioethics Committee at Gdansk University of Technology (approval number 25/2024 dated January 15, 2024). All participants provided written informed consent prior to participation.",
+    "This research does not require ethics committee approval as determined by institutional regulations. The study involves anonymous online surveys without collection of identifiable personal data or sensitive information.",
+    "Personal data processing complies with GDPR regulations. Legal basis: informed consent obtained from all participants. Personal identifiers (names, email addresses) will be separated from research data immediately upon collection and replaced with pseudonymized codes. Only aggregated or fully anonymized data will be published. Personal identifiable information will be stored separately on encrypted drives accessible only to principal investigator and destroyed 5 years after project completion."
+  ],
+  "4.2": [
+    "The right to manage and use both the data and any derivatives based on them while respecting the contribution made by the PI and their team belongs to the Gdansk University of Technology by the intellectual property management regulations adopted by the Gdansk Tech Senate (Resolution No. 117/2021/XXV of 19 May 2021 https://link.pg.edu.pl/GdanskTech_intprop).",
+    "In the case of analyses conducted outside the university, a commercial agreement will be signed with the contractor each time, under which the Gdansk Tech will keep exclusive rights to the research results.",
+    "Data management will comply with the Intellectual Property Regulations of Gdansk University of Technology (https://link.pg.edu.pl/reg.wasn.intel.PG)."
+  ],
+  "5.1": [
+    "The primary place for sharing research data will be the institutional repository MOST Wiedzy Open Research Data Catalog (Bridge of Data). Selected data will be divided into datasets so that each dataset will serve as the basis for one article. The datasets will be made available at the time of the article's publication. If the publication process exceeds the project's duration, the data will be deposited in the repository, metadata describing the data will be published, and access to the data itself will be embargoed until the article is published.",
+    "Data will be openly accessible immediately upon deposition with no embargo period. Anyone can freely download and use the data under CC BY 4.0 license terms.",
+    "Data will be shared in accordance with the publication dates of the articles that are derived from this data. The data will be deposited in the MOST Wiedzy Open Research Data Catalog (Bridge of Data), a CoreTrustSeal certified repository provided by the Gdansk University of Technology, at the latest when articles based on these data are published.",
+    "Ultimately, all raw data will be made available under the CC0 license, while data representing the analysis and interpretation of laboratory data will be under the CC BY license. All metadata describing datasets in MOST Wiedzy Open Research Data Catalog (Bridge of Data) will always be available without any restrictions (CC0).",
+    "Data will be published under Creative Commons Attribution 4.0 International (CC BY 4.0) license, allowing reuse with attribution requirement.",
+    "An 18-month embargo is requested to enable completion of data analysis and submission of manuscripts for peer review. Data will be made publicly available immediately upon publication acceptance. Embargo end date: December 31, 2026.",
+    "Embargo requested until June 30, 2026 to protect intellectual property during patent application process and allow completion of planned publications. Following embargo, data will be fully open access."
+  ],
+  "5.2": [
+    "The MOST Wiedzy Open Research Data Catalog (Bridge of Data) repository will also be the primary place for data long-term preservation. Data deposited there will be automatically categorised for long-term storage without an expiration date.",
+    "The main repository of data will be the MOST Wiedzy Open Research Data Catalog (Bridge of Data), which is CoreTrustSeal certified (as the only one in Poland). This certificate confirms the repository's trustworthiness and sustainability.",
+    "MOST Wiedzy Open Research Data Catalog (Bridge of Data) ensures FAIR principles: Findable (comprehensive metadata, persistent DOI), Accessible (open web interface, clear licensing), Interoperable (DataCite standard, open formats), Reusable (detailed documentation, explicit license).",
+    "The CoreTrustSeal certificate given to the repository has confirmed the quality of data preservation services. The repository will include data containing direct results of laboratory experiments and their analysis. For clarity and consistency of the datasets, working data representing laboratory progress records or results of experiments verifying laboratory procedures will not be included.",
+    "Moreover, all data not selected for sharing will be stored by the PI for at least 10 years after the project is finished, and access to them will be possible upon direct request with the PI's consent."
+  ],
+  "5.3": [
+    "To ensure the broadest possible access to data, data intended for deposition in the repository, both raw and analysed, will be saved in open file formats. However, this will only be done when it is inevitable that no information will be lost and that researchers in this field of science commonly use such a file format."
+  ],
+  "5.4": [
+    "All datasets deposited in the MOST Wiedzy Open Research Data Catalog (Bridge of Data) repository automatically receive DOI identifiers at the time of their publication to ensure that datasets are easily traceable and citable."
+  ],
+  "6.1": [
+    "Managing data in compliance with FAIR principles does not require additional financial resources, as the Gdansk Tech provides both the NAS server and OneDrive service. Similarly, the MOST Wiedzy Open Research Data Catalog (Bridge of Data) repository has institutional funding, and depositing data and their long-term archiving are free of charge. Most activities ensuring data \"FAIRness\" result from the methods and good practices prevailing in the discipline and do not require additional workload.",
+    "No additional financial costs are anticipated for data management. MOST Wiedzy Open Research Data Catalog (Bridge of Data) repository services are provided free of charge to Gdansk Tech researchers. Personnel time for data curation and documentation (approximately 3-5 working days) is included in project personnel budget."
+  ],
+  "6.2": [
+    "The principal investigator, or a person appointed by them, will be responsible for collecting and storing data, as well as for their substantive quality and compliance with FAIR principles.",
+    "The Principal Investigator, [Full Name], will be responsible for overall data management throughout the project and for depositing data in the repository upon completion. Technical support available from Open Science Competence Center (openaccess@pg.edu.pl).",
+    "Support in various aspects of research data management will be provided by Gdansk Tech units, such as the Open Science Competence Center (verification of DMP, metadata for datasets in the repository) or the IT Services Center (CUI) (data security, backups)."
+  ]
+}
