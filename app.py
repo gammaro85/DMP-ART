@@ -701,10 +701,16 @@ def save_category():
 
 @app.route('/load_categories', methods=['GET'])
 def load_categories():
-    """Load all categories and their comments from individual JSON files"""
+    """Load all categories and their comments from individual JSON files.
+
+    Supports language-specific files via ?lang=pl|en parameter.
+    For each category base name, prefers {base}_{lang}.json over {base}.json.
+    Language-variant files (ending in _pl or _en) are not shown as separate categories.
+    """
     try:
         config_dir = 'config'
         categories = {}
+        lang = request.args.get('lang', 'pl')
 
         # Files to skip
         skip_files = [
@@ -713,17 +719,31 @@ def load_categories():
         ]
 
         if os.path.exists(config_dir):
+            # First pass: collect all base category names (exclude language variants)
+            base_categories = set()
             for filename in os.listdir(config_dir):
-                # Skip non-JSON, backup, and system files
                 if not filename.endswith('.json'):
                     continue
                 if filename in skip_files:
                     continue
                 if 'backup' in filename.lower():
                     continue
-
                 file_base = filename[:-5]
-                file_path = os.path.join(config_dir, filename)
+                # Skip language-variant files (e.g. for_newbies_pl, missing_info_en)
+                if file_base.endswith('_pl') or file_base.endswith('_en'):
+                    continue
+                base_categories.add(file_base)
+
+            # Second pass: for each base category, load language-specific file or fallback
+            for file_base in sorted(base_categories):
+                lang_filename = f"{file_base}_{lang}.json"
+                fallback_filename = f"{file_base}.json"
+                lang_path = os.path.join(config_dir, lang_filename)
+                fallback_path = os.path.join(config_dir, fallback_filename)
+
+                file_path = lang_path if os.path.exists(lang_path) else fallback_path
+                if not os.path.exists(file_path):
+                    continue
 
                 try:
                     with open(file_path, 'r', encoding='utf-8') as f:
@@ -731,7 +751,6 @@ def load_categories():
 
                         # Check if data is a valid category (dict with section keys)
                         if data and isinstance(data, dict):
-                            # Check if it has DMP section keys (like "1.1", "1.2", etc.)
                             has_section_keys = any(
                                 key.replace('.', '').replace('GENERAL', '').isdigit() or key == 'GENERAL'
                                 for key in data.keys()
@@ -739,12 +758,11 @@ def load_categories():
                             )
 
                             if has_section_keys:
-                                # Format category name for display
                                 display_name = format_category_name(file_base)
                                 categories[display_name] = data
 
                 except Exception as e:
-                    print(f"Error loading category file {filename}: {str(e)}")
+                    print(f"Error loading category file {file_path}: {str(e)}")
                     continue
 
         return jsonify({
@@ -845,6 +863,11 @@ def discover_categories():
 
             # Extract category name (remove .json extension)
             category_name = filename.replace('.json', '')
+
+            # Skip language-variant files (e.g. for_newbies_pl, missing_info_en)
+            if category_name.endswith('_pl') or category_name.endswith('_en'):
+                continue
+
             categories.append({
                 'id': category_name,
                 'filename': filename,
@@ -882,20 +905,28 @@ def load_single_category(category_id):
                 'message': 'Invalid category ID'
             }), 400
 
-        # Build file path
+        # Build file path, with language-specific fallback
         config_dir = 'config'
-        filename = f"{category_id}.json"
+        lang = request.args.get('lang', 'pl')
+        lang_filename = f"{category_id}_{lang}.json"
+        base_filename = f"{category_id}.json"
+
+        # Prefer language-specific file, fall back to base file
+        if os.path.exists(os.path.join(config_dir, lang_filename)):
+            filename = lang_filename
+        else:
+            filename = base_filename
         file_path = os.path.join(config_dir, filename)
 
         # Check if file exists
         if not os.path.exists(file_path):
             return jsonify({
                 'success': False,
-                'message': f'Category file not found: {filename}'
+                'message': f'Category file not found: {base_filename}'
             }), 404
 
         # Skip system files
-        if filename in ['dmp_structure.json', 'quick_comments.json', 'category_comments.json',
+        if base_filename in ['dmp_structure.json', 'quick_comments.json', 'category_comments.json',
                        'ai_config.json', 'knowledge_base.json', 'extraction_rules.json']:
             return jsonify({
                 'success': False,
@@ -1572,6 +1603,10 @@ def load_all_category_comments():
         if filename in skip_files:
             continue
         if 'backup' in filename.lower():
+            continue
+        # Skip language-variant files (e.g. for_newbies_pl, missing_info_en)
+        file_base = filename[:-5]
+        if file_base.endswith('_pl') or file_base.endswith('_en'):
             continue
 
         try:
