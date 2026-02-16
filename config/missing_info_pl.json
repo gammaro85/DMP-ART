@@ -1,0 +1,47 @@
+{
+  "GENERAL": [
+    "Cały plan musi być w języku angielskim. Wymagana wersja anglojęzyczna.",
+    "Plan musi zawierać odpowiedzi na 6 pytań z podpunktami (1.1, 1.2, 2.1, 2.2, 3.1, 3.2, 4.1, 4.2, 5.1, 5.2, 6.1, 6.2). Pytania pomocnicze są tylko pomocnicze, nie zastępują struktury głównej. Zamiast odpowiedzi \"Jakie dane... ? nie\" należy napisać pełne zdanie: \"No existing datasets will be reused. All data will be newly collected.\""
+  ],
+  "1.1": [
+    "Opis danych zbyt ogólny. Należy doprecyzować rodzaj danych i szacunkową wielkość: \"tabular data from surveys (CSV, approximately 50 MB), microscopic images (TIFF, approximately 2 GB), measurement results (TXT, approximately 5 GB)\" zamiast \"dane badawcze\".",
+    "Brak metodologii zbierania danych. Należy dodać jak powstaną dane, jakimi narzędziami, w jakich warunkach, jaką metodą."
+  ],
+  "1.2": [
+    "Brak rozszerzeń plików. Należy podać konkretnie: \".csv, .jpg, .py, .txt\" zamiast \"pliki tekstowe\". Formaty można podzielić na specyficzne dla oprogramowania oraz powszechnie używane.",
+    "Należy wskazać które formaty otwarte a które własnościowe. Jeśli własnościowe konieczne: należy rozważyć eksport końcowej wersji do otwartych formatów lub uzasadnić dlaczego konwersja nie jest możliwa."
+  ],
+  "2.1": [
+    "Brak opisu struktury katalogów i nazewnictwa plików. Należy dodać na początku jak dane będą katalogowane, czyli że będzie stworzona struktura folderów, a nazwy poszczególnych plików będą usystematyzowane i będą pozwalały na szybką identyfikację: \"Folder structure: /raw_data, /processed_data, /scripts, /results. File names: YYYY-MM-DD_experimentID_sampleID.csv\"",
+    "Opis metadanych niepełny. README powinien zawierać: opis metodologii badawczej, wyjaśnienie wszystkich zmiennych z jednostkami i zakresami wartości, procedury zbierania danych, strukturę plików i folderów, wymagania oprogramowania, znane ograniczenia lub problemy jakościowe, informacje kontaktowe."
+  ],
+  "2.2": [
+    "Kontrola jakości zbyt ogólna (\"dane wysokiej jakości\"). Należy podać konkretne procedury: \"Data entry double-checked by two independent researchers\", \"Equipment calibrated monthly according to manufacturer protocols\", \"Automated validation scripts for out-of-range values\", \"Laboratory notebooks meticulously kept in paper and digital versions\"."
+  ],
+  "3.1": [
+    "Brak opisu kopii zapasowych. Punkt 3.1 wymaga opisu przechowywania w trakcie projektu oraz strategii backup (nośniki, częstotliwość, lokalizacja).",
+    "Należy konkretnie wymienić: dyski laboratoryjne (czyje?), serwery sieciowe (jakie?), chmura (jaka?), dyski zewnętrzne (gdzie przechowywane?). Nie należy podawać DropBox (dane mogą zostać usunięte bez pytania, serwery poza UE).",
+    "Jak często będą tworzone kopie zapasowe? Należy określić częstotliwość dla każdego nośnika (np. automatyczne codziennie do chmury, ręczne tygodniowo na dysk zewnętrzny)."
+  ],
+  "4.1": [
+    "Badania z ludźmi: należy wskazać status zgody komisji etyki (numer zgody, data) lub uzasadnić dlaczego badanie nie wymaga zgody (zgodnie z regulaminem instytucjonalnym).",
+    "Jeśli dane osobowe zbierane: należy dodać podstawę prawną (zgoda, umowa, zadanie realizowane w interesie publicznym), sposób informowania uczestników, okres przechowywania danych, procedurę anonimizacji/pseudonimizacji, prawa uczestników (dostęp, sprostowanie, usunięcie).",
+    "Czy wszystko da się zanonimizować? Może należy dodać, że jeśli to możliwe to będzie anonimizacja, jeśli nie da się to dane nie będą publikowane lub będą udostępnione w ograniczonym zakresie."
+  ],
+  "5.1": [
+    "Embargo wymaga konkretnego uzasadnienia dlaczego dane nie mogą być udostępnione od razu (analiza w toku, przygotowanie publikacji, proces patentowy, zobowiązania wobec partnerów) oraz konkretnej daty końca embargo (\"31.12.2026\", nie \"po zakończeniu projektu\").",
+    "Częściowe udostępnienie wymaga określenia: co zostanie udostępnione publicznie, co nie i dlaczego, jak udostępnione dane pozwalają na weryfikację opublikowanych wyników.",
+    "CC0 może kolidować z Regulaminem Własności Intelektualnej Politechniki Gdańskiej (prawa do utworów pracowniczych należą do instytucji). Należy sprawdzić zgodność z regulaminem, rozważyć CC BY jako bezpieczniejszą alternatywę. W razie wątpliwości: konsultacja z działem prawnym uczelni.",
+    "Kwestia danych otrzymanych z zewnątrz od firm. Czy to będzie po prostu wykupiona usługa? Jeśli tak, należy to napisać i podkreślić, że będą pełne prawa do tych danych."
+  ],
+  "5.2": [
+    "Warto dodać informację o certyfikacie: MOST Wiedzy Open Research Data Catalog (Bridge of Data) ma certyfikat CoreTrustSeal - jedyne certyfikowane repozytorium danych badawczych w Polsce, co potwierdza zgodność z międzynarodowymi standardami dla wiarygodnych repozytoriów cyfrowych.",
+    "Tutaj należy napisać w jakim repozytorium będą przechowywane dane. Nie musi być MOST Wiedzy, jeśli istnieją inne repozytoria lepiej dopasowane tematycznie, należy tylko pamiętać że dane muszą być udostępniane zgodnie z zasadami FAIR."
+  ],
+  "6.1": [
+    "Należy doprecyzować koszty zarządzania danymi. Jeśli deponowanie w repozytorium darmowe: napisać to wyraźnie. Koszt to przede wszystkim czas pracy (należy oszacować liczbę dni roboczych na przygotowanie, dokumentację, kontrolę jakości)."
+  ],
+  "6.2": [
+    "Należy wskazać kto odpowiedzialny za zarządzanie danymi (rola, stanowisko, imię i nazwisko). Można również wymienić Open Science Competence Center jako wsparcie w zakresie weryfikacji DMP i metadanych dla datasetów w repozytorium."
+  ]
+}

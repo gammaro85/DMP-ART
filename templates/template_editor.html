@@ -54,6 +54,35 @@
             background: #a71d2a !important;
             border-color: #a71d2a !important;
         }
+        /* Language switcher */
+        .header-language-switcher {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+        .header-lang-btn {
+            background: transparent;
+            border: 1px solid var(--border-light);
+            color: var(--text-secondary);
+            border-radius: var(--border-radius-md);
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s ease;
+        }
+        .header-lang-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        .header-lang-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
     </style>
     <script>
         (function() {
@@ -80,8 +109,13 @@
                 <a href="/ai-settings" class="nav-item" data-page="ai-settings">AI Settings</a>
                 <a href="/documentation" class="nav-item" data-page="documentation">Documentation</a>
             </div>
-            <div class="lang-selector">
-                <i class="fas fa-globe"></i> EN
+            <div class="header-language-switcher" id="te-lang-switcher">
+                <button id="te-lang-pl-btn" class="header-lang-btn active" data-lang="pl" title="Komentarze po polsku">
+                    <i class="fas fa-language"></i> PL
+                </button>
+                <button id="te-lang-en-btn" class="header-lang-btn" data-lang="en" title="English comments">
+                    <i class="fas fa-language"></i> EN
+                </button>
             </div>
         </nav>
     </header>
@@ -908,6 +942,41 @@
     }
 
     // Theme toggle is handled by dark-mode.js
+
+    // Language switcher for comment language in template editor
+    (function() {
+        const LANG_KEY = 'dmp-art-comment-language';
+        function initLangSwitcher() {
+            const plBtn = document.getElementById('te-lang-pl-btn');
+            const enBtn = document.getElementById('te-lang-en-btn');
+            if (!plBtn || !enBtn) return;
+
+            let currentLang = localStorage.getItem(LANG_KEY) || 'pl';
+
+            function setLang(lang) {
+                currentLang = lang;
+                localStorage.setItem(LANG_KEY, lang);
+                plBtn.classList.toggle('active', lang === 'pl');
+                enBtn.classList.toggle('active', lang === 'en');
+                // Reload categories with new language if template editor is initialized
+                if (typeof window.reloadCategoriesWithLang === 'function') {
+                    window.reloadCategoriesWithLang(lang);
+                }
+            }
+
+            plBtn.addEventListener('click', () => setLang('pl'));
+            enBtn.addEventListener('click', () => setLang('en'));
+
+            // Set initial state
+            setLang(currentLang);
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initLangSwitcher);
+        } else {
+            initLangSwitcher();
+        }
+    })();
     </script>
 
     <footer class="site-footer site-footer--relative">
