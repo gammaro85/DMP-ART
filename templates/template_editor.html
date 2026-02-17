@@ -51,8 +51,8 @@
             line-height: 1 !important;
         }
         .remove-tab-btn:hover {
-            background: #a71d2a !important;
-            border-color: #a71d2a !important;
+            background: var(--error-color) !important;
+            border-color: var(--error-color) !important;
         }
         /* DMP Structure & category spacing */
         .structure-section {
@@ -931,7 +931,7 @@
             font-weight: 500;
             z-index: 10000;
             max-width: 300px;
-            background: ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#007bff'};
+            background: ${type === 'success' ? 'var(--success-color)' : type === 'error' ? 'var(--error-color)' : 'var(--primary-color)'};
         `;
         
         document.body.appendChild(messageEl);

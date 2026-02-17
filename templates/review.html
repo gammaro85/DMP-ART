@@ -312,7 +312,7 @@
         
         /* Paragraph Layout Improvements */
         body[data-page="review"] .extracted-content {
-            background-color: #dce6f0;
+            background-color: var(--bg-card);
             border-radius: 8px;
             padding: 20px;
             margin: 15px 0;
@@ -320,7 +320,7 @@
             border-left: 3px solid var(--primary-color);
             box-shadow: none;
         }
-        
+
         body[data-page="review"] .continuous-text {
             margin: 0;
             padding: 0;
@@ -328,7 +328,7 @@
             border: none;
             box-shadow: none;
         }
-        
+
         body[data-page="review"] .continuous-text p {
             margin: 0;
             padding: 0;
@@ -336,7 +336,7 @@
             border: none;
             box-shadow: none;
             line-height: 1.6;
-            color: #1a2332;
+            color: var(--text-primary);
             text-align: justify;
             word-spacing: normal;
         }
@@ -511,32 +511,32 @@
         }
         
         .action-btn.primary {
-            background-color: #10b981;
+            background-color: var(--success-color);
             color: white;
-            box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 2px 4px rgba(34, 145, 59, 0.3);
         }
-        
+
         .action-btn.primary:hover {
-            background-color: #059669;
-            box-shadow: 0 4px 8px rgba(16, 185, 129, 0.4);
+            background-color: #1a7a30;
+            box-shadow: 0 4px 8px rgba(34, 145, 59, 0.4);
             transform: translateY(-1px);
         }
-        
+
         .action-btn.secondary {
-            background-color: #6366f1;
+            background-color: var(--primary-color);
             color: white;
-            box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 2px 4px rgba(50, 112, 224, 0.3);
         }
-        
+
         .action-btn.secondary:hover {
-            background-color: #4f46e5;
-            box-shadow: 0 4px 8px rgba(99, 102, 241, 0.4);
+            background-color: var(--primary-hover);
+            box-shadow: 0 4px 8px rgba(50, 112, 224, 0.4);
             transform: translateY(-1px);
         }
 
         /* Highlighted citation style */
         body[data-page="review"] .citation-highlight {
-            background-color: #ffe066;
+            background-color: var(--yellow-highlight);
             border-radius: 3px;
             padding: 0 2px;
             transition: background 0.3s;
@@ -547,13 +547,13 @@
             z-index: 9999;
             display: none;
             padding: 6px 12px;
-            background: #6366f1;
-            color: #fff;
+            background: var(--primary-color);
+            color: white;
             border: none;
             border-radius: 5px;
             font-size: 0.85rem;
             cursor: pointer;
-            box-shadow: 0 2px 8px rgba(99,102,241,0.15);
+            box-shadow: 0 2px 8px rgba(50, 112, 224, 0.15);
             transition: opacity 0.2s;
         }
         
@@ -793,15 +793,15 @@
         }
 
         .confidence-fill.high {
-            background: linear-gradient(90deg, #10b981, #059669);
+            background: linear-gradient(90deg, var(--success-color), #1a7a30);
         }
 
         .confidence-fill.medium {
-            background: linear-gradient(90deg, #f59e0b, #d97706);
+            background: linear-gradient(90deg, var(--warning-color), #c99415);
         }
 
         .confidence-fill.low {
-            background: linear-gradient(90deg, #ef4444, #dc2626);
+            background: linear-gradient(90deg, var(--error-color), #a82434);
         }
 
         .confidence-value {
@@ -2386,7 +2386,7 @@
                 // Show temporary success message
                 const originalText = copyBtn.innerHTML;
                 copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                copyBtn.style.background = '#28a745';
+                copyBtn.style.background = 'var(--success-color)';
                 
                 setTimeout(() => {
                     copyBtn.innerHTML = originalText;
@@ -2466,7 +2466,7 @@
 
                         // Success message
                         exportJsonBtn.innerHTML = '<i class="fas fa-check"></i> Exported!';
-                        exportJsonBtn.style.background = '#28a745';
+                        exportJsonBtn.style.background = 'var(--success-color)';
 
                         setTimeout(() => {
                             exportJsonBtn.innerHTML = originalText;

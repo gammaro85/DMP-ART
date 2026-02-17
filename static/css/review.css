@@ -347,7 +347,7 @@ h3.subsection-title {
 
 /* Paragraph Layout Improvements */
 .extracted-content {
-    background-color: #dce6f0 !important;
+    background-color: var(--bg-card) !important;
     border-radius: clamp(0.35rem, 0.75vw, 0.5rem) !important;
     padding: clamp(0.75rem, 1.5vw, 1.25rem) !important;
     margin: clamp(0.5rem, 1.5vh, 0.9rem) 0 !important;
@@ -371,7 +371,7 @@ h3.subsection-title {
     border: none !important;
     box-shadow: none !important;
     line-height: 1.6 !important;
-    color: #1a2332 !important;
+    color: var(--text-primary) !important;
     text-align: justify;
     word-spacing: normal;
 }
@@ -537,32 +537,32 @@ h3.subsection-title {
 }
 
 .action-btn.primary {
-    background-color: #10b981;
+    background-color: var(--success-color);
     color: white;
-    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 2px 4px rgba(34, 145, 59, 0.3);
 }
 
 .action-btn.primary:hover {
-    background-color: #059669;
-    box-shadow: 0 4px 8px rgba(16, 185, 129, 0.4);
+    background-color: #1a7a30;
+    box-shadow: 0 4px 8px rgba(34, 145, 59, 0.4);
     transform: translateY(-1px);
 }
 
 .action-btn.secondary {
-    background-color: #6366f1;
+    background-color: var(--primary-color);
     color: white;
-    box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 2px 4px rgba(50, 112, 224, 0.3);
 }
 
 .action-btn.secondary:hover {
-    background-color: #4f46e5;
-    box-shadow: 0 4px 8px rgba(99, 102, 241, 0.4);
+    background-color: var(--primary-hover);
+    box-shadow: 0 4px 8px rgba(50, 112, 224, 0.4);
     transform: translateY(-1px);
 }
 
 /* Highlighted citation style */
 .citation-highlight {
-    background-color: #ffe066 !important;
+    background-color: var(--yellow-highlight) !important;
     border-radius: 3px;
     padding: 0 2px;
     transition: background 0.3s;
@@ -573,13 +573,13 @@ h3.subsection-title {
     z-index: 9999;
     display: none;
     padding: 6px 12px;
-    background: #6366f1;
-    color: #fff;
+    background: var(--primary-color);
+    color: white;
     border: none;
     border-radius: 5px;
     font-size: 0.85rem;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(99,102,241,0.15);
+    box-shadow: 0 2px 8px rgba(50, 112, 224, 0.15);
     transition: opacity 0.2s;
 }
 
@@ -834,7 +834,7 @@ body {
 
 .modal-header .close-btn:hover {
     background: rgba(255, 0, 0, 0.1);
-    color: #e74c3c;
+    color: var(--error-color);
 }
 
 .modal-content {
@@ -859,7 +859,7 @@ body {
 
 .unconnected-item.assigned {
     opacity: 0.5;
-    border-color: #10b981;
+    border-color: var(--success-color);
     background: var(--bg-secondary);
 }
 
