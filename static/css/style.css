@@ -582,6 +582,51 @@ s .light-logo {
   gap: 8px;
   flex-shrink: 0;
 }
+
+/* Language Switcher - unified across all pages */
+.header-language-switcher {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  padding: 3px;
+  background: var(--bg-secondary);
+  border-radius: 20px;
+}
+
+.header-lang-btn {
+  padding: 4px 12px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 16px;
+  font-weight: var(--font-weight-medium);
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 28px;
+  line-height: 1;
+}
+
+.header-lang-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.header-lang-btn.active {
+  background: var(--primary-color);
+  color: white;
+  font-weight: var(--font-weight-semibold);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+.header-lang-btn .flag-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
 /* Nav links push to the right */
 .header-nav .nav-links {
   margin-left: auto;
@@ -1197,6 +1242,19 @@ textarea::placeholder {
   color: var(--text-secondary);
   border-color: transparent
 }
+[data-theme=dark] .header-language-switcher {
+  background: #374151;
+}
+[data-theme=dark] .header-lang-btn {
+  color: var(--text-secondary);
+}
+[data-theme=dark] .header-lang-btn:hover {
+  background: #4b5563;
+}
+[data-theme=dark] .header-lang-btn.active {
+  background: var(--primary-color);
+  color: white;
+}
 [data-theme=dark] .extracted-content {
   background: #374151;
   border-color: #4b5563;
@@ -1219,6 +1277,8 @@ textarea::placeholder {
 /* Theme transition - applied only to elements that need it */
 .nav-item,
 .theme-toggle,
+.header-language-switcher,
+.header-lang-btn,
 .tab-btn,
 .primary-btn,
 .save-btn,

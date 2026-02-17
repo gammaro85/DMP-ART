@@ -347,11 +347,12 @@ h3.subsection-title {
 
 /* Paragraph Layout Improvements */
 .extracted-content {
-    background-color: var(--bg-secondary) !important;
+    background-color: #dce6f0 !important;
     border-radius: clamp(0.35rem, 0.75vw, 0.5rem) !important;
     padding: clamp(0.75rem, 1.5vw, 1.25rem) !important;
     margin: clamp(0.5rem, 1.5vh, 0.9rem) 0 !important;
     border: none !important;
+    border-left: 3px solid var(--primary-color) !important;
     box-shadow: none !important;
 }
 
@@ -370,7 +371,7 @@ h3.subsection-title {
     border: none !important;
     box-shadow: none !important;
     line-height: 1.6 !important;
-    color: var(--text-primary) !important;
+    color: #1a2332 !important;
     text-align: justify;
     word-spacing: normal;
 }
@@ -1127,8 +1128,11 @@ body {
     box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
 }
 [data-theme="dark"] .extracted-content {
-    background-color: var(--bg-alt) !important;
+    background-color: #2d3a4a !important;
     border-left-color: var(--primary-color) !important;
+}
+[data-theme="dark"] .continuous-text p {
+    color: var(--text-primary) !important;
 }
 [data-theme="dark"] .enhanced-feedback-section {
     background: var(--bg-secondary);
