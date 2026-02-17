@@ -67,35 +67,7 @@
             padding-bottom: 10px;
             border-bottom: 1px solid var(--border-light);
         }
-        /* Language switcher */
-        .header-language-switcher {
-            display: flex;
-            gap: 4px;
-            align-items: center;
-        }
-        .header-lang-btn {
-            background: transparent;
-            border: 1px solid var(--border-light);
-            color: var(--text-secondary);
-            border-radius: var(--border-radius-md);
-            padding: 4px 10px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            transition: all 0.2s ease;
-        }
-        .header-lang-btn:hover {
-            background: var(--bg-hover);
-            color: var(--text-primary);
-        }
-        .header-lang-btn.active {
-            background: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
+        /* Language switcher - styles in style.css */
     </style>
     <script>
         (function() {
@@ -117,10 +89,10 @@
                 </button>
                 <div class="header-language-switcher" id="te-lang-switcher">
                     <button id="te-lang-pl-btn" class="header-lang-btn active" data-lang="pl" title="Komentarze po polsku">
-                        <i class="fas fa-language"></i> PL
+                        <span class="flag-icon">&#x1F1F5;&#x1F1F1;</span> PL
                     </button>
                     <button id="te-lang-en-btn" class="header-lang-btn" data-lang="en" title="English comments">
-                        <i class="fas fa-language"></i> EN
+                        <span class="flag-icon">&#x1F1EC;&#x1F1E7;</span> EN
                     </button>
                 </div>
             </div>
@@ -314,14 +286,9 @@
             })
             .catch(err => console.error('Error loading quick comments:', err));
 
-        // Load categories 
-        fetchJSON('/list_categories')
-            .then(data => {
-                categories = data.categories || [];
-                dataLoaded.categories = true;
-                renderCategoryTabs();
-            })
-            .catch(err => console.error('Error loading categories:', err));
+        // Categories are loaded by template_editor.js via /api/discover-categories
+        // Just mark as loaded for legacy code paths
+        dataLoaded.categories = true;
     }
 
     // --- DMP Structure Rendering ---
@@ -632,10 +599,7 @@
         });
     }
 
-    // Expose for language switcher
-    window.reloadCategoriesWithLang = function(lang) {
-        filterCategoryTabsByLang(lang);
-    };
+    // Language filtering is handled by template_editor.js via window.reloadCategoriesWithLang
 
     function renderCategoryTabs() {
         // Remove existing category tabs and panels

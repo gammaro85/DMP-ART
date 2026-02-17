@@ -312,11 +312,12 @@
         
         /* Paragraph Layout Improvements */
         body[data-page="review"] .extracted-content {
-            background-color: var(--bg-secondary);
+            background-color: #dce6f0;
             border-radius: 8px;
             padding: 20px;
             margin: 15px 0;
             border: none;
+            border-left: 3px solid var(--primary-color);
             box-shadow: none;
         }
         
@@ -335,7 +336,7 @@
             border: none;
             box-shadow: none;
             line-height: 1.6;
-            color: var(--text-primary);
+            color: #1a2332;
             text-align: justify;
             word-spacing: normal;
         }
@@ -483,69 +484,7 @@
             align-items: center;
         }
 
-        /* Header Language Switcher */
-        .header-language-switcher {
-            display: flex;
-            gap: 4px;
-            align-items: center;
-            padding: 3px;
-            background: transparent;
-            border: 1px solid var(--border-light);
-            border-radius: var(--border-radius-md);
-        }
-
-        .header-lang-btn {
-            padding: 4px 10px;
-            background: transparent;
-            border: 1px solid transparent;
-            color: var(--text-secondary);
-            cursor: pointer;
-            border-radius: var(--border-radius-sm);
-            font-weight: var(--font-weight-medium);
-            font-size: 0.8rem;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            min-width: 44px;
-            min-height: 28px;
-        }
-
-        .header-lang-btn:hover {
-            background: var(--bg-hover);
-            color: var(--text-primary);
-        }
-
-        .header-lang-btn.active {
-            background: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-            font-weight: bold;
-        }
-
-        .header-lang-btn i {
-            font-size: 0.8rem;
-        }
-
-        /* Dark mode adjustments for header language switcher */
-        [data-theme="dark"] .header-language-switcher {
-            border-color: #4b5563;
-        }
-
-        [data-theme="dark"] .header-lang-btn {
-            color: var(--text-secondary);
-        }
-
-        [data-theme="dark"] .header-lang-btn:hover {
-            background: #4b5563;
-        }
-
-        [data-theme="dark"] .header-lang-btn.active {
-            background: var(--primary-color);
-            border-color: var(--primary-color);
-            color: white;
-        }
+        /* Header Language Switcher - styles in style.css */
         
         /* Header Action Buttons - Distinguished Style */
         .header-action-buttons-nav {
@@ -1026,10 +965,10 @@
                 <!-- Language Switcher (left side) -->
                 <div class="header-language-switcher">
                     <button id="header-lang-pl-btn" class="header-lang-btn active" data-lang="pl" title="Komentarze po polsku">
-                        <i class="fas fa-language"></i> PL
+                        <span class="flag-icon">&#x1F1F5;&#x1F1F1;</span> PL
                     </button>
                     <button id="header-lang-en-btn" class="header-lang-btn" data-lang="en" title="English comments">
-                        <i class="fas fa-language"></i> EN
+                        <span class="flag-icon">&#x1F1EC;&#x1F1E7;</span> EN
                     </button>
                 </div>
             </div>
