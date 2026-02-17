@@ -47,7 +47,79 @@ Build a web application to:
 
 ## Version History
 
-### v0.8.1 (2025-11-23) - Current Version
+### v0.9.1 (2026-02-17) - UI/UX Polish & Bug Fixes
+
+**Status:** Production-ready
+**Focus:** UI consistency, critical bug fixes, CSS cleanup
+
+#### Critical Bug Fixes
+
+1. **Category Comments Dropdown Not Showing (review.html)**
+   - **Root Cause:** `category-comments-dropdown` had class `hidden` (`display: none !important`), but `showCategoryComments()` was using `style.display = 'block'` which was overridden
+   - **Fix:** Changed to `classList.remove('hidden')` / `classList.add('hidden')` throughout
+   - Functions affected: `showCategoryComments()`, `hideDropdown()`, language change handler
+
+2. **EN Language Button Showing Wrong Label (review.html)**
+   - EN button displayed "PL" text — fixed to "EN"
+
+3. **Undefined CSS Variable `--primary-hover` (style.css)**
+   - Variable was used in gradients and hover states but never declared
+   - Added `--primary-hover: #2563eb` to `:root`
+
+#### UI Layout Changes
+
+1. **Language Toggle Moved to Left Side (review.html, template_editor.html)**
+   - Language switcher now lives in `.header-left-controls` div, left of nav links
+   - Added `.header-left-controls { display: flex; gap: 8px; }` to style.css
+   - Added `.header-nav .nav-links { margin-left: auto }` for right-alignment
+
+2. **Footer Added/Fixed on All Pages**
+   - `ai_settings.html`: added missing `<footer class="site-footer site-footer--relative">`
+   - `test_categories.html`: footer was placed after `</html>` (invalid) — moved inside `<body>` with `site-footer--relative` class
+
+3. **Active Nav Item Highlighting**
+   - `template_editor.html`, `documentation.html`, `ai_settings.html` only load `dark-mode.js`
+   - Added fallback nav highlighting to `dark-mode.js` for pages without `script.js`
+
+#### Template Editor: Language-Filtered Tabs
+
+- Category tabs now filtered by naming convention:
+  - `name_pl` (case-insensitive) → visible only when PL language active
+  - `name_en` → visible only when EN language active
+  - No suffix → always visible (shared)
+- Implemented `window.reloadCategoriesWithLang(lang)` (was referenced but undefined)
+- `renderCategoryTabs()` respects active language on initial render
+
+#### Review Page Visual Hierarchy (review.css)
+
+New styles added for clear content structure:
+- `.question-card` — 3px top border (primary color), card shadow, 2rem bottom margin
+- `.question-header` / `.section-title-only` — small uppercase section label (muted color)
+- `.question-section-combined` — bold high-contrast question text (1.05rem)
+- `.extracted-content` — left border 3px + italic text, visually distinct from feedback
+- `.enhanced-feedback-section` — tertiary background container for feedback area
+- `.feedback-text` — clear input field styling with focus ring
+- All styles have dark mode variants
+
+#### CSS Cleanup & Hardcoded Color Fixes (style.css)
+
+| Selector | Before | After |
+|---|---|---|
+| `.tab-badge` | `#ef4444` | `var(--error-color)` |
+| `.delete-comment-btn` | `#e74c3c` | `var(--error-color)` |
+| `.delete-comment-btn:hover` | `#c0392b` | `#a71d2a` |
+| `.btn-save` | `#27ae60` | `var(--success-color)` |
+| `.btn-save:hover` | `#229954` | `#1e8449` |
+
+#### Other Fixes
+
+- `review.html`: `.header-action-buttons-nav` — replaced `rgba(255,255,255,0.1)` with `var(--bg-secondary)`, fixes dark mode
+- `review.html`: removed duplicate `.results-container` CSS block (first of two identical declarations)
+- `documentation.html`: removed `style="color: inherit;"` from footer link → added `.footer-link` class to style.css
+
+---
+
+### v0.8.1 (2025-11-23)
 
 **Status:** Production-ready
 **Success Rate:** 94.1% (exceeds 93% target)

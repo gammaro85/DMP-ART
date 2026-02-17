@@ -25,28 +25,6 @@
         .results-container {
             background-color: var(--bg-card);
             color: var(--text-primary);
-            max-width: 800px;
-            margin: 0 auto;
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--border-medium);
-            transition: all 0.3s ease;
-        }
-        .result-card {
-            background-color: var(--bg-tertiary);
-            border-color: var(--border-medium);
-        }
-        .feature-card,
-        .stat-item {
-            background-color: var(--bg-secondary);
-            border-color: var(--border-light);
-        }
-
-        /* Enhanced Review Page Styles */
-        .results-container {
-            background-color: var(--bg-card);
-            color: var(--text-primary);
             max-width: 100%;
             border-radius: 12px;
             padding: 2rem;
@@ -575,9 +553,9 @@
             gap: 6px;
             align-items: center;
             padding: 4px;
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: var(--bg-secondary);
             border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--border-light);
         }
         
         .action-btn {
@@ -1041,9 +1019,20 @@
     <!-- Fixed Header Navigation -->
     <header class="fixed-header">
         <nav class="header-nav">
-            <button class="theme-toggle" aria-label="Toggle theme">
-                <i class="fas fa-moon"></i>
-            </button>
+            <div class="header-left-controls">
+                <button class="theme-toggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <!-- Language Switcher (left side) -->
+                <div class="header-language-switcher">
+                    <button id="header-lang-pl-btn" class="header-lang-btn active" data-lang="pl" title="Komentarze po polsku">
+                        <i class="fas fa-language"></i> PL
+                    </button>
+                    <button id="header-lang-en-btn" class="header-lang-btn" data-lang="en" title="English comments">
+                        <i class="fas fa-language"></i> EN
+                    </button>
+                </div>
+            </div>
             <div class="nav-links">
                 <a href="/" class="nav-item" data-page="index">Home</a>
                 <span class="nav-item disabled" data-page="review"
@@ -1051,17 +1040,6 @@
                 <a href="/template_editor" class="nav-item" data-page="template-editor">Configuration</a>
                 <a href="/ai-settings" class="nav-item" data-page="ai-settings">AI Settings</a>
                 <a href="/documentation" class="nav-item" data-page="documentation">Documentation</a>
-            </div>
-            <div class="header-controls">
-                <!-- Language Switcher -->
-                <div class="header-language-switcher">
-                    <button id="header-lang-pl-btn" class="header-lang-btn active" data-lang="pl" title="Komentarze po polsku">
-                        <i class="fas fa-language"></i> PL
-                    </button>
-                    <button id="header-lang-en-btn" class="header-lang-btn" data-lang="en" title="English comments">
-                        <i class="fas fa-language"></i> PL
-                    </button>
-                </div>
             </div>
         </nav>
     </header>
@@ -1405,7 +1383,7 @@
 
             // Close all category dropdowns
             document.querySelectorAll('[id^="category-dropdown-"]').forEach(dropdown => {
-                dropdown.style.display = 'none';
+                dropdown.classList.add('hidden');
             });
 
             // Remove active state from category buttons
@@ -1809,14 +1787,15 @@
         function showCategoryComments(category, section) {
             console.log(`Showing comments for category: ${category}, section: ${section}`);
             console.log('Available CATEGORY_COMMENTS:', Object.keys(CATEGORY_COMMENTS));
-            
+
             const dropdown = document.getElementById(`category-dropdown-${section}`);
             const commentsList = document.getElementById(`category-comments-${section}`);
-
             if (!dropdown || !commentsList) {
                 console.log('Dropdown or comments list not found');
                 return;
             }
+            // Remove hidden class to allow display (hidden uses display:none !important)
+            dropdown.classList.remove('hidden');
 
             // Get comments array for this category and section
             let comments = [];
@@ -1851,14 +1830,12 @@
                 });
             }
 
-            // Show dropdown
-            dropdown.style.display = 'block';
         }
-        
+
         function hideDropdown(section) {
             const dropdown = document.getElementById(`category-dropdown-${section}`);
             if (dropdown) {
-                dropdown.style.display = 'none';
+                dropdown.classList.add('hidden');
             }
         }
         

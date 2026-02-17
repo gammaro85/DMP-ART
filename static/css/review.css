@@ -1017,3 +1017,124 @@ body {
 .action-btn-full.mb-lg {
     margin-bottom: 20px;
 }
+
+/* ============================================
+   REVIEW CONTENT VISUAL HIERARCHY
+   ============================================ */
+
+/* Question card - clear boundary between sections */
+.question-card {
+    border-top: 3px solid var(--primary-color) !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--border-light) !important;
+    background: var(--bg-card) !important;
+    border-radius: 0 0 8px 8px !important;
+    padding: 1rem 1.25rem 1.25rem !important;
+    margin-bottom: 2rem !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+}
+
+/* Question header block */
+.question-header {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-light);
+}
+
+/* Section title (main section label, e.g. "1. Data description and collection") */
+.section-title-only {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+}
+
+/* Question + subsection ID (e.g. "1.1. How will new data be collected?") */
+.question-section-combined {
+    font-size: 1.05rem;
+    line-height: 1.4;
+    color: var(--text-primary);
+}
+.question-section-combined strong {
+    font-weight: 700;
+    color: var(--text-high-contrast);
+}
+
+/* Extracted DMP text block */
+.extracted-content {
+    background-color: var(--bg-secondary) !important;
+    border-left: 3px solid var(--primary-color) !important;
+    border-radius: 0 6px 6px 0 !important;
+    padding: 0.85rem 1rem !important;
+    margin: 0.75rem 0 !important;
+    font-size: 0.9rem !important;
+    line-height: 1.65 !important;
+    color: var(--text-secondary) !important;
+}
+.extracted-content .continuous-text p {
+    color: var(--text-secondary) !important;
+    font-style: italic;
+}
+
+/* Feedback section - visually distinct from extracted text */
+.enhanced-feedback-section {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    padding: 0.85rem;
+    margin-top: 0.75rem;
+}
+
+/* Feedback toolbar: section label + char counter */
+.feedback-toolbar {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+.feedback-toolbar h3 {
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.04em !important;
+    color: var(--text-muted) !important;
+    margin: 0 !important;
+}
+
+/* Feedback textarea - clearly an input field */
+.feedback-text {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-medium) !important;
+    border-radius: 5px !important;
+    padding: 0.6rem 0.75rem !important;
+    font-size: 0.9rem !important;
+    line-height: 1.55 !important;
+    color: var(--text-primary) !important;
+    font-style: normal !important;
+}
+.feedback-text:focus {
+    border-color: var(--primary-color) !important;
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(59,130,246,0.15) !important;
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .question-card {
+    background: var(--bg-card) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
+}
+[data-theme="dark"] .extracted-content {
+    background-color: var(--bg-alt) !important;
+    border-left-color: var(--primary-color) !important;
+}
+[data-theme="dark"] .enhanced-feedback-section {
+    background: var(--bg-secondary);
+    border-color: #4b5563;
+}
+[data-theme="dark"] .feedback-text {
+    background: var(--bg-main) !important;
+    border-color: #4b5563 !important;
+}

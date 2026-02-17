@@ -122,4 +122,24 @@
 
     // Export for global use
     window.DarkMode = DarkMode;
+
+    // Active nav item highlighting (runs on all pages)
+    function highlightActiveNavItem() {
+        const currentPage = document.body && document.body.getAttribute('data-page');
+        if (!currentPage) return;
+        // Skip pages that load script.js (it handles this itself)
+        const scriptLoaded = typeof initializeNavigation === 'function';
+        if (scriptLoaded) return;
+        document.querySelectorAll('.nav-item[data-page]').forEach(function(item) {
+            if (item.getAttribute('data-page') === currentPage) {
+                item.classList.add('active');
+            }
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', highlightActiveNavItem);
+    } else {
+        highlightActiveNavItem();
+    }
 })();
