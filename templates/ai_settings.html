@@ -182,8 +182,8 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #cbd5e1;
-            border: 2px solid #94a3b8;
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-dark);
             transition: 0.3s;
             border-radius: 48px;
         }
@@ -195,10 +195,10 @@
             width: 30px;
             left: 4px;
             bottom: 4px;
-            background-color: white;
+            background-color: var(--bg-card);
             transition: 0.3s;
             border-radius: 50%;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            box-shadow: var(--shadow-light);
         }
 
         .toggle-switch.large .slider:before {
@@ -209,8 +209,8 @@
         }
 
         input:checked + .slider {
-            background-color: #10b981;
-            border-color: #059669;
+            background-color: var(--success-color);
+            border-color: #1a7a30;
         }
 
         input:checked + .slider:before {
@@ -308,12 +308,12 @@
         }
 
         .btn-success {
-            background: #10b981;
+            background: var(--success-color);
             color: white;
         }
 
         .btn-success:hover {
-            background: #059669;
+            background: #1a7a30;
         }
 
         /* Status indicator */
@@ -328,13 +328,13 @@
         }
 
         .status-indicator.enabled {
-            background: rgba(16, 185, 129, 0.1);
-            color: #10b981;
+            background: var(--status-success);
+            color: var(--success-color);
         }
 
         .status-indicator.disabled {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
+            background: var(--status-error);
+            color: var(--error-color);
         }
 
         /* Connection status */
@@ -346,21 +346,21 @@
         }
 
         .connection-status.success {
-            background: rgba(16, 185, 129, 0.1);
-            color: #10b981;
-            border: 1px solid #10b981;
+            background: var(--status-success);
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
         }
 
         .connection-status.error {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-            border: 1px solid #ef4444;
+            background: var(--status-error);
+            color: var(--error-color);
+            border: 1px solid var(--error-color);
         }
 
         .connection-status.loading {
-            background: rgba(59, 130, 246, 0.1);
-            color: #3b82f6;
-            border: 1px solid #3b82f6;
+            background: var(--status-info);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
         }
 
         /* Knowledge Base Section */
