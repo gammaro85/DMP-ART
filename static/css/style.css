@@ -11,6 +11,7 @@ html, body {
 
 :root {
   --primary-color: #3b82f6;
+  --primary-hover: #2563eb;
   --secondary-color: #60a5fa;
   --accent-color: #2563eb;
   --navy: #3b82f6;
@@ -574,6 +575,20 @@ s .light-logo {
   margin: 0 auto;
   padding: 0;
 }
+/* Left controls group: theme toggle + language switcher */
+.header-left-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+/* Nav links push to the right */
+.header-nav .nav-links {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
 .nav-item,
 .theme-toggle {
   font-size: 0.875rem;
@@ -693,7 +708,7 @@ s .light-logo {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #ef4444;
+  background: var(--error-color);
   color: white;
   font-size: 0.7rem;
   font-weight: 700;
@@ -799,7 +814,7 @@ s .light-logo {
 
 .delete-comment-btn {
   padding: var(--spacing-2) var(--spacing-3);
-  background: #e74c3c;
+  background: var(--error-color);
   color: white;
   border: none;
   border-radius: var(--border-radius-md);
@@ -809,7 +824,7 @@ s .light-logo {
 }
 
 .delete-comment-btn:hover {
-  background: #c0392b;
+  background: #a71d2a;
 }
 
 .add-comment-btn {
@@ -846,7 +861,7 @@ s .light-logo {
 
 .btn-save {
   padding: var(--spacing-3) var(--spacing-6);
-  background: #27ae60;
+  background: var(--success-color);
   color: white;
   border: none;
   border-radius: var(--border-radius-md);
@@ -860,7 +875,7 @@ s .light-logo {
 }
 
 .btn-save:hover {
-  background: #229954;
+  background: #1e8449;
 }
 
 .container,
@@ -1262,6 +1277,12 @@ body::before {
   position: relative;
   margin-top: var(--spacing-10);  /* 64px top spacing */
   z-index: 1;  /* Normal content tier (not sticky) */
+}
+/* Footer link - inherits muted color from parent */
+.site-footer .footer-link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 /* Body padding for fixed footer pages to prevent content overlap - consolidated above */

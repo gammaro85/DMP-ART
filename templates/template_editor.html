@@ -111,9 +111,19 @@
 <body data-page="template-editor">
     <header class="fixed-header">
         <nav class="header-nav">
-            <button class="theme-toggle" aria-label="Toggle theme">
-                <i class="fas fa-moon"></i>
-            </button>
+            <div class="header-left-controls">
+                <button class="theme-toggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="header-language-switcher" id="te-lang-switcher">
+                    <button id="te-lang-pl-btn" class="header-lang-btn active" data-lang="pl" title="Komentarze po polsku">
+                        <i class="fas fa-language"></i> PL
+                    </button>
+                    <button id="te-lang-en-btn" class="header-lang-btn" data-lang="en" title="English comments">
+                        <i class="fas fa-language"></i> EN
+                    </button>
+                </div>
+            </div>
             <div class="nav-links">
                 <a href="/" class="nav-item" data-page="index">Home</a>
                 <span class="nav-item disabled" data-page="review"
@@ -121,14 +131,6 @@
                 <a href="/template_editor" class="nav-item" data-page="template-editor">Configuration</a>
                 <a href="/ai-settings" class="nav-item" data-page="ai-settings">AI Settings</a>
                 <a href="/documentation" class="nav-item" data-page="documentation">Documentation</a>
-            </div>
-            <div class="header-language-switcher" id="te-lang-switcher">
-                <button id="te-lang-pl-btn" class="header-lang-btn active" data-lang="pl" title="Komentarze po polsku">
-                    <i class="fas fa-language"></i> PL
-                </button>
-                <button id="te-lang-en-btn" class="header-lang-btn" data-lang="en" title="English comments">
-                    <i class="fas fa-language"></i> EN
-                </button>
             </div>
         </nav>
     </header>
@@ -606,24 +608,57 @@
     }
 
     // --- Category Management ---
+    function getCategoryLang(catName) {
+        // Determine language affinity from category name suffix
+        const lower = (catName || '').toLowerCase();
+        if (lower.endsWith('_pl') || lower.endsWith(' pl')) return 'pl';
+        if (lower.endsWith('_en') || lower.endsWith(' en')) return 'en';
+        return 'shared'; // always visible
+    }
+
+    function filterCategoryTabsByLang(lang) {
+        document.querySelectorAll('.tab-btn[data-category]').forEach(tab => {
+            const catName = tab.getAttribute('data-category');
+            const catLang = getCategoryLang(catName);
+            if (catLang === 'shared' || catLang === lang) {
+                tab.style.display = '';
+            } else {
+                tab.style.display = 'none';
+                // If current tab is hidden, switch to first visible tab
+                if (tab.classList.contains('active')) {
+                    switchTab('dmp-structure');
+                }
+            }
+        });
+    }
+
+    // Expose for language switcher
+    window.reloadCategoriesWithLang = function(lang) {
+        filterCategoryTabsByLang(lang);
+    };
+
     function renderCategoryTabs() {
         // Remove existing category tabs and panels
         document.querySelectorAll('.tab-btn[data-category], .tab-panel[data-category]').forEach(e => e.remove());
-        
+
         const nav = document.getElementById('tab-navigation');
         const addBtn = document.getElementById('add-category-btn');
         const content = document.getElementById('tab-content');
-        
+
         if (!categories.length) {
             return;
         }
-        
+
+        const activeLang = localStorage.getItem('dmp-art-comment-language') || 'pl';
+
         categories.forEach(cat => {
+            const catLang = getCategoryLang(cat.name);
             // Create tab button
             const tab = document.createElement('button');
             tab.className = 'tab-btn';
             tab.setAttribute('data-tab', cat.file);
             tab.setAttribute('data-category', cat.name);
+            tab.style.display = (catLang === 'shared' || catLang === activeLang) ? '' : 'none';
             tab.innerHTML = `
                 <i class="fas fa-folder"></i> ${escapeHtml(cat.name)}
                 <button class="remove-tab-btn" title="Delete Category" onclick="event.stopPropagation(); removeCategoryTab('${cat.file}')">×</button>

@@ -1,7 +1,7 @@
 # DMP-ART: AI Agent Development Guide
 
-**Version:** 0.9.0
-**Last Updated:** 2025-12-08
+**Version:** 0.9.1
+**Last Updated:** 2026-02-17
 **Purpose:** Context and instructions for AI agents working on this codebase
 
 ---
@@ -242,27 +242,63 @@ showToast(message, type); // type: 'success', 'error', 'info', 'warning'
 
 ### CSS Custom Properties (Theme System)
 
+**Actual current values** (from `static/css/style.css`):
+
 ```css
-:root[data-theme="dark"] {
-    --bg-main: #1a1a1a;
-    --bg-card: #2d2d2d;
-    --text-primary: #ecf0f1;
-    --primary-color: #5dade2;
-}
+/* Light theme (default :root) */
+--primary-color: #3b82f6;
+--primary-hover: #2563eb;     /* hover/active state */
+--bg-main: #f3f4f6;
+--bg-card: #ffffff;
+--bg-secondary: #e5e7eb;
+--bg-tertiary: #d1d5db;
+--text-primary: #1f2937;
+--text-secondary: #4b5563;
+--text-muted: #6b7280;
+--text-high-contrast: #111827;
+--border-light: #e5e7eb;
+--section-title-color: #2d5016;
+--subsection-title-color: #4a7c59;
 
-:root[data-theme="light"] {
-    --bg-main: #f5f5f5;
-    --bg-card: #ffffff;
-    --text-primary: #2c3e50;
-    --primary-color: #3498db;
-}
-
-/* Use variables everywhere */
-body {
-    background: var(--bg-main);
-    color: var(--text-primary);
-}
+/* Dark theme ([data-theme="dark"]) */
+--bg-main: #374151;
+--bg-card: #475569;
+--navbar-bg: #2d3748;
+--text-primary: #f1f5f9;
+--section-title-color: #86efac;
+--subsection-title-color: #6ee7b7;
 ```
+
+**IMPORTANT — `.hidden` utility class:**
+```css
+.hidden { display: none !important; }
+```
+Never use `element.style.display = 'none/block'` to toggle elements that use `.hidden`.
+Always use `element.classList.add('hidden')` / `element.classList.remove('hidden')`.
+
+### Nav Header Structure (v0.9.1+)
+
+```html
+<nav class="header-nav">
+    <!-- LEFT: theme toggle + language switcher (if page has one) -->
+    <div class="header-left-controls">
+        <button class="theme-toggle">...</button>
+        <div class="header-language-switcher">   <!-- only on review + template_editor -->
+            <button class="header-lang-btn" data-lang="pl">PL</button>
+            <button class="header-lang-btn" data-lang="en">EN</button>
+        </div>
+    </div>
+    <!-- RIGHT: nav links (margin-left:auto pushes right) -->
+    <div class="nav-links">
+        <a href="/" class="nav-item" data-page="index">Home</a>
+        ...
+    </div>
+</nav>
+```
+
+Pages loading scripts:
+- `index.html`, `review.html`: `dark-mode.js` + `script.js`
+- `template_editor.html`, `documentation.html`, `ai_settings.html`: `dark-mode.js` only
 
 ---
 
@@ -777,8 +813,8 @@ git push -u origin <branch-name>
 
 ---
 
-**Last Updated:** 2025-12-08
-**Codebase Version:** 0.9.0
+**Last Updated:** 2026-02-17
+**Codebase Version:** 0.9.1
 **Extraction Success Rate:** 94.1% (tested on 17 real NCN proposals)
 **Target Users:** Data stewards at Polish research institutions
 **Core Value:** 75% time reduction in DMP review process
@@ -889,6 +925,39 @@ suggestions = assistant.generate_section_suggestion(
 ---
 
 ## Recent Changes (Since Last Update)
+
+### 2026-02-17 Update (v0.9.1) — UI/UX Polish
+
+**Critical Bug Fixes:**
+- ✅ Category comments dropdown now works — was broken by `.hidden { display:none !important }` overriding `style.display='block'`. Fixed via `classList.remove/add('hidden')`
+- ✅ EN language button was showing "PL" label — corrected
+- ✅ `--primary-hover` CSS variable was used but never defined — added to `:root`
+
+**Layout Changes:**
+- ✅ Language toggle moved to LEFT side of nav (next to theme toggle), nav links right-aligned
+  - New wrapper: `.header-left-controls` in `review.html` and `template_editor.html`
+  - CSS: `.header-nav .nav-links { margin-left: auto }` in `style.css`
+- ✅ Footer added to `ai_settings.html` (was missing entirely)
+- ✅ Footer in `test_categories.html` was after `</html>` — moved inside `<body>` with `site-footer--relative`
+- ✅ Active nav item highlighting now works on all pages (added fallback to `dark-mode.js`)
+
+**Template Editor:**
+- ✅ Category tabs filtered by language: `_pl` suffix → PL only, `_en` → EN only, no suffix → always visible
+- ✅ `window.reloadCategoriesWithLang(lang)` implemented (was referenced but undefined)
+
+**Review Page Visual Hierarchy (review.css):**
+- ✅ `.question-card` — prominent top border (primary color), card separators
+- ✅ `.section-title-only` — small uppercase muted label
+- ✅ `.question-section-combined` — bold high-contrast question text
+- ✅ `.extracted-content` — left border + italic = visually distinct DMP text
+- ✅ `.enhanced-feedback-section` — distinct container for feedback input
+- ✅ Dark mode variants for all new styles
+
+**CSS Cleanup:**
+- ✅ Replaced hardcoded hex colors in `tab-badge`, `delete-comment-btn`, `btn-save` with CSS variables
+- ✅ Fixed `.header-action-buttons-nav` rgba hardcoded colors → CSS variables
+- ✅ Removed duplicate `.results-container` declaration in review.html
+- ✅ Moved inline `style="color:inherit"` from documentation.html footer → `.footer-link` class in style.css
 
 ### 2025-12-07 Update (v0.9.0)
 
