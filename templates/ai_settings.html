@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pl" data-theme="light">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -40,7 +40,7 @@
 
         /* Quick Start Guide */
         .quick-start {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #2563eb 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
             color: white;
             border-radius: 12px;
             padding: 1.5rem;
@@ -457,9 +457,11 @@
     <!-- Header -->
     <header class="fixed-header">
         <nav class="header-nav">
-            <button class="theme-toggle" aria-label="Toggle theme">
-                <i class="fas fa-moon"></i>
-            </button>
+            <div class="header-left-controls">
+                <button class="theme-toggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
             <div class="nav-links">
                 <a href="/" class="nav-item" data-page="index">Home</a>
                 <span class="nav-item disabled" data-page="review"

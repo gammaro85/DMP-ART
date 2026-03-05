@@ -142,6 +142,27 @@ html, body {
   --space-2xl: var(--spacing-6);   /* 32px - 2x extra large spacing */
   --space-3xl: var(--spacing-8);   /* 48px - 3x extra large spacing */
   --space-4xl: var(--spacing-10);  /* 64px - 4x extra large spacing */
+
+  /* ============================================
+     INTERACTION COLORS
+     Hover/focus states derived from base colors
+     ============================================ */
+
+  /* Hover variants (darker shades for hover states) */
+  --error-color-hover: #a71d2a;       /* Darker error for hover/active */
+  --success-color-hover: #1a7a30;     /* Darker success for hover/active */
+
+  /* Button backgrounds */
+  --btn-action-bg: rgba(30, 58, 95, 0.9);       /* Dark navy for form/action buttons */
+  --secondary-btn-bg: rgba(107, 114, 128, 0.06);    /* Light gray for secondary buttons */
+  --secondary-btn-border: rgba(107, 114, 128, 0.15); /* Border for secondary buttons */
+  --secondary-btn-hover-bg: rgba(107, 114, 128, 0.12);     /* Hover bg for secondary */
+  --secondary-btn-hover-border: rgba(107, 114, 128, 0.25); /* Hover border for secondary */
+  --secondary-btn-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Hover shadow for secondary */
+
+  /* Header action group */
+  --header-action-group-bg: rgba(255, 255, 255, 0.1);     /* Subtle container bg */
+  --header-action-group-border: rgba(255, 255, 255, 0.2); /* Subtle container border */
 }
 
 /* ============================================
@@ -295,7 +316,7 @@ body[data-page="review"] {
 }
 
 .first-letter {
-  color: rgba(245, 158, 11, 1);
+  color: var(--warning-color);
   font-weight: 700;
 }
 
@@ -869,7 +890,7 @@ s .light-logo {
 }
 
 .delete-comment-btn:hover {
-  background: #a71d2a;
+  background: var(--error-color-hover);
 }
 
 .add-comment-btn {
@@ -920,7 +941,7 @@ s .light-logo {
 }
 
 .btn-save:hover {
-  background: #1e8449;
+  background: var(--success-color-hover);
 }
 
 .container,
@@ -1060,7 +1081,7 @@ s .light-logo {
   margin: 0;
   border: 1px solid transparent;
   cursor: pointer;
-  background: rgba(30,58,95,.9)
+  background: var(--btn-action-bg)
 }
 .assign-btn,
 .btn,
@@ -1093,7 +1114,7 @@ textarea {
   margin: 0;
   border: 1px solid transparent;
   cursor: pointer;
-  background: rgba(30,58,95,.9);
+  background: var(--btn-action-bg);
   color: var(--light-color)
 }
 .add-btn:hover,
@@ -1114,9 +1135,9 @@ textarea {
 .reset-btn,
 .secondary-btn,
 .skip-btn {
-  background: rgba(107,114,128,.06);
+  background: var(--secondary-btn-bg);
   color: var(--text-secondary);
-  border: 1px solid rgba(107,114,128,.15)
+  border: 1px solid var(--secondary-btn-border)
 }
 .btn-secondary:hover,
 .clear-btn:hover,
@@ -1124,11 +1145,11 @@ textarea {
 .reset-btn:hover,
 .secondary-btn:hover,
 .skip-btn:hover {
-  background: rgba(107,114,128,.12);
+  background: var(--secondary-btn-hover-bg);
   color: var(--text-primary);
-  border-color: rgba(107,114,128,.25);
+  border-color: var(--secondary-btn-hover-border);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0,0,0,.08)
+  box-shadow: var(--secondary-btn-hover-shadow)
 }
 .action-btn,
 .assign-btn {
@@ -1153,9 +1174,9 @@ textarea {
 .delete-btn:hover,
 .remove-phrase-btn:hover,
 .remove-question-btn:hover {
-  background: #a71d2a;
+  background: var(--error-color-hover);
   color: var(--light-color);
-  border-color: #a71d2a;
+  border-color: var(--error-color-hover);
   box-shadow: var(--shadow-medium)
 }
 input,
@@ -1229,7 +1250,7 @@ textarea::placeholder {
 }
 [data-theme=dark] .fixed-header {
   background: var(--navbar-bg);
-  border-bottom-color: #4b5563;
+  border-bottom-color: var(--border-light);
   box-shadow: none
 }
 [data-theme=dark] .nav-item {
@@ -1243,29 +1264,29 @@ textarea::placeholder {
   border-color: transparent
 }
 [data-theme=dark] .header-language-switcher {
-  background: #374151;
+  background: var(--bg-main);
 }
 [data-theme=dark] .header-lang-btn {
   color: var(--text-secondary);
 }
 [data-theme=dark] .header-lang-btn:hover {
-  background: #4b5563;
+  background: var(--bg-hover);
 }
 [data-theme=dark] .header-lang-btn.active {
   background: var(--primary-color);
   color: white;
 }
 [data-theme=dark] .extracted-content {
-  background: #374151;
-  border-color: #4b5563;
+  background: var(--bg-main);
+  border-color: var(--border-light);
   color: var(--text-primary)
 }
 [data-theme=dark] input,
 [data-theme=dark] select,
 [data-theme=dark] textarea {
-  background: #374151;
+  background: var(--bg-main);
   color: var(--text-primary);
-  border-color: #4b5563
+  border-color: var(--border-light)
 }
 
 [data-theme=dark] .primary-btn,
@@ -1329,7 +1350,7 @@ body::before {
 [data-theme=dark] .site-footer {
   background: var(--footer-bg);
   box-shadow: none;
-  border-top-color: #4b5563;
+  border-top-color: var(--border-light);
 }
 
 /* Modifier: Relative footer for pages with scrollable content */
@@ -1574,7 +1595,7 @@ textarea,
 /* Dark mode adjustments for upload area */
 [data-theme="dark"] .upload-area {
   background: transparent;
-  border-color: #fbbf24 !important;
+  border-color: var(--warning-color) !important;
   box-shadow: none;
 }
 

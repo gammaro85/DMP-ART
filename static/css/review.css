@@ -518,9 +518,9 @@ h3.subsection-title {
     gap: 6px;
     align-items: center;
     padding: 4px;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--header-action-group-bg);
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--header-action-group-border);
 }
 
 .action-btn {
@@ -543,7 +543,7 @@ h3.subsection-title {
 }
 
 .action-btn.primary:hover {
-    background-color: #1a7a30;
+    background-color: var(--success-color-hover);
     box-shadow: 0 4px 8px rgba(34, 145, 59, 0.4);
     transform: translateY(-1px);
 }
@@ -833,7 +833,7 @@ body {
 }
 
 .modal-header .close-btn:hover {
-    background: rgba(255, 0, 0, 0.1);
+    background: var(--status-error);
     color: var(--error-color);
 }
 
@@ -1128,7 +1128,7 @@ body {
     box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
 }
 [data-theme="dark"] .extracted-content {
-    background-color: #2d3a4a !important;
+    background-color: var(--bg-tertiary) !important;
     border-left-color: var(--primary-color) !important;
 }
 [data-theme="dark"] .continuous-text p {
@@ -1136,9 +1136,9 @@ body {
 }
 [data-theme="dark"] .enhanced-feedback-section {
     background: var(--bg-secondary);
-    border-color: #4b5563;
+    border-color: var(--border-light);
 }
 [data-theme="dark"] .feedback-text {
     background: var(--bg-main) !important;
-    border-color: #4b5563 !important;
+    border-color: var(--border-light) !important;
 }
