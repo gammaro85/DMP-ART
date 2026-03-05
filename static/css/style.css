@@ -24,6 +24,7 @@ html, body {
   --yellow-highlight: #c8e0f4;
   --error-hover: #891e29;
   --success-hover: #186e32;
+  --warning-hover: #b58512;
   --text-inverse: #ffffff;
   --primary-rgb: 50, 112, 224;
   --section-title-color: #244410;
@@ -1235,6 +1236,7 @@ textarea::placeholder {
   --bg-alt: #4b5563;
   --error-hover: #f06b6b;
   --success-hover: #22c55e;
+  --warning-hover: #fbbf24;
   --text-inverse: #ffffff;
   --primary-rgb: 59, 130, 246;
   --status-info: rgba(59, 130, 246, 0.15);
