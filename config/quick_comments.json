@@ -1,31 +1,10 @@
 {
   "quick_comments": [
     {
-      "name": "minor adjustments",
-      "text": {
-        "en": "The plan is very good, just need to add some information.",
-        "pl": "The plan is very good, just need to add some information."
-      }
-    },
-    {
       "name": "send final version",
       "text": {
         "en": "The plan is approved, I would just ask for the final version to be sent to our records.",
         "pl": "The plan is approved, I would just ask for the final version to be sent to our records."
-      }
-    },
-    {
-      "name": "minor adjustments v2",
-      "text": {
-        "en": "Plan is very good, only minor details need adjustment.",
-        "pl": "Plan is very good, only minor details need adjustment."
-      }
-    },
-    {
-      "name": "Sample Comment",
-      "text": {
-        "en": "The plan is very good, just need to add some information.",
-        "pl": "The plan is very good, just need to add some information."
       }
     },
     {
@@ -47,6 +26,13 @@
       "text": {
         "en": "Gdańsk Tech",
         "pl": "Gdańsk Tech"
+      }
+    },
+    {
+      "name": "do skreślenia",
+      "text": {
+        "en": "do skreślenia",
+        "pl": "do skreślenia"
       }
     }
   ]
