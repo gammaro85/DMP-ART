@@ -685,8 +685,8 @@
             margin-top: 0.15rem;
         }
 
-        /* Buttons */
-        .btn {
+        /* Buttons — scoped to settings page to avoid conflict with global .btn */
+        body[data-page="settings"] .btn {
             padding: 0.5rem 1rem;
             border: none;
             border-radius: 6px;
@@ -699,36 +699,36 @@
             gap: 0.4rem;
         }
 
-        .btn-primary {
+        body[data-page="settings"] .btn-primary {
             background: var(--primary-color);
             color: white;
         }
 
-        .btn-primary:hover { background: var(--primary-hover); }
+        body[data-page="settings"] .btn-primary:hover { background: var(--primary-hover); }
 
-        .btn-secondary {
+        body[data-page="settings"] .btn-secondary {
             background: var(--bg-tertiary);
             color: var(--text-primary);
             border: 1px solid var(--border-medium);
         }
 
-        .btn-secondary:hover { background: var(--bg-card); }
+        body[data-page="settings"] .btn-secondary:hover { background: var(--bg-card); }
 
-        .btn-success {
+        body[data-page="settings"] .btn-success {
             background: var(--success-color);
             color: white;
         }
 
-        .btn-success:hover { background: var(--success-hover); }
+        body[data-page="settings"] .btn-success:hover { background: var(--success-hover); }
 
-        .btn-danger {
+        body[data-page="settings"] .btn-danger {
             background: var(--error-color);
             color: white;
         }
 
-        .btn-danger:hover { background: var(--error-hover); }
+        body[data-page="settings"] .btn-danger:hover { background: var(--error-hover); }
 
-        .btn-sm {
+        body[data-page="settings"] .btn-sm {
             padding: 0.3rem 0.6rem;
             font-size: 0.8rem;
         }
@@ -851,11 +851,11 @@
                     <div class="general-info-grid">
                         <div class="general-info-item">
                             <div class="info-label">Version</div>
-                            <div class="info-value">0.9.1</div>
+                            <div class="info-value">{{ app_version }}</div>
                         </div>
                         <div class="general-info-item">
                             <div class="info-label">Extraction Success Rate</div>
-                            <div class="info-value">94.1%</div>
+                            <div class="info-value">{{ extraction_success_rate }}</div>
                         </div>
                         <div class="general-info-item">
                             <div class="info-label">DMP Sections</div>
