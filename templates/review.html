@@ -517,7 +517,7 @@
         }
 
         .action-btn.primary:hover {
-            background-color: #1a7a30;
+            background-color: var(--success-hover);
             box-shadow: 0 4px 8px rgba(34, 145, 59, 0.4);
             transform: translateY(-1px);
         }
@@ -793,15 +793,15 @@
         }
 
         .confidence-fill.high {
-            background: linear-gradient(90deg, var(--success-color), #1a7a30);
+            background: linear-gradient(90deg, var(--success-color), var(--success-hover));
         }
 
         .confidence-fill.medium {
-            background: linear-gradient(90deg, var(--warning-color), #c99415);
+            background: linear-gradient(90deg, var(--warning-color), var(--warning-hover));
         }
 
         .confidence-fill.low {
-            background: linear-gradient(90deg, var(--error-color), #a82434);
+            background: linear-gradient(90deg, var(--error-color), var(--error-hover));
         }
 
         .confidence-value {
@@ -919,16 +919,16 @@
 
         /* Dark mode scrollbar adjustments */
         [data-theme="dark"] body[data-page="review"] {
-            scrollbar-color: var(--primary-color) rgba(30, 41, 59, 0.6);
+            scrollbar-color: var(--primary-color) var(--navbar-bg);
         }
 
         [data-theme="dark"] body[data-page="review"]::-webkit-scrollbar-track {
-            background: rgba(30, 41, 59, 0.6);
+            background: var(--navbar-bg);
         }
 
         [data-theme="dark"] body[data-page="review"]::-webkit-scrollbar-thumb {
             background: var(--primary-color);
-            border-color: rgba(30, 41, 59, 0.6);
+            border-color: var(--navbar-bg);
         }
 
         [data-theme="dark"] body[data-page="review"]::-webkit-scrollbar-thumb:hover {
@@ -938,15 +938,15 @@
         /* Dark mode - no scrollbar changes needed for quick-comments-list */
 
         [data-theme="dark"] textarea {
-            scrollbar-color: rgba(148, 163, 184, 0.4) rgba(30, 41, 59, 0.6);
+            scrollbar-color: var(--text-muted) var(--navbar-bg);
         }
 
         [data-theme="dark"] textarea::-webkit-scrollbar-track {
-            background: rgba(30, 41, 59, 0.6);
+            background: var(--navbar-bg);
         }
 
         [data-theme="dark"] textarea::-webkit-scrollbar-thumb {
-            background: rgba(148, 163, 184, 0.4);
+            background: var(--text-muted);
         }
 
         [data-theme="dark"] textarea::-webkit-scrollbar-thumb:hover {

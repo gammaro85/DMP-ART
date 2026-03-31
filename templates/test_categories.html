@@ -208,7 +208,7 @@
                 
                 dataDiv.innerHTML = html;
             } catch (error) {
-                dataDiv.innerHTML = `<div style="color: red;">Error loading data: ${error.message}</div>`;
+                dataDiv.innerHTML = `<div style="color: var(--error-color);">Error loading data: ${error.message}</div>`;
             }
         }
         

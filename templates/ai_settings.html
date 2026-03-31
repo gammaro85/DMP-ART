@@ -40,7 +40,7 @@
 
         /* Quick Start Guide */
         .quick-start {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #2563eb 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
             color: white;
             border-radius: 12px;
             padding: 1.5rem;
@@ -210,7 +210,7 @@
 
         input:checked + .slider {
             background-color: var(--success-color);
-            border-color: #1a7a30;
+            border-color: var(--success-hover);
         }
 
         input:checked + .slider:before {
@@ -313,7 +313,7 @@
         }
 
         .btn-success:hover {
-            background: #1a7a30;
+            background: var(--success-hover);
         }
 
         /* Status indicator */
