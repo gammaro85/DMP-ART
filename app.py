@@ -1,5 +1,5 @@
-from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for, Response, stream_with_context, send_from_directory
 # app.py - Enhanced Flask application with About page and AI Module
+from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for, Response, stream_with_context, send_from_directory
 import os
 import json
 import time
@@ -8,7 +8,6 @@ import zipfile
 import uuid
 import re
 from datetime import datetime
-from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for, Response, stream_with_context
 from werkzeug.utils import secure_filename
 from utils.extractor import DMPExtractor
 from utils.ai_module import AIReviewAssistant
@@ -497,47 +496,7 @@ def save_dmp_structure():
             'message': f'Error saving DMP structure: {str(e)}'
         })
 
-@app.route('/template_editor')
-def template_editor():
-    try:
-        structure_path = os.path.join('config', 'dmp_structure.json')
-        if os.path.exists(structure_path):
-            with open(structure_path, 'r', encoding='utf-8') as f:
-                dmp_structure = json.load(f)
-        else:
-            extractor = DMPExtractor()
-            dmp_structure = extractor.dmp_structure
-    except Exception as e:
-        print(f"Error loading configuration: {str(e)}")
-        extractor = DMPExtractor()
-        dmp_structure = extractor.dmp_structure
-    
-    templates_by_section = {
-        "1. Data description and collection or re-use of existing data": {
-            k: v for k, v in DMP_TEMPLATES.items() if k.startswith("1.")
-        },
-        "2. Documentation and data quality": {
-            k: v for k, v in DMP_TEMPLATES.items() if k.startswith("2.")
-        },
-        "3. Storage and backup during the research process": {
-            k: v for k, v in DMP_TEMPLATES.items() if k.startswith("3.")
-        },
-        "4. Legal requirements, codes of conduct": {
-            k: v for k, v in DMP_TEMPLATES.items() if k.startswith("4.")
-        },
-        "5. Data sharing and long-term preservation": {
-            k: v for k, v in DMP_TEMPLATES.items() if k.startswith("5.")
-        },
-        "6. Data management responsibilities and resources": {
-            k: v for k, v in DMP_TEMPLATES.items() if k.startswith("6.")
-        }
-    }
-    
-    # Removed comments=COMMON_COMMENTS
-    return render_template('template_editor.html', 
-                           templates=DMP_TEMPLATES,
-                           templates_by_section=templates_by_section,
-                           dmp_structure=dmp_structure)
+# Old template_editor route removed - now handled by settings_redirect()
 
 @app.route('/save_feedback', methods=['POST'])
 def save_feedback():
@@ -1415,13 +1374,81 @@ def health_check():
     })
 
 # ============================================================
-# AI Module Routes
+# Unified Settings Page
 # ============================================================
 
+# Settings modules registry - developers add new modules here
+SETTINGS_MODULES = [
+    {'id': 'general', 'name': 'General', 'icon': 'sliders-h', 'badge': None},
+    {'id': 'comments', 'name': 'Comments', 'icon': 'comments', 'badge': None},
+    {'id': 'ai', 'name': 'AI Assistant', 'icon': 'robot', 'badge': None},
+]
+
+@app.route('/settings')
+def settings_page():
+    """Unified settings page with modular architecture"""
+    return render_template('settings.html', modules=SETTINGS_MODULES)
+
+@app.route('/template_editor')
 @app.route('/ai-settings')
-def ai_settings_page():
-    """AI Settings page"""
-    return render_template('ai_settings.html', config=ai_assistant.get_config())
+def settings_redirect():
+    """Redirect old settings pages to unified settings"""
+    if request.path == '/ai-settings':
+        return redirect('/settings#ai')
+    return redirect('/settings#comments')
+
+@app.route('/api/settings/general', methods=['GET'])
+def get_general_settings():
+    """Get general settings"""
+    max_upload_mb = app.config.get('MAX_CONTENT_LENGTH', 16 * 1024 * 1024) // (1024 * 1024)
+    return jsonify({
+        'success': True,
+        'settings': {
+            'max_upload_mb': max_upload_mb
+        }
+    })
+
+@app.route('/api/settings/general', methods=['POST'])
+def update_general_settings():
+    """Update general settings"""
+    try:
+        data = request.json or {}
+        if 'max_upload_mb' in data:
+            mb = int(data['max_upload_mb'])
+            if mb < 1 or mb > 128:
+                return jsonify({'success': False, 'message': 'File size must be 1-128 MB'}), 400
+            app.config['MAX_CONTENT_LENGTH'] = mb * 1024 * 1024
+        return jsonify({'success': True, 'message': 'Settings updated'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/settings/cache-count', methods=['GET'])
+def get_cache_count():
+    """Get number of cached files"""
+    cache_dir = app.config['CACHE_FOLDER']
+    count = 0
+    if os.path.exists(cache_dir):
+        count = len([f for f in os.listdir(cache_dir) if f.endswith('.json')])
+    return jsonify({'success': True, 'count': count})
+
+@app.route('/api/settings/clear-cache', methods=['POST'])
+def clear_cache():
+    """Clear all cached extraction results"""
+    try:
+        cache_dir = app.config['CACHE_FOLDER']
+        deleted = 0
+        if os.path.exists(cache_dir):
+            for f in os.listdir(cache_dir):
+                if f.endswith('.json'):
+                    os.remove(os.path.join(cache_dir, f))
+                    deleted += 1
+        return jsonify({'success': True, 'deleted': deleted})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+# ============================================================
+# AI Module Routes
+# ============================================================
 
 @app.route('/api/ai/config', methods=['GET'])
 def get_ai_config():
