@@ -88,12 +88,8 @@
                     <i class="fas fa-moon"></i>
                 </button>
                 <div class="header-language-switcher" id="te-lang-switcher">
-                    <button id="te-lang-pl-btn" class="header-lang-btn active" data-lang="pl" title="Komentarze po polsku">
-                        <span class="flag-icon">&#x1F1F5;&#x1F1F1;</span> PL
-                    </button>
-                    <button id="te-lang-en-btn" class="header-lang-btn" data-lang="en" title="English comments">
-                        <span class="flag-icon">&#x1F1EC;&#x1F1E7;</span> EN
-                    </button>
+                    <button id="te-lang-pl-btn" class="header-lang-btn active" data-lang="pl" title="Komentarze po polsku">PL</button>
+                    <button id="te-lang-en-btn" class="header-lang-btn" data-lang="en" title="English comments">EN</button>
                 </div>
             </div>
             <div class="nav-links">
@@ -163,7 +159,7 @@
                 </div>
                 <div class="form-group">
                     <label for="comment-text">Comment Text:</label>
-                    <textarea id="comment-text" rows="4" placeholder="Enter comment text" maxlength="500"></textarea>
+                    <textarea id="comment-text" rows="6" placeholder="Enter comment text" maxlength="500"></textarea>
                 </div>
             </div>
             <div class="modal-footer">
@@ -388,12 +384,12 @@
                     <div style="display: flex; gap: 10px; margin-top: 5px;">
                         <div style="flex: 1;">
                             <label style="font-size: 0.75rem; color: var(--text-secondary); display: block; margin-bottom: 3px;">English (EN)</label>
-                            <textarea class="comment-text-input" rows="3"
+                            <textarea class="comment-text-input" rows="5"
                                       placeholder="English text" data-idx="${idx}" data-field="text_en">${textEn}</textarea>
                         </div>
                         <div style="flex: 1;">
                             <label style="font-size: 0.75rem; color: var(--text-secondary); display: block; margin-bottom: 3px;">Polish (PL)</label>
-                            <textarea class="comment-text-input" rows="3"
+                            <textarea class="comment-text-input" rows="5"
                                       placeholder="Polish text" data-idx="${idx}" data-field="text_pl">${textPl}</textarea>
                         </div>
                     </div>

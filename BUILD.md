@@ -1,3 +1,33 @@
+# DMP-ART - Build & Standalone Guide
+
+## End User Quick Start (Standalone Package)
+
+After unpacking `DMP-ART-Standalone.zip`:
+
+1. **Windows:** double-click `DMP-ART.exe` / **Linux/Mac:** run `./DMP-ART` in terminal
+2. Browser opens automatically at `http://localhost:5000`
+3. Upload a PDF or DOCX NCN proposal → review the extracted 14 sections → export feedback
+
+**Folder layout inside the ZIP:**
+```
+DMP-ART/
+├── DMP-ART.exe          ← run this
+├── _internal/           ← Python runtime (do not modify)
+├── input/               ← place your PDF/DOCX files here
+├── output/
+│   ├── dmp/             ← extracted DMPs
+│   ├── reviews/         ← saved feedback files
+│   └── cache/           ← cache (safe to delete)
+└── config/              ← editable comment templates (JSON)
+```
+
+**OCR for scanned PDFs** requires Tesseract installed separately:
+- Windows: https://github.com/UB-Mannheim/tesseract/wiki
+- Linux: `sudo apt-get install tesseract-ocr tesseract-ocr-pol tesseract-ocr-eng`
+- macOS: `brew install tesseract`
+
+---
+
 # DMP-ART - Build Instructions
 
 ## 📦 Standalone Executable (Recommended for End Users)

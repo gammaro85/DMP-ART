@@ -5,8 +5,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![Flask](https://img.shields.io/badge/Flask-3.1.1-green.svg)](https://flask.palletsprojects.com/)
-[![Version](https://img.shields.io/badge/version-0.8.1-brightgreen.svg)](https://github.com/gammaro85/DMP-ART)
-[![Success Rate](https://img.shields.io/badge/success_rate-94.1%25-success)](FINAL_TEST_RESULTS.md)
+[![Version](https://img.shields.io/badge/version-0.9.1-brightgreen.svg)](https://github.com/gammaro85/DMP-ART)
+[![Success Rate](https://img.shields.io/badge/success_rate-94.1%25-success)](HISTORY.md)
 [![OCR](https://img.shields.io/badge/OCR-supported-blue)](.claude/CLAUDE.md)
 
 ---
