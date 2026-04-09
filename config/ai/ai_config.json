@@ -1,6 +1,6 @@
 {
   "enabled": false,
-  "provider": "anthropic",
+  "provider": "openai",
   "api_keys": {
     "openai": "",
     "anthropic": ""
@@ -8,18 +8,18 @@
   "model_settings": {
     "openai": {
       "model": "gpt-4o",
-      "temperature": 0.89,
+      "temperature": 0.3,
       "max_tokens": 2000
     },
     "anthropic": {
-      "model": "",
-      "temperature": 0.89,
+      "model": "claude-sonnet-4-5-20250929",
+      "temperature": 0.3,
       "max_tokens": 2000
     }
   },
   "review_settings": {
-    "ready_comments_ratio": 0.51,
-    "ai_suggestions_ratio": 0.49,
+    "ready_comments_ratio": 0.75,
+    "ai_suggestions_ratio": 0.25,
     "auto_learn_enabled": true
   },
   "knowledge_base_path": "config/ai/knowledge_base.json"
