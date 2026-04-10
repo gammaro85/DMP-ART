@@ -216,13 +216,7 @@ function initializeUploadPage() {
         fileInfo: document.getElementById('file-info'),
         fileName: document.getElementById('file-name'),
         uploadBtn: document.getElementById('upload-btn'),
-        clearBtn: document.getElementById('clear-btn'),
-        loading: document.getElementById('loading'),
-        result: document.getElementById('result'),
-        successMessage: document.getElementById('success-message'),
-        errorMessage: document.getElementById('error-message'),
-        errorText: document.getElementById('error-text'),
-        downloadBtn: document.getElementById('download-btn')
+        clearBtn: document.getElementById('clear-btn')
     };
 
     // Exit if not on upload page
@@ -472,7 +466,7 @@ function updateProgressBar(data) {
     if (!progressContainer) return;
 
     // Show progress container
-    progressContainer.style.display = 'block';
+    progressContainer.classList.remove('hidden');
 
     // Update progress bar width
     if (progressFill) {
@@ -530,7 +524,7 @@ function updateProgressBar(data) {
 function hideProgressBar() {
     const progressContainer = document.getElementById('progress-container');
     if (progressContainer) {
-        progressContainer.style.display = 'none';
+        progressContainer.classList.add('hidden');
     }
 
     // Reset progress bar
