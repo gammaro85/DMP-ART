@@ -1,22 +1,40 @@
-from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for, Response, stream_with_context, send_from_directory
 # app.py - Enhanced Flask application with About page and AI Module
 import os
 import json
+import re
 import time
 import threading
-import zipfile
+import traceback
 import uuid
-import re
+import zipfile
 from datetime import datetime
-from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for, Response, stream_with_context
+
+import PyPDF2
+from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for, Response, stream_with_context, send_from_directory
 from werkzeug.utils import secure_filename
+
 from utils.extractor import DMPExtractor
 from utils.ai_module import AIReviewAssistant
-# Comments are now managed through JSON files in config/ directory
 
 # Global progress state for real-time SSE updates
 progress_state = {}
 progress_lock = threading.Lock()
+_PROGRESS_TTL = 600  # seconds — abandon orphaned sessions after 10 min
+
+
+def _cleanup_stale_progress():
+    """Background thread: remove progress_state entries older than _PROGRESS_TTL."""
+    while True:
+        time.sleep(60)
+        cutoff = time.time() - _PROGRESS_TTL
+        with progress_lock:
+            stale = [sid for sid, state in progress_state.items()
+                     if state.get('_created', 0) < cutoff]
+            for sid in stale:
+                del progress_state[sid]
+
+_cleanup_thread = threading.Thread(target=_cleanup_stale_progress, daemon=True)
+_cleanup_thread.start()
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -130,7 +148,7 @@ def validate_docx_file(file_path):
         
         # Try to load with python-docx
         try:
-            from docx import Document
+            from docx import Document  # noqa: PLC0415 – heavy import, kept lazy
             doc = Document(file_path)
             paragraph_count = len(doc.paragraphs)
             table_count = len(doc.tables)
@@ -150,45 +168,30 @@ def validate_docx_file(file_path):
         return False, f"Validation error: {str(e)}"
 
 def validate_pdf_file(file_path):
-    """Enhanced PDF file validation"""
+    """PDF file validation. Only checks structure — does NOT reject scanned PDFs
+    (empty text layer is valid; OCR handles those in the extractor)."""
     try:
         if not os.path.exists(file_path):
             return False, "File does not exist"
-        
+
         if not file_path.lower().endswith('.pdf'):
             return False, "File is not a PDF file"
-        
-        # Check file size
+
         file_size = os.path.getsize(file_path)
         if file_size == 0:
             return False, "File is empty"
-        
+
         if file_size > 16 * 1024 * 1024:  # 16MB limit
             return False, "File is too large (max 16MB)"
-        
-        # Try to read with PyPDF2
-        try:
-            import PyPDF2
-            with open(file_path, 'rb') as file:
-                reader = PyPDF2.PdfReader(file)
-                page_count = len(reader.pages)
-                
-                if page_count == 0:
-                    return False, "PDF contains no pages"
-                
-                # Try to extract text from first page
-                try:
-                    first_page_text = reader.pages[0].extract_text()
-                    if not first_page_text.strip():
-                        return False, "PDF appears to contain no readable text"
-                except Exception:
-                    return False, "Cannot extract text from PDF"
-                    
-        except Exception as e:
-            return False, f"PDF processing error: {str(e)}"
-        
+
+        # Validate PDF structure — a readable page count is enough
+        with open(file_path, 'rb') as f:
+            reader = PyPDF2.PdfReader(f)
+            if len(reader.pages) == 0:
+                return False, "PDF contains no pages"
+
         return True, "File is valid"
-        
+
     except Exception as e:
         return False, f"Validation error: {str(e)}"
 
@@ -225,12 +228,13 @@ def upload_file():
     # Generate unique session ID for progress tracking
     session_id = str(uuid.uuid4())
 
-    # Initialize progress state
+    # Initialize progress state (include creation timestamp for TTL cleanup)
     with progress_lock:
         progress_state[session_id] = {
             'message': 'Starting upload...',
             'progress': 0,
-            'status': 'processing'
+            'status': 'processing',
+            '_created': time.time()
         }
 
     file_path = None  # Ensure file_path is always defined
@@ -352,7 +356,6 @@ def upload_file():
                 })
 
         except Exception as e:
-            import traceback
             traceback_str = traceback.format_exc()
             print(f"Error processing file: {str(e)}")
             print(traceback_str)
@@ -662,7 +665,6 @@ def export_json():
         })
 
     except Exception as e:
-        import traceback
         traceback.print_exc()
         return jsonify({
             'success': False,
@@ -1057,7 +1059,7 @@ def delete_category(category_id):
         backup_path = os.path.join('config', backup_name)
 
         # Copy to backup
-        import shutil
+        import shutil  # noqa: PLC0415 – stdlib, keep lazy to avoid import overhead at startup
         shutil.copy2(category_path, backup_path)
 
         # Delete the category file
@@ -1234,17 +1236,27 @@ def delete_category_legacy():
 
 @app.route('/config/<filename>')
 def serve_config(filename):
-    """Serve config files"""
+    """Serve config files (JSON only, no path traversal)"""
     try:
+        # Reject path traversal: only plain filenames allowed
+        if '/' in filename or '\\' in filename or '..' in filename:
+            return jsonify({'error': 'Invalid filename'}), 400
+
+        # Only serve .json files; block ai_config.json (contains API keys)
+        if not filename.endswith('.json'):
+            return jsonify({'error': 'Only JSON files can be served'}), 400
+        if filename in ('ai_config.json', 'knowledge_base.json'):
+            return jsonify({'error': 'File not accessible'}), 403
+
         config_path = os.path.join('config', filename)
         if not os.path.exists(config_path):
             return jsonify({'error': 'File not found'}), 404
-        
+
         with open(config_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
             if data is None:
                 data = {}
-            return data
+            return jsonify(data)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -1522,7 +1534,6 @@ def ai_suggest_feedback():
         return jsonify({'success': True, 'suggestions': suggestions})
 
     except Exception as e:
-        import traceback
         traceback.print_exc()
         return jsonify({'success': False, 'message': str(e)}), 500
 

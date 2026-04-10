@@ -2378,16 +2378,19 @@
                 feedbackTextarea.value = report;
             }
 
-            // Copy report to clipboard
-            function copyToClipboard() {
-                feedbackTextarea.select();
-                document.execCommand('copy');
-                
+            // Copy report to clipboard (local to this modal — does not shadow window.copyToClipboard)
+            function copyReportToClipboard() {
+                navigator.clipboard.writeText(feedbackTextarea.value).catch(() => {
+                    // Fallback for non-HTTPS contexts
+                    feedbackTextarea.select();
+                    document.execCommand('copy');
+                });
+
                 // Show temporary success message
                 const originalText = copyBtn.innerHTML;
                 copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
                 copyBtn.style.background = 'var(--success-color)';
-                
+
                 setTimeout(() => {
                     copyBtn.innerHTML = originalText;
                     copyBtn.style.background = '';
@@ -2500,7 +2503,7 @@
             }
             
             if (copyBtn) {
-                copyBtn.addEventListener('click', copyToClipboard);
+                copyBtn.addEventListener('click', copyReportToClipboard);
             }
             
             if (downloadBtn) {
