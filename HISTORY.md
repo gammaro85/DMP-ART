@@ -1,8 +1,15 @@
 # DMP-ART Project History
 
-**Document Version:** 1.0
-**Last Updated:** 2025-11-23
+**Document Version:** 1.1
+**Last Updated:** 2026-03-11
 **Purpose:** Complete chronological history for AI agents working on this codebase
+
+---
+
+> **Extraction Quality Summary (from v0.7.x testing, 17 real NCN proposals):**
+> Success rate: **94.1% (16/17)** — Excellent (90-100%): 9 files | Fair (50-69%): 2 files | Poor (<50%): 5 files
+> Processing: avg 5.37s (DOCX 0.23s, standard PDF 0.29s, OCR scanned ~25s)
+> 1 failure: corrupted PDF encoding (`plan_zarządzania_OPUS29.pdf`)
 
 ---
 
@@ -46,6 +53,23 @@ Build a web application to:
 ---
 
 ## Version History
+
+### v0.9.1+ (2026-03-11) — Unified Settings Page
+
+**Status:** In progress (branch: `claude/unified-settings-page`)
+**Focus:** Replace separate `/template_editor` and `/ai-settings` pages with a single `/settings` page
+
+#### Changes
+- `GET /settings` — new unified settings route (replaces `/template_editor` as primary config UI)
+- `GET /template_editor` — kept as alias for backwards compatibility
+- `GET /ai-settings` — kept as alias
+- Navigation updated to link `/settings` instead of `/template_editor`
+- Max upload size now dynamically configurable from the Settings UI (stored in `config/settings.json`)
+- `GET/POST /api/settings/general` — new endpoint for general settings (upload size, etc.)
+- `GET /api/settings/cache-count` and `POST /api/settings/clear-cache` — cache management
+- `documentation.html` updated: removed redundant inline JS, fixed nav structure, updated links to `/settings`
+
+---
 
 ### v0.9.1 (2026-02-17) - UI/UX Polish & Bug Fixes
 

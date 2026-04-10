@@ -742,8 +742,8 @@ git push -u origin <branch-name>
    git status
    git log --oneline -10
 
-   # Check test results
-   cat FINAL_TEST_RESULTS.md
+   # Check version history and known issues
+   head -60 HISTORY.md
    ```
 
 2. **Run the app:**
@@ -788,32 +788,54 @@ git push -u origin <branch-name>
 
 ## Documentation Structure
 
-**For AI Agents (Primary Documentation):**
-- **This file** (`.claude/CLAUDE.md`) - Complete AI agent guide to codebase
-- **`HISTORY.md`** - Chronological project history with all major changes
-- **`FINAL_TEST_RESULTS.md`** - Current test results and quality metrics
-- **`.claude/DOCUMENTATION_GUIDELINES.md`** - Standards for maintaining documentation
-- **`.github/copilot-instructions.md`** - GitHub Copilot/Claude onboarding instructions
-- **`README.md`** - Project overview (simplified, GitHub-facing)
+**File ownership:**
 
-**Documentation Principles:**
-1. **Single Source of Truth** - Each concept documented in ONE location only
-2. **Modify, Don't Create** - Update existing docs rather than create new files
-3. **Code References Over Prose** - Link to actual code with file:line references
-4. **For AI Agents, Not Humans** - Optimized for code assistants, not end users
-5. **Actionable Information** - Every section answers "What does an AI agent need to DO?"
+| File | Purpose |
+|------|---------|
+| `.claude/CLAUDE.md` | **Primary reference** — patterns, routes, architecture, ADRs |
+| `HISTORY.md` | Version changelog + condensed test results (94.1% on 17 files) |
+| `README.md` | GitHub-facing overview and version badges |
+| `BUILD.md` | Build/deployment + standalone end-user quick start |
+| `SECURITY.md` | Security considerations |
+| `.github/copilot-instructions.md` | Quick onboarding (~80 lines) |
+| `.claude/DOCUMENTATION_GUIDELINES.md` | Standards and update protocol |
 
 **For Issues:**
-- Check `FINAL_TEST_RESULTS.md` for known issues and test results
-- Review `HISTORY.md` for historical context and evolution
-- Follow patterns documented in this file
-- Consult `.claude/DOCUMENTATION_GUIDELINES.md` for documentation best practices
+- Historical context → `HISTORY.md`
+- Patterns, routes, CSS vars → this file
+- Standards for updating docs → `.claude/DOCUMENTATION_GUIDELINES.md`
+
+## Documentation Update Protocol
+
+**After every meaningful task, update docs before committing.**
+
+| What changed | Where to update |
+|---|---|
+| New route added | `CLAUDE.md` → Current API Routes |
+| New CSS variable or pattern | `CLAUDE.md` → relevant section |
+| Bug fixed or feature shipped | `HISTORY.md` → current version entry |
+| Version bumped | `README.md` badge + `CLAUDE.md` header |
+| Build/deploy changed | `BUILD.md` |
+
+**Standard HISTORY.md entry:**
+```markdown
+### v{X.Y.Z} ({YYYY-MM-DD}) — {Short Title}
+**Status:** Production-ready | In progress
+**Focus:** One-line description
+
+#### Changes
+- **component:** what changed and why
+- Bug: **Root Cause** — **Fix** (file:line)
+```
+
+**Do NOT create new `.md` files** for plans, analyses, or reports.
+Use `.claude/projects/*/memory/` for session notes.
 
 **Remember:** This is a single-user tool optimized for Polish research administrators. Keep it simple, fast, and focused on the core use case.
 
 ---
 
-**Last Updated:** 2026-02-17
+**Last Updated:** 2026-03-11
 **Codebase Version:** 0.9.1
 **Extraction Success Rate:** 94.1% (tested on 17 real NCN proposals)
 **Target Users:** Data stewards at Polish research institutions
