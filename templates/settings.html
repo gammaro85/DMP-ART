@@ -1,0 +1,2051 @@
+<!DOCTYPE html>
+<html lang="pl" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+    <title>Settings - DMP ART</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/dmp-art-favicon (Niestandardowe).png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        (function() {
+            const saved = localStorage.getItem('dmp-art-theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = saved || (prefersDark ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+            const meta = document.querySelector('meta[name="theme-color"]');
+            if (meta) meta.content = theme === 'dark' ? '#121212' : '#ffffff';
+        })();
+    </script>
+    <style>
+        /* ============================================
+           UNIFIED SETTINGS PAGE LAYOUT
+           ============================================ */
+        .settings-layout {
+            display: flex;
+            min-height: calc(100vh - 60px);
+            padding-top: 60px;
+        }
+
+        /* --- Sidebar --- */
+        .settings-sidebar {
+            width: 260px;
+            min-width: 260px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border-light);
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 60px;
+            height: calc(100vh - 60px);
+            overflow-y: auto;
+        }
+
+        .settings-sidebar-header {
+            padding: 0 1.25rem 1rem;
+            border-bottom: 1px solid var(--border-light);
+            margin-bottom: 0.75rem;
+        }
+
+        .settings-sidebar-header h2 {
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .settings-sidebar-header p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin: 0.25rem 0 0;
+        }
+
+        .settings-module-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .settings-module-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.25rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            border-left: 3px solid transparent;
+            transition: all 0.15s ease;
+            font-size: 0.95rem;
+        }
+
+        .settings-module-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .settings-module-item.active {
+            background: var(--bg-hover);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .settings-module-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .settings-module-badge {
+            margin-left: auto;
+            background: var(--primary-color);
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        /* --- Content Area --- */
+        .settings-content {
+            flex: 1;
+            padding: 2rem 2.5rem;
+            background: var(--bg-main);
+            overflow-y: auto;
+            max-width: calc(100% - 260px);
+        }
+
+        .settings-module-panel {
+            display: none;
+            max-width: 960px;
+        }
+
+        .settings-module-panel.active {
+            display: block;
+        }
+
+        .settings-module-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .settings-module-header h1 {
+            font-size: 1.75rem;
+            color: var(--text-primary);
+            margin: 0 0 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .settings-module-header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        /* --- Settings Card (reusable block) --- */
+        .s-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .s-card h2 {
+            color: var(--text-primary);
+            font-size: 1.15rem;
+            margin: 0 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .s-card h2 i {
+            color: var(--primary-color);
+        }
+
+        .s-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .s-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .s-group label {
+            display: block;
+            color: var(--text-primary);
+            font-weight: 500;
+            margin-bottom: 0.4rem;
+            font-size: 0.95rem;
+        }
+
+        .s-group .s-hint {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: 0.2rem;
+        }
+
+        .s-group select,
+        .s-group input[type="text"],
+        .s-group input[type="password"],
+        .s-group input[type="number"] {
+            width: 100%;
+            padding: 0.6rem 0.75rem;
+            border: 1px solid var(--border-medium);
+            border-radius: 6px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .s-group input[type="range"] {
+            width: 100%;
+            margin-top: 0.4rem;
+        }
+
+        /* Toggle inline */
+        .s-toggle-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .s-toggle-row span {
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        /* Footer actions */
+        .s-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-light);
+        }
+
+        /* --- Comments module styles --- */
+        .comments-tab-navigation {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-bottom: 1.25rem;
+            padding: 0.5rem;
+            background: var(--bg-card);
+            border-radius: 10px;
+            border: 1px solid var(--border-light);
+        }
+
+        .comments-tab-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .comments-tab-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .comments-tab-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .comments-tab-btn .remove-tab-btn {
+            background: transparent;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            padding: 0 0 0 4px;
+            font-size: 1rem;
+            line-height: 1;
+            opacity: 0.7;
+        }
+
+        .comments-tab-btn .remove-tab-btn:hover {
+            opacity: 1;
+        }
+
+        .comments-tab-btn.active .remove-tab-btn:hover {
+            color: #fecaca;
+        }
+
+        .comments-tab-panel {
+            display: none;
+        }
+
+        .comments-tab-panel.active {
+            display: block;
+        }
+
+        .add-category-btn-inline {
+            padding: 0.5rem 0.85rem;
+            border: 1px dashed var(--border-medium);
+            border-radius: 6px;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.15s ease;
+        }
+
+        .add-category-btn-inline:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: var(--status-info);
+        }
+
+        /* Structure display */
+        .structure-section {
+            margin-top: 0.75rem;
+        }
+
+        .structure-section h3 {
+            color: var(--section-title-color);
+            font-size: 1rem;
+            margin: 0 0 0.25rem;
+        }
+
+        .structure-subsection {
+            margin-top: 0.3rem;
+            padding-left: 1.25rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Comment rows */
+        .comment-row {
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+            padding: 0.75rem;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+        }
+
+        .comment-row .comment-info {
+            flex: 1;
+        }
+
+        .comment-row .comment-actions {
+            display: flex;
+            gap: 0.4rem;
+            padding-top: 0.2rem;
+        }
+
+        .comment-name-input {
+            width: 100%;
+            padding: 0.4rem 0.6rem;
+            border: 1px solid var(--border-light);
+            border-radius: 4px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .comment-text-input,
+        .category-comment-textarea {
+            width: 100%;
+            padding: 0.4rem 0.6rem;
+            border: 1px solid var(--border-light);
+            border-radius: 4px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            resize: vertical;
+        }
+
+        .cat-question-block {
+            margin-top: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .cat-question-block h4 {
+            color: var(--subsection-title-color);
+            font-size: 0.95rem;
+            margin: 0 0 0.5rem;
+        }
+
+        .category-comment-item {
+            display: flex;
+            gap: 0.5rem;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .category-comment-item textarea {
+            flex: 1;
+        }
+
+        /* Language toggle for comments */
+        .comments-lang-toggle {
+            display: inline-flex;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid var(--border-medium);
+            margin-left: auto;
+        }
+
+        .comments-lang-btn {
+            padding: 0.3rem 0.75rem;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.15s ease;
+        }
+
+        .comments-lang-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* --- AI module specific --- */
+        .ai-quick-start {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .ai-quick-start h2 {
+            color: white;
+            font-size: 1.15rem;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .ai-quick-start h2 i { color: white; }
+
+        .ai-quick-start-steps {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .ai-quick-start-steps li {
+            padding: 0.4rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.65rem;
+            font-size: 0.9rem;
+        }
+
+        .ai-quick-start-steps .step-number {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+            font-size: 0.8rem;
+        }
+
+        .ai-quick-start-steps a {
+            color: white;
+            text-decoration: underline;
+        }
+
+        /* Main toggle card */
+        .ai-main-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.25rem 1.5rem;
+            background: var(--bg-card);
+            border: 2px solid var(--border-medium);
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .ai-main-toggle.enabled {
+            border-color: var(--success-color);
+        }
+
+        .ai-main-toggle h3 {
+            font-size: 1.15rem;
+            color: var(--text-primary);
+            margin: 0 0 0.25rem;
+        }
+
+        .ai-main-toggle p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin: 0;
+        }
+
+        /* Toggle switch (used by AI) */
+        .toggle-switch {
+            position: relative;
+            width: 56px;
+            height: 30px;
+            display: inline-block;
+        }
+
+        .toggle-switch.large {
+            width: 70px;
+            height: 36px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-switch .slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-dark);
+            transition: 0.25s;
+            border-radius: 30px;
+        }
+
+        .toggle-switch .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 2px;
+            background: var(--bg-card);
+            transition: 0.25s;
+            border-radius: 50%;
+            box-shadow: var(--shadow-light);
+        }
+
+        .toggle-switch.large .slider:before {
+            height: 28px;
+            width: 28px;
+            left: 3px;
+            bottom: 2px;
+        }
+
+        .toggle-switch input:checked + .slider {
+            background: var(--success-color);
+            border-color: var(--success-hover);
+        }
+
+        .toggle-switch input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        .toggle-switch.large input:checked + .slider:before {
+            transform: translateX(32px);
+        }
+
+        /* Status indicator */
+        .ai-status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+
+        .ai-status-indicator.enabled {
+            background: var(--status-success);
+            color: var(--success-color);
+        }
+
+        .ai-status-indicator.disabled {
+            background: var(--status-error);
+            color: var(--error-color);
+        }
+
+        /* API key row */
+        .api-key-row {
+            display: flex;
+            gap: 0.5rem;
+            align-items: flex-start;
+        }
+
+        .api-key-row input { flex: 1; }
+
+        .api-key-row button { white-space: nowrap; }
+
+        /* Connection status */
+        .connection-status {
+            margin-top: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        .connection-status.success {
+            background: var(--status-success);
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+        }
+
+        .connection-status.error {
+            background: var(--status-error);
+            color: var(--error-color);
+            border: 1px solid var(--error-color);
+        }
+
+        .connection-status.loading {
+            background: var(--status-info);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        /* Ratio display */
+        .ratio-display {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.4rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Stats grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+        }
+
+        .stat-box {
+            background: var(--bg-tertiary);
+            padding: 0.75rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-box .value {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .stat-box .label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* --- General module specific --- */
+        .general-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .general-info-item {
+            background: var(--bg-tertiary);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+        }
+
+        .general-info-item .info-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .general-info-item .info-value {
+            font-size: 1rem;
+            color: var(--text-primary);
+            font-weight: 500;
+            margin-top: 0.15rem;
+        }
+
+        /* Buttons — scoped to settings page to avoid conflict with global .btn */
+        body[data-page="settings"] .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        body[data-page="settings"] .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        body[data-page="settings"] .btn-primary:hover { background: var(--primary-hover); }
+
+        body[data-page="settings"] .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-medium);
+        }
+
+        body[data-page="settings"] .btn-secondary:hover { background: var(--bg-card); }
+
+        body[data-page="settings"] .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        body[data-page="settings"] .btn-success:hover { background: var(--success-hover); }
+
+        body[data-page="settings"] .btn-danger {
+            background: var(--error-color);
+            color: white;
+        }
+
+        body[data-page="settings"] .btn-danger:hover { background: var(--error-hover); }
+
+        body[data-page="settings"] .btn-sm {
+            padding: 0.3rem 0.6rem;
+            font-size: 0.8rem;
+        }
+
+        /* Modal */
+        .settings-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .settings-modal {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            min-width: 380px;
+            max-width: 90vw;
+            box-shadow: var(--shadow-heavy);
+        }
+
+        .settings-modal h3 {
+            margin: 0 0 1rem;
+            color: var(--text-primary);
+        }
+
+        .settings-modal input[type="text"] {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid var(--border-medium);
+            border-radius: 6px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .settings-modal .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+
+        .settings-modal .modal-error {
+            color: var(--error-color);
+            font-size: 0.85rem;
+            min-height: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Action row for Quick Comments */
+        .action-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        /* Hidden utility */
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body data-page="settings">
+    <!-- Header -->
+    <header class="fixed-header">
+        <nav class="header-nav">
+            <div class="header-left-controls">
+                <button class="theme-toggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+            <div class="nav-links">
+                <a href="/" class="nav-item" data-page="index">Home</a>
+                <span class="nav-item disabled" data-page="review"
+                      title="Upload and process a document first to access review">Review</span>
+                <a href="/settings" class="nav-item" data-page="settings">Settings</a>
+                <a href="/documentation" class="nav-item" data-page="documentation">Documentation</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="settings-layout">
+        <!-- Sidebar -->
+        <aside class="settings-sidebar">
+            <div class="settings-sidebar-header">
+                <h2><i class="fas fa-cog"></i> Settings</h2>
+                <p>Configure your DMP ART instance</p>
+            </div>
+            <ul class="settings-module-list" id="settings-module-list">
+                {% for module in modules %}
+                <li class="settings-module-item{% if loop.first %} active{% endif %}"
+                    data-module="{{ module.id }}"
+                    onclick="switchModule('{{ module.id }}')">
+                    <i class="fas fa-{{ module.icon }}"></i>
+                    <span>{{ module.name }}</span>
+                    {% if module.badge %}
+                    <span class="settings-module-badge">{{ module.badge }}</span>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </aside>
+
+        <!-- Content -->
+        <main class="settings-content">
+
+            <!-- ============================================
+                 MODULE: GENERAL SETTINGS
+                 ============================================ -->
+            <div class="settings-module-panel active" id="module-general">
+                <div class="settings-module-header">
+                    <h1><i class="fas fa-sliders-h"></i> General Settings</h1>
+                    <p>Application preferences and basic configuration</p>
+                </div>
+
+                <!-- Application Info -->
+                <div class="s-card">
+                    <h2><i class="fas fa-info-circle"></i> Application Info</h2>
+                    <div class="general-info-grid">
+                        <div class="general-info-item">
+                            <div class="info-label">Version</div>
+                            <div class="info-value">{{ app_version }}</div>
+                        </div>
+                        <div class="general-info-item">
+                            <div class="info-label">Extraction Success Rate</div>
+                            <div class="info-value">{{ extraction_success_rate }}</div>
+                        </div>
+                        <div class="general-info-item">
+                            <div class="info-label">DMP Sections</div>
+                            <div class="info-value">14 (Science Europe)</div>
+                        </div>
+                        <div class="general-info-item">
+                            <div class="info-label">Supported Formats</div>
+                            <div class="info-value">PDF, DOCX</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interface Preferences -->
+                <div class="s-card">
+                    <h2><i class="fas fa-palette"></i> Interface Preferences</h2>
+                    <div class="s-group">
+                        <label>Theme</label>
+                        <select id="general-theme" onchange="generalSetTheme(this.value)">
+                            <option value="light">Light</option>
+                            <option value="dark">Dark</option>
+                        </select>
+                        <div class="s-hint">Choose the color scheme. Also available via the toggle in the header.</div>
+                    </div>
+                    <div class="s-group">
+                        <label>Default Comment Language</label>
+                        <select id="general-language" onchange="generalSetLanguage(this.value)">
+                            <option value="pl">Polski (PL)</option>
+                            <option value="en">English (EN)</option>
+                        </select>
+                        <div class="s-hint">Default language for comment categories in the review page and editor.</div>
+                    </div>
+                </div>
+
+                <!-- Upload Settings -->
+                <div class="s-card">
+                    <h2><i class="fas fa-upload"></i> Upload Settings</h2>
+                    <div class="s-group">
+                        <label>Maximum File Size</label>
+                        <select id="general-max-upload" onchange="generalSetMaxUpload(this.value)">
+                            <option value="8">8 MB</option>
+                            <option value="16" selected>16 MB</option>
+                            <option value="32">32 MB</option>
+                            <option value="64">64 MB</option>
+                        </select>
+                        <div class="s-hint">Maximum allowed file size for uploaded PDF/DOCX documents.</div>
+                    </div>
+                </div>
+
+                <!-- Cache Management -->
+                <div class="s-card">
+                    <h2><i class="fas fa-database"></i> Cache Management</h2>
+                    <div class="s-group">
+                        <label>Cached Files</label>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0.25rem 0 0.75rem;">
+                            <span id="cache-count">-</span> cached extraction results stored on disk.
+                        </p>
+                        <button class="btn btn-secondary" onclick="refreshCacheCount()">
+                            <i class="fas fa-sync"></i> Refresh Count
+                        </button>
+                        <button class="btn btn-danger" onclick="clearCache()" style="margin-left: 0.5rem;">
+                            <i class="fas fa-trash"></i> Clear All Cache
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================
+                 MODULE: COMMENTS CONFIGURATION
+                 ============================================ -->
+            <div class="settings-module-panel" id="module-comments">
+                <div class="settings-module-header">
+                    <h1>
+                        <i class="fas fa-comments"></i> Comments Configuration
+                        <div class="comments-lang-toggle">
+                            <button class="comments-lang-btn active" data-lang="pl" onclick="setCommentsLang('pl')">PL</button>
+                            <button class="comments-lang-btn" data-lang="en" onclick="setCommentsLang('en')">EN</button>
+                        </div>
+                    </h1>
+                    <p>Manage DMP structure, quick comments, and feedback categories for review</p>
+                </div>
+
+                <!-- Comments sub-tabs -->
+                <div class="comments-tab-navigation" id="comments-tab-nav">
+                    <button class="comments-tab-btn active" data-tab="c-dmp-structure" onclick="switchCommentsTab('c-dmp-structure')">
+                        <i class="fas fa-list"></i> DMP Structure
+                    </button>
+                    <button class="comments-tab-btn" data-tab="c-quick-comments" onclick="switchCommentsTab('c-quick-comments')">
+                        <i class="fas fa-comment"></i> Quick Comments
+                    </button>
+                    <!-- Category tabs are dynamically injected here -->
+                    <button class="add-category-btn-inline" id="add-category-btn" onclick="createNewCategoryTab()">
+                        <i class="fas fa-plus"></i> New
+                    </button>
+                </div>
+
+                <!-- DMP Structure Tab Panel -->
+                <div class="comments-tab-panel active" id="c-dmp-structure-panel">
+                    <div class="s-card">
+                        <h2><i class="fas fa-sitemap"></i> DMP Structure</h2>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+                            The structure of your DMP. This structure is used for review and for all categories.
+                        </p>
+                        <div id="dmp-structure-list">
+                            <!-- Loaded dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Comments Tab Panel -->
+                <div class="comments-tab-panel" id="c-quick-comments-panel">
+                    <div class="s-card">
+                        <h2><i class="fas fa-bolt"></i> Quick Comments</h2>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+                            Quick comment snippets available in the review sidebar.
+                        </p>
+                        <div id="quick-comments-list">
+                            <!-- Loaded dynamically -->
+                        </div>
+                        <div class="action-row">
+                            <button class="btn btn-primary" onclick="openAddCommentModal()">
+                                <i class="fas fa-plus"></i> Add Quick Comment
+                            </button>
+                            <button class="btn btn-success" onclick="saveAllQuickComments()">
+                                <i class="fas fa-save"></i> Save All
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category panels are dynamically injected here -->
+            </div>
+
+            <!-- ============================================
+                 MODULE: AI ASSISTANT
+                 ============================================ -->
+            <div class="settings-module-panel" id="module-ai">
+                <div class="settings-module-header">
+                    <h1><i class="fas fa-robot"></i> AI Assistant</h1>
+                    <p>Configure AI-powered review suggestions using OpenAI or Anthropic</p>
+                </div>
+
+                <!-- Quick Start Guide -->
+                <div class="ai-quick-start">
+                    <h2><i class="fas fa-rocket"></i> Quick Setup (3 Steps)</h2>
+                    <ol class="ai-quick-start-steps">
+                        <li>
+                            <span class="step-number">1</span>
+                            <span><strong>Get API Key:</strong> Choose provider and create account:<br>
+                            OpenAI: <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com/api-keys</a><br>
+                            Anthropic: <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com/settings/keys</a></span>
+                        </li>
+                        <li>
+                            <span class="step-number">2</span>
+                            <span><strong>Paste API Key</strong> below and click "Test" to verify connection</span>
+                        </li>
+                        <li>
+                            <span class="step-number">3</span>
+                            <span><strong>Enable AI</strong> with the toggle below and save</span>
+                        </li>
+                    </ol>
+                </div>
+
+                <!-- Main Toggle -->
+                <div class="ai-main-toggle" id="ai-main-toggle-card">
+                    <div>
+                        <h3>
+                            <i class="fas fa-power-off"></i> AI Assistant
+                            <span id="ai-status" class="ai-status-indicator disabled">
+                                <i class="fas fa-circle"></i> Off
+                            </span>
+                        </h3>
+                        <p>Enable AI to auto-generate review suggestions</p>
+                    </div>
+                    <label class="toggle-switch large">
+                        <input type="checkbox" id="ai-enabled" onchange="aiToggle()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <!-- Provider & API Keys -->
+                <div class="s-card">
+                    <h2><i class="fas fa-server"></i> API Provider</h2>
+                    <div class="s-group">
+                        <label>Provider</label>
+                        <select id="ai-provider" onchange="aiUpdateProviderUI()">
+                            <option value="openai">OpenAI (ChatGPT)</option>
+                            <option value="anthropic">Anthropic (Claude)</option>
+                        </select>
+                    </div>
+
+                    <!-- OpenAI -->
+                    <div id="openai-settings">
+                        <div class="s-group">
+                            <label>OpenAI API Key</label>
+                            <div class="api-key-row">
+                                <input type="password" id="openai-api-key" placeholder="sk-...">
+                                <button class="btn btn-secondary" onclick="aiTestConnection('openai')">
+                                    <i class="fas fa-plug"></i> Test
+                                </button>
+                            </div>
+                            <div id="openai-status" class="connection-status hidden"></div>
+                        </div>
+                        <div class="s-group">
+                            <label>Model</label>
+                            <select id="openai-model">
+                                <option value="">Loading models...</option>
+                            </select>
+                            <div class="s-hint">GPT-4o offers the best quality-to-price ratio</div>
+                        </div>
+                    </div>
+
+                    <!-- Anthropic -->
+                    <div id="anthropic-settings" class="hidden">
+                        <div class="s-group">
+                            <label>Anthropic API Key</label>
+                            <div class="api-key-row">
+                                <input type="password" id="anthropic-api-key" placeholder="sk-ant-...">
+                                <button class="btn btn-secondary" onclick="aiTestConnection('anthropic')">
+                                    <i class="fas fa-plug"></i> Test
+                                </button>
+                            </div>
+                            <div id="anthropic-status" class="connection-status hidden"></div>
+                        </div>
+                        <div class="s-group">
+                            <label>Model</label>
+                            <select id="anthropic-model">
+                                <option value="">Loading models...</option>
+                            </select>
+                            <div class="s-hint">Claude Sonnet 4.5 offers the best balance of intelligence and speed</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review Settings -->
+                <div class="s-card">
+                    <h2><i class="fas fa-sliders-h"></i> Review Settings</h2>
+                    <div class="s-group">
+                        <label>Ready Comments Ratio: <strong id="ratio-value">75%</strong></label>
+                        <input type="range" id="ready-comments-ratio" min="50" max="100" value="75" oninput="aiUpdateRatioDisplay()">
+                        <div class="ratio-display">
+                            <span>Ready comments: <span id="ready-pct">75%</span></span>
+                            <span>AI suggestions: <span id="ai-pct">25%</span></span>
+                        </div>
+                        <div class="s-hint">AI will prefer ready comments from your library in the given ratio.</div>
+                    </div>
+
+                    <div class="s-group">
+                        <div class="s-toggle-row">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="auto-learn-enabled" checked>
+                                <span class="slider"></span>
+                            </label>
+                            <span>Auto-learn from your saved feedback</span>
+                        </div>
+                        <div class="s-hint">AI will analyze saved reviews and learn new patterns.</div>
+                    </div>
+
+                    <div class="s-group">
+                        <label>Temperature (creativity)</label>
+                        <input type="range" id="temperature" min="0" max="100" value="30" oninput="aiUpdateTempDisplay()">
+                        <div class="ratio-display">
+                            <span>Deterministic</span>
+                            <span id="temp-value">0.3</span>
+                            <span>Creative</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Knowledge Base -->
+                <div class="s-card">
+                    <h2><i class="fas fa-brain"></i> Knowledge Base</h2>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="value" id="total-issues">0</div>
+                            <div class="label">Issue Patterns</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="value" id="total-practices">0</div>
+                            <div class="label">Good Practices</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="value" id="total-sections">0</div>
+                            <div class="label">Sections</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 0.75rem; display: flex; gap: 0.5rem;">
+                        <button class="btn btn-secondary" onclick="aiViewKnowledgeBase()">
+                            <i class="fas fa-eye"></i> Browse
+                        </button>
+                        <button class="btn btn-secondary" onclick="aiExportKnowledge()">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                    </div>
+                </div>
+
+                <!-- AI Actions -->
+                <div class="s-actions">
+                    <button class="btn btn-secondary" onclick="aiResetSettings()">
+                        <i class="fas fa-undo"></i> Reset to Defaults
+                    </button>
+                    <button class="btn btn-primary" onclick="aiSaveSettings()">
+                        <i class="fas fa-save"></i> Save AI Settings
+                    </button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Toast notification -->
+    <div id="settings-toast" class="hidden" style="
+        position: fixed; bottom: 2rem; right: 2rem; padding: 0.75rem 1.25rem;
+        border-radius: 8px; color: white; font-weight: 500; z-index: 10001;
+        box-shadow: var(--shadow-heavy); transition: opacity 0.3s ease;
+        max-width: 350px; font-size: 0.9rem;
+    "></div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
+    <script>
+    // ============================================
+    // TOAST NOTIFICATIONS
+    // ============================================
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('settings-toast');
+        toast.textContent = message;
+        toast.style.background = type === 'success' ? 'var(--success-color)'
+            : type === 'error' ? 'var(--error-color)'
+            : type === 'warning' ? 'var(--warning-color)'
+            : 'var(--primary-color)';
+        toast.classList.remove('hidden');
+        clearTimeout(toast._timeout);
+        toast._timeout = setTimeout(() => toast.classList.add('hidden'), 3500);
+    }
+
+    // ============================================
+    // MODULE SWITCHING
+    // ============================================
+    function switchModule(moduleId) {
+        // Update sidebar
+        document.querySelectorAll('.settings-module-item').forEach(el => el.classList.remove('active'));
+        const item = document.querySelector(`.settings-module-item[data-module="${moduleId}"]`);
+        if (item) item.classList.add('active');
+
+        // Update panels
+        document.querySelectorAll('.settings-module-panel').forEach(el => el.classList.remove('active'));
+        const panel = document.getElementById('module-' + moduleId);
+        if (panel) panel.classList.add('active');
+
+        // Update URL hash
+        history.replaceState(null, '', '#' + moduleId);
+    }
+
+    // ============================================
+    // GENERAL SETTINGS
+    // ============================================
+    function generalSetTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('dmp-art-theme', theme);
+        // Update header toggle icon
+        const icon = document.querySelector('.theme-toggle i');
+        if (icon) {
+            icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+    }
+
+    function generalSetLanguage(lang) {
+        localStorage.setItem('dmp-art-comment-language', lang);
+        // Also update comments lang toggle if visible
+        document.querySelectorAll('.comments-lang-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.lang === lang);
+        });
+        // Reload categories with new language
+        loadCommentCategories();
+    }
+
+    function generalSetMaxUpload(sizeMB) {
+        fetch('/api/settings/general', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ max_upload_mb: parseInt(sizeMB) })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) showToast('Upload limit updated');
+            else showToast('Error: ' + data.message, 'error');
+        })
+        .catch(() => showToast('Connection error', 'error'));
+    }
+
+    function refreshCacheCount() {
+        fetch('/api/settings/cache-count')
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('cache-count').textContent = data.count;
+            }
+        })
+        .catch(() => {});
+    }
+
+    function clearCache() {
+        if (!confirm('Are you sure? This will delete all cached extraction results.')) return;
+        fetch('/api/settings/clear-cache', { method: 'POST' })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                showToast('Cache cleared (' + data.deleted + ' files removed)');
+                refreshCacheCount();
+            } else {
+                showToast('Error: ' + data.message, 'error');
+            }
+        })
+        .catch(() => showToast('Connection error', 'error'));
+    }
+
+    function loadGeneralSettings() {
+        // Theme
+        const theme = localStorage.getItem('dmp-art-theme') || 'light';
+        document.getElementById('general-theme').value = theme;
+
+        // Language
+        const lang = localStorage.getItem('dmp-art-comment-language') || 'pl';
+        document.getElementById('general-language').value = lang;
+
+        // Cache count
+        refreshCacheCount();
+
+        // Max upload - load from server
+        fetch('/api/settings/general')
+        .then(r => r.json())
+        .then(data => {
+            if (data.success && data.settings) {
+                const mb = data.settings.max_upload_mb || 16;
+                document.getElementById('general-max-upload').value = mb;
+            }
+        })
+        .catch(() => {});
+    }
+
+    // ============================================
+    // COMMENTS CONFIGURATION
+    // ============================================
+    let dmpStructure = [];
+    let quickComments = [];
+    let commentCategories = [];
+    let currentCommentsTab = 'c-dmp-structure';
+
+    function switchCommentsTab(tabId) {
+        currentCommentsTab = tabId;
+
+        document.querySelectorAll('.comments-tab-btn').forEach(b => b.classList.remove('active'));
+        const btn = document.querySelector(`.comments-tab-btn[data-tab="${tabId}"]`);
+        if (btn) btn.classList.add('active');
+
+        document.querySelectorAll('.comments-tab-panel').forEach(p => p.classList.remove('active'));
+        const panel = document.getElementById(tabId + '-panel');
+        if (panel) panel.classList.add('active');
+
+        // Render content
+        if (tabId === 'c-dmp-structure') renderDmpStructure();
+        else if (tabId === 'c-quick-comments') renderQuickComments();
+        else renderCategoryPanel(tabId);
+    }
+
+    function setCommentsLang(lang) {
+        localStorage.setItem('dmp-art-comment-language', lang);
+        document.querySelectorAll('.comments-lang-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.lang === lang);
+        });
+        // Also update general settings select
+        const sel = document.getElementById('general-language');
+        if (sel) sel.value = lang;
+        // Reload categories
+        loadCommentCategories();
+    }
+
+    function loadDmpStructure() {
+        fetch('/config/dmp_structure.json')
+        .then(r => r.json())
+        .then(data => {
+            dmpStructure = data.structure || [];
+            if (currentCommentsTab === 'c-dmp-structure') renderDmpStructure();
+        })
+        .catch(err => console.error('Error loading DMP structure:', err));
+    }
+
+    function renderDmpStructure() {
+        const container = document.getElementById('dmp-structure-list');
+        if (!container) return;
+        container.innerHTML = '';
+
+        if (!dmpStructure.length) {
+            container.innerHTML = '<p style="color: var(--text-muted);">No DMP structure found.</p>';
+            return;
+        }
+
+        dmpStructure.forEach(section => {
+            const div = document.createElement('div');
+            div.className = 'structure-section';
+            div.innerHTML = `<h3>${section.id}. ${escapeHtml(section.question)}</h3>`;
+            container.appendChild(div);
+
+            if (section.subsections) {
+                section.subsections.forEach(sub => {
+                    const subDiv = document.createElement('div');
+                    subDiv.className = 'structure-subsection';
+                    subDiv.textContent = `${sub.id} ${sub.question}`;
+                    container.appendChild(subDiv);
+                });
+            }
+        });
+    }
+
+    // --- Quick Comments ---
+    function loadQuickComments() {
+        fetch('/config/quick_comments.json')
+        .then(r => r.json())
+        .then(data => {
+            quickComments = data.quick_comments || [];
+            if (currentCommentsTab === 'c-quick-comments') renderQuickComments();
+        })
+        .catch(err => console.error('Error loading quick comments:', err));
+    }
+
+    function ensureBilingualText(text) {
+        if (typeof text === 'string') return { en: text, pl: text };
+        if (typeof text === 'object' && text !== null && (text.en || text.pl)) {
+            return { en: text.en || text.pl || '', pl: text.pl || text.en || '' };
+        }
+        return { en: '', pl: '' };
+    }
+
+    function renderQuickComments() {
+        const list = document.getElementById('quick-comments-list');
+        if (!list) return;
+        list.innerHTML = '';
+
+        if (!quickComments.length) {
+            list.innerHTML = '<p style="color: var(--text-muted);">No quick comments yet. Click "Add Quick Comment" to start.</p>';
+            return;
+        }
+
+        quickComments.forEach((comment, idx) => {
+            const bt = ensureBilingualText(comment.text);
+            const row = document.createElement('div');
+            row.className = 'comment-row';
+            row.innerHTML = `
+                <div class="comment-info">
+                    <input type="text" class="comment-name-input" value="${escapeHtml(comment.name || '')}"
+                           placeholder="Comment name" data-idx="${idx}" data-field="name">
+                    <div style="display: flex; gap: 8px; margin-top: 5px;">
+                        <div style="flex: 1;">
+                            <label style="font-size: 0.7rem; color: var(--text-muted); display: block; margin-bottom: 2px;">EN</label>
+                            <textarea class="comment-text-input" rows="2" placeholder="English text"
+                                      data-idx="${idx}" data-field="text_en">${escapeHtml(bt.en)}</textarea>
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="font-size: 0.7rem; color: var(--text-muted); display: block; margin-bottom: 2px;">PL</label>
+                            <textarea class="comment-text-input" rows="2" placeholder="Polish text"
+                                      data-idx="${idx}" data-field="text_pl">${escapeHtml(bt.pl)}</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="comment-actions">
+                    <button class="btn btn-sm btn-success" title="Save" onclick="saveIndividualComment(${idx})">
+                        <i class="fas fa-save"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" title="Delete" onclick="removeQuickComment(${idx})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+            list.appendChild(row);
+        });
+
+        // Listen for inline edits
+        list.querySelectorAll('.comment-name-input, .comment-text-input').forEach(input => {
+            input.addEventListener('change', function() {
+                const idx = parseInt(this.dataset.idx);
+                const field = this.dataset.field;
+                if (field === 'name') {
+                    quickComments[idx].name = this.value;
+                } else if (field === 'text_en') {
+                    const bt = ensureBilingualText(quickComments[idx].text);
+                    bt.en = this.value;
+                    quickComments[idx].text = bt;
+                } else if (field === 'text_pl') {
+                    const bt = ensureBilingualText(quickComments[idx].text);
+                    bt.pl = this.value;
+                    quickComments[idx].text = bt;
+                }
+            });
+        });
+    }
+
+    function openAddCommentModal() {
+        const name = prompt('Comment name:');
+        if (!name || !name.trim()) return;
+        quickComments.push({ name: name.trim(), text: { en: '', pl: '' } });
+        renderQuickComments();
+        showToast('Comment added. Fill in the text and save.', 'info');
+    }
+
+    function removeQuickComment(idx) {
+        if (!confirm('Delete this quick comment?')) return;
+        quickComments.splice(idx, 1);
+        renderQuickComments();
+    }
+
+    function saveIndividualComment(idx) {
+        const c = quickComments[idx];
+        if (!c || !c.name || !c.name.trim()) {
+            showToast('Comment name is required', 'error');
+            return;
+        }
+        const bt = ensureBilingualText(c.text);
+        if (!bt.en.trim() && !bt.pl.trim()) {
+            showToast('At least one language text required', 'error');
+            return;
+        }
+        quickComments[idx].text = bt;
+        postJSON('/save_quick_comments', { quick_comments: quickComments })
+        .then(data => {
+            if (data.success) showToast('Comment "' + c.name + '" saved');
+            else showToast('Error: ' + data.message, 'error');
+        })
+        .catch(() => showToast('Connection error', 'error'));
+    }
+
+    function saveAllQuickComments() {
+        for (let i = 0; i < quickComments.length; i++) {
+            if (!quickComments[i].name || !quickComments[i].name.trim()) {
+                showToast('Comment #' + (i+1) + ' missing name', 'error');
+                return;
+            }
+            quickComments[i].text = ensureBilingualText(quickComments[i].text);
+        }
+        postJSON('/save_quick_comments', { quick_comments: quickComments })
+        .then(data => {
+            if (data.success) showToast('All quick comments saved');
+            else showToast('Error: ' + data.message, 'error');
+        })
+        .catch(() => showToast('Connection error', 'error'));
+    }
+
+    // --- Categories ---
+    function getCategoryLang(name) {
+        const lower = (name || '').toLowerCase();
+        if (lower.endsWith('_pl') || lower.endsWith(' pl')) return 'pl';
+        if (lower.endsWith('_en') || lower.endsWith(' en')) return 'en';
+        return 'shared';
+    }
+
+    function loadCommentCategories() {
+        const lang = localStorage.getItem('dmp-art-comment-language') || 'pl';
+        fetch('/api/discover-categories?lang=' + lang)
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                commentCategories = data.categories || [];
+                renderCategoryTabs();
+            }
+        })
+        .catch(err => console.error('Error loading categories:', err));
+    }
+
+    function renderCategoryTabs() {
+        const nav = document.getElementById('comments-tab-nav');
+        const addBtn = document.getElementById('add-category-btn');
+        const contentArea = document.getElementById('module-comments');
+
+        // Remove existing dynamic tabs + panels
+        nav.querySelectorAll('.comments-tab-btn[data-category]').forEach(el => el.remove());
+        contentArea.querySelectorAll('.comments-tab-panel[data-category]').forEach(el => el.remove());
+
+        const activeLang = localStorage.getItem('dmp-art-comment-language') || 'pl';
+
+        commentCategories.forEach(cat => {
+            const catLang = getCategoryLang(cat.display_name || cat.id);
+            const visible = catLang === 'shared' || catLang === activeLang;
+
+            // Tab button
+            const btn = document.createElement('button');
+            btn.className = 'comments-tab-btn';
+            btn.setAttribute('data-tab', 'cat-' + cat.id);
+            btn.setAttribute('data-category', cat.id);
+            btn.style.display = visible ? '' : 'none';
+            btn.innerHTML = `
+                <i class="fas fa-folder"></i> ${escapeHtml(cat.display_name || cat.id)}
+                <span class="remove-tab-btn" title="Delete" onclick="event.stopPropagation(); removeCategoryTab('${cat.id}');">&times;</span>
+            `;
+            btn.addEventListener('click', function(e) {
+                if (e.target.closest('.remove-tab-btn')) return;
+                switchCommentsTab('cat-' + cat.id);
+            });
+            nav.insertBefore(btn, addBtn);
+
+            // Tab panel
+            const panel = document.createElement('div');
+            panel.className = 'comments-tab-panel';
+            panel.id = 'cat-' + cat.id + '-panel';
+            panel.setAttribute('data-category', cat.id);
+            contentArea.appendChild(panel);
+        });
+    }
+
+    function renderCategoryPanel(tabId) {
+        // tabId is like "cat-ready_to_use"
+        const catId = tabId.replace(/^cat-/, '');
+        const cat = commentCategories.find(c => c.id === catId);
+        if (!cat) return;
+
+        const panel = document.getElementById(tabId + '-panel');
+        if (!panel) return;
+
+        panel.innerHTML = `
+            <div class="s-card">
+                <h2><i class="fas fa-tags"></i> ${escapeHtml(cat.display_name || cat.id)}</h2>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+                    Edit feedback comments for each DMP section.
+                </p>
+                <div class="action-row" style="margin-bottom: 1rem;">
+                    <button class="btn btn-success" onclick="saveCategory('${catId}')">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+                <div id="catq-${catId}">
+                    <p style="color: var(--text-muted);">Loading...</p>
+                </div>
+            </div>
+        `;
+
+        // Load category data
+        const lang = localStorage.getItem('dmp-art-comment-language') || 'pl';
+        fetch('/api/load-category/' + catId + '?lang=' + lang)
+        .then(r => r.json())
+        .then(result => {
+            if (result.success) {
+                renderCategoryQuestions(catId, result.data);
+            } else {
+                document.getElementById('catq-' + catId).innerHTML =
+                    '<p style="color: var(--error-color);">Error: ' + result.message + '</p>';
+            }
+        })
+        .catch(err => {
+            document.getElementById('catq-' + catId).innerHTML =
+                '<p style="color: var(--error-color);">Error loading category data.</p>';
+        });
+    }
+
+    function renderCategoryQuestions(catId, catData) {
+        const container = document.getElementById('catq-' + catId);
+        if (!container) return;
+        container.innerHTML = '';
+
+        // Build flat structure from dmpStructure
+        let flatSections = [];
+        dmpStructure.forEach(section => {
+            flatSections.push({ id: section.id, question: section.question });
+            if (section.subsections) {
+                section.subsections.forEach(sub => flatSections.push({ id: sub.id, question: sub.question }));
+            }
+        });
+
+        flatSections.forEach(item => {
+            const comments = Array.isArray(catData[item.id]) ? catData[item.id] : [];
+            const block = document.createElement('div');
+            block.className = 'cat-question-block';
+            block.setAttribute('data-section-id', item.id);
+            block.innerHTML = `
+                <h4>${item.id} — ${escapeHtml(item.question)}</h4>
+                <div class="question-comments" id="cw-${catId}-${item.id}">
+                    ${comments.map((c, idx) => `
+                        <div class="category-comment-item">
+                            <textarea class="category-comment-textarea" rows="2">${escapeHtml(c)}</textarea>
+                            <button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
+                <button class="btn btn-sm btn-success" style="margin-top: 0.3rem;"
+                        onclick="addCategoryComment('${catId}','${item.id}')">
+                    <i class="fas fa-plus"></i> Add
+                </button>
+            `;
+            container.appendChild(block);
+        });
+    }
+
+    function addCategoryComment(catId, sectionId) {
+        const wrap = document.getElementById('cw-' + catId + '-' + sectionId);
+        if (!wrap) return;
+        const div = document.createElement('div');
+        div.className = 'category-comment-item';
+        div.innerHTML = `
+            <textarea class="category-comment-textarea" rows="2" placeholder="New comment..."></textarea>
+            <button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">
+                <i class="fas fa-trash"></i>
+            </button>
+        `;
+        wrap.appendChild(div);
+        div.querySelector('textarea').focus();
+    }
+
+    function saveCategory(catId) {
+        const container = document.getElementById('catq-' + catId);
+        if (!container) return;
+
+        const sectionData = {};
+        container.querySelectorAll('.cat-question-block').forEach(block => {
+            const sid = block.getAttribute('data-section-id');
+            const comments = [];
+            block.querySelectorAll('.category-comment-textarea').forEach(ta => {
+                const val = ta.value.trim();
+                if (val) comments.push(val);
+            });
+            sectionData[sid] = comments;
+        });
+
+        postJSON('/save_category', { file: catId, data: sectionData })
+        .then(resp => {
+            if (resp.success) showToast('Category saved');
+            else showToast('Error: ' + resp.message, 'error');
+        })
+        .catch(() => showToast('Connection error', 'error'));
+    }
+
+    function createNewCategoryTab() {
+        // Show inline modal
+        const overlay = document.createElement('div');
+        overlay.className = 'settings-modal-overlay';
+        overlay.innerHTML = `
+            <div class="settings-modal">
+                <h3>Create New Category</h3>
+                <input type="text" id="new-cat-name" placeholder="Category name (lowercase, e.g. my_category)" autocomplete="off">
+                <div class="modal-error" id="new-cat-error"></div>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="this.closest('.settings-modal-overlay').remove()">Cancel</button>
+                    <button class="btn btn-primary" onclick="submitNewCategory()">Create</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        const input = overlay.querySelector('#new-cat-name');
+        input.focus();
+        input.addEventListener('keydown', e => { if (e.key === 'Enter') submitNewCategory(); });
+        overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+    }
+
+    function submitNewCategory() {
+        const input = document.getElementById('new-cat-name');
+        const errorDiv = document.getElementById('new-cat-error');
+        const name = (input ? input.value : '').trim();
+
+        if (!name) { errorDiv.textContent = 'Name is required.'; return; }
+        if (!/^[a-z0-9_]+$/.test(name)) { errorDiv.textContent = 'Lowercase alphanumeric + underscores only.'; return; }
+        if (commentCategories.some(c => c.id === name)) { errorDiv.textContent = 'Category already exists.'; return; }
+
+        postJSON('/api/create-category', { name: name, content: {} })
+        .then(data => {
+            if (data.success) {
+                document.querySelector('.settings-modal-overlay').remove();
+                showToast('Category "' + name + '" created');
+                loadCommentCategories();
+            } else {
+                errorDiv.textContent = data.message || 'Failed to create category.';
+            }
+        })
+        .catch(() => { errorDiv.textContent = 'Connection error.'; });
+    }
+
+    function removeCategoryTab(catId) {
+        if (!confirm('Delete category "' + catId + '"? This cannot be undone.')) return;
+        fetch('/api/delete-category/' + catId, { method: 'DELETE' })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                showToast('Category deleted');
+                if (currentCommentsTab === 'cat-' + catId) switchCommentsTab('c-dmp-structure');
+                loadCommentCategories();
+            } else {
+                showToast('Error: ' + data.message, 'error');
+            }
+        })
+        .catch(() => showToast('Connection error', 'error'));
+    }
+
+    // ============================================
+    // AI ASSISTANT MODULE
+    // ============================================
+    const aiModelsLoaded = { openai: false, anthropic: false };
+
+    function aiLoadConfig() {
+        fetch('/api/ai/config')
+        .then(r => r.json())
+        .then(data => {
+            if (!data.success) return;
+            const config = data.config;
+
+            document.getElementById('ai-enabled').checked = config.enabled;
+            aiUpdateStatusIndicator(config.enabled);
+
+            document.getElementById('ai-provider').value = config.provider || 'openai';
+            aiUpdateProviderUI();
+
+            const ms = config.model_settings || {};
+            if (ms.openai) document.getElementById('openai-model').value = ms.openai.model || 'gpt-4o';
+            if (ms.anthropic) document.getElementById('anthropic-model').value = ms.anthropic.model || '';
+
+            const rs = config.review_settings || {};
+            const ratio = (rs.ready_comments_ratio || 0.75) * 100;
+            document.getElementById('ready-comments-ratio').value = ratio;
+            aiUpdateRatioDisplay();
+
+            document.getElementById('auto-learn-enabled').checked = rs.auto_learn_enabled !== false;
+
+            const temp = (ms[config.provider]?.temperature || 0.3) * 100;
+            document.getElementById('temperature').value = temp;
+            aiUpdateTempDisplay();
+        })
+        .catch(e => console.error('Error loading AI config:', e));
+    }
+
+    function aiLoadStatistics() {
+        fetch('/api/ai/knowledge')
+        .then(r => r.json())
+        .then(data => {
+            if (!data.success) return;
+            const kb = data.knowledge_base;
+            let issues = 0, practices = 0, sections = 0;
+            for (const sd of Object.values(kb.sections || {})) {
+                sections++;
+                issues += (sd.common_issues || []).length;
+                practices += (sd.good_practices || []).length;
+            }
+            document.getElementById('total-issues').textContent = issues;
+            document.getElementById('total-practices').textContent = practices;
+            document.getElementById('total-sections').textContent = sections;
+        })
+        .catch(e => console.error('Error loading AI stats:', e));
+    }
+
+    function aiUpdateStatusIndicator(enabled) {
+        const el = document.getElementById('ai-status');
+        const card = document.getElementById('ai-main-toggle-card');
+        if (enabled) {
+            el.className = 'ai-status-indicator enabled';
+            el.innerHTML = '<i class="fas fa-circle"></i> On';
+            card.classList.add('enabled');
+        } else {
+            el.className = 'ai-status-indicator disabled';
+            el.innerHTML = '<i class="fas fa-circle"></i> Off';
+            card.classList.remove('enabled');
+        }
+    }
+
+    function aiUpdateProviderUI() {
+        const provider = document.getElementById('ai-provider').value;
+        const openai = document.getElementById('openai-settings');
+        const anthropic = document.getElementById('anthropic-settings');
+        if (provider === 'openai') {
+            openai.classList.remove('hidden');
+            anthropic.classList.add('hidden');
+        } else {
+            openai.classList.add('hidden');
+            anthropic.classList.remove('hidden');
+        }
+    }
+
+    function aiUpdateRatioDisplay() {
+        const v = document.getElementById('ready-comments-ratio').value;
+        document.getElementById('ratio-value').textContent = v + '%';
+        document.getElementById('ready-pct').textContent = v + '%';
+        document.getElementById('ai-pct').textContent = (100 - v) + '%';
+    }
+
+    function aiUpdateTempDisplay() {
+        const t = document.getElementById('temperature').value / 100;
+        document.getElementById('temp-value').textContent = t.toFixed(1);
+    }
+
+    async function aiToggle() {
+        const enabled = document.getElementById('ai-enabled').checked;
+        try {
+            const r = await fetch('/api/ai/toggle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ enabled })
+            });
+            const data = await r.json();
+            if (data.success) {
+                aiUpdateStatusIndicator(data.enabled);
+                showToast(data.enabled ? 'AI enabled' : 'AI disabled');
+            } else showToast('Error: ' + data.message, 'error');
+        } catch (e) { showToast('Connection error', 'error'); }
+    }
+
+    async function aiTestConnection(provider) {
+        const statusEl = document.getElementById(provider + '-status');
+        const apiKey = document.getElementById(provider + '-api-key').value;
+
+        if (!apiKey) {
+            statusEl.classList.remove('hidden');
+            statusEl.className = 'connection-status error';
+            statusEl.innerHTML = '<i class="fas fa-times"></i> Enter an API key first';
+            return;
+        }
+
+        statusEl.classList.remove('hidden');
+        statusEl.className = 'connection-status loading';
+        statusEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testing...';
+
+        try {
+            await aiSaveSettings(false);
+            const r = await fetch('/api/ai/test-connection', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+            const data = await r.json();
+            statusEl.className = 'connection-status ' + (data.success ? 'success' : 'error');
+            statusEl.innerHTML = '<i class="fas fa-' + (data.success ? 'check' : 'times') + '"></i> ' + data.message;
+        } catch (e) {
+            statusEl.className = 'connection-status error';
+            statusEl.innerHTML = '<i class="fas fa-times"></i> Connection failed';
+        }
+    }
+
+    async function aiSaveSettings(notify = true) {
+        const provider = document.getElementById('ai-provider').value;
+        const settings = {
+            provider,
+            api_keys: {
+                openai: document.getElementById('openai-api-key').value,
+                anthropic: document.getElementById('anthropic-api-key').value
+            },
+            model_settings: {
+                openai: {
+                    model: document.getElementById('openai-model').value,
+                    temperature: document.getElementById('temperature').value / 100,
+                    max_tokens: 2000
+                },
+                anthropic: {
+                    model: document.getElementById('anthropic-model').value,
+                    temperature: document.getElementById('temperature').value / 100,
+                    max_tokens: 2000
+                }
+            },
+            review_settings: {
+                ready_comments_ratio: document.getElementById('ready-comments-ratio').value / 100,
+                ai_suggestions_ratio: (100 - document.getElementById('ready-comments-ratio').value) / 100,
+                auto_learn_enabled: document.getElementById('auto-learn-enabled').checked
+            }
+        };
+        try {
+            const r = await fetch('/api/ai/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(settings)
+            });
+            const data = await r.json();
+            if (notify) {
+                if (data.success) showToast('AI settings saved');
+                else showToast('Error: ' + data.message, 'error');
+            }
+        } catch (e) {
+            if (notify) showToast('Connection error', 'error');
+        }
+    }
+
+    function aiResetSettings() {
+        if (!confirm('Reset all AI settings to defaults?')) return;
+        document.getElementById('ai-enabled').checked = false;
+        document.getElementById('ai-provider').value = 'openai';
+        document.getElementById('openai-api-key').value = '';
+        document.getElementById('anthropic-api-key').value = '';
+        document.getElementById('openai-model').value = 'gpt-4o';
+        document.getElementById('anthropic-model').value = 'claude-sonnet-4-5-20250929';
+        document.getElementById('ready-comments-ratio').value = 75;
+        document.getElementById('auto-learn-enabled').checked = true;
+        document.getElementById('temperature').value = 30;
+        aiModelsLoaded.openai = false;
+        aiModelsLoaded.anthropic = false;
+        aiUpdateProviderUI();
+        aiUpdateRatioDisplay();
+        aiUpdateTempDisplay();
+        aiUpdateStatusIndicator(false);
+        showToast('Defaults restored', 'info');
+    }
+
+    function aiViewKnowledgeBase() { showToast('Feature in progress', 'info'); }
+    function aiExportKnowledge() { window.location.href = '/api/ai/knowledge'; }
+
+    async function aiLoadModels(provider) {
+        if (aiModelsLoaded[provider]) return;
+        const sel = document.getElementById(provider + '-model');
+        const currentVal = sel.value;
+        try {
+            const currentProvider = document.getElementById('ai-provider').value;
+            document.getElementById('ai-provider').value = provider;
+            await aiSaveSettings(false);
+            const r = await fetch('/api/ai/models');
+            const data = await r.json();
+            document.getElementById('ai-provider').value = currentProvider;
+
+            if (data.success && data.models && data.models.length) {
+                sel.innerHTML = '';
+                data.models.forEach(m => {
+                    const opt = document.createElement('option');
+                    opt.value = m.id;
+                    opt.textContent = m.name;
+                    sel.appendChild(opt);
+                });
+                if (currentVal) {
+                    const exists = Array.from(sel.options).some(o => o.value === currentVal);
+                    if (exists) sel.value = currentVal;
+                }
+                aiModelsLoaded[provider] = true;
+            } else {
+                aiSetFallbackModels(provider);
+            }
+        } catch (e) {
+            aiSetFallbackModels(provider);
+        }
+    }
+
+    function aiSetFallbackModels(provider) {
+        const sel = document.getElementById(provider + '-model');
+        sel.innerHTML = '';
+        const models = provider === 'openai' ? [
+            { id: 'gpt-4o', name: 'GPT-4o (Recommended)' },
+            { id: 'gpt-4o-mini', name: 'GPT-4o Mini (fast & cheap)' },
+            { id: 'gpt-4-turbo', name: 'GPT-4 Turbo' },
+            { id: 'gpt-4', name: 'GPT-4' },
+            { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo (legacy)' }
+        ] : [
+            { id: 'claude-sonnet-4-5-20250929', name: 'Claude Sonnet 4.5 (Recommended)' },
+            { id: 'claude-haiku-4-5-20251001', name: 'Claude Haiku 4.5' },
+            { id: 'claude-opus-4-5-20251101', name: 'Claude Opus 4.5' },
+            { id: 'claude-3-5-haiku-20241022', name: 'Claude 3.5 Haiku (Legacy)' },
+            { id: 'claude-sonnet-4-20250514', name: 'Claude Sonnet 4 (Legacy)' }
+        ];
+        models.forEach(m => {
+            const opt = document.createElement('option');
+            opt.value = m.id;
+            opt.textContent = m.name;
+            sel.appendChild(opt);
+        });
+    }
+
+    // ============================================
+    // UTILITIES
+    // ============================================
+    function escapeHtml(text) {
+        const d = document.createElement('div');
+        d.textContent = text;
+        return d.innerHTML;
+    }
+
+    function postJSON(url, data) {
+        return fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        }).then(r => r.json());
+    }
+
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    document.addEventListener('DOMContentLoaded', async function() {
+        // Load all module data
+        loadGeneralSettings();
+        loadDmpStructure();
+        loadQuickComments();
+        loadCommentCategories();
+        aiLoadConfig();
+        aiLoadStatistics();
+        aiLoadModels('openai');
+        aiLoadModels('anthropic');
+
+        // Handle URL hash for deep-linking
+        const hash = window.location.hash.replace('#', '');
+        if (hash && document.getElementById('module-' + hash)) {
+            switchModule(hash);
+        }
+    });
+    </script>
+
+    <footer class="site-footer site-footer--relative">
+        <span>DMP ART &copy; 2025</span>
+    </footer>
+</body>
+</html>
