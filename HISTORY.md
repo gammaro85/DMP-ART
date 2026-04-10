@@ -54,18 +54,31 @@ Build a web application to:
 
 ## Version History
 
-### v0.9.1+ (2026-03-11) — Unified Settings Page
+### v0.9.1 (2026-04-10) — Codebase Audit & Dead Code Removal
 
-**Status:** In progress (branch: `claude/unified-settings-page`)
+**Status:** Production-ready
+**Focus:** Fix upload workflow bug, remove ~130 KB of dead code left over after unified settings migration
+
+#### Changes
+- **Bug fix:** `script.js` — upload progress bar was always invisible
+  - **Root Cause:** `#progress-container` uses `class="hidden"` → `display:none !important`; `updateProgressBar()` called `style.display='block'` which the `!important` rule silently blocked
+  - **Fix:** replaced with `classList.remove/add('hidden')` (`script.js:466`, `script.js:524`)
+- **Cleanup:** removed `templates/template_editor.html` (984 lines) — rendered by no route; `/template_editor` only redirects
+- **Cleanup:** removed `templates/ai_settings.html` (1020 lines) — rendered by no route; `/ai-settings` only redirects
+- **Cleanup:** removed `static/js/template_editor.js` (28 KB) — never included by any `<script>` tag
+- **Cleanup:** removed 6 dead DOM element refs from `initializeUploadPage()` in `script.js` (`loading`, `result`, `successMessage`, `errorMessage`, `errorText`, `downloadBtn`) — IDs absent from all templates
+
+### v0.9.1 (2026-03-11) — Unified Settings Page
+
+**Status:** Production-ready
 **Focus:** Replace separate `/template_editor` and `/ai-settings` pages with a single `/settings` page
 
 #### Changes
-- `GET /settings` — new unified settings route (replaces `/template_editor` as primary config UI)
-- `GET /template_editor` — kept as alias for backwards compatibility
-- `GET /ai-settings` — kept as alias
+- `GET /settings` → `settings.html` (2,051 lines) — unified config UI (general, comments, AI)
+- `/template_editor` and `/ai-settings` kept as redirect aliases pointing to `/settings`
 - Navigation updated to link `/settings` instead of `/template_editor`
 - Max upload size now dynamically configurable from the Settings UI (stored in `config/settings.json`)
-- `GET/POST /api/settings/general` — new endpoint for general settings (upload size, etc.)
+- `GET/POST /api/settings/general` — endpoint for general settings (upload size, etc.)
 - `GET /api/settings/cache-count` and `POST /api/settings/clear-cache` — cache management
 - `documentation.html` updated: removed redundant inline JS, fixed nav structure, updated links to `/settings`
 
