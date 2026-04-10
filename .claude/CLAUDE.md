@@ -1,7 +1,7 @@
 # DMP-ART: AI Agent Development Guide
 
 **Version:** 0.9.1
-**Last Updated:** 2026-02-17
+**Last Updated:** 2026-04-10
 **Purpose:** Context and instructions for AI agents working on this codebase
 
 ---
@@ -33,7 +33,7 @@ DMP-ART (Data Management Plan Assessment and Response Tool) is a web application
 - Vanilla JavaScript (no frameworks, but now organized in separate files)
 - HTML5 + CSS3 with custom properties
 - Dark/Light theme system with dedicated dark-mode.js
-- Modular JS architecture (script.js, template_editor.js)
+- Modular JS architecture (script.js, ai_assistant.js, dark-mode.js)
 
 **Data Storage:**
 - JSON files in `config/` directory
@@ -55,8 +55,7 @@ utils/knowledge_manager.py          # Knowledge base management (NEW)
 templates/review.html               # Main review interface (2,341 lines)
 static/css/style.css                # Unified styling (1,596 lines, dark/light themes)
 static/js/script.js                 # Main JavaScript functionality (42KB)
-static/js/ai_assistant.js           # AI frontend integration (NEW)
-static/js/template_editor.js        # Template editor logic (28KB)
+static/js/ai_assistant.js           # AI frontend integration
 static/js/dark-mode.js              # Theme management (4KB)
 ```
 
@@ -81,9 +80,8 @@ config/
 templates/                          # Jinja2 HTML templates
 ├── index.html                      # Upload page
 ├── review.html                     # Review interface (main UI)
-├── template_editor.html            # Configuration management
+├── settings.html                   # Unified settings page (comments, AI, general)
 ├── documentation.html              # User documentation
-├── ai_settings.html                # AI module settings
 └── test_categories.html            # Category testing interface
 
 static/
@@ -92,8 +90,7 @@ static/
 │   └── review.css                  # Review page specific styles
 ├── js/
 │   ├── script.js                   # Main application logic
-│   ├── ai_assistant.js             # AI frontend integration
-│   ├── template_editor.js          # Template editor functionality
+│   ├── ai_assistant.js             # AI frontend integration (loaded on review page)
 │   └── dark-mode.js                # Theme switching logic
 └── images/                         # Logos and assets
 
@@ -215,7 +212,7 @@ if result['success']:
 
 **File Organization:**
 - `static/js/script.js` - Main application logic, AJAX handlers, UI interactions
-- `static/js/template_editor.js` - Template editor specific functionality
+- `static/js/ai_assistant.js` - AI assistant class, loaded only on `review.html`
 - `static/js/dark-mode.js` - Theme management and persistence
 
 **Common patterns:**
@@ -298,7 +295,8 @@ Always use `element.classList.add('hidden')` / `element.classList.remove('hidden
 
 Pages loading scripts:
 - `index.html`, `review.html`: `dark-mode.js` + `script.js`
-- `template_editor.html`, `documentation.html`, `ai_settings.html`: `dark-mode.js` only
+- `review.html` also loads: `ai_assistant.js`
+- `settings.html`, `documentation.html`, `test_categories.html`: `dark-mode.js` only
 
 ---
 
@@ -835,7 +833,7 @@ Use `.claude/projects/*/memory/` for session notes.
 
 ---
 
-**Last Updated:** 2026-03-11
+**Last Updated:** 2026-04-10
 **Codebase Version:** 0.9.1
 **Extraction Success Rate:** 94.1% (tested on 17 real NCN proposals)
 **Target Users:** Data stewards at Polish research institutions
@@ -868,10 +866,7 @@ utils/
 └── ai_module.py            # Main orchestration module
 
 static/js/
-└── ai_assistant.js         # Frontend integration
-
-templates/
-└── ai_settings.html        # AI settings page
+└── ai_assistant.js         # Frontend integration (loaded on review.html)
 ```
 
 ### Key Files
@@ -888,7 +883,7 @@ templates/
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/ai-settings` | GET | AI settings page |
+| `/ai-settings` | GET | Redirects to `/settings#ai` |
 | `/api/ai/config` | GET/POST | Get/update AI config |
 | `/api/ai/toggle` | POST | Enable/disable AI |
 | `/api/ai/test-connection` | POST | Test API connection |
@@ -948,6 +943,25 @@ suggestions = assistant.generate_section_suggestion(
 
 ## Recent Changes (Since Last Update)
 
+### 2026-04-10 Update (v0.9.1) — Codebase Audit & Dead Code Removal
+
+**Critical Bug Fix:**
+- ✅ Upload progress bar was never visible — `#progress-container` carries class `hidden` (`display:none !important`) but `updateProgressBar()` used `style.display='block'` which was silently overridden. Fixed to `classList.remove/add('hidden')` (`script.js:466/524`)
+
+**Dead Code Removed:**
+- ✅ `templates/template_editor.html` (984 lines) — never rendered; `/template_editor` redirects to `/settings`
+- ✅ `templates/ai_settings.html` (1020 lines) — never rendered; `/ai-settings` redirects to `/settings`
+- ✅ `static/js/template_editor.js` (28KB) — never loaded by any `<script>` tag after unification
+- ✅ 6 dead DOM element references removed from `initializeUploadPage()` in `script.js` (`loading`, `result`, `successMessage`, `errorMessage`, `errorText`, `downloadBtn` — IDs don't exist in any template)
+
+### 2026-03-11 Update (v0.9.1) — Unified Settings Page
+
+**Architecture:**
+- ✅ New `GET /settings` route → `settings.html` (2,051 lines) replaces both `/template_editor` and `/ai-settings`
+- ✅ `/template_editor` and `/ai-settings` kept as redirect aliases
+- ✅ Max upload size dynamically configurable from Settings UI (`config/settings.json`)
+- New endpoints: `GET/POST /api/settings/general`, `GET /api/settings/cache-count`, `POST /api/settings/clear-cache`
+
 ### 2026-02-17 Update (v0.9.1) — UI/UX Polish
 
 **Critical Bug Fixes:**
@@ -957,19 +971,11 @@ suggestions = assistant.generate_section_suggestion(
 
 **Layout Changes:**
 - ✅ Language toggle moved to LEFT side of nav (next to theme toggle), nav links right-aligned
-  - New wrapper: `.header-left-controls` in `review.html` and `template_editor.html`
-  - CSS: `.header-nav .nav-links { margin-left: auto }` in `style.css`
-- ✅ Footer added to `ai_settings.html` (was missing entirely)
 - ✅ Footer in `test_categories.html` was after `</html>` — moved inside `<body>` with `site-footer--relative`
 - ✅ Active nav item highlighting now works on all pages (added fallback to `dark-mode.js`)
 
-**Template Editor:**
-- ✅ Category tabs filtered by language: `_pl` suffix → PL only, `_en` → EN only, no suffix → always visible
-- ✅ `window.reloadCategoriesWithLang(lang)` implemented (was referenced but undefined)
-
 **Review Page Visual Hierarchy (review.css):**
 - ✅ `.question-card` — prominent top border (primary color), card separators
-- ✅ `.section-title-only` — small uppercase muted label
 - ✅ `.question-section-combined` — bold high-contrast question text
 - ✅ `.extracted-content` — left border + italic = visually distinct DMP text
 - ✅ `.enhanced-feedback-section` — distinct container for feedback input
@@ -977,9 +983,7 @@ suggestions = assistant.generate_section_suggestion(
 
 **CSS Cleanup:**
 - ✅ Replaced hardcoded hex colors in `tab-badge`, `delete-comment-btn`, `btn-save` with CSS variables
-- ✅ Fixed `.header-action-buttons-nav` rgba hardcoded colors → CSS variables
 - ✅ Removed duplicate `.results-container` declaration in review.html
-- ✅ Moved inline `style="color:inherit"` from documentation.html footer → `.footer-link` class in style.css
 
 ### 2025-12-07 Update (v0.9.0)
 
