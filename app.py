@@ -150,9 +150,8 @@ def validate_docx_file(file_path):
         try:
             from docx import Document  # noqa: PLC0415 – heavy import, kept lazy
             doc = Document(file_path)
-            paragraph_count = len(doc.paragraphs)
             table_count = len(doc.tables)
-            
+
             # Check for minimum content
             has_content = any(p.text.strip() for p in doc.paragraphs) or table_count > 0
             
