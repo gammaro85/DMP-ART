@@ -110,57 +110,96 @@ class DMPExtractor:
         # Performance optimization: Pre-compile regex patterns
         self._compile_regex_patterns()
         
-        # Bilingual section mapping
+        # Bilingual section mapping — includes both short canonical forms and longer document variants
+        # (longer variants prevent Jaccard dilution when docs use the full NCN/OSF phrasing)
         self.section_mapping = {
             "Opis danych oraz pozyskiwanie": "1. Data description and collection or re-use of existing data",
+            "Opis danych oraz pozyskiwanie lub ponowne wykorzystanie dostępnych danych": "1. Data description and collection or re-use of existing data",
             "Dokumentacja i jakość danych": "2. Documentation and data quality",
-            "Przechowywanie i tworzenie kopii zapasowych": "3. Storage and backup during the research process", 
+            "Przechowywanie i tworzenie kopii zapasowych": "3. Storage and backup during the research process",
+            "Przechowywanie i tworzenie kopii zapasowych podczas badań": "3. Storage and backup during the research process",
             "Wymogi prawne, kodeks postępowania": "4. Legal requirements, codes of conduct",
             "Udostępnianie i długotrwałe przechowywanie": "5. Data sharing and long-term preservation",
-            "Zadania związane z zarządzaniem danymi": "6. Data management responsibilities and resources"
+            "Udostępnianie i długotrwałe przechowywanie danych": "5. Data sharing and long-term preservation",
+            "Zadania związane z zarządzaniem danymi": "6. Data management responsibilities and resources",
+            "Zadania związane z zarządzaniem danymi oraz zasoby": "6. Data management responsibilities and resources",
         }
         
-        # Bilingual subsection mapping with exact Polish subsections
+        # Bilingual subsection mapping — full NCN/OSF canonical forms plus short/abbreviated
+        # document variants seen in real proposals (abbreviated headers produce low Jaccard
+        # against long canonical keys, so we add them explicitly for direct matching).
         raw_subsection_mapping = {
             # 1. Data description section
-            "Sposób pozyskiwania i opracowywania nowych danych i/lub ponownego wykorzystania dostępnych danych": 
+            "Sposób pozyskiwania i opracowywania nowych danych i/lub ponownego wykorzystania dostępnych danych":
                 "How will new data be collected or produced and/or how will existing data be re-used?",
-            "Pozyskiwane lub opracowywane dane (np. rodzaj, format, ilość)": 
+            "Sposób pozyskiwania i opracowania nowych danych i/lub wykorzystanie dostępnych danych":
+                "How will new data be collected or produced and/or how will existing data be re-used?",
+            "Pozyskiwane lub opracowywane dane (np. rodzaj, format, ilość)":
                 "What data (for example the types, formats, and volumes) will be collected or produced?",
-            
+
             # 2. Documentation and data quality
-            "Metadane i dokumenty (np. metodologia lub pozyskiwanie danych oraz sposób porządkowania danych) towarzyszące danym": 
+            "Metadane i dokumenty (np. metodologia lub pozyskiwanie danych oraz sposób porządkowania danych) towarzyszące danym":
                 "What metadata and documentation (for example methodology or data collection and way of organising data) will accompany data?",
-            "Stosowane środki kontroli jakości danych": 
+            # abbreviated form used in many documents
+            "Metadane i dokumenty":
+                "What metadata and documentation (for example methodology or data collection and way of organising data) will accompany data?",
+            "Stosowane środki kontroli jakości danych":
                 "What data quality control measures will be used?",
-            
+
             # 3. Storage and backup
-            "Przechowywanie i tworzenie kopii zapasowych danych i metadanych podczas badań": 
+            "Przechowywanie i tworzenie kopii zapasowych danych i metadanych podczas badań":
                 "How will data and metadata be stored and backed up during the research process?",
-            "Sposób zapewnienia bezpieczeństwa danych oraz ochrony danych wrażliwych podczas badań": 
+            "Sposób zapewnienia bezpieczeństwa danych oraz ochrony danych wrażliwych podczas badań":
                 "How will data security and protection of sensitive data be taken care of during the research?",
-            
+
             # 4. Legal requirements
-            "Sposób zapewnienia zgodności z przepisami dotyczącymi danych osobowych i bezpieczeństwa danych w przypadku przetwarzania danych osobowych": 
+            "Sposób zapewnienia zgodności z przepisami dotyczącymi danych osobowych i bezpieczeństwa danych w przypadku przetwarzania danych osobowych":
                 "If personal data are processed, how will compliance with legislation on personal data and on data security be ensured?",
-            "Sposób zarządzania innymi kwestiami prawnymi, np. prawami własności intelektualnej lub własnością. Obowiązujące przepisy": 
+            "Sposób zapewnienia zgodności z przepisami dotyczącymi danych osobowych i bezpieczeństwa w przypadku przetwarzania danych osobowych":
+                "If personal data are processed, how will compliance with legislation on personal data and on data security be ensured?",
+            "Sposób zarządzania innymi kwestiami prawnymi, np. prawami własności intelektualnej lub własnością. Obowiązujące przepisy":
                 "How will other legal issues, such as intelectual property rights and ownership, be managed? What legislation is applicable?",
-            
+            # abbreviated form
+            "Sposób zarządzania innymi kwestiami prawnymi":
+                "How will other legal issues, such as intelectual property rights and ownership, be managed? What legislation is applicable?",
+
             # 5. Data sharing and preservation
-            "Sposób i termin udostępnienia danych. Ewentualne ograniczenia w udostępnianiu danych lub przyczyny embarga": 
+            "Sposób i termin udostępnienia danych. Ewentualne ograniczenia w udostępnianiu danych lub przyczyny embarga":
                 "How and when will data be shared? Are there possible restrictions to data sharing or embargo reasons?",
-            "Sposób wyboru danych przeznaczonych do przechowania oraz miejsce długotrwałego przechowywania danych (np. repozytorium lub archiwum danych)": 
+            # abbreviated forms
+            "Sposób i termin udostępnienia danych":
+                "How and when will data be shared? Are there possible restrictions to data sharing or embargo reasons?",
+            "Sposób i termin udostępniania danych":
+                "How and when will data be shared? Are there possible restrictions to data sharing or embargo reasons?",
+            "Sposób wyboru danych przeznaczonych do przechowania oraz miejsce długotrwałego przechowywania danych (np. repozytorium lub archiwum danych)":
                 "How will data for preservation be selected, and where will data be preserved long-term (for example a data repository or archive)?",
-            "Metody lub narzędzia programowe umożliwiające dostęp do danych i korzystanie z danych": 
+            # abbreviated form
+            "Sposób wyboru danych do przechowywania":
+                "How will data for preservation be selected, and where will data be preserved long-term (for example a data repository or archive)?",
+            "Wybór danych do przechowywania":
+                "How will data for preservation be selected, and where will data be preserved long-term (for example a data repository or archive)?",
+            "Metody lub narzędzia programowe umożliwiające dostęp do danych i korzystanie z danych":
                 "What methods or software tools will be needed to access and use the data?",
-            "Sposób zapewniający stosowanie unikalnego i trwałego identyfikatora (np. cyfrowego identyfikatora obiektu (DOI)) dla każdego zestawu danych": 
+            # abbreviated form
+            "Metody lub narzędzia programowe umożliwiające dostęp do danych":
+                "What methods or software tools will be needed to access and use the data?",
+            "Sposób zapewniający stosowanie unikalnego i trwałego identyfikatora (np. cyfrowego identyfikatora obiektu (DOI)) dla każdego zestawu danych":
                 "How will the application of a unique and persistent identifier (such us a Digital Object Identifier (DOI)) to each data set be ensured?",
-            
+            # abbreviated form
+            "Sposób zapewniający stosowanie unikalnego i trwałego identyfikatora":
+                "How will the application of a unique and persistent identifier (such us a Digital Object Identifier (DOI)) to each data set be ensured?",
+
             # 6. Data management responsibilities
-            "Osoba (np. funkcja, stanowisko i instytucja) odpowiedzialna za zarządzanie danymi (np. data steward)": 
+            "Osoba (np. funkcja, stanowisko i instytucja) odpowiedzialna za zarządzanie danymi (np. data steward)":
                 "Who (for example role, position, and institution) will be responsible for data management (i.e the data steward)?",
-            "Środki (np. finansowe i czasowe) przeznaczone do zarządzania danymi i zapewnienia możliwości odnalezienia, dostępu, interoperacyjności i ponownego wykorzystania danych": 
-                "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)?"
+            # abbreviated form (Jaccard exactly 0.40 against full key — would fail strict `>` check)
+            "Osoba odpowiedzialna za zarządzanie danymi":
+                "Who (for example role, position, and institution) will be responsible for data management (i.e the data steward)?",
+            "Środki (np. finansowe i czasowe) przeznaczone do zarządzania danymi i zapewnienia możliwości odnalezienia, dostępu, interoperacyjności i ponownego wykorzystania danych":
+                "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)?",
+            # abbreviated form
+            "Środki przeznaczone do zarządzania danymi":
+                "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)?",
         }
         
         # Create normalized versions of subsection mapping
@@ -328,6 +367,16 @@ class DMPExtractor:
             for pattern_rule in rules['skip_patterns']['pdf_specific']['patterns']:
                 if pattern_rule.get('enabled', True):
                     self.pdf_skip_patterns_compiled.append(
+                        re.compile(pattern_rule['pattern'], re.IGNORECASE)
+                    )
+
+        # Compile DOCX-specific skip patterns from config
+        self.docx_skip_patterns_compiled = []
+        docx_rules = rules['skip_patterns'].get('docx_specific', {})
+        if docx_rules.get('enabled', True):
+            for pattern_rule in docx_rules.get('patterns', []):
+                if pattern_rule.get('enabled', True):
+                    self.docx_skip_patterns_compiled.append(
                         re.compile(pattern_rule['pattern'], re.IGNORECASE)
                     )
 
@@ -560,6 +609,11 @@ class DMPExtractor:
 
             # Special handling for complex grant application headers/footers
             return self._is_grant_header_footer(text)
+
+        # DOCX-specific patterns (web-form artifacts from OSF copy-paste)
+        for pattern in self.docx_skip_patterns_compiled:
+            if pattern.search(text) is not None:
+                return True
 
         return False
     
@@ -1278,7 +1332,18 @@ class DMPExtractor:
             if self._text_similarity(polish.lower(), text.lower()) > threshold:
                 self._log_debug(f"Direct title match: {polish} -> {english} (threshold: {threshold})")
                 return english
-        
+
+        # Character-level fallback for typos in section headers (e.g. "Dokumentacha" vs "Dokumentacja").
+        # Applied only to short texts (≤80 chars) to avoid false positives on content paragraphs.
+        if len(text) <= 80:
+            from difflib import SequenceMatcher
+            char_threshold = 0.80
+            for polish, english in self.section_mapping.items():
+                score = SequenceMatcher(None, polish.lower(), text.lower()).ratio()
+                if score >= char_threshold:
+                    self._log_debug(f"Section char-level match: '{text}' ~ '{polish}' -> '{english}' (score: {score:.2f})")
+                    return english
+
         return None
     
     def _text_similarity(self, text1, text2):
@@ -1374,8 +1439,9 @@ class DMPExtractor:
                     self._log_debug(f"Polish mapping candidate: '{text}' ~ '{polish}' -> '{english}' (score: {similarity:.2f})")
         
         # ENHANCED: Use configurable threshold for Polish matching
+        # Use >= (not >) so a score exactly at the threshold still passes.
         polish_threshold = self.extraction_rules['thresholds']['polish_subsection_similarity']
-        if best_match and best_score > polish_threshold:
+        if best_match and best_score >= polish_threshold:
             self._log_debug(f"Best Polish match: '{text}' -> '{best_match}' (score: {best_score:.2f}, threshold: {polish_threshold})")
             return best_match
         
@@ -1439,9 +1505,27 @@ class DMPExtractor:
                             self._log_debug(f"PDF question pattern match: '{text}' -> '{subsection}'")
                             return subsection
         
+        # 5. Character-level fuzzy fallback — catches typos/OCR errors in subsection headers.
+        # Only applied to short texts (likely headers, not content paragraphs).
+        if len(text) < 200 and current_section:
+            from difflib import SequenceMatcher
+            char_threshold = 0.80
+            best_char_match = None
+            best_char_score = 0.0
+            for polish, english in self.subsection_mapping.items():
+                if english not in self.dmp_structure.get(current_section, []):
+                    continue
+                score = SequenceMatcher(None, normalized_text, polish.lower()).ratio()
+                if score > best_char_score:
+                    best_char_score = score
+                    best_char_match = english
+            if best_char_match and best_char_score >= char_threshold:
+                self._log_debug(f"Char-level fuzzy match: '{text}' -> '{best_char_match}' (score: {best_char_score:.2f})")
+                return best_char_match
+
         self._log_debug(f"No subsection match found for: '{text}' (best score: {best_score:.2f})")
         return None
-    
+
     def _split_embedded_headers(self, line):
         """Split lines that contain embedded subsection headers (common in PDFs)
 
@@ -1961,7 +2045,7 @@ class DMPExtractor:
 
             # Fill empty sections with placeholder text for complete extraction
             empty_count = 0
-            for section_id in ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2', '4.1', '4.2', '5.1', '5.2', '5.3', '6.1', '6.2']:
+            for section_id in ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2', '4.1', '4.2', '5.1', '5.2', '5.3', '5.4', '6.1', '6.2']:
                 if section_id in review_structure:
                     paras = review_structure[section_id].get('paragraphs', [])
                     if not paras or len(paras) == 0:
@@ -2258,7 +2342,7 @@ class DMPExtractor:
 
                 # Fill empty sections with placeholder text for complete extraction
                 empty_count = 0
-                for section_id in ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2', '4.1', '4.2', '5.1', '5.2', '5.3', '6.1', '6.2']:
+                for section_id in ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2', '4.1', '4.2', '5.1', '5.2', '5.3', '5.4', '6.1', '6.2']:
                     if section_id in review_structure:
                         paras = review_structure[section_id].get('paragraphs', [])
                         if not paras:
