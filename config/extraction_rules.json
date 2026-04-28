@@ -52,7 +52,14 @@
     "docx_specific": {
       "description": "Skip patterns only for DOCX files",
       "enabled": true,
-      "patterns": []
+      "patterns": [
+        {"id": "docx_skip_001", "pattern": "^\\^\\s*Edytuj", "description": "OSF web-form edit button artifact", "enabled": true},
+        {"id": "docx_skip_002", "pattern": "Słów:\\s*\\d+,\\s*Znaków:\\s*\\d+", "description": "OSF word/char count artifact", "enabled": true},
+        {"id": "docx_skip_003", "pattern": "^NIE DOTYCZY na wszystkie", "description": "OSF N/A for all button", "enabled": true},
+        {"id": "docx_skip_004", "pattern": "^©\\s*\\d{4}\\s*Ośrodek Przetwarzania", "description": "OSF footer copyright", "enabled": true},
+        {"id": "docx_skip_005", "pattern": "^Build:\\s*\\d{4}-\\d{2}-\\d{2}", "description": "OSF build info footer", "enabled": true},
+        {"id": "docx_skip_006", "pattern": "Polityka cookies.*Klauzula informacyjna", "description": "OSF footer links", "enabled": true}
+      ]
     }
   },
 
