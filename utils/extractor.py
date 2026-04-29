@@ -1701,6 +1701,24 @@ class DMPExtractor:
                 detection_text = content_item.split('\n')[0] if '\n' in content_item else content_item
                 detected_subsection = self.detect_subsection_from_text(detection_text, current_section, is_pdf=is_pdf)
 
+                # Cross-section fallback: if no subsection found in current section, check other sections.
+                # Handles documents with no main section headers (only subsection headers like "2.1", "3.1"...).
+                # Only try on short, header-like text to avoid false positives on long content paragraphs.
+                if not detected_subsection and len(detection_text.strip()) < 200:
+                    cross_sub, cross_sec = self._detect_subsection_with_section_inference(detection_text, is_pdf=is_pdf)
+                    if cross_sub and cross_sec and cross_sec != current_section:
+                        self._log_debug(f"Cross-section: '{detection_text[:60]}' → '{cross_sub}' in '{cross_sec}' (was '{current_section}')")
+                        # Flush buffer before switching section
+                        if content_buffer:
+                            target = current_subsection or self.dmp_structure[current_section][0]
+                            for buffered_content in content_buffer:
+                                self._assign_content_safely(section_content, tagged_content,
+                                                          current_section, target, buffered_content)
+                            content_buffer = []
+                        current_section = cross_sec
+                        current_subsection = cross_sub
+                        detected_subsection = cross_sub
+
                 # Only change subsection if it's different from the current one
                 if detected_subsection and detected_subsection != current_subsection:
                     # Flush buffer to previous subsection OR first subsection if none set yet
@@ -1889,10 +1907,11 @@ class DMPExtractor:
                             break
 
                 # Strategy 3: Look for English section 1 keywords
+                # Only match short paragraphs (<150 chars) to avoid false positives on content text
                 if start_idx == -1:
                     for i, para in enumerate(formatted_paragraphs):
                         clean_para = para.replace("UNDERLINED:", "").replace("BOLD:", "").replace("UNDERLINED_BOLD:", "").strip().lower()
-                        if ("data description" in clean_para or "data collection" in clean_para):
+                        if len(clean_para) < 150 and ("data description" in clean_para or "data collection" in clean_para):
                             start_idx = i
                             self._log_debug(f"Fallback Strategy 3: Found English section 1 keywords at paragraph {i}")
                             break
