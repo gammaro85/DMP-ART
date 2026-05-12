@@ -46,5 +46,6 @@
      },
 
      // Optional: Disable telemetry if preferred
-     "claude-code.telemetry.enabled": false
+     "claude-code.telemetry.enabled": false,
+     "sarif-viewer.connectToGithubCodeScanning": "off"
 }
