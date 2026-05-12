@@ -26,10 +26,10 @@ def validate_requirement_1():
     print("   ✅ DMPExtractor integration in app.py")
     
     # Check documentation
-    with open('WERYFIKACJA_WYMAGAN_DATA_STEWARD.md', 'r', encoding='utf-8') as f:
+    with open('README.md', 'r', encoding='utf-8') as f:
         content = f.read()
         assert '94.1%' in content, "❌ Success rate not documented"
-    print("   ✅ 94.1% success rate documented")
+        print("   ✅ 94.1% success rate documented in README.md")
     print("   Status: ✅ IMPLEMENTED")
 
 def validate_requirement_2():
@@ -63,7 +63,7 @@ def validate_requirement_3():
     print("   ✅ config/quick_comments.json exists")
     
     # Check category files
-    categories = ['ready.json', 'newcomer.json', 'mising.json']
+    categories = ['ready_to_use.json', 'for_newbies.json', 'missing_info.json']
     for cat in categories:
         path = f'config/{cat}'
         assert os.path.exists(path), f"❌ {cat} not found"
@@ -81,9 +81,9 @@ def validate_requirement_4():
     print("\n4️⃣  Configuration of comments and structure")
     print("   " + "─" * 60)
     
-    # Check template editor
-    assert os.path.exists('templates/template_editor.html'), "❌ Template editor not found"
-    print("   ✅ templates/template_editor.html exists")
+    # Check unified settings page
+    assert os.path.exists('templates/settings.html'), "❌ Unified settings page not found"
+    print("   ✅ templates/settings.html exists")
     
     # Check save endpoints
     with open('app.py', 'r') as f:
@@ -99,18 +99,15 @@ def validate_requirement_5():
     print("   " + "─" * 60)
     
     # Check category structure
-    with open('config/ready.json', 'r') as f:
+    with open('config/ready_to_use.json', 'r', encoding='utf-8') as f:
         ready_data = json.load(f)
     
     # Check if sections have individual comment lists
     sections = ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2', '4.1', '4.2', 
                 '5.1', '5.2', '5.3', '5.4', '6.1', '6.2']
     
-    category_key = list(ready_data.keys())[0]
-    category_data = ready_data[category_key]
-    
-    for section in sections[:5]:  # Check first 5 sections
-        assert section in category_data, f"❌ Section {section} not in category"
+    for section in sections:
+        assert section in ready_data, f"❌ Section {section} not in ready_to_use.json"
     print("   ✅ Per-section comment customization available")
     print(f"   ✅ All 14 sections can have unique comments")
     print("   Status: ✅ IMPLEMENTED")
@@ -142,19 +139,19 @@ def validate_requirement_7():
     
     # Check folders exist
     assert os.path.exists('outputs'), "❌ outputs/ folder not found"
-    assert os.path.exists('feedback'), "❌ feedback/ folder not found"
+    assert os.path.exists('outputs/reviews'), "❌ outputs/reviews folder not found"
     print("   ✅ outputs/ folder exists")
-    print("   ✅ feedback/ folder exists")
+    print("   ✅ outputs/reviews folder exists")
     
     # Check app.py configuration
     with open('app.py', 'r') as f:
         content = f.read()
-        assert "config['FEEDBACK_FOLDER']" in content, "❌ FEEDBACK_FOLDER not configured"
-        assert "app.config['FEEDBACK_FOLDER'], feedback_filename" in content, "❌ save_feedback not using FEEDBACK_FOLDER"
-        assert "app.config['FEEDBACK_FOLDER'], json_filename" in content, "❌ export_json not using FEEDBACK_FOLDER"
-    print("   ✅ FEEDBACK_FOLDER configured")
-    print("   ✅ save_feedback uses FEEDBACK_FOLDER")
-    print("   ✅ export_json uses FEEDBACK_FOLDER")
+        assert "config['REVIEWS_FOLDER']" in content, "❌ REVIEWS_FOLDER not configured"
+        assert "app.config['REVIEWS_FOLDER'], feedback_filename" in content, "❌ save_feedback not using REVIEWS_FOLDER"
+        assert "app.config['REVIEWS_FOLDER'], json_filename" in content, "❌ export_json not using REVIEWS_FOLDER"
+    print("   ✅ REVIEWS_FOLDER configured")
+    print("   ✅ save_feedback uses REVIEWS_FOLDER")
+    print("   ✅ export_json uses REVIEWS_FOLDER")
     
     # Check naming convention maintains linkage
     dmp_name = "DMP_Kowalski_J_OPUS_29_191125.docx"

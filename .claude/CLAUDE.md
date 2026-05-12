@@ -434,34 +434,53 @@ python app.py
 - Test theme toggle
 ```
 
-**3. Template Editor Test:**
+**3. Settings Page Test:**
 ```
 - Edit quick comments → save → verify appears in review page
 - Create new category → save → verify in review page
 - Edit DMP structure → reload → verify changes
+- Verify legacy /template_editor redirect lands on /settings
 ```
 
 ### Automated Testing
 
+**Current test split:**
+- Active automated checks: `tests/validate_all_requirements.py`, `tests/test_feedback_folder.py`, `tests/test_integration_workflow.py`, `tests/test_placeholder_functionality.py`, `tests/test_extractor_optimization.py`
+- Manual or environment-dependent diagnostics: `tests/test_real_files.py`, `tests/test_pzd_extraction.py`, OCR/setup checks
+- Archived debug probes: `old/debug_tests_dec2025/`
+
 **Run performance benchmarks:**
 ```bash
-python test_extractor_optimization.py
+python tests/test_extractor_optimization.py
+```
+
+**Run validation checks:**
+```bash
+python tests/validate_all_requirements.py
+python tests/test_feedback_folder.py
+python tests/test_integration_workflow.py
 ```
 
 **Test real files:**
 ```bash
-python test_real_files.py
-# NOTE: Requires /pzd directory with test PDF/DOCX files
-# This directory is not included in the repository
-# Test will fail with FileNotFoundError if missing - this is expected
+python tests/test_real_files.py
+python tests/test_real_files.py --debug
+# NOTE: Depends on local test data in tests/pzd/.
+# The script is now non-interactive and exits gracefully when the dataset is absent.
+```
+
+**Test PZD batch extraction:**
+```bash
+python tests/test_pzd_extraction.py
+# NOTE: Depends on local test data in tests/pzd/ and exits gracefully when absent.
 ```
 
 **Run integration tests:**
 ```bash
-python test_integration_workflow.py
+python tests/test_integration_workflow.py
 ```
 
-**Note:** No pytest/unittest framework used. Tests are custom Python scripts that can be run directly.
+**Note:** There is no pytest configuration currently. The suite is a mix of standalone Python scripts and `unittest` modules that can be run directly.
 
 ### OCR Testing
 

@@ -3,17 +3,35 @@
 Phase 1.3: PZD Files Extraction Test
 Tests the extraction mechanism with sample PZD files
 """
+import argparse
 import sys
 import os
 import json
 from datetime import datetime
 
-# Add parent directory to path
-sys.path.insert(0, '/home/user/DMP-ART')
+# Add parent directory to path (cross-platform)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from utils.extractor import DMPExtractor
 
-def test_file_extraction(file_path, output_dir='pzd/test_outputs'):
+
+def parse_args():
+    """Parse CLI arguments for PZD-based diagnostic runs."""
+    parser = argparse.ArgumentParser(description='Run PZD extraction diagnostics.')
+    parser.add_argument(
+        '--pzd-dir',
+        default=os.path.join(os.path.dirname(__file__), 'pzd'),
+        help='Directory containing sample PDF/DOCX files.'
+    )
+    parser.add_argument(
+        '--output-dir',
+        default=os.path.join(os.path.dirname(__file__), 'test_outputs', 'pzd'),
+        help='Directory for generated cache files.'
+    )
+    return parser.parse_args()
+
+
+def test_file_extraction(file_path, output_dir):
     """Test extraction for a single file"""
     print(f"\n{'='*80}")
     print(f"TESTING: {os.path.basename(file_path)}")
@@ -92,18 +110,33 @@ def test_file_extraction(file_path, output_dir='pzd/test_outputs'):
 
 def main():
     """Main test runner"""
+    args = parse_args()
+
     print("="*80)
     print("DMP-ART: PZD Files Extraction Test")
     print("Phase 1.3: Testing extraction mechanism")
     print("="*80)
 
-    pzd_dir = '/home/user/DMP-ART/pzd'
+    pzd_dir = args.pzd_dir
+
+    # Check if test directory exists
+    if not os.path.exists(pzd_dir):
+        print(f"\n⚠️  Warning: Test directory not found: {pzd_dir}")
+        print("   This test requires a 'tests/pzd/' folder with sample PDF/DOCX files.")
+        print("   Skipping test.\n")
+        sys.exit(0)
+
     test_files = []
 
     # Find all test files
     for filename in os.listdir(pzd_dir):
         if filename.endswith(('.docx', '.pdf')):
             test_files.append(os.path.join(pzd_dir, filename))
+
+    if not test_files:
+        print(f"\n⚠️  No PDF or DOCX files found in {pzd_dir}")
+        print("   Add test files to this folder and run again.\n")
+        sys.exit(0)
 
     print(f"\nFound {len(test_files)} test files:")
     for f in test_files:
@@ -112,7 +145,7 @@ def main():
     # Run tests
     results = []
     for file_path in test_files:
-        result = test_file_extraction(file_path)
+        result = test_file_extraction(file_path, args.output_dir)
         results.append(result)
 
     # Generate summary report

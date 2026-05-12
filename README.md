@@ -45,7 +45,7 @@ DMP-ART is a web application for Polish research administrators (data stewards) 
 - Werkzeug 3.1.3, Pillow 11.0.0
 
 **Frontend:**
-- Vanilla JavaScript (modular: script.js, template_editor.js, dark-mode.js)
+- Vanilla JavaScript (modular: script.js, ai_assistant.js, dark-mode.js)
 - HTML5 + CSS3 with custom properties
 - Dark/Light theme system
 - Server-Sent Events (SSE) for real-time updates
@@ -103,7 +103,7 @@ dmp-art/
 ├── templates/                 # Jinja2 HTML templates
 │   ├── index.html            # Upload page
 │   ├── review.html           # Review interface (2,341 lines)
-│   ├── template_editor.html  # Configuration management
+│   ├── settings.html         # Unified settings page
 │   └── documentation.html    # Documentation page
 ├── static/                    # Static assets
 │   ├── css/
@@ -111,7 +111,7 @@ dmp-art/
 │   │   └── review.css        # Review-specific styles (671 lines)
 │   ├── js/
 │   │   ├── script.js         # Main logic (42KB)
-│   │   ├── template_editor.js# Template editor (28KB)
+│   │   ├── ai_assistant.js   # AI assistant frontend
 │   │   └── dark-mode.js      # Theme management (4KB)
 │   └── images/               # Logos and assets
 ├── utils/                     # Core processing modules
@@ -139,13 +139,12 @@ dmp-art/
   - Version history, architecture evolution, performance optimizations
   - Feature development timeline, technical debt resolution
 
-- **[FINAL_TEST_RESULTS.md](FINAL_TEST_RESULTS.md)** - Test results and quality metrics (~500 lines)
-  - 94.1% success rate analysis, performance benchmarks
-  - Test suite results (21 tests, 90% passing)
-
 - **[.claude/DOCUMENTATION_GUIDELINES.md](.claude/DOCUMENTATION_GUIDELINES.md)** - Documentation standards (~400 lines)
   - Best practices for maintaining docs, update workflows
   - Anti-patterns to avoid, quality checklist
+
+- **Testing status** - maintained in [HISTORY.md](HISTORY.md) and [.claude/CLAUDE.md](.claude/CLAUDE.md)
+  - Active validation scripts, manual diagnostics, and archived debug probes
 
 **Documentation Principles:**
 1. **Single Source of Truth** - Each concept documented in ONE location only
@@ -171,7 +170,7 @@ Edit `config/quick_comments.json` to customize:
 ### Categories
 Create custom category files in `config/` directory:
 - Each category gets its own JSON file
-- Categories appear in Template Editor
+- Categories appear in the unified Settings page
 - Used for organized feedback in review interface
 
 ---
@@ -185,9 +184,9 @@ Create custom category files in `config/` directory:
 | **OCR Success** | 100% on scanned PDFs | ✅ |
 | **Processing Speed** | 0.26s avg (DOCX/PDF), 23.6s (OCR) | ✅ |
 | **Text Similarity** | 0.0003ms (99.9% faster) | ✅ |
-| **Unit Test Pass Rate** | 90% (19/21 tests) | ✅ |
+| **Validation Scripts** | `tests/validate_all_requirements.py`, `tests/test_feedback_folder.py`, `tests/test_integration_workflow.py` | ✅ |
 
-**See [FINAL_TEST_RESULTS.md](FINAL_TEST_RESULTS.md) for detailed analysis**
+**See [HISTORY.md](HISTORY.md) and [.claude/CLAUDE.md](.claude/CLAUDE.md) for testing details and current validation guidance**
 
 ---
 
@@ -222,10 +221,16 @@ python app.py
 
 ```bash
 # Run unit tests
-python test_extractor_optimization.py
+python tests/test_extractor_optimization.py
 
-# Test with real files
-python test_real_files.py
+# Run validation scripts
+python tests/validate_all_requirements.py
+python tests/test_feedback_folder.py
+python tests/test_integration_workflow.py
+
+# Test with local real files (if tests/pzd/ exists)
+python tests/test_real_files.py
+python tests/test_pzd_extraction.py
 
 # Verify OCR
 tesseract --version
@@ -245,7 +250,15 @@ tesseract --version
 
 ## Version History
 
-### v0.8.1 (2025-11-23) - Current Version ✅
+### v0.9.1 (2026-04-10) - Current Version ✅
+
+**Major Changes:**
+- Unified Settings Page (replaces separate template_editor and ai_settings)
+- Dead code removal (~130 KB cleaned up)
+- Upload progress bar bug fix
+- Dynamic max upload size configuration
+
+### v0.8.1 (2025-11-23)
 
 **Major Changes:**
 - JavaScript modularization (3 separate files)
@@ -255,7 +268,7 @@ tesseract --version
 ### v0.8.0 (2025-11-19)
 
 **Features:**
-- Template editor with dynamic category management
+- Category management UI (now consolidated into the unified Settings page)
 - Dark/Light theme system
 - Bilingual document processing
 
@@ -291,7 +304,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 - **AI Agents:** See `.claude/CLAUDE.md` for complete codebase guide
 - **Issues:** https://github.com/gammaro85/DMP-ART/issues
 - **History:** See `HISTORY.md` for project evolution
-- **Tests:** See `FINAL_TEST_RESULTS.md` for quality metrics
+- **Tests:** See `HISTORY.md` and `.claude/CLAUDE.md` for current test guidance
 
 **Best Practices:**
 - Use high-quality PDF exports from OSF
@@ -315,7 +328,7 @@ Licensed under the MIT License
 
 **DMP-ART** - Making DMP assessment efficient, consistent, and comprehensive.
 
-**Current Version:** 0.8.1
+**Current Version:** 0.9.1
 **Success Rate:** 94.1%
 **Time Savings:** 75%
 **Target Users:** Data stewards at Polish research institutions

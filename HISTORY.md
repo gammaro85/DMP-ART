@@ -1,7 +1,7 @@
 # DMP-ART Project History
 
 **Document Version:** 1.1
-**Last Updated:** 2026-03-11
+**Last Updated:** 2026-05-13
 **Purpose:** Complete chronological history for AI agents working on this codebase
 
 ---
@@ -53,6 +53,19 @@ Build a web application to:
 ---
 
 ## Version History
+
+### v0.9.1 (2026-05-13) — Test Documentation Cleanup
+
+**Status:** Production-ready
+**Focus:** Fold test-suite cleanup into existing documentation, align validation scripts with current app structure, and archive stale debug probes
+
+#### Changes
+- **Documentation:** removed standalone test-suite analysis document and folded conclusions into core project docs (`README.md`, `.claude/CLAUDE.md`, `.github/copilot-instructions.md`, `HISTORY.md`)
+- **Testing cleanup:** archived 7 root-level Dec 2025 debug probes to `old/debug_tests_dec2025/` so the repository root reflects the active suite
+- **Validation fix:** updated `tests/test_feedback_folder.py` and `tests/test_integration_workflow.py` to use `outputs/reviews/` and `REVIEWS_FOLDER` instead of the obsolete `feedback/` model
+- **Validation fix:** updated `tests/validate_all_requirements.py` to reflect the unified settings page, current category filenames, and current README-based success-rate documentation
+- **Diagnostics fix:** updated `tests/test_real_files.py` and `tests/test_pzd_extraction.py` to use non-interactive CLI options and predictable path handling for local `tests/pzd/` datasets
+- **Docs alignment:** clarified that current testing is a mix of runnable scripts and `unittest` modules, with environment-dependent diagnostics kept separate from active automated checks
 
 ### v0.9.1 (2026-04-10) — Codebase Audit & Dead Code Removal
 

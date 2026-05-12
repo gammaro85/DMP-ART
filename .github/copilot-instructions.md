@@ -98,11 +98,14 @@ Always use `classList.add/remove('hidden')`, never `element.style.display`.
 
 ## Testing
 
-No pytest — custom scripts only:
+No pytest configuration currently — runnable scripts plus some `unittest` modules:
 ```bash
-python test_extractor_optimization.py   # performance benchmarks
-python test_integration_workflow.py     # integration tests
-# test_real_files.py requires /pzd directory (not in repo) — expected to fail
+python tests/validate_all_requirements.py
+python tests/test_feedback_folder.py
+python tests/test_integration_workflow.py
+python tests/test_extractor_optimization.py   # performance benchmarks
+# tests/test_real_files.py and tests/test_pzd_extraction.py require local data in tests/pzd/
+# both diagnostics are non-interactive and exit gracefully when the dataset is absent
 ```
 
 Manual checklist after changes:
@@ -124,5 +127,5 @@ No mobile/responsive design. Target users work on desktop. Do not add mobile bre
 
 - `pip install` fails with "Cannot uninstall blinker" → add `--ignore-installed blinker`
 - Scanned PDFs produce no text without Tesseract
-- `test_real_files.py` fails without `/pzd` directory — this is expected
+- `tests/test_real_files.py` and `tests/test_pzd_extraction.py` skip gracefully without `tests/pzd/`
 - Upload size limit is configurable via `/settings` (default 16 MB)

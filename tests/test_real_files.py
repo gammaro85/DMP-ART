@@ -3,15 +3,37 @@
 Test DMP extraction on real files from pzd folder
 Generates comprehensive statistics and analysis
 """
+import argparse
 import os
 import sys
 import json
 import time
 from datetime import datetime
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from utils.extractor import DMPExtractor
+
+
+def parse_args():
+    """Parse CLI arguments for manual diagnostic runs."""
+    parser = argparse.ArgumentParser(description='Run real-file extraction diagnostics.')
+    parser.add_argument(
+        '--pzd-dir',
+        default=os.path.join(os.path.dirname(__file__), 'pzd'),
+        help='Directory containing sample PDF/DOCX files.'
+    )
+    parser.add_argument(
+        '--output-dir',
+        default=os.path.join(os.path.dirname(__file__), 'test_outputs'),
+        help='Directory for generated cache files and JSON report.'
+    )
+    parser.add_argument(
+        '--debug',
+        action='store_true',
+        help='Enable extractor debug mode.'
+    )
+    return parser.parse_args()
 
 
 def test_file(file_path, output_dir, debug=False):
@@ -109,14 +131,25 @@ def test_file(file_path, output_dir, debug=False):
 
 def main():
     """Main test runner"""
+    args = parse_args()
+
     print("="*80)
     print("DMP EXTRACTOR: REAL FILES TEST")
     print("="*80)
     print(f"Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
-    pzd_dir = os.path.join(os.path.dirname(__file__), 'pzd')
-    output_dir = os.path.join(os.path.dirname(__file__), 'test_outputs')
+    pzd_dir = args.pzd_dir
+    output_dir = args.output_dir
     os.makedirs(output_dir, exist_ok=True)
+
+    # Check if test directory exists
+    if not os.path.exists(pzd_dir):
+        print(f"\n⚠️  Warning: Test directory not found: {pzd_dir}")
+        print("   This test requires a 'tests/pzd/' folder with sample PDF/DOCX files.")
+        print("   Create the folder and add test files, or skip this test.")
+        print("\n   Exiting gracefully.\n")
+        print("="*80)
+        return
 
     # Find all DOCX and PDF files
     test_files = []
@@ -124,16 +157,19 @@ def main():
         if filename.endswith(('.docx', '.pdf')):
             test_files.append(os.path.join(pzd_dir, filename))
 
+    if not test_files:
+        print(f"\n⚠️  No PDF or DOCX files found in {pzd_dir}")
+        print("   Add test files to this folder and run again.\n")
+        print("="*80)
+        return
+
     print(f"\nFound {len(test_files)} files to test")
     print("-"*80)
-
-    # Ask for debug mode
-    debug_mode = input("\nEnable debug mode? (y/n): ").lower().strip() == 'y'
 
     # Run tests
     results = []
     for file_path in sorted(test_files):
-        result = test_file(file_path, output_dir, debug=debug_mode)
+        result = test_file(file_path, output_dir, debug=args.debug)
         results.append(result)
 
     # Generate summary report
