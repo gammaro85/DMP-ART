@@ -19,6 +19,12 @@ import shutil
 import zipfile
 from pathlib import Path
 import subprocess
+import io
+
+# Fix Windows console encoding for emoji support
+if sys.platform == 'win32':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
 # Kolory dla termianla
 class Colors:
@@ -61,8 +67,14 @@ def clean_previous_builds():
     for folder in folders_to_clean:
         if os.path.exists(folder):
             print(f"▶ Usuwanie {folder}/...")
-            shutil.rmtree(folder)
-            print(f"{Colors.GREEN}✓ Usunięto {folder}/{Colors.END}")
+            try:
+                shutil.rmtree(folder)
+                print(f"{Colors.GREEN}✓ Usunięto {folder}/{Colors.END}")
+            except Exception as e:
+                print(f"{Colors.RED}✗ Błąd przy usuwaniu {folder}: {e}{Colors.END}")
+                return False
+
+    return True
 
 def build_executable():
     """Buduje executable z PyInstaller."""

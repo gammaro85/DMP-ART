@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Test script to verify feedback folder separation feature.
+Test script to verify review output folder separation feature.
 
 This test validates that:
-1. The feedback folder is created correctly
-2. Feedback files are saved to feedback/ folder
+1. The reviews folder is created correctly
+2. Feedback files are saved to outputs/reviews/ folder
 3. DMP files remain in outputs/ folder
 4. File naming convention maintains the link between DMP and feedback files
 """
@@ -16,7 +16,7 @@ import shutil
 from datetime import datetime
 
 def test_folder_structure():
-    """Test that feedback folder exists and is separate from outputs"""
+    """Test that reviews folder exists and is separate from main outputs"""
     print("Test 1: Folder Structure")
     print("-" * 50)
     
@@ -24,15 +24,15 @@ def test_folder_structure():
     assert os.path.exists('outputs'), "❌ outputs/ folder does not exist"
     print("✓ outputs/ folder exists")
     
-    # Check feedback folder exists
-    assert os.path.exists('feedback'), "❌ feedback/ folder does not exist"
-    print("✓ feedback/ folder exists")
+    # Check reviews folder exists
+    assert os.path.exists(os.path.join('outputs', 'reviews')), "❌ outputs/reviews folder does not exist"
+    print("✓ outputs/reviews folder exists")
     
     # Check they are separate directories
     outputs_path = os.path.abspath('outputs')
-    feedback_path = os.path.abspath('feedback')
+    feedback_path = os.path.abspath(os.path.join('outputs', 'reviews'))
     assert outputs_path != feedback_path, "❌ outputs and feedback are the same directory"
-    print("✓ outputs/ and feedback/ are separate directories")
+    print("✓ outputs/ and outputs/reviews/ are separate directories")
     
     print("✅ Test 1 PASSED\n")
 
@@ -76,21 +76,21 @@ def test_file_separation():
         f.write("Test DMP content")
     print(f"✓ Created test DMP: {dmp_path}")
     
-    # Create test feedback file in feedback
-    feedback_path = os.path.join('feedback', test_feedback)
+    # Create test feedback file in outputs/reviews
+    feedback_path = os.path.join('outputs', 'reviews', test_feedback)
     with open(feedback_path, 'w') as f:
         f.write("Test feedback content")
     print(f"✓ Created test feedback: {feedback_path}")
     
     # Verify they exist in correct locations
     assert os.path.exists(dmp_path), "❌ DMP file not in outputs/"
-    assert os.path.exists(feedback_path), "❌ Feedback file not in feedback/"
+    assert os.path.exists(feedback_path), "❌ Feedback file not in outputs/reviews/"
     print("✓ Files are in correct folders")
     
     # Verify they are not in the wrong folders
-    wrong_dmp = os.path.join('feedback', test_dmp)
+    wrong_dmp = os.path.join('outputs', 'reviews', test_dmp)
     wrong_feedback = os.path.join('outputs', test_feedback)
-    assert not os.path.exists(wrong_dmp), "❌ DMP file incorrectly in feedback/"
+    assert not os.path.exists(wrong_dmp), "❌ DMP file incorrectly in outputs/reviews/"
     assert not os.path.exists(wrong_feedback), "❌ Feedback file incorrectly in outputs/"
     print("✓ Files are NOT in wrong folders")
     
@@ -102,7 +102,7 @@ def test_file_separation():
     print("✅ Test 3 PASSED\n")
 
 def test_gitignore_configuration():
-    """Test that .gitignore properly handles feedback files"""
+    """Test that .gitignore properly handles review files"""
     print("Test 4: .gitignore Configuration")
     print("-" * 50)
     
@@ -110,16 +110,16 @@ def test_gitignore_configuration():
     with open('.gitignore', 'r') as f:
         gitignore_content = f.read()
     
-    # Check for feedback folder entries
-    assert 'feedback/*.txt' in gitignore_content, "❌ .gitignore missing feedback/*.txt"
-    print("✓ .gitignore includes feedback/*.txt")
+    # Check for review folder entries
+    assert 'outputs/reviews/*.txt' in gitignore_content, "❌ .gitignore missing outputs/reviews/*.txt"
+    print("✓ .gitignore includes outputs/reviews/*.txt")
     
-    assert 'feedback/*.json' in gitignore_content, "❌ .gitignore missing feedback/*.json"
-    print("✓ .gitignore includes feedback/*.json")
+    assert 'outputs/reviews/*.json' in gitignore_content, "❌ .gitignore missing outputs/reviews/*.json"
+    print("✓ .gitignore includes outputs/reviews/*.json")
     
     # Check that old outputs/feedback_*.txt is removed or replaced
     # (Should not be there anymore since we moved to feedback folder)
-    print("✓ .gitignore properly configured for feedback folder")
+    print("✓ .gitignore properly configured for outputs/reviews folder")
     
     print("✅ Test 4 PASSED\n")
 
@@ -132,21 +132,21 @@ def test_app_configuration():
     with open('app.py', 'r') as f:
         app_content = f.read()
     
-    # Check for FEEDBACK_FOLDER config
-    assert "app.config['FEEDBACK_FOLDER']" in app_content, "❌ FEEDBACK_FOLDER not in app.config"
-    print("✓ FEEDBACK_FOLDER configured in app")
+    # Check for REVIEWS_FOLDER config
+    assert "app.config['REVIEWS_FOLDER']" in app_content, "❌ REVIEWS_FOLDER not in app.config"
+    print("✓ REVIEWS_FOLDER configured in app")
     
-    # Check for feedback folder creation
-    assert "os.makedirs(app.config['FEEDBACK_FOLDER'], exist_ok=True)" in app_content, "❌ Feedback folder not created"
-    print("✓ Feedback folder creation in app initialization")
+    # Check for reviews folder creation
+    assert "os.makedirs(app.config['REVIEWS_FOLDER'], exist_ok=True)" in app_content, "❌ Reviews folder not created"
+    print("✓ Reviews folder creation in app initialization")
     
-    # Check that save_feedback uses FEEDBACK_FOLDER
-    assert "app.config['FEEDBACK_FOLDER'], feedback_filename" in app_content, "❌ save_feedback not using FEEDBACK_FOLDER"
-    print("✓ save_feedback() uses FEEDBACK_FOLDER")
+    # Check that save_feedback uses REVIEWS_FOLDER
+    assert "app.config['REVIEWS_FOLDER'], feedback_filename" in app_content, "❌ save_feedback not using REVIEWS_FOLDER"
+    print("✓ save_feedback() uses REVIEWS_FOLDER")
     
-    # Check that export_json uses FEEDBACK_FOLDER
-    assert "app.config['FEEDBACK_FOLDER'], json_filename" in app_content, "❌ export_json not using FEEDBACK_FOLDER"
-    print("✓ export_json() uses FEEDBACK_FOLDER")
+    # Check that export_json uses REVIEWS_FOLDER
+    assert "app.config['REVIEWS_FOLDER'], json_filename" in app_content, "❌ export_json not using REVIEWS_FOLDER"
+    print("✓ export_json() uses REVIEWS_FOLDER")
     
     print("✅ Test 5 PASSED\n")
 
@@ -166,10 +166,10 @@ def main():
         print("=" * 50)
         print("✅ ALL TESTS PASSED")
         print("=" * 50)
-        print("\nFeedback folder separation is working correctly!")
+        print("\nReview output folder separation is working correctly!")
         print("\nFile organization:")
         print("  📁 outputs/  → DMP files (DMP_*.docx)")
-        print("  📁 feedback/ → Review files (feedback_*.txt, Review_*.json)")
+        print("  📁 outputs/reviews/ → Review files (feedback_*.txt, Review_*.json)")
         print("\nLinkage maintained through consistent naming convention.")
         return 0
         

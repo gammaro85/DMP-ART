@@ -1,16 +1,21 @@
 #!/usr/bin/env python3
 """
-Integration test for feedback folder separation.
+Integration test for review output folder separation.
 
 This test simulates the complete workflow:
 1. DMP extraction to outputs/
-2. Feedback creation to feedback/
+2. Feedback creation to outputs/reviews/
 3. Verification of file linkage
 """
 
 import os
 import json
 from datetime import datetime
+
+
+def _normalized(path):
+    """Normalize paths so assertions behave the same on Windows and POSIX."""
+    return os.path.normpath(path)
 
 def simulate_workflow():
     """Simulate the complete DMP review workflow"""
@@ -45,7 +50,7 @@ def simulate_workflow():
     # Generate feedback filename based on DMP filename
     feedback_base = os.path.splitext(dmp_filename)[0]
     feedback_filename = f"feedback_{feedback_base}.txt"
-    feedback_path = os.path.join('feedback', feedback_filename)
+    feedback_path = os.path.join('outputs', 'reviews', feedback_filename)
     
     # Create mock feedback
     feedback_content = f"""
@@ -84,7 +89,7 @@ Data: {datetime.now().strftime('%Y-%m-%d')}
     print("-" * 60)
     
     json_filename = f"Review_{researcher_surname}_{researcher_firstname[0]}_{competition_name}_{competition_edition}_{date_str}.json"
-    json_path = os.path.join('feedback', json_filename)
+    json_path = os.path.join('outputs', 'reviews', json_filename)
     
     json_data = {
         'metadata': {
@@ -118,17 +123,17 @@ Data: {datetime.now().strftime('%Y-%m-%d')}
     
     # Check DMP is in outputs/
     assert os.path.exists(dmp_path), "DMP not in outputs/"
-    assert dmp_path.startswith('outputs/'), "DMP not in outputs/ folder"
+    assert _normalized(dmp_path).startswith(_normalized('outputs')), "DMP not in outputs/ folder"
     print("✓ DMP file in outputs/ folder")
     
-    # Check feedback files are in feedback/
-    assert os.path.exists(feedback_path), "Feedback not in feedback/"
-    assert feedback_path.startswith('feedback/'), "Feedback not in feedback/ folder"
-    print("✓ Feedback TXT in feedback/ folder")
+    # Check review files are in outputs/reviews/
+    assert os.path.exists(feedback_path), "Feedback not in outputs/reviews/"
+    assert _normalized(feedback_path).startswith(_normalized(os.path.join('outputs', 'reviews'))), "Feedback not in outputs/reviews/ folder"
+    print("✓ Feedback TXT in outputs/reviews/ folder")
     
-    assert os.path.exists(json_path), "JSON not in feedback/"
-    assert json_path.startswith('feedback/'), "JSON not in feedback/ folder"
-    print("✓ Review JSON in feedback/ folder")
+    assert os.path.exists(json_path), "JSON not in outputs/reviews/"
+    assert _normalized(json_path).startswith(_normalized(os.path.join('outputs', 'reviews'))), "JSON not in outputs/reviews/ folder"
+    print("✓ Review JSON in outputs/reviews/ folder")
     
     # Step 5: Verify file linkage
     print("\nStep 5: Verify file linkage")
@@ -155,9 +160,10 @@ DMP-ART/
 ├── outputs/
 │   └── {dmp_filename}
 │
-└── feedback/
-    ├── {feedback_filename}
-    └── {json_filename}
+└── outputs/
+    └── reviews/
+        ├── {feedback_filename}
+        └── {json_filename}
 """)
     
     # Cleanup
@@ -174,8 +180,8 @@ DMP-ART/
     print("\nWorkflow verified successfully!")
     print("\nFile organization:")
     print("  📄 DMP_*.docx        → outputs/")
-    print("  📝 feedback_*.txt    → feedback/")
-    print("  📊 Review_*.json     → feedback/")
+    print("  📝 feedback_*.txt    → outputs/reviews/")
+    print("  📊 Review_*.json     → outputs/reviews/")
     print("\n✓ Files remain linked through consistent naming convention")
     
     return 0
