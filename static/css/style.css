@@ -13,11 +13,11 @@ html, body {
 }
 
 :root {
-  --primary-color: #3270e0;
-  --primary-hover: #1f54cc;
-  --secondary-color: #5090e8;
-  --accent-color: #1f54cc;
-  --navy: #3270e0;
+  --primary-color: #2d83c8;
+  --primary-hover: #1c66b3;
+  --secondary-color: #4d9ad6;
+  --accent-color: #1c66b3;
+  --navy: #2d83c8;
   --light-color: #e2e7f0;
   --dark-color: #162e52;
   --error-color: #c92e3e;
@@ -29,7 +29,7 @@ html, body {
   --success-hover: #186e32;
   --warning-hover: #b58512;
   --text-inverse: #ffffff;
-  --primary-rgb: 50, 112, 224;
+  --primary-rgb: 45, 131, 200;
   --section-title-color: #244410;
   --subsection-title-color: #3e6a4c;
   --shadow-light: 0 1px 3px rgba(24, 48, 82, 0.12);
@@ -55,7 +55,7 @@ html, body {
   --border-light: #c0cedf;
   --border-medium: #a6b9d0;
   --border-dark: #7e95b0;
-  --status-info: rgba(50, 112, 224, 0.10);
+  --status-info: rgba(45, 131, 200, 0.10);
   --status-warning: rgba(229, 173, 26, 0.10);
   --status-success: rgba(34, 145, 59, 0.10);
   --status-error: rgba(201, 46, 62, 0.10);
@@ -1218,10 +1218,10 @@ textarea::placeholder {
   opacity: 0.7;
 }
 [data-theme=dark] {
-  --primary-color: #3b82f6;
-  --secondary-color: #60a5fa;
-  --accent-color: #93c5fd;
-  --navy: #1e293b;
+  --primary-color: #3897dc;
+  --secondary-color: #5cb2df;
+  --accent-color: #8fcde6;
+  --navy: #143546;
   --light-color: #0f172a;
   --dark-color: #f1f5f9;
   --error-color: #f87171;
@@ -1258,15 +1258,15 @@ textarea::placeholder {
   --glass-bg: #374151;
   --glass-border: #4b5563;
   --glass-backdrop: none;
-  --primary-hover: #2563eb;
+  --primary-hover: #2381cc;
   --yellow-highlight: #1c3a5a;
   --bg-alt: #4b5563;
   --error-hover: #f06b6b;
   --success-hover: #22c55e;
   --warning-hover: #fbbf24;
   --text-inverse: #ffffff;
-  --primary-rgb: 59, 130, 246;
-  --status-info: rgba(59, 130, 246, 0.15);
+  --primary-rgb: 56, 151, 220;
+  --status-info: rgba(56, 151, 220, 0.15);
   --status-warning: rgba(251, 191, 36, 0.15);
   --status-success: rgba(74, 222, 128, 0.15);
   --status-error: rgba(248, 113, 113, 0.15)
