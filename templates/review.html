@@ -347,6 +347,7 @@
             max-height: 300px;
             resize: vertical;
             transition: height 0.2s ease;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
         
         /* Legacy styles for backward compatibility */
@@ -2308,7 +2309,7 @@
                 // Insert citation into feedback textarea
                 let textarea = document.getElementById('feedback-' + currentSectionId);
                 if (textarea) {
-                    let citation = `❝ ${selText} ❞`;
+                    let citation = `*${selText}*`;
                     let value = textarea.value;
                     let sep = value && !value.endsWith('\n') ? '\n\n' : '';
                     textarea.value = value + sep + citation;
@@ -2394,10 +2395,7 @@
                     const feedbackTextarea = section.querySelector(`#feedback-${sectionId}`);
                     
                     if (feedbackTextarea && feedbackTextarea.value.trim()) {
-                        report += `SECTION ${sectionId}\\n`;
-                        report += `${questionText}\\n`;
-                        report += `${'='.repeat(50)}\\n`;
-                        report += feedbackTextarea.value.trim() + '\\n\\n';
+                        report += `${sectionId}. ${feedbackTextarea.value.trim()}\\n\\n`;
                     }
                 });
                 
