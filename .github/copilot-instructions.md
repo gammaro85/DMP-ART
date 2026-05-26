@@ -51,6 +51,12 @@ pip install pytesseract pdf2image
 
 ## Key Patterns
 
+**Documentation rule — NEVER create new `.md` files:**
+```
+❌ FORBIDDEN: EXTRACTION_ANALYSIS.md, *_REPORT.md, *_PLAN.md, *_SUMMARY.md, *_NOTES.md
+✅ INSTEAD: Update .claude/CLAUDE.md (for patterns/findings) or HISTORY.md (for changes)
+```
+
 **Flask route standard:**
 ```python
 @app.route('/api/endpoint', methods=['POST'])

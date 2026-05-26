@@ -347,24 +347,51 @@ Pages loading scripts:
 
 ### Modifying Extraction Logic
 
-**File:** `utils/extractor.py`
+**Current extractor:** `utils/extractor_v2.py` (anchor-based, production since v0.9.x)  
+**Legacy extractor:** `utils/extractor.py` (pattern-based, archived)
 
-**Key methods:**
-- `process_file()` - Entry point
-- `process_docx()` - DOCX extraction
-- `process_pdf()` - PDF extraction (with OCR fallback)
-- `detect_section_from_text()` - Section detection (4-tier fallback)
-- `detect_subsection_from_text()` - Subsection detection
-- `improve_content_assignment()` - Content-to-section mapping
+#### Anchor-Based Extraction Pipeline (extractor_v2.py)
 
-**Performance tip:** Pre-compile regex patterns in `__init__()`:
-```python
-self.skip_patterns_compiled = [
-    re.compile(r"Strona \d+", re.IGNORECASE),
-    re.compile(r"Page \d+", re.IGNORECASE),
-    # ...
-]
-```
+**Architecture:**
+1. **DocConverter** - converts PDF/DOCX → flat list of TextBlock objects
+2. **AnchorMatcher** - finds 28 subsection questions (14 PL + 14 EN) using token overlap
+3. **ContentCleaner** - strips formatting markers, filters noise (headers, footers, section titles)
+4. **DMPExtractor** - slices content between anchors → JSON cache
+
+**Key classes:**
+- `DMPExtractor` - main orchestrator, public API: `process_file(file_path, output_dir)`
+- `DocConverter` - handles PDF (with OCR fallback) and DOCX parsing
+- `AnchorMatcher` - locates subsection boundaries via anchor texts from `config/dmp_anchors.json`
+- `ContentCleaner` - removes structural noise and user-defined skip terms
+- `SkipTermsManager` - CRUD for `config/extraction_skip_terms.json`
+
+**Anchor matching strategy:**
+- **Strategy 1:** Token overlap with sliding window (1-4 blocks)
+  - HIGH_THRESHOLD = 0.55 (accept immediately)
+  - LOW_THRESHOLD = 0.35 (fallback if no HIGH match)
+- **Strategy 2:** Fingerprint keyword coverage over 6-block window
+- **Forward-only search:** prevents duplicate anchors at document end from stealing boundaries
+
+**Critical extraction principles:**
+- Subsection questions (anchors) are **NOT** included in extracted content
+- Numerations (1.1, 2.1, etc.) are identifiers only, **NOT** content
+- Main section headers (1-6) are filtered as structural noise via `_BUILTIN_NOISE`
+- Extracted content = text between question N and question N+1
+
+**Configuration files:**
+- `config/dmp_anchors.json` - 28 anchor texts (PL/EN) + fingerprint keywords per subsection
+- `config/extraction_skip_terms.json` - user-editable regex patterns to exclude
+
+**Common modifications:**
+1. **Add new anchor variant:** Edit `config/dmp_anchors.json`, add text to `pl` or `en` arrays
+2. **Adjust matching sensitivity:** Modify `HIGH_THRESHOLD` / `LOW_THRESHOLD` in AnchorMatcher
+3. **Add noise filter:** Extend `_BUILTIN_NOISE` regex list (lines 105-130)
+4. **Custom skip terms:** Use SkipTermsManager.add() or edit `extraction_skip_terms.json`
+
+**Performance notes:**
+- Regex patterns in `_BUILTIN_NOISE` are compiled once at module load
+- Token overlap uses set intersection - O(n) per comparison
+- Window size (1-4) balances accuracy vs. performance
 
 ### Adding a New Route
 
@@ -845,8 +872,18 @@ git push -u origin <branch-name>
 - Bug: **Root Cause** — **Fix** (file:line)
 ```
 
-**Do NOT create new `.md` files** for plans, analyses, or reports.
-Use `.claude/projects/*/memory/` for session notes.
+**⚠️ NEVER create new `.md` files** — regardless of name (analysis, report, plan, summary, notes, findings, etc.)
+
+**Forbidden patterns:**
+- ❌ `EXTRACTION_ANALYSIS_*.md`, `*_REPORT.md`, `IMPLEMENTATION_PLAN.md`
+- ❌ `*_SUMMARY.md`, `*_NOTES.md`, `*_FINDINGS.md`, `*_DECISIONS.md`
+- ❌ ANY new markdown file for documentation purposes
+
+**What to do instead:**
+- Analysis/findings → update this file (`.claude/CLAUDE.md`)
+- Bug fixes/changes → add to `HISTORY.md`
+- Temporary notes → `.claude/projects/*/memory/` (auto-memory)
+- Work tracking → `TodoWrite` tool
 
 **Remember:** This is a single-user tool optimized for Polish research administrators. Keep it simple, fast, and focused on the core use case.
 

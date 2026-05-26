@@ -343,7 +343,7 @@ body:not([data-page=index]) .logo {
   display: none
 }
 [data-theme=dark] .dark-logo,
-s .light-logo {
+.light-logo {
   display: block
 }
 /* Responsive layout for mobile */

@@ -102,29 +102,36 @@ _STOP: Set[str] = {
 
 # Lines that are structural noise — always filtered, regardless of user skip terms.
 # Matches: DMP/PZD header, main section titles (Polish + English numbered 1-6)
+#
+# Fix history:
+# - 2026-05-26: Fixed regex for section 2 ("jako" → "jakość")
+# - 2026-05-26: Extended patterns with optional suffixes for better matching
+# - 2026-05-26: Added .* suffix to match any trailing text after main keywords
 _BUILTIN_NOISE: List = [
     re.compile(r'PLAN\s+ZARZĄDZANIA\s+DANYMI', re.IGNORECASE),
     re.compile(r'\bDATA\s+MANAGEMENT\s+PLAN\b', re.IGNORECASE),
+    # Polish section titles with flexible suffixes (matches anything after main keywords)
     re.compile(
         r'^\s*\d+[\.\s]+(?:'
-        r'Opis\s+danych'
-        r'|Dokumentacja\s+i\s+jako'
-        r'|Przechowywanie\s+i\s+tworzenie'
-        r'|Wymogi\s+prawne'
-        r'|Udost[eę]pnianie\s+i\s+d[łl]ugotrwa[łl]'
-        r'|Zadania\s+zwi[aą]zane'
-        r')',
+        r'Opis\s+danych.*'                    # "oraz pozyskiwanie lub ponowne wykorzystanie..."
+        r'|Dokumentacja\s+i\s+jakość.*'       # "danych"
+        r'|Przechowywanie\s+i\s+tworzenie.*'  # "kopii zapasowych podczas badań"
+        r'|Wymogi\s+prawne.*'                 # ", kodeks postępowania"
+        r'|Udost[eę]pnianie\s+i\s+d[łl]ugotrwa[łl].*'  # "e przechowywanie danych"
+        r'|Zadania\s+zwi[aą]zane.*'           # "z zarządzaniem danymi oraz zasoby"
+        r')$',
         re.IGNORECASE,
     ),
+    # English section titles with flexible suffixes
     re.compile(
         r'^\s*\d+[\.\s]+(?:'
-        r'Data\s+description\s+and\s+collection'
-        r'|Documentation\s+and\s+data\s+quality'
-        r'|Storage\s+and\s+backup'
-        r'|Legal\s+requirements'
-        r'|Data\s+sharing\s+and\s+long'
-        r'|Data\s+management\s+responsibilities'
-        r')',
+        r'Data\s+description\s+and.*'         # "collection or re-use of existing data"
+        r'|Documentation\s+and\s+data.*'      # "quality"
+        r'|Storage\s+and\s+backup.*'          # "during the research process"
+        r'|Legal\s+requirements.*'            # ", codes of conduct"
+        r'|Data\s+sharing\s+and.*'            # "long-term preservation"
+        r'|Data\s+management\s+responsibilities.*'  # "and resources"
+        r')$',
         re.IGNORECASE,
     ),
 ]
@@ -364,15 +371,18 @@ class AnchorMatcher:
     def __init__(self, anchors_cfg: dict) -> None:
         self._anchors = anchors_cfg
 
-    def find_boundaries(self, blocks: List[TextBlock]) -> Dict[str, int]:
+    def find_boundaries(self, blocks: List[TextBlock]) -> Dict[str, Tuple[int, int]]:
         """
-        Returns {section_id: block_index} in document order.
+        Returns {section_id: (block_index, window_size)} in document order.
+        - block_index: first block where anchor/question begins
+        - window_size: number of blocks that contain the anchor text
+
         Each section is searched only in the portion of the document AFTER the
         previous section's anchor — forward-only search prevents a later duplicate
         of anchor text (e.g. a re-printed template at the end of the file) from
         stealing the boundary from the real occurrence.
         """
-        result: Dict[str, int] = {}
+        result: Dict[str, Tuple[int, int]] = {}
         search_from = 0
         for sid in SECTION_ORDER:
             cfg = self._anchors.get(sid)
@@ -380,12 +390,13 @@ class AnchorMatcher:
                 continue
             texts = cfg.get('pl', []) + cfg.get('en', [])
             fingerprint = cfg.get('fingerprint_pl', []) + cfg.get('fingerprint_en', [])
-            rel_idx, score = self._locate(blocks[search_from:], texts, fingerprint)
+            rel_idx, win_size, score = self._locate(blocks[search_from:], texts, fingerprint)
             if rel_idx >= 0:
                 abs_idx = search_from + rel_idx
-                result[sid] = abs_idx
-                search_from = abs_idx + 1
-                logger.debug('Anchor %s → block %d (score %.2f)', sid, abs_idx, score)
+                result[sid] = (abs_idx, win_size)
+                search_from = abs_idx + win_size  # Skip past entire matched window
+                logger.debug('Anchor %s → blocks %d-%d (window=%d, score %.2f)',
+                           sid, abs_idx, abs_idx + win_size - 1, win_size, score)
             else:
                 logger.debug('Anchor %s → NOT FOUND', sid)
         return result
@@ -395,21 +406,28 @@ class AnchorMatcher:
         blocks: List[TextBlock],
         anchor_texts: List[str],
         fingerprint: List[str],
-    ) -> Tuple[int, float]:
+    ) -> Tuple[int, int, float]:
         """
         Find the FIRST position (left-to-right) whose token_overlap with any anchor
         reaches HIGH_THRESHOLD and return it immediately.  If no position reaches
         HIGH, return the first position that reached LOW.  This prevents a later
         high-scoring duplicate from stealing the boundary.
+
+        Returns: (start_idx, matched_window_size, score)
+        - start_idx: first block index where anchor begins
+        - matched_window_size: number of blocks that contain the anchor text
+        - score: match confidence score
         """
         norm_anchors = [normalize(a) for a in anchor_texts]
-        first_low_idx, first_low_score = -1, 0.0
+        first_low_idx, first_low_win, first_low_score = -1, 1, 0.0
 
-        # Strategy 1: for each position i, try windows of 1/2/3 blocks.
+        # Strategy 1: for each position i, try windows of 1/2/3/4 blocks.
         # Return the moment we hit HIGH; record first LOW as fallback.
+        # Window size increased to 4 to handle long questions split across multiple lines.
         for i in range(len(blocks)):
             best_at_i = 0.0
-            for win_size in (1, 2, 3):
+            best_win = 1
+            for win_size in (1, 2, 3, 4):
                 if i + win_size > len(blocks):
                     break
                 window = ' '.join(
@@ -419,10 +437,11 @@ class AnchorMatcher:
                     s = token_overlap(na, window)
                     if s > best_at_i:
                         best_at_i = s
+                        best_win = win_size
             if best_at_i >= self.HIGH_THRESHOLD:
-                return i, best_at_i
+                return i, best_win, best_at_i
             if best_at_i >= self.LOW_THRESHOLD and first_low_idx < 0:
-                first_low_idx, first_low_score = i, best_at_i
+                first_low_idx, first_low_win, first_low_score = i, best_win, best_at_i
 
         # Strategy 2: fingerprint keyword coverage over a 6-block window.
         # Only runs when strategy 1 found nothing at all.
@@ -437,13 +456,13 @@ class AnchorMatcher:
                     window_tokens = set(window.split())
                     score = len(fp_tokens & window_tokens) / len(fp_tokens)
                     if score >= self.HIGH_THRESHOLD:
-                        return i, score
+                        return i, 6, score  # Fingerprint uses 6-block window
                     if score >= self.LOW_THRESHOLD and first_low_idx < 0:
-                        first_low_idx, first_low_score = i, score
+                        first_low_idx, first_low_win, first_low_score = i, 6, score
 
         if first_low_idx >= 0:
-            return first_low_idx, first_low_score
-        return -1, 0.0
+            return first_low_idx, first_low_win, first_low_score
+        return -1, 1, 0.0
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -457,6 +476,7 @@ class ContentCleaner:
         """
         Return cleaned non-empty text lines from *blocks*, skipping:
           - header / footer lines
+          - subsection numerations (1.1, 2.2) and main section numbers (1., 2.)
           - structural noise (DMP title, main section titles)
           - lines matching any pattern in skip_patterns
           - lines that are empty after formatting removal
@@ -466,6 +486,10 @@ class ContentCleaner:
             if block.is_hf:
                 continue
             text = strip_formatting(block.text)
+            # Remove subsection numerations (1.1, 2.2) and main section numbers (1., 2.)
+            # These are identifiers only, NOT part of the content
+            text = _RE_SEC_NUM.sub('', text)   # Remove "1.1 ", "2.2 " prefix
+            text = _RE_MAIN_NUM.sub('', text)  # Remove "1. ", "2. " prefix
             text = _RE_WS.sub(' ', text).strip()
             if not text:
                 continue
@@ -654,12 +678,16 @@ class DMPExtractor:
     def _build_cache(
         self,
         blocks: List[TextBlock],
-        boundaries: Dict[str, int],
+        boundaries: Dict[str, Tuple[int, int]],
         skip_patterns: list,
     ) -> dict:
         """
         Slice *blocks* into sections using *boundaries*, clean each slice,
         and assemble the JSON cache structure expected by review.html.
+
+        boundaries format: {section_id: (start_idx, window_size)}
+        - start_idx: first block of the anchor/question
+        - window_size: number of blocks occupied by the anchor/question
         """
         cache: dict = {}
 
@@ -673,19 +701,27 @@ class DMPExtractor:
             ]
             return cache
 
-        ordered = sorted(boundaries.items(), key=lambda x: x[1])  # by block idx
+        # Sort by start_idx (first element of tuple)
+        ordered = sorted(boundaries.items(), key=lambda x: x[1][0])
 
         # Text before the first found anchor → unconnected
-        first_idx = ordered[0][1]
-        pre_lines = self._cleaner.clean(blocks[:first_idx], skip_patterns)
+        first_start_idx, _ = ordered[0][1]
+        pre_lines = self._cleaner.clean(blocks[:first_start_idx], skip_patterns)
 
         # Slice each found section
-        for rank, (sid, start_idx) in enumerate(ordered):
-            end_idx = (
-                ordered[rank + 1][1] if rank + 1 < len(ordered) else len(blocks)
-            )
-            # start_idx is the anchor / question block → exclude it from content
-            content_blocks = blocks[start_idx + 1: end_idx]
+        for rank, (sid, (start_idx, win_size)) in enumerate(ordered):
+            # Content begins AFTER the entire anchor window
+            content_start = start_idx + win_size
+
+            # Content ends at the start of next anchor (or end of document)
+            if rank + 1 < len(ordered):
+                next_start_idx, _ = ordered[rank + 1][1]
+                content_end = next_start_idx
+            else:
+                content_end = len(blocks)
+
+            # Extract content blocks (excludes ALL anchor blocks)
+            content_blocks = blocks[content_start:content_end]
             paragraphs = self._cleaner.clean(content_blocks, skip_patterns)
             tagged = [{'text': p, 'tags': [], 'title': ''} for p in paragraphs]
             main = sid.split('.')[0]
@@ -695,6 +731,12 @@ class DMPExtractor:
                 'paragraphs': paragraphs,
                 'tagged_paragraphs': tagged,
             }
+
+            logger.debug(
+                'Section %s: anchor blocks %d-%d, content blocks %d-%d (%d paragraphs)',
+                sid, start_idx, start_idx + win_size - 1,
+                content_start, content_end - 1, len(paragraphs)
+            )
 
         # Fill any sections that were not found
         for sid in SECTION_ORDER:

@@ -9,9 +9,26 @@
 
 1. **AI agents, not humans** — docs are for code assistants, not end users
 2. **Single Source of Truth** — each fact lives in exactly one file
-3. **Modify, don't create** — update existing files; never create new `*_PLAN.md`, `*_REPORT.md`, `*_SUMMARY.md`
+3. **Modify, don't create** — update existing files; **NEVER** create new markdown files
 4. **Code references over prose** — link to actual file:line locations
 5. **Actionable** — every section answers "what should an AI agent do here?"
+
+### ⚠️ Forbidden: Creating New Documentation Files
+
+**NEVER create new `.md` files** — this rule has NO exceptions.
+
+Forbidden patterns include (but not limited to):
+- `*_ANALYSIS.md` (EXTRACTION_ANALYSIS, CODE_ANALYSIS, etc.)
+- `*_REPORT.md` (TEST_REPORT, PERFORMANCE_REPORT, etc.)
+- `*_PLAN.md` (IMPLEMENTATION_PLAN, REFACTOR_PLAN, etc.)
+- `*_SUMMARY.md` (CHANGES_SUMMARY, REVIEW_SUMMARY, etc.)
+- `*_NOTES.md` (OPTIMIZATION_NOTES, DEBUG_NOTES, etc.)
+- `*_FINDINGS.md`, `*_DECISIONS.md`, `*_PROPOSALS.md`, etc.
+
+If you feel tempted to create a new file, **STOP** and:
+1. Identify which existing file owns that information (see File Ownership below)
+2. Update that file instead
+3. For temporary working notes, use `.claude/projects/*/memory/`
 
 ---
 
@@ -80,9 +97,11 @@ Temporary notes → Claude memory files in `.claude/projects/*/memory/`.
 
 | ❌ Don't do this | ✅ Do this instead |
 |-----------------|-------------------|
-| Create `FEATURE_X_PLAN.md` | Add to `HISTORY.md` roadmap or CLAUDE.md ADRs |
-| Create `ANALYSIS_REPORT.md` | Add findings to relevant section in `CLAUDE.md` |
-| Create `OPTIMIZATION_NOTES.md` | Update `CLAUDE.md` Performance Optimizations section |
+| Create ANY new `.md` file | Update existing documentation files only |
+| Create `EXTRACTION_ANALYSIS_*.md` | Add findings to `CLAUDE.md` → Modifying Extraction Logic |
+| Create `*_PLAN.md` / `*_PROPOSAL.md` | Add to `HISTORY.md` roadmap or `CLAUDE.md` ADRs |
+| Create `*_REPORT.md` / `*_SUMMARY.md` | Add to relevant section in `CLAUDE.md` |
+| Create `*_NOTES.md` / `*_FINDINGS.md` | Update `CLAUDE.md` or use `.claude/projects/*/memory/` |
 | Duplicate info across files | Pick the owning file, reference from others |
 | Leave outdated version numbers | Update badges in `README.md` on every release |
 | Write docs without code examples | Always include file:line references |
