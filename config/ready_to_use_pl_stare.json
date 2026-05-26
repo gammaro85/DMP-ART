@@ -1,0 +1,66 @@
+{
+  "1.1": [
+    "Nie zostaną ponownie wykorzystane żadne istniejące dane. Wszystkie dane zostaną zebrane specjalnie na potrzeby niniejszych badań.",
+    "W trakcie projektu powstaną cztery główne typy danych: dane surowe z eksperymentów mikroarrayowych, dane z analizy ontologicznej, dane robocze generowane podczas pracy laboratoryjnej (np. cyfrowe notatniki laboratoryjne) oraz dane wtórne wynikające z interpretacji i przetwarzania danych surowych.",
+    "Projekt wygeneruje: odpowiedzi z ankiet od ok. 200 uczestników zebrane przez kwestionariusze online (dane tabelaryczne, ok. 50 MB); nagrania wywiadów: 20 wywiadów półstrukturyzowanych (60-90 min każdy), ok. 10 GB plików audio; transkrypcje i zakodowane dane z analizy jakościowej.",
+    "Badania wytworzą obrazy mikroskopowe próbek biologicznych: ok. 500 obrazów wykonanych mikroskopem konfokalnym przy powiększeniu 100x i 400x, przechowywanych jako pliki TIFF, łączny rozmiar ok. 2 GB.",
+    "Dane pomiarowe z analizy spektroskopowej: dane szeregów czasowych z ok. 100 próbek, łącznie ok. 5 GB danych w formacie CSV."
+  ],
+  "1.2": [
+    "Formaty zapisywanych plików można podzielić na dwa typy: formaty specyficzne dla oprogramowania laboratoryjnego, takie jak .ndf (NimbleScan), .ixo (Light Cycler 96), oraz powszechnie używane formaty tekstowe (.txt, .docx), tabelaryczne (.csv, .xlsx) i graficzne (.tiff, .png).",
+    "Dane będą przechowywane w następujących formatach: .csv dla danych tabelarycznych, .txt dla transkrypcji i dokumentacji, .py dla skryptów analitycznych Python, .pdf dla raportów końcowych, .tiff dla obrazów mikroskopowych, .png dla wykresów.",
+    "Dane robocze będą prowadzone w formacie Microsoft Excel (.xlsx) podczas aktywnej analizy. Po zakończeniu projektu wszystkie zestawy danych zostaną przekonwertowane do otwartego formatu CSV (.csv), aby zapewnić długoterminową dostępność.",
+    "W celu zapewnienia jak najszerszego dostępu, dane przeznaczone do deponowania w repozytorium, zarówno surowe jak i przetworzone, będą zapisywane w otwartych formatach plików – o ile nie wiąże się to z utratą informacji."
+  ],
+  "2.1": [
+    "Dane surowe, ze względu na specyfikę oprogramowania laboratoryjnego, mogą posiadać różne zestawy metadanych, które nie będą w żaden sposób modyfikowane. Głównym narzędziem zapewnienia spójności będą notatniki laboratoryjne, prowadzone w wersji papierowej i cyfrowej.",
+    "Wszystkie dane zdeponowane w repozytorium MOST Wiedzy Open Research Data Catalog (Bridge of Data) będą opisane atrybutami zgodnymi ze standardem DataCite. Opisy metadanych będą przechowywane w formacie JSON-LD i będą zawierać, w miarę możliwości, trwałe identyfikatory (PID), takie jak ORCID.",
+    "Do każdego zestawu danych zostanie dołączony plik README.txt zawierający: opis metodologii badawczej, wyjaśnienie wszystkich zmiennych z jednostkami i zakresami wartości, procedury zbierania danych, strukturę plików i folderów, wymagania oprogramowania, znane ograniczenia oraz dane kontaktowe."
+  ],
+  "2.2": [
+    "Dane surowe z poszczególnych eksperymentów będą szczegółowo dokumentowane w notatnikach laboratoryjnych. Kalibracja sprzętu będzie prowadzona zgodnie z protokołami producenta. Dane wprowadzane będą sprawdzane przez dwie niezależne osoby. Skrypty walidacyjne będą automatycznie sprawdzać zakresy wartości.",
+    "Kontrola jakości obejmuje: podwójne wprowadzanie danych, kalibrację urządzeń co miesiąc, automatyczne skrypty weryfikacji zakresów wartości, prowadzenie notatników laboratoryjnych w wersji papierowej i cyfrowej."
+  ],
+  "3.1": [
+    "Dane będą przechowywane na serwerach instytucjonalnych z automatyczną kopią zapasową (codziennie), na dysku zewnętrznym (tygodniowo, przechowywany w innej lokalizacji) oraz w chmurze instytucjonalnej OneDrive (automatycznie, w czasie rzeczywistym). Strategia 3-2-1: 3 kopie, 2 nośniki, 1 lokalizacja zewnętrzna.",
+    "Dane aktywne będą przechowywane na dysku laboratoryjnym oraz synchronizowane z serwerem instytucjonalnym. Kopie zapasowe będą tworzone automatycznie codziennie na serwer oraz ręcznie tygodniowo na zaszyfrowany dysk zewnętrzny."
+  ],
+  "3.2": [
+    "Dane po zakończeniu projektu zostaną zdeponowane w repozytorium MOST Wiedzy Open Research Data Catalog (Bridge of Data) na Politechnice Gdańskiej, które posiada certyfikat CoreTrustSeal. Minimalny okres przechowywania: 10 lat po zakończeniu projektu.",
+    "Dane będą zdeponowane w certyfikowanym repozytorium zapewniającym długoterminowe przechowywanie zgodnie z zasadami FAIR. Dane zostaną udostępnione wraz z pełną dokumentacją (README, metadane DataCite)."
+  ],
+  "4.1": [
+    "Badania nie wymagają zgody komisji etyki, ponieważ nie angażują uczestników ludzkich ani danych osobowych. Wszystkie dane będą zbierane z publicznie dostępnych źródeł lub generowane komputerowo.",
+    "Badania zostały zatwierdzone przez komisję etyki instytucjonalnej (nr zgody: [NUMER], data: [DATA]). Uczestnicy zostaną poinformowani o celu badań i wyrażą pisemną zgodę. Dane osobowe będą przetwarzane zgodnie z RODO na podstawie zgody uczestnika. Dane zostaną zanonimizowane przed udostępnieniem.",
+    "Dane nie zawierają danych osobowych ani wrażliwych. Wszelkie dane zebrane od uczestników będą anonimizowane na etapie zbierania, uniemożliwiając identyfikację osób."
+  ],
+  "4.2": [
+    "Projekt nie wiąże się z żadnymi kwestiami prawnymi dotyczącymi własności intelektualnej ani umowami o poufności. Wszystkie dane są własnością instytucji i będą udostępnione na licencji otwartej.",
+    "Dane z eksperymentów są własnością instytucji zgodnie z Regulaminem Własności Intelektualnej. Brak ograniczeń prawnych dotyczących udostępniania. Dane partnerskie mogą wymagać krótkiego okresu embargo – zostanie to uzgodnione z partnerami."
+  ],
+  "5.1": [
+    "Dane zostaną udostępnione publicznie pod licencją Creative Commons Attribution 4.0 (CC BY 4.0), wymagającą podania autorstwa. Udostępnienie nastąpi nie później niż w momencie publikacji wyników badań.",
+    "Dane zostaną zdeponowane i udostępnione w repozytorium MOST Wiedzy pod licencją CC BY 4.0 niezwłocznie po zakończeniu projektu, nie później niż 6 miesięcy od daty zakończenia grantu.",
+    "Dane wymagają krótkiego okresu embargo (max. do [DATA]) ze względu na przygotowanie publikacji. Po tym terminie zostaną w pełni udostępnione publicznie pod licencją CC BY 4.0."
+  ],
+  "5.2": [
+    "Dane zostaną zdeponowane w repozytorium MOST Wiedzy Open Research Data Catalog (Bridge of Data) na Politechnice Gdańskiej – jedynym certyfikowanym repozytorium danych badawczych w Polsce (certyfikat CoreTrustSeal), zapewniającym dostęp zgodny z zasadami FAIR.",
+    "Dane zostaną zdeponowane w repozytorium tematycznym [NAZWA] oraz/lub w repozytorium instytucjonalnym MOST Wiedzy. Wybór podyktowany jest zgodnością z wymaganiami grantodawcy i zasadami FAIR."
+  ],
+  "5.3": [
+    "Dane zostaną udostępnione w formacie otwartym (.csv, .txt, .png) z pełną dokumentacją (README, metadane DataCite), co umożliwi ich ponowne wykorzystanie przez innych badaczy.",
+    "Kod źródłowy zostanie opublikowany w repozytorium GitHub/GitLab pod licencją MIT, co umożliwi odtworzenie analiz i wyników."
+  ],
+  "5.4": [
+    "Dane są udostępniane jako dane otwarte na licencji CC BY 4.0, które mogą być ponownie używane przez każdego, pod warunkiem podania autorstwa.",
+    "Ze względu na charakter danych (dane poufne, dane wrażliwe) dostęp będzie możliwy po złożeniu wniosku i uzyskaniu zgody właściciela danych."
+  ],
+  "6.1": [
+    "Koszty zarządzania danymi obejmują wyłącznie czas pracy: szacunkowo [X] dni roboczych na przygotowanie dokumentacji, kontrolę jakości i deponowanie. Repozytorium MOST Wiedzy oferuje darmowe przechowywanie dla pracowników Politechniki Gdańskiej.",
+    "Koszty zarządzania danymi: czas pracy szacowany na [X] dni roboczych; przechowywanie w repozytorium instytucjonalnym – bezpłatne; zakup zewnętrznych dysków zapasowych: ok. [KWOTA] PLN."
+  ],
+  "6.2": [
+    "Za zarządzanie danymi odpowiedzialny jest główny badacz [IMIĘ NAZWISKO] (stanowisko: [STANOWISKO]). Wsparcie merytoryczne zapewnia Open Science Competence Center w zakresie weryfikacji DMP i metadanych.",
+    "Zarządzanie danymi jest wspólną odpowiedzialnością wszystkich członków zespołu badawczego, koordynowaną przez [IMIĘ NAZWISKO]. Procedury zarządzania danymi są opisane w planie projektu."
+  ]
+}
