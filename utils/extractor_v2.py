@@ -358,7 +358,8 @@ class AnchorMatcher:
     the block index at which each subsection begins.
     """
 
-    MATCH_THRESHOLD = 0.35  # minimum token_overlap score to accept a hit
+    HIGH_THRESHOLD = 0.55  # score at which we accept immediately (first match wins)
+    LOW_THRESHOLD  = 0.35  # fallback minimum to accept any match
 
     def __init__(self, anchors_cfg: dict) -> None:
         self._anchors = anchors_cfg
@@ -366,47 +367,27 @@ class AnchorMatcher:
     def find_boundaries(self, blocks: List[TextBlock]) -> Dict[str, int]:
         """
         Returns {section_id: block_index} in document order.
-        Anchors are found independently, then monotonic-order enforcement removes
-        any boundary that would place a section before the previous one
-        (false positives from similar text elsewhere in the document).
+        Each section is searched only in the portion of the document AFTER the
+        previous section's anchor — forward-only search prevents a later duplicate
+        of anchor text (e.g. a re-printed template at the end of the file) from
+        stealing the boundary from the real occurrence.
         """
-        raw: Dict[str, int] = {}
+        result: Dict[str, int] = {}
+        search_from = 0
         for sid in SECTION_ORDER:
             cfg = self._anchors.get(sid)
             if not cfg:
                 continue
             texts = cfg.get('pl', []) + cfg.get('en', [])
             fingerprint = cfg.get('fingerprint_pl', []) + cfg.get('fingerprint_en', [])
-            idx, score = self._locate(blocks, texts, fingerprint)
-            if idx >= 0:
-                raw[sid] = idx
-                logger.debug('Anchor %s → block %d (score %.2f)', sid, idx, score)
+            rel_idx, score = self._locate(blocks[search_from:], texts, fingerprint)
+            if rel_idx >= 0:
+                abs_idx = search_from + rel_idx
+                result[sid] = abs_idx
+                search_from = abs_idx + 1
+                logger.debug('Anchor %s → block %d (score %.2f)', sid, abs_idx, score)
             else:
                 logger.debug('Anchor %s → NOT FOUND', sid)
-
-        return self._enforce_order(raw)
-
-    @staticmethod
-    def _enforce_order(boundaries: Dict[str, int]) -> Dict[str, int]:
-        """
-        Walk SECTION_ORDER and keep only boundaries whose block index is strictly
-        greater than all previously accepted boundaries.  This removes false
-        positives that would place a later section before an earlier one.
-        """
-        result: Dict[str, int] = {}
-        last_idx = -1
-        for sid in SECTION_ORDER:
-            if sid not in boundaries:
-                continue
-            idx = boundaries[sid]
-            if idx > last_idx:
-                result[sid] = idx
-                last_idx = idx
-            else:
-                logger.debug(
-                    'Anchor %s at block %d violates order (last=%d) — discarded',
-                    sid, idx, last_idx,
-                )
         return result
 
     def _locate(
@@ -415,39 +396,53 @@ class AnchorMatcher:
         anchor_texts: List[str],
         fingerprint: List[str],
     ) -> Tuple[int, float]:
-        """Find best matching position for a single anchor."""
+        """
+        Find the FIRST position (left-to-right) whose token_overlap with any anchor
+        reaches HIGH_THRESHOLD and return it immediately.  If no position reaches
+        HIGH, return the first position that reached LOW.  This prevents a later
+        high-scoring duplicate from stealing the boundary.
+        """
         norm_anchors = [normalize(a) for a in anchor_texts]
-        best_idx, best_score = -1, 0.0
+        first_low_idx, first_low_score = -1, 0.0
 
-        # Strategy 1: sliding windows of 1, 2, 3 consecutive blocks
-        for win_size in (1, 2, 3):
-            for i in range(len(blocks) - win_size + 1):
+        # Strategy 1: for each position i, try windows of 1/2/3 blocks.
+        # Return the moment we hit HIGH; record first LOW as fallback.
+        for i in range(len(blocks)):
+            best_at_i = 0.0
+            for win_size in (1, 2, 3):
+                if i + win_size > len(blocks):
+                    break
                 window = ' '.join(
                     normalize(blocks[j].text) for j in range(i, i + win_size)
                 )
                 for na in norm_anchors:
-                    score = token_overlap(na, window)
-                    if score > best_score:
-                        best_score, best_idx = score, i
-            if best_score >= 0.60:
-                break  # strong enough match; skip larger windows
+                    s = token_overlap(na, window)
+                    if s > best_at_i:
+                        best_at_i = s
+            if best_at_i >= self.HIGH_THRESHOLD:
+                return i, best_at_i
+            if best_at_i >= self.LOW_THRESHOLD and first_low_idx < 0:
+                first_low_idx, first_low_score = i, best_at_i
 
-        # Strategy 2: fingerprint keyword coverage over a 6-block window
-        # Handles questions split across many short lines (common in PDFs)
-        if best_score < self.MATCH_THRESHOLD and fingerprint:
+        # Strategy 2: fingerprint keyword coverage over a 6-block window.
+        # Only runs when strategy 1 found nothing at all.
+        if first_low_idx < 0 and fingerprint:
             fp_tokens = {w.lower() for w in fingerprint if len(w) >= 4}
-            for i in range(len(blocks)):
-                window = ' '.join(
-                    normalize(blocks[j].text)
-                    for j in range(i, min(i + 6, len(blocks)))
-                )
-                window_tokens = set(window.split())
-                score = len(fp_tokens & window_tokens) / len(fp_tokens)
-                if score > best_score:
-                    best_score, best_idx = score, i
+            if fp_tokens:
+                for i in range(len(blocks)):
+                    window = ' '.join(
+                        normalize(blocks[j].text)
+                        for j in range(i, min(i + 6, len(blocks)))
+                    )
+                    window_tokens = set(window.split())
+                    score = len(fp_tokens & window_tokens) / len(fp_tokens)
+                    if score >= self.HIGH_THRESHOLD:
+                        return i, score
+                    if score >= self.LOW_THRESHOLD and first_low_idx < 0:
+                        first_low_idx, first_low_score = i, score
 
-        if best_score >= self.MATCH_THRESHOLD:
-            return best_idx, best_score
+        if first_low_idx >= 0:
+            return first_low_idx, first_low_score
         return -1, 0.0
 
 
