@@ -26,6 +26,28 @@ Jeśli chcesz przetwarzać zeskanowane PDF-y:
 
 ## Codzienne użycie
 
+### Tryb portable dla użytkownika końcowego (zalecany na Windows)
+**Kiedy używać:** dystrybucja dla osób nietechnicznych bez własnego `DMP-ART.exe`
+
+Po zbudowaniu paczki portable:
+```powershell
+python build_portable.py
+```
+
+Użytkownik końcowy uruchamia:
+```cmd
+start_portable.bat
+```
+
+✨ **Korzyści:**
+- brak własnej binarki PyInstaller `.exe`
+- wszystkie dane, komentarze i cache pozostają lokalnie w folderze aplikacji
+- proste uruchamianie przez dwuklik w plik `.bat`
+
+⚠️ **Ograniczenia:**
+- paczka jest budowana pod konkretny system operacyjny
+- OCR nadal wymaga osobnej instalacji Tesseract
+
 ### Tryb deweloperski (development)
 **Kiedy używać:** Tworzenie zmian, testowanie, debugowanie
 

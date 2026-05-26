@@ -1,0 +1,214 @@
+{
+  "sections": {
+    "1.1": {
+      "pl": [
+        "Sposób pozyskiwania i opracowywania nowych danych i/lub ponownego wykorzystania dostępnych danych",
+        "Sposób pozyskiwania i opracowania nowych danych i/lub wykorzystanie dostępnych danych",
+        "W jaki sposób nowe dane zostaną zebrane lub wytworzone i/lub jak będą ponownie użyte istniejące dane"
+      ],
+      "en": [
+        "How will new data be collected or produced and/or how will existing data be re-used"
+      ],
+      "fingerprint_pl": ["pozyskiwania", "opracowywania", "ponownego", "dostępnych", "nowych", "zebrane"],
+      "fingerprint_en": ["collected", "produced", "existing", "re-used", "reused"]
+    },
+    "1.2": {
+      "pl": [
+        "Pozyskiwane lub opracowywane dane (np. rodzaj, format, ilość)",
+        "Jakie dane (np. typy, formaty i ilości) zostaną zebrane lub wytworzone",
+        "Rodzaj, format i ilość danych"
+      ],
+      "en": [
+        "What data (for example the types, formats, and volumes) will be collected or produced"
+      ],
+      "fingerprint_pl": ["rodzaj", "format", "ilość", "pozyskiwane", "opracowywane", "formaty"],
+      "fingerprint_en": ["types", "formats", "volumes", "collected", "produced"]
+    },
+    "2.1": {
+      "pl": [
+        "Metadane i dokumenty (np. metodologia lub pozyskiwanie danych oraz sposób porządkowania danych) towarzyszące danym",
+        "Metadane i dokumenty towarzyszące danym",
+        "Jakie metadane i dokumentacja będą towarzyszyć danym"
+      ],
+      "en": [
+        "What metadata and documentation (for example methodology or data collection and way of organising data) will accompany data"
+      ],
+      "fingerprint_pl": ["metadane", "dokumenty", "metodologia", "porządkowania", "towarzyszące"],
+      "fingerprint_en": ["metadata", "documentation", "methodology", "organising", "accompany"]
+    },
+    "2.2": {
+      "pl": [
+        "Stosowane środki kontroli jakości danych",
+        "Jakie środki kontroli jakości danych zostaną użyte",
+        "Środki kontroli jakości"
+      ],
+      "en": [
+        "What data quality control measures will be used"
+      ],
+      "fingerprint_pl": ["środki", "kontroli", "jakości", "stosowane"],
+      "fingerprint_en": ["quality", "control", "measures"]
+    },
+    "3.1": {
+      "pl": [
+        "Przechowywanie i tworzenie kopii zapasowych danych i metadanych podczas badań",
+        "Jak dane i metadane będą przechowywane i archiwizowane w trakcie procesu badawczego",
+        "Przechowywanie i kopie zapasowe danych"
+      ],
+      "en": [
+        "How will data and metadata be stored and backed up during the research process"
+      ],
+      "fingerprint_pl": ["przechowywanie", "kopii", "zapasowych", "metadanych", "archiwizowane"],
+      "fingerprint_en": ["stored", "backed", "backup", "metadata", "research", "process"]
+    },
+    "3.2": {
+      "pl": [
+        "Sposób zapewnienia bezpieczeństwa danych oraz ochrony danych wrażliwych podczas badań",
+        "Jak zostanie zapewnione bezpieczeństwo danych i ochrona danych wrażliwych podczas badania",
+        "Bezpieczeństwo danych i ochrona danych wrażliwych"
+      ],
+      "en": [
+        "How will data security and protection of sensitive data be taken care of during the research"
+      ],
+      "fingerprint_pl": ["bezpieczeństwa", "ochrony", "wrażliwych", "zapewnienia"],
+      "fingerprint_en": ["security", "protection", "sensitive", "research"]
+    },
+    "4.1": {
+      "pl": [
+        "Sposób zapewnienia zgodności z przepisami dotyczącymi danych osobowych i bezpieczeństwa danych w przypadku przetwarzania danych osobowych",
+        "Sposób zapewnienia zgodności z przepisami dotyczącymi danych osobowych i bezpieczeństwa w przypadku przetwarzania danych osobowych",
+        "Zgodność z przepisami o danych osobowych"
+      ],
+      "en": [
+        "If personal data are processed, how will compliance with legislation on personal data and on data security be ensured"
+      ],
+      "fingerprint_pl": ["osobowych", "zgodności", "przepisami", "przetwarzania"],
+      "fingerprint_en": ["personal", "compliance", "legislation", "processed"]
+    },
+    "4.2": {
+      "pl": [
+        "Sposób zarządzania innymi kwestiami prawnymi, np. prawami własności intelektualnej lub własnością. Obowiązujące przepisy",
+        "Sposób zarządzania innymi kwestiami prawnymi",
+        "Inne kwestie prawne – własność intelektualna i przepisy"
+      ],
+      "en": [
+        "How will other legal issues, such as intellectual property rights and ownership, be managed? What legislation is applicable",
+        "How will other legal issues, such as intelectual property rights and ownership, be managed? What legislation is applicable"
+      ],
+      "fingerprint_pl": ["prawnymi", "własności", "intelektualnej", "zarządzania", "przepisy"],
+      "fingerprint_en": ["legal", "intellectual", "property", "ownership", "legislation"]
+    },
+    "5.1": {
+      "pl": [
+        "Sposób i termin udostępnienia danych. Ewentualne ograniczenia w udostępnianiu danych lub przyczyny embarga",
+        "Sposób i termin udostępnienia danych",
+        "Sposób i termin udostępniania danych",
+        "Udostępnianie danych – termin i ograniczenia"
+      ],
+      "en": [
+        "How and when will data be shared? Are there possible restrictions to data sharing or embargo reasons"
+      ],
+      "fingerprint_pl": ["termin", "udostępnienia", "ograniczenia", "embarga", "udostępniania"],
+      "fingerprint_en": ["shared", "restrictions", "embargo", "sharing"]
+    },
+    "5.2": {
+      "pl": [
+        "Sposób wyboru danych przeznaczonych do przechowania oraz miejsce długotrwałego przechowywania danych (np. repozytorium lub archiwum danych)",
+        "Sposób wyboru danych do przechowywania",
+        "Wybór danych do przechowywania",
+        "Długotrwałe przechowywanie danych"
+      ],
+      "en": [
+        "How will data for preservation be selected, and where will data be preserved long-term (for example a data repository or archive)"
+      ],
+      "fingerprint_pl": ["wyboru", "długotrwałego", "repozytorium", "archiwum", "przeznaczonych"],
+      "fingerprint_en": ["preservation", "selected", "preserved", "long-term", "repository", "archive"]
+    },
+    "5.3": {
+      "pl": [
+        "Metody lub narzędzia programowe umożliwiające dostęp do danych i korzystanie z danych",
+        "Metody lub narzędzia programowe umożliwiające dostęp do danych",
+        "Narzędzia i metody dostępu do danych"
+      ],
+      "en": [
+        "What methods or software tools will be needed to access and use the data"
+      ],
+      "fingerprint_pl": ["narzędzia", "programowe", "dostęp", "korzystanie", "metody"],
+      "fingerprint_en": ["methods", "software", "tools", "access"]
+    },
+    "5.4": {
+      "pl": [
+        "Sposób zapewniający stosowanie unikalnego i trwałego identyfikatora (np. cyfrowego identyfikatora obiektu (DOI)) dla każdego zestawu danych",
+        "Sposób zapewniający stosowanie unikalnego i trwałego identyfikatora",
+        "Unikalny i trwały identyfikator (DOI)"
+      ],
+      "en": [
+        "How will the application of a unique and persistent identifier (such as a Digital Object Identifier (DOI)) to each data set be ensured",
+        "How will the application of a unique and persistent identifier (such us a Digital Object Identifier (DOI)) to each data set be ensured"
+      ],
+      "fingerprint_pl": ["unikalnego", "trwałego", "identyfikatora", "zestawu"],
+      "fingerprint_en": ["unique", "persistent", "identifier", "DOI"]
+    },
+    "6.1": {
+      "pl": [
+        "Osoba (np. funkcja, stanowisko i instytucja) odpowiedzialna za zarządzanie danymi (np. data steward)",
+        "Osoba odpowiedzialna za zarządzanie danymi",
+        "Kto będzie odpowiedzialny za zarządzanie danymi"
+      ],
+      "en": [
+        "Who (for example role, position, and institution) will be responsible for data management (i.e the data steward)"
+      ],
+      "fingerprint_pl": ["odpowiedzialna", "stanowisko", "instytucja", "zarządzanie", "steward"],
+      "fingerprint_en": ["responsible", "role", "position", "institution", "steward"]
+    },
+    "6.2": {
+      "pl": [
+        "Środki (np. finansowe i czasowe) przeznaczone do zarządzania danymi i zapewnienia możliwości odnalezienia, dostępu, interoperacyjności i ponownego wykorzystania danych",
+        "Środki przeznaczone do zarządzania danymi",
+        "Zasoby przeznaczone na zarządzanie danymi"
+      ],
+      "en": [
+        "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)"
+      ],
+      "fingerprint_pl": ["finansowe", "czasowe", "przeznaczone", "interoperacyjności", "FAIR", "odnalezienia"],
+      "fingerprint_en": ["resources", "financial", "dedicated", "FAIR", "Findable", "Accessible", "Interoperable"]
+    }
+  },
+  "section_titles": {
+    "1": {
+      "pl": [
+        "Opis danych oraz pozyskiwanie",
+        "Opis danych oraz pozyskiwanie lub ponowne wykorzystanie dostępnych danych"
+      ],
+      "en": ["Data description and collection or re-use of existing data"]
+    },
+    "2": {
+      "pl": ["Dokumentacja i jakość danych"],
+      "en": ["Documentation and data quality"]
+    },
+    "3": {
+      "pl": [
+        "Przechowywanie i tworzenie kopii zapasowych",
+        "Przechowywanie i tworzenie kopii zapasowych podczas badań"
+      ],
+      "en": ["Storage and backup during the research process"]
+    },
+    "4": {
+      "pl": ["Wymogi prawne, kodeks postępowania"],
+      "en": ["Legal requirements, codes of conduct"]
+    },
+    "5": {
+      "pl": [
+        "Udostępnianie i długotrwałe przechowywanie",
+        "Udostępnianie i długotrwałe przechowywanie danych"
+      ],
+      "en": ["Data sharing and long-term preservation"]
+    },
+    "6": {
+      "pl": [
+        "Zadania związane z zarządzaniem danymi",
+        "Zadania związane z zarządzaniem danymi oraz zasoby"
+      ],
+      "en": ["Data management responsibilities and resources"]
+    }
+  }
+}

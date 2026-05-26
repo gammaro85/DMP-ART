@@ -15,8 +15,8 @@ def validate_requirement_1():
     print("   " + "─" * 60)
     
     # Check for extractor module
-    assert os.path.exists('utils/extractor.py'), "❌ Extractor module not found"
-    print("   ✅ utils/extractor.py exists")
+    assert os.path.exists('utils/extractor_v2.py'), "❌ Extractor module not found"
+    print("   ✅ utils/extractor_v2.py exists")
     
     # Check for extraction in app.py
     with open('app.py', 'r') as f:
