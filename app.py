@@ -419,14 +419,14 @@ def download_file(filename):
 
 @app.route('/review/<filename>')
 def review_dmp(filename):
+    # File existence is no longer required — all content comes from the cache.
+    # Keep the lookup only so the download link works if a DMP DOCX was created.
     file_path = os.path.join(app.config['OUTPUT_FOLDER'], filename)
     if not os.path.exists(file_path):
-        # Try outputs/dmp/ as fallback for DOCX/PDF
         alt_path = os.path.join(app.config['DMP_FOLDER'], filename)
         if os.path.exists(alt_path):
             file_path = alt_path
-        else:
-            return "File not found", 404
+        # No file is fine — cache is the source of truth
     
     cache_id = request.args.get('cache_id', '')
     
