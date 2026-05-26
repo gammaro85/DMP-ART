@@ -9,7 +9,7 @@ import uuid
 import re
 from datetime import datetime
 from werkzeug.utils import secure_filename
-from utils.extractor import DMPExtractor
+from utils.extractor_v2 import DMPExtractor, SkipTermsManager
 from utils.ai_module import AIReviewAssistant
 # Comments are now managed through JSON files in config/ directory
 
@@ -824,7 +824,8 @@ def discover_categories():
 
             # Skip system files and AI configuration files
             if filename in ['dmp_structure.json', 'quick_comments.json', 'category_comments.json',
-                           'ai_config.json', 'knowledge_base.json', 'extraction_rules.json']:
+                           'ai_config.json', 'knowledge_base.json', 'extraction_rules.json',
+                           'dmp_anchors.json', 'extraction_skip_terms.json', 'settings.json']:
                 continue
 
             # Skip backup files (any file containing 'backup')
@@ -1385,6 +1386,48 @@ def health_check():
     })
 
 # ============================================================
+# Extraction: skip-terms API
+# ============================================================
+
+@app.route('/api/extraction/skip-terms', methods=['GET'])
+def get_skip_terms():
+    """Return the list of skip terms used during DMP extraction."""
+    try:
+        mgr = SkipTermsManager()
+        return jsonify({'success': True, 'terms': mgr.load()})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@app.route('/api/extraction/skip-terms', methods=['POST'])
+def add_skip_term():
+    """Add a new skip term. Body: {term: str}"""
+    try:
+        data = request.json or {}
+        term = data.get('term', '').strip()
+        if not term:
+            return jsonify({'success': False, 'message': 'Term is required'}), 400
+        mgr = SkipTermsManager()
+        terms = mgr.add(term)
+        return jsonify({'success': True, 'terms': terms})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@app.route('/api/extraction/skip-terms', methods=['DELETE'])
+def delete_skip_term():
+    """Remove a skip term. Body: {term: str}"""
+    try:
+        data = request.json or {}
+        term = data.get('term', '')
+        mgr = SkipTermsManager()
+        terms = mgr.remove(term)
+        return jsonify({'success': True, 'terms': terms})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+# ============================================================
 # Unified Settings Page
 # ============================================================
 
@@ -1393,6 +1436,7 @@ SETTINGS_MODULES = [
     {'id': 'general', 'name': 'General', 'icon': 'sliders-h', 'badge': None},
     {'id': 'comments', 'name': 'Comments', 'icon': 'comments', 'badge': None},
     {'id': 'ai', 'name': 'AI Assistant', 'icon': 'robot', 'badge': None},
+    {'id': 'extraction', 'name': 'Ekstrakcja', 'icon': 'filter', 'badge': None},
 ]
 
 @app.route('/settings')
