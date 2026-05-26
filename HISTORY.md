@@ -54,6 +54,55 @@ Build a web application to:
 
 ## Version History
 
+### v0.9.1 (2026-05-26) — Extractor v2 Anchor-Based Algorithm Fixes
+
+**Status:** Production-ready  
+**Focus:** Fix critical bugs in anchor-based DMP extraction algorithm (extractor_v2.py)
+
+#### Changes
+- **Bug fix:** `utils/extractor_v2.py:111` — regex for section 2 header filtering
+  - **Root Cause:** Pattern `Dokumentacja\s+i\s+jako` did not match "Dokumentacja i jakość danych" (typo: "jako" instead of "jakość")
+  - **Fix:** corrected to `Dokumentacja\s+i\s+jakość`
+  - **Impact:** Section 2 main header now properly filtered from extracted content
+- **Enhancement:** extended noise-filtering patterns with optional suffixes for better matching of main section headers (1-6)
+  - `Opis\s+danych(?:\s+oraz\s+pozyskiwanie)?` — matches both "Opis danych" and full title
+  - `Dokumentacja\s+i\s+jakość(?:\s+danych)?` — matches with optional "danych"
+  - `Zadania\s+zwi[aą]zane(?:\s+z\s+zarządzaniem)?` — matches with optional "z zarządzaniem"
+- **Enhancement:** increased AnchorMatcher window size from (1,2,3) to (1,2,3,4) blocks
+  - **Rationale:** Long subsection questions (e.g., 6.2: 140+ chars) may span multiple PDF lines
+  - **Impact:** improved anchor detection for multi-line questions
+- **Documentation:** added fix history comments to `_BUILTIN_NOISE` definition
+
+#### Extraction Algorithm Details
+
+**Anchor-based approach:**
+1. **DocConverter:** PDF/DOCX → flat list of TextBlock objects
+2. **AnchorMatcher:** searches for 28 anchor texts (14 PL + 14 EN subsection questions) using token overlap (thresholds: HIGH=0.55, LOW=0.35)
+3. **ContentCleaner:** strips formatting markers and filters noise (headers, footers, section titles)
+4. **DMPExtractor:** slices content between anchors → JSON cache for review.html
+
+**Key principles (verified):**
+- Subsection questions (anchors) are NOT included in extracted content
+- Numerations (1.1, 2.1, etc.) are identifiers only, not content
+- Main section headers (1-6) are filtered as structural noise
+- Extracted content = text between question N and question N+1
+
+**Testing notes:**
+- Validated against NCN OPUS-31 proposal (3940.pdf, PI: Jacek Ryl, Politechnika Gdańska)
+- Format: Polish section headers + Polish subsection questions + English content
+- Expected success: 13-14 of 14 subsections correctly extracted
+- Potential edge case: Section 6.1 if main header and question are merged in one text block
+
+### v0.9.1 (2026-05-13) — Portable Runtime Packaging
+
+**Status:** Production-ready
+**Focus:** Add a Windows-friendly portable distribution path that avoids a generated standalone `.exe`
+
+#### Changes
+- **Packaging:** added `build_portable.py` to assemble a portable distribution with copied application sources, local CPython runtime, and current environment packages
+- **Distribution:** added `start_portable.bat` and `start_portable.ps1` as one-click startup entrypoints for end users
+- **Docs:** updated `BUILD.md` and `START_HERE.md` to position the portable runtime package as the preferred Windows option for non-technical users when endpoint protection blocks the PyInstaller executable
+
 ### v0.9.1 (2026-05-13) — Test Documentation Cleanup
 
 **Status:** Production-ready
