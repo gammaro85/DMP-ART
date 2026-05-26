@@ -122,6 +122,25 @@
             max-width: 960px;
         }
 
+        .skip-term-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.4rem 0.7rem;
+            background: var(--bg-secondary);
+            border-radius: 5px;
+            margin-bottom: 0.4rem;
+            gap: 0.75rem;
+        }
+
+        .skip-term-text {
+            font-family: monospace;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            word-break: break-all;
+            flex: 1;
+        }
+
         .settings-module-panel.active {
             display: block;
         }
@@ -1162,6 +1181,63 @@
                 </div>
             </div>
 
+            <!-- ============================================
+                 MODULE: EXTRACTION
+                 ============================================ -->
+            <div class="settings-module-panel" id="module-extraction">
+                <div class="settings-module-header">
+                    <h1><i class="fas fa-filter"></i> Ekstrakcja</h1>
+                    <p>Konfiguracja procesu wydzielania sekcji DMP z dokumentów</p>
+                </div>
+
+                <!-- Skip terms -->
+                <div class="s-card">
+                    <h2><i class="fas fa-ban"></i> Terminy pomijane</h2>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0 0 0.75rem;">
+                        Linie zawierające poniższe wyrażenia są usuwane z wyodrębnionej treści.
+                        Obsługiwane są zwykłe frazy tekstowe oraz wyrażenia regularne (regex).
+                    </p>
+
+                    <div class="s-group">
+                        <label>Dodaj nowy termin</label>
+                        <div style="display: flex; gap: 0.5rem; margin-top: 0.35rem;">
+                            <input type="text" id="skip-term-input"
+                                   placeholder="np. Strona \d+ z \d+ lub tekst nagłówka"
+                                   style="flex: 1; font-family: monospace; font-size: 0.875rem;"
+                                   autocomplete="off"
+                                   onkeydown="if(event.key==='Enter') addSkipTerm()">
+                            <button class="btn btn-primary" onclick="addSkipTerm()">
+                                <i class="fas fa-plus"></i> Dodaj
+                            </button>
+                        </div>
+                        <div class="s-hint">
+                            Przykłady: <code>Strona \d+</code>, <code>Plan Zarządzania Danymi</code>,
+                            <code>Narodowe Centrum Nauki</code>
+                        </div>
+                    </div>
+
+                    <div class="s-group">
+                        <label>Aktualna lista terminów</label>
+                        <div id="skip-terms-list" style="margin-top: 0.5rem;">
+                            <p style="color: var(--text-muted); font-size: 0.85rem;">
+                                Ładowanie&hellip;
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info card -->
+                <div class="s-card">
+                    <h2><i class="fas fa-info-circle"></i> Jak działa nowy ekstraktor (v2)</h2>
+                    <div style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6;">
+                        <p><strong>1. Konwersja do formatu pośredniego</strong> — każdy dokument (PDF / DOCX) jest zamieniany na płaską listę bloków tekstu. Tabele są spłaszczane do wierszy. Nagłówki i stopki są automatycznie wykrywane i oznaczane.</p>
+                        <p><strong>2. Wyszukiwanie 28 kotwic</strong> — skrypt szuka tekstów 14 pytań DMP w wersji polskiej i angielskiej. Dopasowanie jest elastyczne: ignoruje numery sekcji (1.1, 2.3…), znaczniki formatowania i błędy OCR.</p>
+                        <p><strong>3. Ekstrakcja między granicami</strong> — treść każdej sekcji to tekst między pytaniem N a pytaniem N+1.</p>
+                        <p><strong>4. Czyszczenie</strong> — usuwane są znaczniki formatowania (BOLD:, [BOLD]), linie nagłówków/stopek i terminy z listy powyżej.</p>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 
@@ -2023,6 +2099,81 @@
     }
 
     // ============================================
+    // EXTRACTION: SKIP TERMS
+    // ============================================
+
+    async function loadSkipTerms() {
+        try {
+            const r = await fetch('/api/extraction/skip-terms');
+            const data = await r.json();
+            if (data.success) renderSkipTerms(data.terms);
+        } catch (e) {
+            console.error('Failed to load skip terms', e);
+        }
+    }
+
+    function renderSkipTerms(terms) {
+        const list = document.getElementById('skip-terms-list');
+        if (!list) return;
+        if (!terms || !terms.length) {
+            list.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">Brak zdefiniowanych terminów.</p>';
+            return;
+        }
+        list.innerHTML = '';
+        terms.forEach(term => {
+            const row = document.createElement('div');
+            row.className = 'skip-term-row';
+            row.innerHTML = `
+                <code class="skip-term-text">${escapeHtml(term)}</code>
+                <button class="btn btn-sm btn-danger"
+                        onclick="deleteSkipTerm(${JSON.stringify(term)})"
+                        title="Usuń">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            list.appendChild(row);
+        });
+    }
+
+    async function addSkipTerm() {
+        const input = document.getElementById('skip-term-input');
+        const term = input.value.trim();
+        if (!term) { input.focus(); return; }
+        try {
+            const data = await postJSON('/api/extraction/skip-terms', { term });
+            if (data.success) {
+                renderSkipTerms(data.terms);
+                input.value = '';
+                input.focus();
+                showToast('Termin dodany', 'success');
+            } else {
+                showToast(data.message || 'Błąd', 'error');
+            }
+        } catch (e) {
+            showToast('Błąd połączenia', 'error');
+        }
+    }
+
+    async function deleteSkipTerm(term) {
+        try {
+            const r = await fetch('/api/extraction/skip-terms', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ term })
+            });
+            const data = await r.json();
+            if (data.success) {
+                renderSkipTerms(data.terms);
+                showToast('Termin usunięty', 'success');
+            } else {
+                showToast(data.message || 'Błąd', 'error');
+            }
+        } catch (e) {
+            showToast('Błąd połączenia', 'error');
+        }
+    }
+
+    // ============================================
     // INITIALIZATION
     // ============================================
     document.addEventListener('DOMContentLoaded', async function() {
@@ -2035,6 +2186,7 @@
         aiLoadStatistics();
         aiLoadModels('openai');
         aiLoadModels('anthropic');
+        loadSkipTerms();
 
         // Handle URL hash for deep-linking
         const hash = window.location.hash.replace('#', '');
