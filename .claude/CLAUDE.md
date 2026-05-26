@@ -65,9 +65,13 @@ static/js/dark-mode.js              # Theme management (4KB)
 config/
 ├── dmp_structure.json              # 14 DMP section definitions
 ├── quick_comments.json             # Reusable comment templates
-├── for_newbies.json                # Category: Guidance for newcomers
-├── missing_info.json               # Category: Missing information
-├── ready_to_use.json               # Category: Ready to use feedback
+├── for_newbies_pl.json             # Category: Guidance for newcomers (Polish)
+├── for_newbies_en.json             # Category: Guidance for newcomers (English)
+├── missing_info_pl.json            # Category: Missing information (Polish)
+├── missing_info_en.json            # Category: Missing information (English)
+├── ready_to_use_pl.json            # Category: Ready to use feedback (Polish)
+├── ready_to_use_en.json            # Category: Ready to use feedback (English)
+├── *_pl_stare.json                 # Legacy archived Polish category variants (fallback only)
 ├── [custom].json                   # User can create unlimited categories
 └── ai/                             # AI module configuration (separate folder)
     ├── ai_config.json              # AI module settings

@@ -4,6 +4,246 @@
  */
 
 // ===========================================
+// SESSION MANAGEMENT
+// ===========================================
+
+/**
+ * SessionManager - Handles review session persistence and restoration
+ * Enables users to:
+ * - Navigate freely between pages (Settings/Documentation) without losing progress
+ * - Resume review after browser restart
+ * - Auto-save feedback drafts every 30 seconds
+ */
+const SessionManager = {
+    STORAGE_KEY: 'dmp-art-sessions',
+    MAX_SESSIONS: 5,
+    AUTO_SAVE_INTERVAL: 30000, // 30 seconds
+    autoSaveTimer: null,
+
+    /**
+     * Save current review session to localStorage
+     * @param {string} cacheId - UUID cache identifier
+     * @param {string} filename - Original DMP filename
+     * @param {Object} feedbackData - Current feedback text per section
+     * @param {Object} metadata - Optional metadata (researcher name, etc.)
+     */
+    saveSession(cacheId, filename, feedbackData, metadata = {}) {
+        if (!cacheId || !filename) {
+            console.warn('SessionManager: Cannot save session without cacheId and filename');
+            return false;
+        }
+
+        const sessions = this.getAllSessions();
+        const timestamp = Date.now();
+
+        // Find existing session or create new
+        let sessionIndex = sessions.findIndex(s => s.sessionId === cacheId);
+
+        const sessionData = {
+            sessionId: cacheId,
+            filename: filename,
+            timestamp: sessionIndex >= 0 ? sessions[sessionIndex].timestamp : timestamp,
+            lastSaved: timestamp,
+            feedbackDraft: feedbackData,
+            metadata: metadata
+        };
+
+        if (sessionIndex >= 0) {
+            sessions[sessionIndex] = sessionData;
+        } else {
+            sessions.unshift(sessionData);
+        }
+
+        // Keep only MAX_SESSIONS most recent
+        const trimmedSessions = sessions.slice(0, this.MAX_SESSIONS);
+
+        try {
+            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(trimmedSessions));
+            console.log('SessionManager: Session saved', cacheId);
+            return true;
+        } catch (e) {
+            console.error('SessionManager: Error saving session', e);
+            return false;
+        }
+    },
+
+    /**
+     * Load session data from localStorage
+     * @param {string} cacheId - Session identifier
+     * @returns {Object|null} Session data or null if not found
+     */
+    loadSession(cacheId) {
+        const sessions = this.getAllSessions();
+        const session = sessions.find(s => s.sessionId === cacheId);
+
+        if (session) {
+            console.log('SessionManager: Session loaded', cacheId);
+            return session;
+        }
+
+        console.log('SessionManager: No session found for', cacheId);
+        return null;
+    },
+
+    /**
+     * Get all saved sessions, sorted by last modified
+     * @returns {Array} Array of session objects
+     */
+    getAllSessions() {
+        try {
+            const data = localStorage.getItem(this.STORAGE_KEY);
+            return data ? JSON.parse(data) : [];
+        } catch (e) {
+            console.error('SessionManager: Error loading sessions', e);
+            return [];
+        }
+    },
+
+    /**
+     * Get recent sessions for display on home page
+     * @returns {Array} Up to MAX_SESSIONS recent sessions
+     */
+    getRecentSessions() {
+        return this.getAllSessions()
+            .sort((a, b) => b.lastSaved - a.lastSaved)
+            .slice(0, this.MAX_SESSIONS);
+    },
+
+    /**
+     * Delete a session from localStorage
+     * @param {string} cacheId - Session to delete
+     */
+    deleteSession(cacheId) {
+        const sessions = this.getAllSessions();
+        const filtered = sessions.filter(s => s.sessionId !== cacheId);
+
+        try {
+            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(filtered));
+            console.log('SessionManager: Session deleted', cacheId);
+            return true;
+        } catch (e) {
+            console.error('SessionManager: Error deleting session', e);
+            return false;
+        }
+    },
+
+    /**
+     * Start auto-save timer for current review session
+     */
+    startAutoSave(cacheId, filename) {
+        if (!cacheId || !filename) {
+            console.warn('SessionManager: Cannot start auto-save without cacheId and filename');
+            return;
+        }
+
+        // Clear existing timer
+        this.stopAutoSave();
+
+        console.log('SessionManager: Auto-save started');
+
+        this.autoSaveTimer = setInterval(() => {
+            const feedbackData = this.collectFeedbackData();
+            const metadata = this.collectMetadata();
+
+            if (Object.keys(feedbackData).length > 0) {
+                this.saveSession(cacheId, filename, feedbackData, metadata);
+                console.log('SessionManager: Auto-saved at', new Date().toLocaleTimeString());
+            }
+        }, this.AUTO_SAVE_INTERVAL);
+    },
+
+    /**
+     * Stop auto-save timer
+     */
+    stopAutoSave() {
+        if (this.autoSaveTimer) {
+            clearInterval(this.autoSaveTimer);
+            this.autoSaveTimer = null;
+            console.log('SessionManager: Auto-save stopped');
+        }
+    },
+
+    /**
+     * Collect current feedback data from all textareas
+     * @returns {Object} Section ID to feedback text mapping
+     */
+    collectFeedbackData() {
+        const feedbackData = {};
+
+        document.querySelectorAll('.feedback-text').forEach(textarea => {
+            const sectionId = textarea.id.replace('feedback-', '');
+            const value = textarea.value.trim();
+
+            if (value) {
+                feedbackData[sectionId] = value;
+            }
+        });
+
+        return feedbackData;
+    },
+
+    /**
+     * Collect metadata from page (researcher name, etc.)
+     * @returns {Object} Metadata object
+     */
+    collectMetadata() {
+        const metadata = {};
+
+        // Try to extract researcher info from page if available
+        const researcherSurnameEl = document.getElementById('researcher-surname');
+        const researcherFirstnameEl = document.getElementById('researcher-firstname');
+
+        if (researcherSurnameEl) metadata.researcher_surname = researcherSurnameEl.textContent;
+        if (researcherFirstnameEl) metadata.researcher_firstname = researcherFirstnameEl.textContent;
+
+        return metadata;
+    },
+
+    /**
+     * Restore feedback data to textareas
+     * @param {Object} feedbackData - Section ID to text mapping
+     */
+    restoreFeedbackData(feedbackData) {
+        if (!feedbackData) return;
+
+        Object.entries(feedbackData).forEach(([sectionId, text]) => {
+            const textarea = document.getElementById(`feedback-${sectionId}`);
+            if (textarea && !textarea.value) {
+                textarea.value = text;
+                console.log(`SessionManager: Restored feedback for section ${sectionId}`);
+            }
+        });
+    },
+
+    /**
+     * Format session timestamp for display
+     * @param {number} timestamp - Unix timestamp
+     * @returns {string} Formatted date string
+     */
+    formatTimestamp(timestamp) {
+        const date = new Date(timestamp);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+
+        if (diffMins < 1) return 'Just now';
+        if (diffMins < 60) return `${diffMins} minutes ago`;
+        if (diffHours < 24) return `${diffHours} hours ago`;
+        if (diffDays < 7) return `${diffDays} days ago`;
+
+        return date.toLocaleDateString('pl-PL', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+};
+
+// ===========================================
 // MAIN INITIALIZATION
 // ===========================================
 
@@ -230,10 +470,126 @@ function initializeUploadPage() {
         setupFileSelection(elements);
         setupUploadButton(elements);
         setupClearButton(elements);
+        renderRecentSessions(); // NEW: Show recent review sessions
 
         console.log('Upload page initialized successfully');
     } catch (error) {
         console.error('Error initializing upload page:', error);
+    }
+}
+
+/**
+ * Render recent sessions on home page
+ * Shows list of saved review sessions with continue/delete options
+ */
+function renderRecentSessions() {
+    const container = document.getElementById('recent-sessions-container');
+    const list = document.getElementById('recent-sessions-list');
+
+    if (!container || !list) {
+        console.log('Recent sessions container not found (not on index page)');
+        return;
+    }
+
+    const sessions = SessionManager.getRecentSessions();
+
+    if (sessions.length === 0) {
+        container.classList.add('hidden');
+        return;
+    }
+
+    // Show container
+    container.classList.remove('hidden');
+
+    // Clear existing content
+    list.innerHTML = '';
+
+    // Render each session
+    sessions.forEach(session => {
+        const item = document.createElement('div');
+        item.className = 'session-item';
+
+        const info = document.createElement('div');
+        info.className = 'session-info';
+
+        const filename = document.createElement('div');
+        filename.className = 'session-filename';
+        filename.textContent = session.filename;
+
+        const meta = document.createElement('div');
+        meta.className = 'session-meta';
+
+        const timestamp = document.createElement('span');
+        timestamp.innerHTML = `<i class="fas fa-clock"></i> ${SessionManager.formatTimestamp(session.lastSaved)}`;
+
+        const feedbackCount = Object.keys(session.feedbackDraft || {}).length;
+        const feedbackInfo = document.createElement('span');
+        feedbackInfo.innerHTML = `<i class="fas fa-comment"></i> ${feedbackCount} section${feedbackCount !== 1 ? 's' : ''} with feedback`;
+
+        meta.appendChild(timestamp);
+        meta.appendChild(feedbackInfo);
+
+        info.appendChild(filename);
+        info.appendChild(meta);
+
+        const actions = document.createElement('div');
+        actions.className = 'session-actions';
+
+        const continueBtn = document.createElement('button');
+        continueBtn.className = 'session-btn continue';
+        continueBtn.innerHTML = '<i class="fas fa-play"></i> Continue';
+        continueBtn.onclick = () => continueSession(session);
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'session-btn delete';
+        deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+        deleteBtn.title = 'Delete session';
+        deleteBtn.onclick = (e) => {
+            e.stopPropagation();
+            deleteSession(session.sessionId);
+        };
+
+        actions.appendChild(continueBtn);
+        actions.appendChild(deleteBtn);
+
+        item.appendChild(info);
+        item.appendChild(actions);
+
+        list.appendChild(item);
+    });
+}
+
+/**
+ * Continue a saved session
+ * @param {Object} session - Session data
+ */
+function continueSession(session) {
+    if (!session || !session.sessionId || !session.filename) {
+        showToast('Invalid session data', 'error');
+        return;
+    }
+
+    // Navigate to review page with cache_id
+    const reviewUrl = `/review/${encodeURIComponent(session.filename)}?cache_id=${session.sessionId}`;
+    window.location.href = reviewUrl;
+}
+
+/**
+ * Delete a session with confirmation
+ * @param {string} sessionId - Session ID to delete
+ */
+function deleteSession(sessionId) {
+    const confirmed = confirm('Czy na pewno chcesz usunąć tę sesję?\n\nTa operacja jest nieodwracalna.');
+
+    if (confirmed) {
+        const success = SessionManager.deleteSession(sessionId);
+
+        if (success) {
+            showToast('Session deleted', 'success');
+            renderRecentSessions(); // Refresh list
+        } else {
+            showToast('Error deleting session', 'error');
+        }
     }
 }
 
@@ -665,11 +1021,165 @@ function initializeReviewPage() {
         setupSaveFeedbackButton(elements);
         initializeCharacterCounters();
         initializeAutoResize();
+        initializeSessionManagement(); // NEW: Session persistence
 
         console.log('Review page initialized successfully');
     } catch (error) {
         console.error('Error initializing review page:', error);
     }
+}
+
+/**
+ * Initialize session management for review page
+ * - Restores saved feedback from localStorage
+ * - Starts auto-save timer
+ * - Sets up navigation warnings
+ */
+function initializeSessionManagement() {
+    console.log('SessionManager: Initializing session management...');
+
+    // Extract cache_id and filename from page
+    const cacheId = getCacheIdFromPage();
+    const filename = getFilenameFromPage();
+
+    if (!cacheId || !filename) {
+        console.warn('SessionManager: Cannot initialize - missing cache_id or filename');
+        return;
+    }
+
+    console.log('SessionManager: Working with session', cacheId, filename);
+
+    // Try to restore saved session
+    const savedSession = SessionManager.loadSession(cacheId);
+    if (savedSession && savedSession.feedbackDraft) {
+        const hasUnsavedWork = Object.keys(SessionManager.collectFeedbackData()).length > 0;
+
+        if (!hasUnsavedWork) {
+            // Only restore if textareas are empty
+            SessionManager.restoreFeedbackData(savedSession.feedbackDraft);
+            showToast('Previous session restored', 'info');
+        }
+    }
+
+    // Start auto-save
+    SessionManager.startAutoSave(cacheId, filename);
+
+    // Setup navigation warnings
+    setupNavigationWarnings(cacheId, filename);
+
+    // Save on page unload
+    window.addEventListener('beforeunload', () => {
+        const feedbackData = SessionManager.collectFeedbackData();
+        const metadata = SessionManager.collectMetadata();
+        SessionManager.saveSession(cacheId, filename, feedbackData, metadata);
+    });
+}
+
+/**
+ * Setup navigation warnings to prevent accidental data loss
+ * - Home: warn if unsaved changes
+ * - Settings/Documentation: safe (session auto-saved)
+ * - Browser close: auto-save
+ */
+function setupNavigationWarnings(cacheId, filename) {
+    // Intercept Home navigation link
+    const homeLink = document.querySelector('a[data-page="index"], a[href="/"]');
+
+    if (homeLink) {
+        homeLink.addEventListener('click', (e) => {
+            const feedbackData = SessionManager.collectFeedbackData();
+
+            if (Object.keys(feedbackData).length > 0) {
+                // Save session first
+                const metadata = SessionManager.collectMetadata();
+                SessionManager.saveSession(cacheId, filename, feedbackData, metadata);
+
+                // Confirm navigation
+                const confirmed = confirm(
+                    'Nawigacja do strony głównej zakończy bieżącą sesję review.\n\n' +
+                    'Twoje zmiany zostały zapisane i możesz je wznowić później.\n\n' +
+                    'Czy na pewno chcesz przejść do strony głównej?'
+                );
+
+                if (!confirmed) {
+                    e.preventDefault();
+                    return false;
+                }
+            }
+        });
+    }
+
+    // Settings/Documentation: Auto-save without warning
+    const safeLinks = document.querySelectorAll(
+        'a[data-page="settings"], a[href="/settings"], ' +
+        'a[data-page="documentation"], a[href="/documentation"]'
+    );
+
+    safeLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            const feedbackData = SessionManager.collectFeedbackData();
+            const metadata = SessionManager.collectMetadata();
+            SessionManager.saveSession(cacheId, filename, feedbackData, metadata);
+            console.log('SessionManager: Session saved before navigation to', link.href);
+        });
+    });
+
+    // Browser close/refresh: Auto-save
+    window.addEventListener('beforeunload', (e) => {
+        const feedbackData = SessionManager.collectFeedbackData();
+
+        if (Object.keys(feedbackData).length > 0) {
+            const metadata = SessionManager.collectMetadata();
+            SessionManager.saveSession(cacheId, filename, feedbackData, metadata);
+
+            // Show browser warning (only if there's unsaved work)
+            e.preventDefault();
+            e.returnValue = '';
+        }
+    });
+}
+
+/**
+ * Extract cache_id from URL query parameter or page data
+ * @returns {string|null} Cache ID
+ */
+function getCacheIdFromPage() {
+    // Try URL parameter first
+    const urlParams = new URLSearchParams(window.location.search);
+    let cacheId = urlParams.get('cache_id');
+
+    // Try data attribute on body/container
+    if (!cacheId) {
+        const container = document.querySelector('[data-cache-id]');
+        cacheId = container ? container.getAttribute('data-cache-id') : null;
+    }
+
+    return cacheId;
+}
+
+/**
+ * Extract filename from page
+ * @returns {string|null} Filename
+ */
+function getFilenameFromPage() {
+    // Try data attribute first
+    const container = document.querySelector('[data-filename]');
+    if (container) {
+        return container.getAttribute('data-filename');
+    }
+
+    // Try to extract from page title or heading
+    const heading = document.querySelector('h1, h2');
+    if (heading) {
+        const match = heading.textContent.match(/Review:\s*(.+?)$/i);
+        if (match) return match[1].trim();
+    }
+
+    // Try from URL
+    const pathMatch = window.location.pathname.match(/\/review\/(.+?)$/);
+    if (pathMatch) return decodeURIComponent(pathMatch[1]);
+
+    return null;
 }
 
 function setupCommentButtons(elements) {
@@ -845,17 +1355,32 @@ function saveFeedback() {
         feedbackData[sectionId] = textarea.value;
     });
 
+    // NEW: Save session to localStorage first
+    const cacheId = getCacheIdFromPage();
+    const filename = getFilenameFromPage();
+
+    if (cacheId && filename) {
+        const metadata = SessionManager.collectMetadata();
+        SessionManager.saveSession(cacheId, filename, feedbackData, metadata);
+        console.log('SessionManager: Session saved with feedback');
+    }
+
+    // Then save feedback file to server
     fetch('/save_feedback', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(feedbackData)
+        body: JSON.stringify({
+            filename: filename,
+            feedback: compileFeedback(), // Save compiled feedback as text file
+            feedbackData: feedbackData   // Also send raw data for potential future use
+        })
     })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                showToast('Feedback saved successfully!');
+                showToast('Progress saved! You can safely navigate to Settings or other pages.', 'success');
             } else {
                 showToast('Error saving feedback: ' + (data.message || 'Unknown error'), 'error');
             }

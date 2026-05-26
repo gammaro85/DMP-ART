@@ -60,6 +60,10 @@ Build a web application to:
 **Focus:** Fix critical bugs in anchor-based DMP extraction algorithm (extractor_v2.py)
 
 #### Changes
+- **Bug fix:** category config discovery/loading now normalizes language variants before building category IDs
+   - **Root Cause:** after renaming category files to `*_pl.json` and archiving old Polish variants as `*_pl_stare.json`, backend discovery skipped only `_pl`/`_en` and treated `_pl_stare` as a separate base category
+   - **Fix:** added shared category resolution helpers in `app.py` so discovery, single-category loading, review loading, and AI comment aggregation prefer `*_pl.json`, then base `.json`, and only then legacy `*_pl_stare.json`
+   - **Impact:** review/settings endpoints now load current Polish comment sets instead of archived `*_stare` files
 - **Bug fix:** `utils/extractor_v2.py:111` — regex for section 2 header filtering
   - **Root Cause:** Pattern `Dokumentacja\s+i\s+jako` did not match "Dokumentacja i jakość danych" (typo: "jako" instead of "jakość")
   - **Fix:** corrected to `Dokumentacja\s+i\s+jakość`
