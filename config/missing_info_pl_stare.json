@@ -1,0 +1,68 @@
+{
+  "GENERAL": [
+    "Plan zarządzania danymi musi być napisany w języku angielskim.",
+    "Plan musi zawierać odpowiedzi na wszystkie pytania główne z podpunktami (1.1, 1.2, 2.1, 2.2, 3.1, 3.2, 4.1, 4.2, 5.1, 5.2, 6.1, 6.2) -- zamiast odpowiedzi w stylu 'nie dotyczy' lub 'Nie' należy pisać pełne zdania, np. 'No existing datasets will be reused. All data will be newly collected.'",
+    "Plan spełnia podstawowe wymagania i zostaje zaakceptowany -- po uzupełnieniu wskazanych elementów proszę o przesłanie ostatecznej wersji do archiwizacji."
+  ],
+  "1.1": [
+    "Opis danych jest zbyt ogólny -- należy doprecyzować rodzaj i format danych wraz z szacunkową wielkością poszczególnych zbiorów, np. 'tabular data from surveys (CSV, approximately 50 MB), microscopic images (TIFF, approximately 2 GB), measurement results (TXT, approximately 5 GB)'.",
+    "Brak szacunkowej łącznej objętości wszystkich danych wytworzonych w projekcie -- należy dodać zgrubny szacunek, np. 'dane zajmą łącznie nie więcej niż 20 GB'.",
+    "Brak opisu metodologii zbierania danych -- należy wskazać jak powstaną dane, jakimi narzędziami, w jakich warunkach i jaką metodą.",
+    "Należy jednoznacznie wskazać, czy w projekcie będą ponownie wykorzystywane istniejące zbiory danych (jeśli nie, należy napisać to wprost, np. 'No existing datasets will be reused. All data will be newly collected specifically for this research.')."
+  ],
+  "1.2": [
+    "Brak konkretnych rozszerzeń plików -- należy podać je jednoznacznie, np. '.csv, .jpg, .py, .txt' zamiast ogólnego opisu, z podziałem na formaty specyficzne dla oprogramowania i powszechnie używane.",
+    "Brak szacunkowej łącznej objętości danych -- należy dodać zgrubny szacunek, np. 'łącznie wszystkie pliki zajmą nie więcej niż 5 GB'.",
+    "Należy wskazać, które formaty są otwarte, a które własnościowe, oraz opisać plan konwersji do formatów otwartych przed udostępnieniem danych w repozytorium lub uzasadnić, dlaczego konwersja nie jest możliwa."
+  ],
+  "2.1": [
+    "Brak opisu struktury katalogów i schematu nazewnictwa plików -- należy opisać jak dane będą organizowane, np. '/raw_data, /processed_data, /scripts, /results' i 'YYYY-MM-DD_experimentID_sampleID.csv'.",
+    "Należy wskazać standard metadanych DataCite (format JSON-LD) stosowany w repozytorium MOST Wiedzy Open Research Data Catalog -- Dublin Core nie jest standardem tego repozytorium.",
+    "Brak informacji o pliku README -- każdy zbiór danych zdeponowany w repozytorium powinien być opisany w pliku README.txt zawierającym opis metodologii, zmiennych, struktury plików i wymagań oprogramowania."
+  ],
+  "2.2": [
+    "Kontrola jakości danych jest opisana zbyt ogólnie -- należy podać konkretne procedury, np. podwójne wprowadzanie danych przez dwóch niezależnych badaczy, miesięczna kalibracja aparatury, automatyczne skrypty walidujące zakresy wartości.",
+    "Sformułowanie 'dane będą wysokiej jakości' nie jest wystarczające -- należy opisać konkretne procedury zapewnienia jakości danych specyficzne dla rodzaju gromadzonych danych."
+  ],
+  "3.1": [
+    "Brak opisu strategii kopii zapasowych -- należy wskazać miejsca przechowywania danych, nośniki i częstotliwość tworzenia kopii zapasowych, np. 'automatycznie codziennie do OneDrive, tygodniowo na zaszyfrowany dysk zewnętrzny'.",
+    "Należy konkretnie wskazać nazwy usług przechowywania danych (dysk sieciowy, chmura, dysk zewnętrzny) i ich lokalizację -- nie należy wskazywać Dropbox, którego dane mogą być usunięte bez ostrzeżenia i przechowywane poza UE.",
+    "Należy opisać, czy i jak dane będą przechowywane po zakończeniu projektu, lub wskazać to w punkcie 5.2."
+  ],
+  "3.2": [
+    "Brak opisu środków bezpieczeństwa danych -- należy wskazać ochronę hasłem, szyfrowanie oraz ograniczenie dostępu wyłącznie do upoważnionych członków zespołu badawczego, a także procedury na wypadek utraty danych."
+  ],
+  "4.1": [
+    "W przypadku badań angażujących ludzi należy wskazać numer i datę zgody komisji etyki lub uzasadnić, dlaczego badanie nie wymaga zgody komisji, powołując się na regulamin instytucjonalny.",
+    "Punkt 4.1 wymaga uzupełnienia o opis zgodności z RODO -- jeśli dane osobowe będą przetwarzane, należy opisać podstawę prawną, sposób informowania uczestników, okres przechowywania, procedurę anonimizacji lub pseudonimizacji i prawa uczestników; jeśli nie -- należy to jednoznacznie stwierdzić.",
+    "Jeśli danych osobowych nie da się w pełni zanonimizować, należy opisać jak będą zabezpieczone i jakie dane (w jakim zakresie) zostaną udostępnione publicznie."
+  ],
+  "4.2": [
+    "Punkt 4.2 nie powinien być pusty -- należy co najmniej wskazać, że prawa do danych należą do Politechniki Gdańskiej zgodnie z Regulaminem Własności Intelektualnej (Uchwała Nr 117/2021/XXV, https://link.pg.edu.pl/GdanskTech_intprop).",
+    "Brak wskazania licencji dla danych udostępnianych w repozytorium -- należy podać wybraną licencję Creative Commons (CC BY jest standardem rekomendowanym przez NCN).",
+    "Jeśli projekt angażuje partnerów zewnętrznych lub podwykonawców, należy wskazać jak zostaną uregulowane kwestie podziału praw własności intelektualnej -- zazwyczaj poprzez osobną umowę o współpracy."
+  ],
+  "5.1": [
+    "Embargo wymaga konkretnego uzasadnienia (np. analiza w toku, przygotowanie publikacji, trwający proces patentowy, zobowiązania wobec partnerów) oraz konkretnej daty zakończenia embarga (np. '31.12.2026', nie 'po zakończeniu projektu').",
+    "Brak wskazania licencji, na której dane będą udostępnione -- NCN rekomenduje licencję CC BY.",
+    "Licencja CC BY-NC nie jest zgodna z wymogami NCN dotyczącymi otwartego dostępu -- należy zastąpić ją licencją CC BY lub CC0, które umożliwiają użycie danych do dowolnych celów, w tym komercyjnych.",
+    "Jeśli część danych zawiera informacje umożliwiające identyfikację osób, należy zaznaczyć, że takie dane nie będą udostępniane publicznie.",
+    "Brak informacji o terminie udostępnienia danych -- należy podać konkretną datę lub powiązać dostęp z momentem publikacji artykułu.",
+    "Częściowe udostępnienie wymaga wyraźnego wskazania: co zostanie udostępnione publicznie, co nie i dlaczego, oraz jak udostępnione dane pozwalają na weryfikację opublikowanych wyników."
+  ],
+  "5.2": [
+    "Brak wskazania konkretnego repozytorium -- należy podać pełną oficjalną nazwę, np. MOST Wiedzy Open Research Data Catalog (Bridge of Data), w którym dane będą przechowywane długoterminowo.",
+    "Warto dodać informację o certyfikacie CoreTrustSeal repozytorium MOST Wiedzy Open Research Data Catalog, które jest jedynym certyfikowanym repozytorium danych badawczych w Polsce.",
+    "Brak opisu zgodności z zasadami FAIR -- warto opisać, w jaki sposób repozytorium MOST Wiedzy zapewnia każdą z czterech zasad: Findable, Accessible, Interoperable, Reusable.",
+    "Należy wskazać, czy wszystkie dane zostaną zdeponowane w repozytorium, czy tylko część, i uzasadnić, dlaczego pozostałe dane nie będą udostępniane.",
+    "Dane nieprzeznaczone do udostępnienia w repozytorium powinny być przechowywane przez osobę odpowiedzialną za projekt przez co najmniej 10 lat od jego zakończenia."
+  ],
+  "6.1": [
+    "Brak wskazania osoby odpowiedzialnej za zarządzanie danymi -- należy podać imię, nazwisko, stanowisko i instytucję osoby odpowiedzialnej za codzienne zarządzanie danymi badawczymi.",
+    "Można wskazać Centrum Kompetencji Otwartej Nauki (CKON) BPG Politechniki Gdańskiej (openaccess@pg.edu.pl) jako zewnętrzne wsparcie merytoryczne w zakresie weryfikacji DMP i metadanych dla zbiorów danych w repozytorium MOST Wiedzy.",
+    "Centrum Usług Informatycznych (CUI) PG zapewnia wsparcie techniczne w zakresie bezpieczeństwa danych i tworzenia kopii zapasowych -- można to uwzględnić w opisie struktury odpowiedzialności."
+  ],
+  "6.2": [
+    "Brak opisu kosztów zarządzania danymi -- należy wyraźnie stwierdzić, że deponowanie w repozytorium MOST Wiedzy i przechowywanie na serwerach PG są bezpłatne, oraz oszacować nakład czasu pracy (liczbę dni roboczych) na przygotowanie danych."
+  ]
+}

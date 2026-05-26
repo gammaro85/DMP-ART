@@ -1,0 +1,49 @@
+{
+  "1.1": [
+    "Punkt 1.1 wymaga wyszczególnienia wszystkich danych, które powstaną lub zostaną zebrane w projekcie -- niezależnie od tego, czy zostaną później udostępnione. Dla każdego rodzaju danych należy podać: konkretny typ (np. dane ankietowe, zdjęcia mikroskopowe, wyniki pomiarów spektroskopowych, dane z symulacji), format i szacunkową objętość (np. ok. 500 plików TIFF, łącznie ok. 2 GB), a na końcu łączną objętość wszystkich danych (np. dane zajmą łącznie nie więcej niż 20 GB).",
+    "Metodologia zbierania danych to opis jak, czym i w jakich warunkach dane powstaną. Przykłady: 'Dane ankietowe zostaną zebrane za pomocą platformy LimeSurvey w formie anonimowych kwestionariuszy online', 'Pomiary wykonane spektrometrem Ramana w laboratorium', 'Wywiady przeprowadzone z kwestionariuszem półstrukturowanym', 'Dane wygenerowane przez symulacje numeryczne w środowisku MATLAB'. Jeśli istniejące dane nie będą ponownie wykorzystywane, wystarczy to krótko zaznaczyć na początku odpowiedzi."
+  ],
+  "1.2": [
+    "W tym punkcie należy podać konkretne rozszerzenia plików, w których dane będą przechowywane, np. '.csv, .txt, .jpg, .tiff, .xlsx'. Warto podzielić je na dwie grupy: formaty specyficzne dla oprogramowania laboratoryjnego lub aparatury oraz powszechnie używane formaty tekstowe, tabelaryczne i graficzne. Dla każdego formatu warto podać szacunkowy rozmiar lub łączną objętość.",
+    "Do długoterminowego przechowywania i udostępniania danych zalecane są formaty otwarte: .csv (zamiast .xlsx), .txt, .json, .tiff, .png, .pdf/A. Jeśli podczas badań konieczne jest używanie formatu własnościowego, należy zaplanować eksport do formatu otwartego przed zdeponowaniem danych w repozytorium -- wyjątkiem jest sytuacja, gdy konwersja prowadziłaby do utraty istotnych informacji."
+  ],
+  "2.1": [
+    "Punkt 2.1 opisuje dwie rzeczy: jak dane będą zorganizowane (struktura katalogów, nazewnictwo plików) oraz jak będą opisane (metadane). Dobrą praktyką jest podanie struktury folderów (np. /dane_surowe, /dane_przetworzone, /skrypty, /wyniki, /dokumentacja) i schematu nazewnictwa plików (np. RRRR-MM-DD_idEksperym_idProbki.csv).",
+    "Do każdego zbioru danych zdeponowanego w repozytorium MOST Wiedzy Open Research Data Catalog (Bridge of Data) należy dołączyć plik README.txt z opisem metodologii, zmiennych, struktury plików i wymagań oprogramowania. Repozytorium automatycznie generuje metadane w standardzie DataCite (format JSON-LD) -- w DMP należy wskazać właśnie ten standard, nie Dublin Core."
+  ],
+  "2.2": [
+    "Punkt 2.2 opisuje metody zapewnienia jakości danych, czyli co zostanie zrobione, żeby dane były wartościowe i wiarygodne. Zamiast ogólnego stwierdzenia 'dane będą wysokiej jakości' należy podać konkretne procedury, np.: 'podwójne wprowadzanie danych przez dwóch niezależnych badaczy', 'kalibracja aparatury co miesiąc zgodnie z protokołami producenta', 'automatyczne skrypty walidujące zakresy wartości', 'prowadzenie notatników laboratoryjnych w wersji papierowej i cyfrowej'.",
+    "Dla projektów laboratoryjnych typowe procedury zapewnienia jakości obejmują: kalibrację sprzętu z dokumentacją, stosowanie materiałów referencyjnych, powtarzanie pomiarów w przypadku wątpliwości oraz weryfikację przez drugiego badacza. Dla projektów z danymi ankietowymi: pilotaż kwestionariusza, anonimowe wypełnianie, automatyczna walidacja odpowiedzi, podwójne wprowadzanie danych."
+  ],
+  "3.1": [
+    "Punkt 3.1 wymaga opisania gdzie i jak dane będą przechowywane w trakcie projektu oraz jaka będzie strategia tworzenia kopii zapasowych. Dobrą praktyką jest zasada 3-2-1: 3 kopie danych, na 2 różnych nośnikach, z 1 kopią przechowywaną poza miejscem pracy -- np. komputer w laboratorium + OneDrive (automatycznie codziennie) + zaszyfrowany dysk zewnętrzny w innej lokalizacji (raz w tygodniu).",
+    "Zalecane miejsca przechowywania: dyski sieciowe lub serwery PG, OneDrive w wersji instytucjonalnej (licencja Office 365 A1 for Faculty). Odradzamy wszelkie komercyjne serwisy chmurowe spoza UE lub bez umowy powierzenia danych (np. Dropbox w wersji darmowej, Google Drive poza domeną instytucjonalną) -- dane mogą być usunięte bez ostrzeżenia lub przechowywane poza UE."
+  ],
+  "3.2": [
+    "Punkt 3.2 opisuje bezpieczeństwo danych i ochronę danych wrażliwych. Należy wskazać kto ma dostęp do danych (tylko upoważnieni członkowie zespołu), w jaki sposób chroniony jest dostęp (hasła, szyfrowanie, uwierzytelnianie dwuskładnikowe) i jak często zmieniane są hasła.",
+    "Bezpieczeństwo infrastruktury IT (serwerów, systemów chmurowych) zapewnia Centrum Usług Informatycznych PG. Jeśli w projekcie nie ma danych wrażliwych ani osobowych, wystarczy to zaznaczyć i opisać standardowe procedury bezpieczeństwa stosowane w instytucji."
+  ],
+  "4.1": [
+    "Jeśli w projekcie zbierane są dane osobowe (imię, nazwisko, email, PESEL, wizerunek) lub dane wrażliwe (dane o zdrowiu, genetyczne, wyznaniu, orientacji seksualnej), należy opisać: podstawę prawną przetwarzania, sposób informowania uczestników, okres przechowywania, procedurę anonimizacji lub pseudonimizacji oraz prawa uczestników. Jeśli badania wymagają zgody komisji etyki, należy podać numer zgody.",
+    "Jeśli projekt nie zbiera żadnych danych osobowych, wystarczy to jednoznacznie stwierdzić. Jeśli dane będą anonimizowane zaraz po zebraniu, należy opisać procedurę anonimizacji -- dane zanonimizowane nie są już danymi osobowymi i nie podlegają RODO."
+  ],
+  "4.2": [
+    "Punkt 4.2 dotyczy praw własności intelektualnej. Zgodnie z Regulaminem Własności Intelektualnej Politechniki Gdańskiej (Uchwała Senatu Nr 117/2021/XXV, https://link.pg.edu.pl/GdanskTech_intprop) prawa do danych i wyników należą do uczelni. Jeśli w projekcie uczestniczą partnerzy zewnętrzni, kwestie podziału praw powinny zostać uregulowane w umowie o współpracy.",
+    "Licencja CC BY (Creative Commons Uznanie autorstwa) jest standardową licencją rekomendowaną przez NCN -- wymaga podania autorstwa przy dalszym użyciu. Licencja CC0 (domena publiczna) może być problematyczna, ponieważ prawa do danych pracowników PG należą do uczelni -- przed jej wyborem zalecana jest konsultacja z działem prawnym lub Centrum Kompetencji Otwartej Nauki PG."
+  ],
+  "5.1": [
+    "Punkt 5.1 opisuje kiedy i na jakich warunkach dane zostaną udostępnione. Termin udostępnienia powinien być powiązany z publikacją wyników -- najczęściej dane udostępniane są w momencie publikacji artykułu. Jeśli planowane jest embargo, musi mieć konkretne uzasadnienie (analiza w toku, przygotowanie publikacji, proces patentowy) i konkretną datę zakończenia (np. '31.12.2026', nie 'po zakończeniu projektu') -- NCN dopuszcza embargo maksymalnie na 2 lata od zakończenia projektu.",
+    "Należy wskazać licencję, na której dane będą udostępnione -- NCN rekomenduje CC BY. Jeśli dane zawierają informacje umożliwiające identyfikację osób, których nie da się zanonimizować, należy zaznaczyć, że takie dane nie będą udostępniane publicznie, i opisać co konkretnie zostanie udostępnione."
+  ],
+  "5.2": [
+    "Repozytorium MOST Wiedzy Open Research Data Catalog (Bridge of Data) prowadzone przez Politechnikę Gdańską jest jedynym w Polsce certyfikowanym repozytorium danych badawczych (certyfikat CoreTrustSeal). Dane zdeponowane w tym repozytorium są automatycznie kategoryzowane do długoterminowego przechowywania bez terminu wygaśnięcia i automatycznie otrzymują identyfikator DOI.",
+    "Zasada FAIR w repozytorium MOST Wiedzy: Findable -- DOI + indeksowanie w Web of Science Data Citation Index; Accessible -- otwarty interfejs webowy, jasna licencja; Interoperable -- metadane w standardzie DataCite, dane w otwartych formatach; Reusable -- dokumentacja w README, wyraźna licencja. Dane niewybrane do udostępnienia powinny być przechowywane przez kierownika projektu przez co najmniej 10 lat po zakończeniu projektu."
+  ],
+  "6.1": [
+    "Punkt 6.1 wskazuje kto jest odpowiedzialny za zarządzanie danymi w projekcie. Zazwyczaj jest to kierownik projektu lub wyznaczona osoba (np. post-doc, data steward) -- należy podać imię i nazwisko, stanowisko i instytucję. Można też wymienić Centrum Kompetencji Otwartej Nauki (CKON) BPG PG jako wsparcie zewnętrzne w zakresie weryfikacji DMP i metadanych (openaccess@pg.edu.pl) oraz Centrum Usług Informatycznych (CUI) PG jako wsparcie techniczne w zakresie bezpieczeństwa i kopii zapasowych."
+  ],
+  "6.2": [
+    "Punkt 6.2 dotyczy kosztów zarządzania danymi. Deponowanie danych w repozytorium MOST Wiedzy Open Research Data Catalog oraz przechowywanie na serwerach i OneDrive PG jest bezpłatne dla pracowników i doktorantów PG -- należy to jednoznacznie stwierdzić. Kosztem jest przede wszystkim czas pracy: należy oszacować liczbę dni roboczych przeznaczonych na przygotowanie, dokumentację i kontrolę jakości danych.",
+    "Jeśli zarządzanie danymi wymaga zakupu specjalistycznego oprogramowania lub sprzętu (np. zaszyfrowane dyski zewnętrzne), należy to wymienić. Czas pracy przeznaczony na przygotowanie danych do udostępnienia jest typowym kosztem osobowym i może być ujęty w budżecie projektu."
+  ]
+}
