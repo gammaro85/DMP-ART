@@ -1,13 +1,6 @@
 {
   "quick_comments": [
     {
-      "name": "send final version",
-      "text": {
-        "en": "The plan is approved, I would just ask for the final version to be sent to our records.",
-        "pl": "The plan is approved, I would just ask for the final version to be sent to our records."
-      }
-    },
-    {
       "name": "repository name",
       "text": {
         "en": "MOST Wiedzy Open Research Data Catalog (Bridge of Data)",
@@ -18,7 +11,7 @@
       "name": "Gdańsk Tech - sentence",
       "text": {
         "en": "The proper abbreviation for our university is Gdańsk Tech.",
-        "pl": "The proper abbreviation for our university is Gdańsk Tech."
+        "pl": "prawidłowy skrót naszej uczej w języku angielskim to Gdańsk Tech."
       }
     },
     {

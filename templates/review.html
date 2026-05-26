@@ -1704,15 +1704,18 @@
                         const category = this.getAttribute('data-category');
                         const section = this.getAttribute('data-section');
 
-                        // Toggle active state
+                        // Check if THIS button is already active BEFORE removing classes
+                        const wasActive = this.classList.contains('active');
+
+                        // Remove active state from ALL category buttons in this section
                         const sectionButtons = document.querySelectorAll(`[data-section="${section}"].category-btn-inline`);
                         sectionButtons.forEach(btn => btn.classList.remove('active'));
 
-                        if (this.classList.contains('active')) {
-                            // If clicking active button, hide dropdown
+                        if (wasActive) {
+                            // If clicking active button, hide dropdown (toggle off)
                             hideDropdown(section);
                         } else {
-                            // Show dropdown with category comments
+                            // Show dropdown with category comments and mark THIS button as active
                             this.classList.add('active');
                             showCategoryComments(category, section);
                         }
@@ -2306,10 +2309,10 @@
                 range.deleteContents();
                 range.insertNode(span);
 
-                // Insert citation into feedback textarea
+                // Insert citation into feedback textarea with Polish quotation marks
                 let textarea = document.getElementById('feedback-' + currentSectionId);
                 if (textarea) {
-                    let citation = `*${selText}*`;
+                    let citation = `„${selText}"`;
                     let value = textarea.value;
                     let sep = value && !value.endsWith('\n') ? '\n\n' : '';
                     textarea.value = value + sep + citation;
