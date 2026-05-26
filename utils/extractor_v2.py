@@ -108,8 +108,8 @@ _STOP: Set[str] = {
 # - 2026-05-26: Extended patterns with optional suffixes for better matching
 # - 2026-05-26: Added .* suffix to match any trailing text after main keywords
 _BUILTIN_NOISE: List = [
-    re.compile(r'PLAN\s+ZARZĄDZANIA\s+DANYMI', re.IGNORECASE),
-    re.compile(r'\bDATA\s+MANAGEMENT\s+PLAN\b', re.IGNORECASE),
+    re.compile(r'^\s*PLAN\s+ZARZĄDZANIA\s+DANYMI\b', re.IGNORECASE),
+    re.compile(r'^\s*DATA\s+MANAGEMENT\s+PLAN\b', re.IGNORECASE),
     # Polish section titles with flexible suffixes (matches anything after main keywords)
     re.compile(
         r'^\s*\d+[\.\s]+(?:'
@@ -365,8 +365,11 @@ class AnchorMatcher:
     the block index at which each subsection begins.
     """
 
-    HIGH_THRESHOLD = 0.55  # score at which we accept immediately (first match wins)
-    LOW_THRESHOLD  = 0.35  # fallback minimum to accept any match
+    HIGH_THRESHOLD  = 0.55  # score at which we accept immediately (first match wins)
+    LOW_THRESHOLD   = 0.35  # fallback minimum to accept any match
+    MIN_FIRST_BLOCK = 0.20  # block[i] alone must cover ≥20% of anchor tokens;
+                            # prevents content blocks from starting a wide window
+                            # that only contains the anchor text further down
 
     def __init__(self, anchors_cfg: dict) -> None:
         self._anchors = anchors_cfg
@@ -413,6 +416,13 @@ class AnchorMatcher:
         HIGH, return the first position that reached LOW.  This prevents a later
         high-scoring duplicate from stealing the boundary.
 
+        Two guards ensure the anchor STARTS at block[i] rather than somewhere
+        inside a wide window:
+          1. Skip blocks that are structural noise (main section titles).
+          2. Require block[i] alone to cover ≥ MIN_FIRST_BLOCK of anchor tokens.
+             This prevents a content block followed 3 blocks later by the real
+             question text from being accepted as an anchor start.
+
         Returns: (start_idx, matched_window_size, score)
         - start_idx: first block index where anchor begins
         - matched_window_size: number of blocks that contain the anchor text
@@ -423,10 +433,33 @@ class AnchorMatcher:
 
         # Strategy 1: for each position i, try windows of 1/2/3/4 blocks.
         # Return the moment we hit HIGH; record first LOW as fallback.
-        # Window size increased to 4 to handle long questions split across multiple lines.
         for i in range(len(blocks)):
+            blk = blocks[i]
+
+            # Skip header/footer lines
+            if blk.is_hf:
+                continue
+
+            # Skip main section title lines (e.g. "3. Przechowywanie i tworzenie…")
+            # These score highly against subsection anchors but are not the anchor.
+            if any(p.search(blk.text) for p in _BUILTIN_NOISE):
+                continue
+
+            # The anchor must START in this block — compute single-block score first.
+            # If block[i] has no anchor tokens, a window of 4 could still score high
+            # by pulling in the actual question block further down, which would
+            # consume the preceding content inside the "anchor window".
+            norm_blk = normalize(blk.text)
+            best_single = max(
+                (token_overlap(na, norm_blk) for na in norm_anchors),
+                default=0.0,
+            )
+            if best_single < self.MIN_FIRST_BLOCK:
+                continue
+
             best_at_i = 0.0
             best_win = 1
+            best_weight = 0.0  # score × anchor word-count — proxy for |matched tokens|
             for win_size in (1, 2, 3, 4):
                 if i + win_size > len(blocks):
                     break
@@ -435,9 +468,17 @@ class AnchorMatcher:
                 )
                 for na in norm_anchors:
                     s = token_overlap(na, window)
-                    if s > best_at_i:
+                    # weight = matched-token count proxy.  When two windows share the
+                    # same ratio (e.g. a short 3-token anchor scores 1.0 on win=1
+                    # and a long 9-token anchor also scores 1.0 on win=2), prefer
+                    # the window that covers more anchor tokens absolutely.
+                    # If adding extra blocks brings no extra anchor tokens, the weight
+                    # stays the same and best_win is NOT increased (no bloat).
+                    weight = s * len(na.split())
+                    if s > best_at_i or (s == best_at_i and weight > best_weight):
                         best_at_i = s
                         best_win = win_size
+                        best_weight = weight
             if best_at_i >= self.HIGH_THRESHOLD:
                 return i, best_win, best_at_i
             if best_at_i >= self.LOW_THRESHOLD and first_low_idx < 0:
