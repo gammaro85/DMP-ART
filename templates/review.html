@@ -1209,6 +1209,12 @@
                                     </select>
                                     <button class="assign-btn" data-index="{{ loop.index0 }}" data-text="{{ item.text }}">Assign</button>
                                     <button class="skip-btn" data-index="{{ loop.index0 }}">Skip</button>
+                                    <button class="add-skip-term-btn"
+                                            data-index="{{ loop.index0 }}"
+                                            data-text="{{ item.text | e }}"
+                                            title="Dodaj ten tekst do listy terminów pomijanych przy ekstrakcji">
+                                        <i class="fas fa-ban"></i> Dodaj do skip list
+                                    </button>
                                 </div>
                             </div>
                             {% endfor %}
@@ -1846,6 +1852,35 @@
                 btn.addEventListener('click', function() {
                     const index = this.getAttribute('data-index');
                     skipText(index);
+                });
+            });
+
+            // "Dodaj do skip list" button
+            document.querySelectorAll('.add-skip-term-btn').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const term = this.getAttribute('data-text');
+                    if (!term) return;
+                    try {
+                        const r = await fetch('/api/extraction/skip-terms', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({term: term})
+                        });
+                        const data = await r.json();
+                        if (data.success) {
+                            this.disabled = true;
+                            this.innerHTML = '<i class="fas fa-check"></i> Dodano';
+                            this.style.opacity = '0.6';
+                            if (typeof showToast === 'function')
+                                showToast('Dodano do listy terminów pomijanych', 'success');
+                        } else {
+                            if (typeof showToast === 'function')
+                                showToast(data.message || 'Błąd', 'error');
+                        }
+                    } catch (e) {
+                        if (typeof showToast === 'function')
+                            showToast('Błąd połączenia', 'error');
+                    }
                 });
             });
 

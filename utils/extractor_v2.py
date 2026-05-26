@@ -100,6 +100,35 @@ _STOP: Set[str] = {
     'jak', 'będą', 'każdego',
 }
 
+# Lines that are structural noise — always filtered, regardless of user skip terms.
+# Matches: DMP/PZD header, main section titles (Polish + English numbered 1-6)
+_BUILTIN_NOISE: List = [
+    re.compile(r'PLAN\s+ZARZĄDZANIA\s+DANYMI', re.IGNORECASE),
+    re.compile(r'\bDATA\s+MANAGEMENT\s+PLAN\b', re.IGNORECASE),
+    re.compile(
+        r'^\s*\d+[\.\s]+(?:'
+        r'Opis\s+danych'
+        r'|Dokumentacja\s+i\s+jako'
+        r'|Przechowywanie\s+i\s+tworzenie'
+        r'|Wymogi\s+prawne'
+        r'|Udost[eę]pnianie\s+i\s+d[łl]ugotrwa[łl]'
+        r'|Zadania\s+zwi[aą]zane'
+        r')',
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r'^\s*\d+[\.\s]+(?:'
+        r'Data\s+description\s+and\s+collection'
+        r'|Documentation\s+and\s+data\s+quality'
+        r'|Storage\s+and\s+backup'
+        r'|Legal\s+requirements'
+        r'|Data\s+sharing\s+and\s+long'
+        r'|Data\s+management\s+responsibilities'
+        r')',
+        re.IGNORECASE,
+    ),
+]
+
 
 def normalize(text: str) -> str:
     """Lowercase, strip section numbers and formatting markers."""
@@ -336,10 +365,12 @@ class AnchorMatcher:
 
     def find_boundaries(self, blocks: List[TextBlock]) -> Dict[str, int]:
         """
-        Returns {section_id: block_index} sorted by ascending position.
-        Only sections whose anchor was found above the threshold are included.
+        Returns {section_id: block_index} in document order.
+        Anchors are found independently, then monotonic-order enforcement removes
+        any boundary that would place a section before the previous one
+        (false positives from similar text elsewhere in the document).
         """
-        found: Dict[str, Tuple[int, float]] = {}
+        raw: Dict[str, int] = {}
         for sid in SECTION_ORDER:
             cfg = self._anchors.get(sid)
             if not cfg:
@@ -348,15 +379,35 @@ class AnchorMatcher:
             fingerprint = cfg.get('fingerprint_pl', []) + cfg.get('fingerprint_en', [])
             idx, score = self._locate(blocks, texts, fingerprint)
             if idx >= 0:
-                found[sid] = (idx, score)
+                raw[sid] = idx
                 logger.debug('Anchor %s → block %d (score %.2f)', sid, idx, score)
             else:
                 logger.debug('Anchor %s → NOT FOUND', sid)
 
-        return {
-            sid: idx
-            for sid, (idx, _) in sorted(found.items(), key=lambda x: x[1][0])
-        }
+        return self._enforce_order(raw)
+
+    @staticmethod
+    def _enforce_order(boundaries: Dict[str, int]) -> Dict[str, int]:
+        """
+        Walk SECTION_ORDER and keep only boundaries whose block index is strictly
+        greater than all previously accepted boundaries.  This removes false
+        positives that would place a later section before an earlier one.
+        """
+        result: Dict[str, int] = {}
+        last_idx = -1
+        for sid in SECTION_ORDER:
+            if sid not in boundaries:
+                continue
+            idx = boundaries[sid]
+            if idx > last_idx:
+                result[sid] = idx
+                last_idx = idx
+            else:
+                logger.debug(
+                    'Anchor %s at block %d violates order (last=%d) — discarded',
+                    sid, idx, last_idx,
+                )
+        return result
 
     def _locate(
         self,
@@ -411,6 +462,7 @@ class ContentCleaner:
         """
         Return cleaned non-empty text lines from *blocks*, skipping:
           - header / footer lines
+          - structural noise (DMP title, main section titles)
           - lines matching any pattern in skip_patterns
           - lines that are empty after formatting removal
         """
@@ -421,6 +473,8 @@ class ContentCleaner:
             text = strip_formatting(block.text)
             text = _RE_WS.sub(' ', text).strip()
             if not text:
+                continue
+            if any(p.search(text) for p in _BUILTIN_NOISE):
                 continue
             if any(p.search(text) for p in skip_patterns):
                 continue
