@@ -1,0 +1,161 @@
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - navigation [ref=e3]:
+      - button "Toggle theme" [ref=e5] [cursor=pointer]:
+        - generic [ref=e6]: 
+      - generic [ref=e7]:
+        - link "Home" [ref=e8] [cursor=pointer]:
+          - /url: /
+        - generic "Upload and process a document first to access review": Review
+        - link "Settings":
+          - /url: /settings
+        - link "Documentation" [ref=e9] [cursor=pointer]:
+          - /url: /documentation
+  - generic [ref=e10]:
+    - complementary [ref=e11]:
+      - generic [ref=e12]:
+        - heading " Settings" [level=2] [ref=e13]:
+          - generic [ref=e14]: 
+          - text: Settings
+        - paragraph [ref=e15]: Configure your DMP ART instance
+      - list [ref=e16]:
+        - listitem [ref=e17] [cursor=pointer]:
+          - generic [ref=e18]: 
+          - generic [ref=e19]: General
+        - listitem [ref=e20] [cursor=pointer]:
+          - generic [ref=e21]: 
+          - generic [ref=e22]: Comments
+        - listitem [ref=e23] [cursor=pointer]:
+          - generic [ref=e24]: 
+          - generic [ref=e25]: AI Assistant
+        - listitem [ref=e26] [cursor=pointer]:
+          - generic [ref=e27]: 
+          - generic [ref=e28]: Ekstrakcja
+    - main [ref=e29]:
+      - text:       
+      - generic [ref=e82]:
+        - generic [ref=e83]:
+          - heading " Comments Configuration PL EN" [level=1] [ref=e84]:
+            - generic [ref=e85]: 
+            - text: Comments Configuration
+            - generic [ref=e86]:
+              - button "PL" [ref=e87] [cursor=pointer]
+              - button "EN" [ref=e88] [cursor=pointer]
+          - paragraph [ref=e89]: Manage DMP structure, quick comments, and feedback categories for review
+        - generic [ref=e90]:
+          - button " DMP Structure" [ref=e91] [cursor=pointer]:
+            - generic [ref=e92]: 
+            - text: DMP Structure
+          - button " Quick Comments" [active] [ref=e93] [cursor=pointer]:
+            - generic [ref=e94]: 
+            - text: Quick Comments
+          - button " For Newbies ×" [ref=e95] [cursor=pointer]:
+            - generic [ref=e96]: 
+            - text: For Newbies
+            - generic "Delete" [ref=e97]: ×
+          - button " Missing Info ×" [ref=e98] [cursor=pointer]:
+            - generic [ref=e99]: 
+            - text: Missing Info
+            - generic "Delete" [ref=e100]: ×
+          - button " Ready to Use ×" [ref=e101] [cursor=pointer]:
+            - generic [ref=e102]: 
+            - text: Ready to Use
+            - generic "Delete" [ref=e103]: ×
+          - button "+ New" [ref=e104] [cursor=pointer]:
+            - generic [ref=e105]: +
+            - text: New
+        - text: 
+        - generic [ref=e139]:
+          - heading " Quick Comments" [level=2] [ref=e140]:
+            - generic [ref=e141]: 
+            - text: Quick Comments
+          - paragraph [ref=e142]: Quick comment snippets available in the review sidebar.
+          - generic [ref=e143]:
+            - generic [ref=e144]:
+              - generic [ref=e145]:
+                - textbox "Comment name" [ref=e146]: repository name
+                - generic [ref=e147]:
+                  - generic [ref=e148]:
+                    - generic [ref=e149]: EN
+                    - textbox "English text" [ref=e150]: MOST Wiedzy Open Research Data Catalog (Bridge of Data)
+                  - generic [ref=e151]:
+                    - generic [ref=e152]: PL
+                    - textbox "Polish text" [ref=e153]: MOST Wiedzy Open Research Data Catalog (Bridge of Data)
+              - generic [ref=e154]:
+                - button "" [ref=e155] [cursor=pointer]:
+                  - generic [ref=e156]: 
+                - button "" [ref=e157] [cursor=pointer]:
+                  - generic [ref=e158]: 
+            - generic [ref=e159]:
+              - generic [ref=e160]:
+                - textbox "Comment name" [ref=e161]: Gdańsk Tech - sentence
+                - generic [ref=e162]:
+                  - generic [ref=e163]:
+                    - generic [ref=e164]: EN
+                    - textbox "English text" [ref=e165]: The proper abbreviation for our university is Gdańsk Tech.
+                  - generic [ref=e166]:
+                    - generic [ref=e167]: PL
+                    - textbox "Polish text" [ref=e168]: prawidłowy skrót naszej uczej w języku angielskim to Gdańsk Tech.
+              - generic [ref=e169]:
+                - button "" [ref=e170] [cursor=pointer]:
+                  - generic [ref=e171]: 
+                - button "" [ref=e172] [cursor=pointer]:
+                  - generic [ref=e173]: 
+            - generic [ref=e174]:
+              - generic [ref=e175]:
+                - textbox "Comment name" [ref=e176]: Gdańsk Tech
+                - generic [ref=e177]:
+                  - generic [ref=e178]:
+                    - generic [ref=e179]: EN
+                    - textbox "English text" [ref=e180]: Gdańsk Tech
+                  - generic [ref=e181]:
+                    - generic [ref=e182]: PL
+                    - textbox "Polish text" [ref=e183]: Gdańsk Tech
+              - generic [ref=e184]:
+                - button "" [ref=e185] [cursor=pointer]:
+                  - generic [ref=e186]: 
+                - button "" [ref=e187] [cursor=pointer]:
+                  - generic [ref=e188]: 
+            - generic [ref=e189]:
+              - generic [ref=e190]:
+                - textbox "Comment name" [ref=e191]: do skreślenia
+                - generic [ref=e192]:
+                  - generic [ref=e193]:
+                    - generic [ref=e194]: EN
+                    - textbox "English text" [ref=e195]: do skreślenia
+                  - generic [ref=e196]:
+                    - generic [ref=e197]: PL
+                    - textbox "Polish text" [ref=e198]: do skreślenia
+              - generic [ref=e199]:
+                - button "" [ref=e200] [cursor=pointer]:
+                  - generic [ref=e201]: 
+                - button "" [ref=e202] [cursor=pointer]:
+                  - generic [ref=e203]: 
+            - generic [ref=e204]:
+              - generic [ref=e205]:
+                - textbox "Comment name" [ref=e206]: Resolution nr 204/2026/XXVI of February 25th 2026
+                - generic [ref=e207]:
+                  - generic [ref=e208]:
+                    - generic [ref=e209]: EN
+                    - textbox "English text" [ref=e210]: Resolution nr 204/2026/XXVI of February 25th 2026
+                  - generic [ref=e211]:
+                    - generic [ref=e212]: PL
+                    - textbox "Polish text" [ref=e213]: Resolution nr 204/2026/XXVI of February 25th 2026
+              - generic [ref=e214]:
+                - button "" [ref=e215] [cursor=pointer]:
+                  - generic [ref=e216]: 
+                - button "" [ref=e217] [cursor=pointer]:
+                  - generic [ref=e218]: 
+          - generic [ref=e219]:
+            - button "+ Add Quick Comment" [ref=e220] [cursor=pointer]:
+              - generic [ref=e221]: +
+              - text: Add Quick Comment
+            - button " Save All" [ref=e222] [cursor=pointer]:
+              - generic [ref=e223]: 
+              - text: Save All
+      - text:                +  
+  - contentinfo [ref=e79]:
+    - generic [ref=e80]:
+      - text: DMP ART © 2025 —
+      - link "MIT License" [ref=e81] [cursor=pointer]:
+        - /url: https://github.com/gammaro85/DMP-ART

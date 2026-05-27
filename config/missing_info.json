@@ -12,7 +12,7 @@
   "1.2": [
     "Brak rozszerzeń plików. Należy podać konkretnie: \".csv, .jpg, .py, .txt\" zamiast \"pliki tekstowe\". Formaty można podzielić na specyficzne dla oprogramowania oraz powszechnie używane.",
     "Należy wskazać które formaty otwarte a które własnościowe. Jeśli własnościowe konieczne: należy rozważyć eksport końcowej wersji do otwartych formatów lub uzasadnić dlaczego konwersja nie jest możliwa.",
-    "Należy oszacować chociaż przybliżoną przestrzeń zajmowaną przez dane, może być zakres np. 10-20 GB"
+    "Należy chociaż w przybliżeniu oszacować przestezeń dyskową, jaką zajmą dane. Może być zakres np 10-20GB."
   ],
   "2.1": [
     "Brak opisu struktury katalogów i nazewnictwa plików. Należy dodać na początku jak dane będą katalogowane, czyli że będzie stworzona struktura folderów, a nazwy poszczególnych plików będą usystematyzowane i będą pozwalały na szybką identyfikację: \"Folder structure: /raw_data, /processed_data, /scripts, /results. File names: YYYY-MM-DD_experimentID_sampleID.csv\"",

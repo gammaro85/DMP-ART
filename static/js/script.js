@@ -1713,58 +1713,151 @@ function debounce(func, wait) {
     };
 }
 
+/**
+ * Show modal dialog for notifications
+ * @param {string} message - Message to display
+ * @param {string} type - Type: 'success', 'error', 'warning', 'info'
+ */
 function showToast(message, type = 'success') {
-    console.log(`Toast (${type}):`, message);
+    console.log(`Dialog (${type}):`, message);
 
-    // Create or get toast container
-    let toastContainer = document.getElementById('toast-container');
-    if (!toastContainer) {
-        toastContainer = document.createElement('div');
-        toastContainer.id = 'toast-container';
-        toastContainer.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        `;
-        document.body.appendChild(toastContainer);
+    // Remove existing dialog if present
+    const existingDialog = document.getElementById('notification-dialog');
+    if (existingDialog) {
+        existingDialog.remove();
     }
 
-    // Create toast element
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
-    toast.textContent = message;
-    toast.style.cssText = `
-        background: ${type === 'error' ? 'var(--error-color)' : 'var(--success-color)'};
-        color: white;
-        padding: 12px 16px;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        transform: translateX(100%);
-        transition: transform 0.3s ease;
-        max-width: 300px;
-        word-wrap: break-word;
+    // Create backdrop
+    const backdrop = document.createElement('div');
+    backdrop.className = 'notification-backdrop';
+    backdrop.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.2s ease;
     `;
 
-    toastContainer.appendChild(toast);
+    // Icon mapping
+    const icons = {
+        success: '<i class="fas fa-check-circle"></i>',
+        error: '<i class="fas fa-times-circle"></i>',
+        warning: '<i class="fas fa-exclamation-triangle"></i>',
+        info: '<i class="fas fa-info-circle"></i>'
+    };
+
+    // Color mapping
+    const colors = {
+        success: 'var(--success-color)',
+        error: 'var(--error-color)',
+        warning: 'var(--warning-color)',
+        info: 'var(--primary-color)'
+    };
+
+    // Create dialog
+    const dialog = document.createElement('div');
+    dialog.id = 'notification-dialog';
+    dialog.className = 'notification-dialog';
+    dialog.style.cssText = `
+        background: var(--bg-card);
+        border-radius: var(--border-radius-lg);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        padding: 2rem;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+        transform: scale(0.9);
+        opacity: 0;
+        transition: transform 0.2s ease, opacity 0.2s ease;
+    `;
+
+    const iconColor = colors[type] || colors.info;
+    const iconHtml = icons[type] || icons.info;
+
+    dialog.innerHTML = `
+        <div style="font-size: 3rem; color: ${iconColor}; margin-bottom: 1rem;">
+            ${iconHtml}
+        </div>
+        <div style="font-size: 1.1rem; color: var(--text-primary); margin-bottom: 1.5rem; line-height: 1.5;">
+            ${message}
+        </div>
+        <button class="notification-ok-btn" style="
+            background: ${iconColor};
+            color: white;
+            border: none;
+            border-radius: var(--border-radius-md);
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 100px;
+        ">OK</button>
+    `;
+
+    backdrop.appendChild(dialog);
+    document.body.appendChild(backdrop);
 
     // Animate in
-    setTimeout(() => {
-        toast.style.transform = 'translateX(0)';
-    }, 10);
+    requestAnimationFrame(() => {
+        backdrop.style.opacity = '1';
+        dialog.style.transform = 'scale(1)';
+        dialog.style.opacity = '1';
+    });
 
-    // Remove after 3 seconds
-    setTimeout(() => {
-        toast.style.transform = 'translateX(100%)';
+    // Close function
+    const closeDialog = () => {
+        backdrop.style.opacity = '0';
+        dialog.style.transform = 'scale(0.9)';
+        dialog.style.opacity = '0';
         setTimeout(() => {
-            if (toast.parentNode) {
-                toast.parentNode.removeChild(toast);
+            if (backdrop.parentNode) {
+                backdrop.remove();
             }
-        }, 300);
-    }, 3000);
+        }, 200);
+    };
+
+    // OK button click
+    const okBtn = dialog.querySelector('.notification-ok-btn');
+    okBtn.addEventListener('click', closeDialog);
+
+    // Hover effect for OK button
+    okBtn.addEventListener('mouseenter', () => {
+        okBtn.style.filter = 'brightness(1.1)';
+        okBtn.style.transform = 'translateY(-1px)';
+    });
+    okBtn.addEventListener('mouseleave', () => {
+        okBtn.style.filter = 'brightness(1)';
+        okBtn.style.transform = 'translateY(0)';
+    });
+
+    // Click backdrop to close
+    backdrop.addEventListener('click', (e) => {
+        if (e.target === backdrop) {
+            closeDialog();
+        }
+    });
+
+    // ESC key to close
+    const escHandler = (e) => {
+        if (e.key === 'Escape') {
+            closeDialog();
+            document.removeEventListener('keydown', escHandler);
+        }
+    };
+    document.addEventListener('keydown', escHandler);
+
+    // Auto-close after 5 seconds for success/info
+    if (type === 'success' || type === 'info') {
+        setTimeout(closeDialog, 5000);
+    }
 }
 
 async function copyToClipboard(text) {

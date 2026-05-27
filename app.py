@@ -541,18 +541,46 @@ def save_templates():
 
 # Removed /save_comments endpoint
 
+@app.route('/load_dmp_structure', methods=['GET'])
+def load_dmp_structure():
+    """Load DMP structure"""
+    try:
+        structure_path = os.path.join('config', 'dmp_structure.json')
+
+        if not os.path.exists(structure_path):
+            return jsonify({
+                'success': True,
+                'structure': []
+            })
+
+        with open(structure_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            if data is None:
+                data = {}
+
+        return jsonify({
+            'success': True,
+            'structure': data.get('structure', [])
+        })
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error loading DMP structure: {str(e)}'
+        })
+
 @app.route('/save_dmp_structure', methods=['POST'])
 def save_dmp_structure():
     try:
         data = request.json
-        
+
         # Save DMP structure to a file
         structure_path = os.path.join('config', 'dmp_structure.json')
         os.makedirs(os.path.dirname(structure_path), exist_ok=True)
-        
+
         with open(structure_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
-        
+
         return jsonify({
             'success': True,
             'message': 'DMP structure saved successfully'
@@ -702,23 +730,31 @@ def save_category():
         data = request.json or {}
         file = data.get('file')
         category_data = data.get('data', {})
-        
+        lang = data.get('lang', 'pl')
+
         if not file:
             return jsonify({
                 'success': False,
                 'message': 'File name is required'
             })
-        
-        category_path = os.path.join('config', f'{file}.json')
-        
-        with open(category_path, 'w', encoding='utf-8') as f:
+
+        # Resolve the actual file path using the same logic as load
+        config_dir = 'config'
+        filename, file_path = resolve_category_file(config_dir, file, lang)
+
+        # If file doesn't exist, create new one with language suffix
+        if not file_path:
+            filename = f'{file}_{lang}.json'
+            file_path = os.path.join(config_dir, filename)
+
+        with open(file_path, 'w', encoding='utf-8') as f:
             json.dump(category_data, f, indent=2, ensure_ascii=False)
-        
+
         return jsonify({
             'success': True,
-            'message': f'Category "{file}" saved successfully'
+            'message': f'Category "{filename}" saved successfully'
         })
-        
+
     except Exception as e:
         return jsonify({
             'success': False,

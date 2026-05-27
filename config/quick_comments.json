@@ -34,6 +34,13 @@
         "en": "Resolution nr 204/2026/XXVI of February 25th 2026",
         "pl": "Resolution nr 204/2026/XXVI of February 25th 2026"
       }
+    },
+    {
+      "name": "Test Comment 2026",
+      "text": {
+        "en": "This is a test comment in English",
+        "pl": "To jest testowy komentarz po polsku"
+      }
     }
   ]
 }

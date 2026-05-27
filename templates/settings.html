@@ -1410,11 +1410,15 @@
     }
 
     function loadDmpStructure() {
-        fetch('/config/dmp_structure.json')
+        fetch('/load_dmp_structure')
         .then(r => r.json())
         .then(data => {
-            dmpStructure = data.structure || [];
-            if (currentCommentsTab === 'c-dmp-structure') renderDmpStructure();
+            if (data.success) {
+                dmpStructure = data.structure || [];
+                if (currentCommentsTab === 'c-dmp-structure') renderDmpStructure();
+            } else {
+                console.error('Error loading DMP structure:', data.message);
+            }
         })
         .catch(err => console.error('Error loading DMP structure:', err));
     }
@@ -1448,11 +1452,15 @@
 
     // --- Quick Comments ---
     function loadQuickComments() {
-        fetch('/config/quick_comments.json')
+        fetch('/load_quick_comments')
         .then(r => r.json())
         .then(data => {
-            quickComments = data.quick_comments || [];
-            if (currentCommentsTab === 'c-quick-comments') renderQuickComments();
+            if (data.success) {
+                quickComments = data.quick_comments || [];
+                if (currentCommentsTab === 'c-quick-comments') renderQuickComments();
+            } else {
+                console.error('Error loading quick comments:', data.message);
+            }
         })
         .catch(err => console.error('Error loading quick comments:', err));
     }
@@ -1753,7 +1761,8 @@
             sectionData[sid] = comments;
         });
 
-        postJSON('/save_category', { file: catId, data: sectionData })
+        const lang = localStorage.getItem('dmp-art-comment-language') || 'pl';
+        postJSON('/save_category', { file: catId, data: sectionData, lang: lang })
         .then(resp => {
             if (resp.success) showToast('Category saved');
             else showToast('Error: ' + resp.message, 'error');
@@ -2197,7 +2206,7 @@
     </script>
 
     <footer class="site-footer site-footer--relative">
-        <span>DMP ART &copy; 2025</span>
+        <span>DMP ART &copy; 2025 — <a href="https://github.com/gammaro85/DMP-ART" target="_blank" rel="noopener" class="footer-link">MIT License</a></span>
     </footer>
 </body>
 </html>
