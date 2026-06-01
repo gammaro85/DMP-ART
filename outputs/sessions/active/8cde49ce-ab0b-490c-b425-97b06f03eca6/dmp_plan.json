@@ -1,0 +1,663 @@
+{
+  "cache_id": "8cde49ce-ab0b-490c-b425-97b06f03eca6",
+  "sections": {
+    "1.1": {
+      "section": "1. Data description and collection or re-use of existing data",
+      "question": "How will new data be collected or produced and/or how will existing data be re-used?",
+      "content": "Experimental data will be generated during synthesis, physicochemical characterization, and\noptical investigation of azo -functionalized MOF materials and receptor -layer systems. The\nproject will involve acquisition of spectroscopic, structural, thermal, microscopic, and optical -\nresponse datasets obtained using standard analy tical instrumentation and laboratory\nsoftware. Data processing will include interpretation of structure –property –interaction\nrelationships, comparative analysis of analyte -dependent optical responses, and correlation\nof physicochemical parameters with sens ing behavior. Selected literature -derived and\npublicly available datasets related to MOF systems and supramolecular receptor materials\nmay additionally be used for comparative interpretation of the obtained results.",
+      "tagged_paragraphs": [
+        {
+          "text": "Experimental data will be generated during synthesis, physicochemical characterization, and",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "optical investigation of azo -functionalized MOF materials and receptor -layer systems. The",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "project will involve acquisition of spectroscopic, structural, thermal, microscopic, and optical -",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "response datasets obtained using standard analy tical instrumentation and laboratory",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "software. Data processing will include interpretation of structure –property –interaction",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "relationships, comparative analysis of analyte -dependent optical responses, and correlation",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "of physicochemical parameters with sens ing behavior. Selected literature -derived and",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "publicly available datasets related to MOF systems and supramolecular receptor materials",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "may additionally be used for comparative interpretation of the obtained results.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "1.2": {
+      "section": "1. Data description and collection or re-use of existing data",
+      "question": "What data (for example the types, formats, and volumes) will be collected or produced?",
+      "content": "The project will generate raw and processed experimental datasets including synthetic\nprotocols, NMR, FTIR, UV –Vis, fluorescence, NIR, PXRD/XRD, DSC/TGA, and SEM data, as well\nas optical sensing measurements, analyte -recognition studi es, microscopy images, calibration\ndatasets, and comparative structure –interaction –response analyses. Data will be stored\nprimarily in digital form using instrument -generated formats and additionally converted\nwhere appropriate into commonly accessible for mats such as CSV, TXT, PDF, PNG, TIFF, and",
+      "tagged_paragraphs": [
+        {
+          "text": "The project will generate raw and processed experimental datasets including synthetic",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "protocols, NMR, FTIR, UV –Vis, fluorescence, NIR, PXRD/XRD, DSC/TGA, and SEM data, as well",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "as optical sensing measurements, analyte -recognition studi es, microscopy images, calibration",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "datasets, and comparative structure –interaction –response analyses. Data will be stored",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "primarily in digital form using instrument -generated formats and additionally converted",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "where appropriate into commonly accessible for mats such as CSV, TXT, PDF, PNG, TIFF, and",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "2.1": {
+      "section": "2. Documentation and data quality",
+      "question": "What metadata and documentation (for example methodology or data collection and way of organising data) will accompany data?",
+      "content": "sample identity, synthesis conditions, instrumental parameters, analyte composition,\nprocessing methods, and experimental conditions relevant for interpretation and\nreproducibility of the obtained results. Data and metadata will be organized according to\nresearch tasks, analytical methods, and experimental series using consist ent file naming\nconventions and standardized directory structures. Metadata descriptions will include sample\nidentifiers, experimental conditions, units, and processing parameters.\nLaboratory documentation will include synthetic procedures, characterizatio n protocols,\ncalibration parameters, data -processing procedures, and descriptions of analytical workflows.\nWhere appropriate, README files and supplementary metadata descriptions will additionally\nbe prepared to improve interoperability and long -term usabi lity of the datasets. Metadata\nand documentation will be prepared in accordance with FAIR principles to facilitate future\ninterpretation, accessibility, and potential reuse of research data.",
+      "tagged_paragraphs": [
+        {
+          "text": "sample identity, synthesis conditions, instrumental parameters, analyte composition,",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "processing methods, and experimental conditions relevant for interpretation and",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "reproducibility of the obtained results. Data and metadata will be organized according to",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "research tasks, analytical methods, and experimental series using consist ent file naming",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "conventions and standardized directory structures. Metadata descriptions will include sample",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "identifiers, experimental conditions, units, and processing parameters.",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Laboratory documentation will include synthetic procedures, characterizatio n protocols,",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "calibration parameters, data -processing procedures, and descriptions of analytical workflows.",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Where appropriate, README files and supplementary metadata descriptions will additionally",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "be prepared to improve interoperability and long -term usabi lity of the datasets. Metadata",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "and documentation will be prepared in accordance with FAIR principles to facilitate future",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "interpretation, accessibility, and potential reuse of research data.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "2.2": {
+      "section": "2. Documentation and data quality",
+      "question": "What data quality control measures will be used?",
+      "content": "Data quality will be ens ured through application of standard quality -control procedures\nroutinely used in synthetic chemistry, materials characterization, and spectroscopic analysis.\nExperimental results will be verified using replicate measurements, comparison of\ncomplementary a nalytical techniques, calibration of analytical instrumentation, and\nvalidation of reproducibility of selected synthesis and characterization procedures.\nThe reliability of the obtained datasets will additionally be assessed through comparative\nanalysis of physicochemical, structural, thermal, and optical measurements performed for\nindependent samples and experimental series. Raw and processed datasets will be\nperiodically reviewed by project participants in order to identify inconsistencies, experimental\nartefacts, or data -processing errors.",
+      "tagged_paragraphs": [
+        {
+          "text": "Data quality will be ens ured through application of standard quality -control procedures",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "routinely used in synthetic chemistry, materials characterization, and spectroscopic analysis.",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Experimental results will be verified using replicate measurements, comparison of",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "complementary a nalytical techniques, calibration of analytical instrumentation, and",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "validation of reproducibility of selected synthesis and characterization procedures.",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "The reliability of the obtained datasets will additionally be assessed through comparative",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "analysis of physicochemical, structural, thermal, and optical measurements performed for",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "independent samples and experimental series. Raw and processed datasets will be",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "periodically reviewed by project participants in order to identify inconsistencies, experimental",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "artefacts, or data -processing errors.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "3.1": {
+      "section": "3. Storage and backup during the research process",
+      "question": "How will data and metadata be stored and backed up during the research process?",
+      "content": "Research data and accompanying metadata generated during the project realization will be\nstored on secured institutional infrastructure available at Gdańsk University of Technology\nand collaborating research institutions. Working datasets will additionally be stored on\npassword -protected laboratory workstations and secured external st orage devices accessible\nonly to authorized project participants.\nBackup procedures will include regular creation of backup copies of raw and processed\ndatasets, metadata files, laboratory documentation, and processed analytical results. Backup\ncopies will be stored in separate locations in accordance with institutional recommendations\nand good research -data -management practices. Whenever technically feasible, the project\nwill follow the recommended 3 -2-1 backup strategy involving multiple copies of dataset s\nstored on different storage media.\nRaw instrumental data, processed datasets, and metadata will be preserved throughout the\nentire project duration in order to ensure reproducibility, long -term accessibility, and\nintegrity of the obtained experimental re sults.",
+      "tagged_paragraphs": [
+        {
+          "text": "Research data and accompanying metadata generated during the project realization will be",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "stored on secured institutional infrastructure available at Gdańsk University of Technology",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "and collaborating research institutions. Working datasets will additionally be stored on",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "password -protected laboratory workstations and secured external st orage devices accessible",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "only to authorized project participants.",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Backup procedures will include regular creation of backup copies of raw and processed",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "datasets, metadata files, laboratory documentation, and processed analytical results. Backup",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "copies will be stored in separate locations in accordance with institutional recommendations",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "and good research -data -management practices. Whenever technically feasible, the project",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "will follow the recommended 3 -2-1 backup strategy involving multiple copies of dataset s",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "stored on different storage media.",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Raw instrumental data, processed datasets, and metadata will be preserved throughout the",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "entire project duration in order to ensure reproducibility, long -term accessibility, and",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "integrity of the obtained experimental re sults.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "3.2": {
+      "section": "3. Storage and backup during the research process",
+      "question": "How will data security and protection of sensitive data be taken care of during the research?",
+      "content": "The project does not involve collection or processing of personal, medical, or otherwise\nsensitive data. The generated datasets will consist exclusively of experim ental research data\nassociated with synthesis, physicochemical characterization, and optical investigation of\nfunctional materials.\nAccess to raw and processed datasets during the project realization will be restricted to\nauthorized project participants an d collaborating researchers directly involved in data\nanalysis and interpretation. Data -management procedures applied within the project will\ncomply with institutional regulations concerning research -data security, intellectual -property\nprotection, and goo d scientific practice. Temporary restrictions on access to unpublished",
+      "tagged_paragraphs": [
+        {
+          "text": "The project does not involve collection or processing of personal, medical, or otherwise",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "sensitive data. The generated datasets will consist exclusively of experim ental research data",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "associated with synthesis, physicochemical characterization, and optical investigation of",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "functional materials.",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Access to raw and processed datasets during the project realization will be restricted to",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "authorized project participants an d collaborating researchers directly involved in data",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "analysis and interpretation. Data -management procedures applied within the project will",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "comply with institutional regulations concerning research -data security, intellectual -property",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "protection, and goo d scientific practice. Temporary restrictions on access to unpublished",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "4.1": {
+      "section": "4. Legal requirements, codes of conduct",
+      "question": "If personal data are processed, how will compliance with legislation on personal data and on data security be ensured?",
+      "content": "records, or other sensitive information. The generated datasets will consist exclusively of\nexperimental research data associated with synthesis, physicochemical characterization, and\noptical investigation of functional materials.",
+      "tagged_paragraphs": [
+        {
+          "text": "records, or other sensitive information. The generated datasets will consist exclusively of",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "experimental research data associated with synthesis, physicochemical characterization, and",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "optical investigation of functional materials.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "4.2": {
+      "section": "4. Legal requirements, codes of conduct",
+      "question": "How will other legal issues, such as intellectual property rights and ownership, be managed? What legislation is applicable?",
+      "content": "Research data management and dissemination procedures applied within the project will\ncomply with institutional regulations concerning intellectual -property protection, ownership\nof research results, and principles of good scientific practice. Ownership of research data,\nlaboratory documentation, and generated intellectual property will follow the regulations\nand policies applicable at Gdańsk University of Technology and Medical University of Gdańsk .\nUnpublished data sets, raw analytical results, and potentially implementation -relevant\nfindings may remain temporarily restricted until completion of publication procedures,\nintellectual -property evaluation, or other dissemination activities. Data underlying published\nscientific results will be shared in accordance with FAIR principles, open -science\nrecommendations, and publisher requirements whenever possible.\nWhere appropriate, selected datasets and supplementary materials associated with scientific\npublications may be de posited in trusted repositories with assignment of persistent\nidentifiers (DOI) and appropriate metadata descriptions.",
+      "tagged_paragraphs": [
+        {
+          "text": "Research data management and dissemination procedures applied within the project will",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "comply with institutional regulations concerning intellectual -property protection, ownership",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "of research results, and principles of good scientific practice. Ownership of research data,",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "laboratory documentation, and generated intellectual property will follow the regulations",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "and policies applicable at Gdańsk University of Technology and Medical University of Gdańsk .",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Unpublished data sets, raw analytical results, and potentially implementation -relevant",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "findings may remain temporarily restricted until completion of publication procedures,",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "intellectual -property evaluation, or other dissemination activities. Data underlying published",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "scientific results will be shared in accordance with FAIR principles, open -science",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "recommendations, and publisher requirements whenever possible.",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Where appropriate, selected datasets and supplementary materials associated with scientific",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "publications may be de posited in trusted repositories with assignment of persistent",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "identifiers (DOI) and appropriate metadata descriptions.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "5.1": {
+      "section": "5. Data sharing and long-term preservation",
+      "question": "How and when will data be shared? Are there possible restrictions to data sharing or embargo reasons?",
+      "content": "lub przyczyny embarga\nData underlying scientific publications will be shared whenever possible in accordance with\nFAIR principles, NCN recommendations, and publisher requirements. Selected datasets and\nsupplementary materials will be deposited in trusted open -access repositories, preferably\nMOST Danych repository of Gdańsk University of Technology, after publication of the\ncorresponding results. Temporary embargo periods may be applied in cases related to\nongoing publications or intellectual -property evalu ation.",
+      "tagged_paragraphs": [
+        {
+          "text": "lub przyczyny embarga",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Data underlying scientific publications will be shared whenever possible in accordance with",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "FAIR principles, NCN recommendations, and publisher requirements. Selected datasets and",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "supplementary materials will be deposited in trusted open -access repositories, preferably",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "MOST Danych repository of Gdańsk University of Technology, after publication of the",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "corresponding results. Temporary embargo periods may be applied in cases related to",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "ongoing publications or intellectual -property evalu ation.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "5.2": {
+      "section": "5. Data sharing and long-term preservation",
+      "question": "How will data for preservation be selected, and where will data be preserved long-term (for example a data repository or archive)?",
+      "content": "Long -term preservation will concern datasets directly associated with scientific publications,\nincluding spec troscopic, diffraction, thermal -analysis, microscopy, and optical -response data\ntogether with metadata and supplementary documentation. Data will be archived using\ninstitutional infrastructure and trusted repositories, including MOST Danych repository, for a\nminimum period of 10 years.",
+      "tagged_paragraphs": [
+        {
+          "text": "Long -term preservation will concern datasets directly associated with scientific publications,",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "including spec troscopic, diffraction, thermal -analysis, microscopy, and optical -response data",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "together with metadata and supplementary documentation. Data will be archived using",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "institutional infrastructure and trusted repositories, including MOST Danych repository, for a",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "minimum period of 10 years.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "5.3": {
+      "section": "5. Data sharing and long-term preservation",
+      "question": "What methods or software tools will be needed to access and use the data?",
+      "content": "Research data will be stored using standard instrument -generated formats and additionally\nconverted where appropriate into accessible forma ts such as CSV, TXT, PDF, PNG, TIFF, and\nXLSX to facilitate interoperability and reuse using standard scientific and office software.",
+      "tagged_paragraphs": [
+        {
+          "text": "Research data will be stored using standard instrument -generated formats and additionally",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "converted where appropriate into accessible forma ts such as CSV, TXT, PDF, PNG, TIFF, and",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "XLSX to facilitate interoperability and reuse using standard scientific and office software.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "5.4": {
+      "section": "5. Data sharing and long-term preservation",
+      "question": "How will the application of a unique and persistent identifier (such as a Digital Object Identifier (DOI)) to each data set be ensured?",
+      "content": "Datasets deposited in open repositories will receive persistent identifiers such as DOI\nnumbers assigned by the hosting repository. Deposited datasets will additionally be\naccompanied by metadata and README documentation enabling identification, citation, and\nlong -term accessibility of the research data.",
+      "tagged_paragraphs": [
+        {
+          "text": "Datasets deposited in open repositories will receive persistent identifiers such as DOI",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "numbers assigned by the hosting repository. Deposited datasets will additionally be",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "accompanied by metadata and README documentation enabling identification, citation, and",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "long -term accessibility of the research data.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "6.1": {
+      "section": "6. Data management responsibilities and resources",
+      "question": "Who (for example role, position, and institution) will be responsible for data management (i.e. the data steward)?",
+      "content": "Responsibility for research data management within the project will be coordinated by Dr.\nEng. Michał Nowak (Gdańsk University of Technology), who will serve as the project data\nsteward. Responsibilities will include supervision of data organization, metadata preparation,\nbackup procedure s, quality -control verification, and coordination of long -term archiving and\nrepository deposition of selected datasets associated with scientific publications. Quarterly\ninternal reviews of data organization, accessibility, metadata completeness, and back up\nintegrity will additionally be performed in order to ensure compliance with FAIR principles\nand institutional data -management recommendations. Individual project participants will be\nresponsible for proper documentation and organization of datasets gene rated within their\nrespective research tasks.",
+      "tagged_paragraphs": [
+        {
+          "text": "Responsibility for research data management within the project will be coordinated by Dr.",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Eng. Michał Nowak (Gdańsk University of Technology), who will serve as the project data",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "steward. Responsibilities will include supervision of data organization, metadata preparation,",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "backup procedure s, quality -control verification, and coordination of long -term archiving and",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "repository deposition of selected datasets associated with scientific publications. Quarterly",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "internal reviews of data organization, accessibility, metadata completeness, and back up",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "integrity will additionally be performed in order to ensure compliance with FAIR principles",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "and institutional data -management recommendations. Individual project participants will be",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "responsible for proper documentation and organization of datasets gene rated within their",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "respective research tasks.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "6.2": {
+      "section": "6. Data management responsibilities and resources",
+      "question": "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)?",
+      "content": "Research data management will be performed using institutional infrastructure and standard\nsoftware tools routinely available at participating institutions. Time and organizational\nresources necessary for metadata preparation, data organization, backup creation, repository\ndeposition, and long -term archiving will be incorporated into routine project activities.\nStandardized file naming conventions, metadata descriptions, README documentation, and\nuse of accessible data formats will support findability, accessibility, interoperability, and\nfuture re use of selected datasets in accordance with FAIR principles.",
+      "tagged_paragraphs": [
+        {
+          "text": "Research data management will be performed using institutional infrastructure and standard",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "software tools routinely available at participating institutions. Time and organizational",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "resources necessary for metadata preparation, data organization, backup creation, repository",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "deposition, and long -term archiving will be incorporated into routine project activities.",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Standardized file naming conventions, metadata descriptions, README documentation, and",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "use of accessible data formats will support findability, accessibility, interoperability, and",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "future re use of selected datasets in accordance with FAIR principles.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    }
+  }
+}

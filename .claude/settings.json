@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(python -c \"from app import app; print\\('App loaded successfully'\\)\")",
+      "PowerShell(python tests\\\\test_section_5_2_debug.py)"
+    ]
+  }
+}

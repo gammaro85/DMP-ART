@@ -1,0 +1,263 @@
+{
+  "cache_id": "c12b2a3b-d260-4b0c-a8a4-90909e601632",
+  "sections": {
+    "1.1": {
+      "section": "1. Data description and collection or re-use of existing data",
+      "question": "How will new data be collected or produced and/or how will existing data be re-used?",
+      "content": "Dół formularza\nMetody pozyskiwania danych obejmują: 1. Eksperymenty symulacyjne: Testy bębnowe opon w różnych kątach znoszenia w celu analizy oporu toczenia i strat energetycznych. 2. Pomiary termowizyjne: Wykorzystanie kamer termowizyjnych do monitorowania temperatury powierzchni opon. 3. Rejestracja parametrów ciśnieniowych i termicznych: Czujniki zamontowane w oponach umożliwiające rejestrację temperatury i ciśnienia w czasie rzeczywistym. 4. Analiza mikroskopowa: Badania geometrii mikroskopowej struktury opony przed i po eksploatacji. 5. Badania DSC i TGA: Analiza termiczna mieszanki gumowej w celu określenia jej stabilności termicznej i zmian strukturalnych. 6. Ocena zużycia powierzchni styku opony z nawierzchnią: Porównawcza analiza śladów zużycia dla różnych kątów znoszenia. Źródła literaturowe i komunikacja: 1. Przegląd artykułów naukowych.",
+      "tagged_paragraphs": [
+        {
+          "text": "Dół formularza",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Metody pozyskiwania danych obejmują: 1. Eksperymenty symulacyjne: Testy bębnowe opon w różnych kątach znoszenia w celu analizy oporu toczenia i strat energetycznych. 2. Pomiary termowizyjne: Wykorzystanie kamer termowizyjnych do monitorowania temperatury powierzchni opon. 3. Rejestracja parametrów ciśnieniowych i termicznych: Czujniki zamontowane w oponach umożliwiające rejestrację temperatury i ciśnienia w czasie rzeczywistym. 4. Analiza mikroskopowa: Badania geometrii mikroskopowej struktury opony przed i po eksploatacji. 5. Badania DSC i TGA: Analiza termiczna mieszanki gumowej w celu określenia jej stabilności termicznej i zmian strukturalnych. 6. Ocena zużycia powierzchni styku opony z nawierzchnią: Porównawcza analiza śladów zużycia dla różnych kątów znoszenia. Źródła literaturowe i komunikacja: 1. Przegląd artykułów naukowych.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "1.2": {
+      "section": "1. Data description and collection or re-use of existing data",
+      "question": "What data (for example the types, formats, and volumes) will be collected or produced?",
+      "content": "Zostaną wykorzystane następujące formaty danych: 1. Eksperymentalne analizy badawcze: *.txt, *.csv, *.xls, *.jpg, *.pdf itp. 2. Literatura źródłowa i wymiana informacji: *.pdf, *.doc, *.xls, *.ppt itp.\nSzacunkowa objętość zgromadzonych danych wyniesie około 10 GB (w zależności od liczby eksperymentów i jakości plików graficznych).\nPoczątek formularza",
+      "tagged_paragraphs": [
+        {
+          "text": "Zostaną wykorzystane następujące formaty danych: 1. Eksperymentalne analizy badawcze: *.txt, *.csv, *.xls, *.jpg, *.pdf itp. 2. Literatura źródłowa i wymiana informacji: *.pdf, *.doc, *.xls, *.ppt itp.",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Szacunkowa objętość zgromadzonych danych wyniesie około 10 GB (w zależności od liczby eksperymentów i jakości plików graficznych).",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Początek formularza",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "2.1": {
+      "section": "2. Documentation and data quality",
+      "question": "What metadata and documentation (for example methodology or data collection and way of organising data) will accompany data?",
+      "content": "Metody matematyczne do analizy danych:\nAnaliza regresji.\nMetody statystyczne.\nAnaliza szeregów czasowych.\nMetody numeryczne.\nAnaliza obrazu.\nOpublikowane dane będą publicznie dostępne w otwartym repozytorium danych badawczych (MOST Wiedzy Katalog Danych Badawczych) i opisane według standardu metadanych DataCite. Informacje o metadanych zostaną zapisane w formacie JSON-LD, a autor zostanie zidentyfikowany i zweryfikowany za pomocą numeru ORCID. Datasety zostaną opatrzone trwałym identyfikatorem DOI.",
+      "tagged_paragraphs": [
+        {
+          "text": "Metody matematyczne do analizy danych:",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Analiza regresji.",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Metody statystyczne.",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Analiza szeregów czasowych.",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Metody numeryczne.",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Analiza obrazu.",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Opublikowane dane będą publicznie dostępne w otwartym repozytorium danych badawczych (MOST Wiedzy Katalog Danych Badawczych) i opisane według standardu metadanych DataCite. Informacje o metadanych zostaną zapisane w formacie JSON-LD, a autor zostanie zidentyfikowany i zweryfikowany za pomocą numeru ORCID. Datasety zostaną opatrzone trwałym identyfikatorem DOI.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "2.2": {
+      "section": "2. Documentation and data quality",
+      "question": "What data quality control measures will be used?",
+      "content": "Środki kontroli jakości danych: 1. Walidacja danych na etapie ich gromadzenia i przetwarzania. 2. Regularne przeglądy i weryfikacja poprawności wprowadzonych informacji. 3. Stosowanie ustandaryzowanych formatów i procedur opisu danych. 4. Automatyczne mechanizmy wykrywania błędów i anomalii. 5. Zachowanie spójności danych poprzez wersjonowanie i kontrolę dostępu. 6. Niezależna weryfikacja przez innych członków zespołu badawczego. 7. Wykorzystywanie rzetelnych i sprawdzonych źródeł informacji. 8. Dane udostępnione w otwartym repozytorium otrzymają identyfikator DOI i zostaną opublikowane zgodnie z zasadami FAIR, zapewniającymi ich dostępność, interoperacyjność, możliwość ponownego wykorzystania oraz właściwe zarządzanie.\nPoczątek formularza",
+      "tagged_paragraphs": [
+        {
+          "text": "Środki kontroli jakości danych: 1. Walidacja danych na etapie ich gromadzenia i przetwarzania. 2. Regularne przeglądy i weryfikacja poprawności wprowadzonych informacji. 3. Stosowanie ustandaryzowanych formatów i procedur opisu danych. 4. Automatyczne mechanizmy wykrywania błędów i anomalii. 5. Zachowanie spójności danych poprzez wersjonowanie i kontrolę dostępu. 6. Niezależna weryfikacja przez innych członków zespołu badawczego. 7. Wykorzystywanie rzetelnych i sprawdzonych źródeł informacji. 8. Dane udostępnione w otwartym repozytorium otrzymają identyfikator DOI i zostaną opublikowane zgodnie z zasadami FAIR, zapewniającymi ich dostępność, interoperacyjność, możliwość ponownego wykorzystania oraz właściwe zarządzanie.",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Początek formularza",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "3.1": {
+      "section": "3. Storage and backup during the research process",
+      "question": "How will data and metadata be stored and backed up during the research process?",
+      "content": "Dół formularza\nDziałania związane z badaniami będą dokumentowane i na komputerach biurowych osoby realizującej projekt, zapewniając tym samym dostępność i bezpieczeństwo informacji. 1. Dane będą przechowywane w bezpiecznych, kontrolowanych środowiskach zgodnych z wymaganiami projektu. 2. Regularne tworzenie kopii zapasowych na zabezpieczonych serwerach uczelnianych oraz w chmurze instytucjonalnej. 3. Zastosowanie zasady redundancji – przechowywanie kopii danych w co najmniej dwóch niezależnych lokalizacjach. 4. Ograniczony dostęp do danych poprzez system uprawnień i autoryzacji użytkowników. 5. Monitorowanie integralności plików oraz stosowanie metod ochrony przed utratą lub uszkodzeniem danych. 6. Dokumentowanie zmian i wersjonowanie plików w celu zapewnienia spójności i możliwości odtworzenia wcześniejszych wersji.",
+      "tagged_paragraphs": [
+        {
+          "text": "Dół formularza",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Działania związane z badaniami będą dokumentowane i na komputerach biurowych osoby realizującej projekt, zapewniając tym samym dostępność i bezpieczeństwo informacji. 1. Dane będą przechowywane w bezpiecznych, kontrolowanych środowiskach zgodnych z wymaganiami projektu. 2. Regularne tworzenie kopii zapasowych na zabezpieczonych serwerach uczelnianych oraz w chmurze instytucjonalnej. 3. Zastosowanie zasady redundancji – przechowywanie kopii danych w co najmniej dwóch niezależnych lokalizacjach. 4. Ograniczony dostęp do danych poprzez system uprawnień i autoryzacji użytkowników. 5. Monitorowanie integralności plików oraz stosowanie metod ochrony przed utratą lub uszkodzeniem danych. 6. Dokumentowanie zmian i wersjonowanie plików w celu zapewnienia spójności i możliwości odtworzenia wcześniejszych wersji.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "3.2": {
+      "section": "3. Storage and backup during the research process",
+      "question": "How will data security and protection of sensitive data be taken care of during the research?",
+      "content": "Aby chronić dane przed utratą, będą tworzone regularne kopie zapasowe i stosowane wersjonowanie plików. Dane będą przechowywane na serwerach uczelni lub w bezpiecznych usługach chmurowych zgodnych ze standardami IT instytucji. W przypadku danych wrażliwych zastosowane zostanie szyfrowanie i przechowywanie w chronionych obszarach z dostępem wyłącznie dla upoważnionych osób. Przechowywanie danych będzie zgodne z RODO, a dane osobowe – pseudonimizowane lub anonimizowane, jeśli będzie to możliwe. Wdrożone zostaną procedury monitorowania dostępu i kontroli integralności danych, co pozwoli szybko reagować na zagrożenia. Celem jest zapewnienie wysokiego poziomu bezpieczeństwa przez cały okres realizacji badań.\nPoczątek formularza",
+      "tagged_paragraphs": [
+        {
+          "text": "Aby chronić dane przed utratą, będą tworzone regularne kopie zapasowe i stosowane wersjonowanie plików. Dane będą przechowywane na serwerach uczelni lub w bezpiecznych usługach chmurowych zgodnych ze standardami IT instytucji. W przypadku danych wrażliwych zastosowane zostanie szyfrowanie i przechowywanie w chronionych obszarach z dostępem wyłącznie dla upoważnionych osób. Przechowywanie danych będzie zgodne z RODO, a dane osobowe – pseudonimizowane lub anonimizowane, jeśli będzie to możliwe. Wdrożone zostaną procedury monitorowania dostępu i kontroli integralności danych, co pozwoli szybko reagować na zagrożenia. Celem jest zapewnienie wysokiego poziomu bezpieczeństwa przez cały okres realizacji badań.",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Początek formularza",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "4.1": {
+      "section": "4. Legal requirements, codes of conduct",
+      "question": "If personal data are processed, how will compliance with legislation on personal data and on data security be ensured?",
+      "content": "Jeśli w ramach badań będą przetwarzane dane osobowe, zostaną one zabezpieczone zgodnie z wymogami RODO, a także wewnętrznymi regulacjami uczelni dotyczącymi ochrony danych. Dane zostaną poddane procesowi anonimizacji lub pseudonimizacji, aby zminimalizować ryzyko identyfikacji osób fizycznych. Przetwarzanie będzie prowadzone z zachowaniem zasady minimalizacji danych i przechowywania ich tylko przez niezbędny okres.",
+      "tagged_paragraphs": [
+        {
+          "text": "Jeśli w ramach badań będą przetwarzane dane osobowe, zostaną one zabezpieczone zgodnie z wymogami RODO, a także wewnętrznymi regulacjami uczelni dotyczącymi ochrony danych. Dane zostaną poddane procesowi anonimizacji lub pseudonimizacji, aby zminimalizować ryzyko identyfikacji osób fizycznych. Przetwarzanie będzie prowadzone z zachowaniem zasady minimalizacji danych i przechowywania ich tylko przez niezbędny okres.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "4.2": {
+      "section": "4. Legal requirements, codes of conduct",
+      "question": "How will other legal issues, such as intellectual property rights and ownership, be managed? What legislation is applicable?",
+      "content": "Zasady dotyczące zarządzania własnością intelektualną na Politechnice Gdańskiej stanowią, że zarządzanie wszelką opracowaną własnością intelektualną pozostaje w prawach zaangażowanych naukowców i Politechniki Gdańskiej zgodnie z przepisami krajowymi i instytucjonalnymi (Uchwała Senatu PG nr 117/2021/XXV z 19 maja 2021 r.).\nPoczątek formularza",
+      "tagged_paragraphs": [
+        {
+          "text": "Zasady dotyczące zarządzania własnością intelektualną na Politechnice Gdańskiej stanowią, że zarządzanie wszelką opracowaną własnością intelektualną pozostaje w prawach zaangażowanych naukowców i Politechniki Gdańskiej zgodnie z przepisami krajowymi i instytucjonalnymi (Uchwała Senatu PG nr 117/2021/XXV z 19 maja 2021 r.).",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Początek formularza",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "5.1": {
+      "section": "5. Data sharing and long-term preservation",
+      "question": "How and when will data be shared? Are there possible restrictions to data sharing or embargo reasons?",
+      "content": "Dół formularza\nWybrane zestawy danych zostaną udostępnione za pośrednictwem platformy Most Wiedzy – Katalog Danych Badawczych oraz jako załączniki do publikacji naukowych, zgodnie z wymaganiami wydawców (np. jako supplementary material lub dane surowe).\nDane zostaną udostępnione najpóźniej w dniu publikacji wyników badań w czasopismach naukowych. W uzasadnionych przypadkach (np. trwające procedury patentowe lub poufność wynikająca ze współpracy z partnerami zewnętrznymi), możliwe będzie nałożenie czasowego embarga, nie dłuższego niż 12 miesięcy od zakończenia projektu.\nDługoterminowe przechowywanie danych zapewnione będzie poprzez instytucjonalne repozytorium uczelni oraz/lub renomowane zewnętrzne repozytoria dyscyplinarne, zgodnie z dobrymi praktykami w danej dziedzinie.",
+      "tagged_paragraphs": [
+        {
+          "text": "Dół formularza",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Wybrane zestawy danych zostaną udostępnione za pośrednictwem platformy Most Wiedzy – Katalog Danych Badawczych oraz jako załączniki do publikacji naukowych, zgodnie z wymaganiami wydawców (np. jako supplementary material lub dane surowe).",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Dane zostaną udostępnione najpóźniej w dniu publikacji wyników badań w czasopismach naukowych. W uzasadnionych przypadkach (np. trwające procedury patentowe lub poufność wynikająca ze współpracy z partnerami zewnętrznymi), możliwe będzie nałożenie czasowego embarga, nie dłuższego niż 12 miesięcy od zakończenia projektu.",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Długoterminowe przechowywanie danych zapewnione będzie poprzez instytucjonalne repozytorium uczelni oraz/lub renomowane zewnętrzne repozytoria dyscyplinarne, zgodnie z dobrymi praktykami w danej dziedzinie.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "5.2": {
+      "section": "5. Data sharing and long-term preservation",
+      "question": "How will data for preservation be selected, and where will data be preserved long-term (for example a data repository or archive)?",
+      "content": "Dane przeznaczone do udostępnienia zostaną wyselekcjonowane pod kątem ich wartości naukowej oraz zgodności z najwyższymi standardami jakości. Informacje publikowane w repozytorium będą zgodne z zasadami FAIR, co zapewni ich dostępność, interoperacyjność oraz możliwość ponownego wykorzystania. MOST Wiedzy Katalog Danych Badawczych posiada certyfikat CoreTrustSeal, potwierdzający jego wiarygodność i trwałość. Zdeponowane tam dane będą automatycznie kategoryzowane do długoterminowego przechowywania bez daty wygaśnięcia. Wszystki8e dane zebrane podczas trwania projektu będą archiwizowane przez co najmniej 10 lat.",
+      "tagged_paragraphs": [
+        {
+          "text": "Dane przeznaczone do udostępnienia zostaną wyselekcjonowane pod kątem ich wartości naukowej oraz zgodności z najwyższymi standardami jakości. Informacje publikowane w repozytorium będą zgodne z zasadami FAIR, co zapewni ich dostępność, interoperacyjność oraz możliwość ponownego wykorzystania. MOST Wiedzy Katalog Danych Badawczych posiada certyfikat CoreTrustSeal, potwierdzający jego wiarygodność i trwałość. Zdeponowane tam dane będą automatycznie kategoryzowane do długoterminowego przechowywania bez daty wygaśnięcia. Wszystki8e dane zebrane podczas trwania projektu będą archiwizowane przez co najmniej 10 lat.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "5.3": {
+      "section": "5. Data sharing and long-term preservation",
+      "question": "What methods or software tools will be needed to access and use the data?",
+      "content": "Dane zostaną odpowiednio sklasyfikowane i zapisane w standardowych formatach plików, co ułatwi ich organizację i przyszłe wykorzystanie.",
+      "tagged_paragraphs": [
+        {
+          "text": "Dane zostaną odpowiednio sklasyfikowane i zapisane w standardowych formatach plików, co ułatwi ich organizację i przyszłe wykorzystanie.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "5.4": {
+      "section": "5. Data sharing and long-term preservation",
+      "question": "How will the application of a unique and persistent identifier (such as a Digital Object Identifier (DOI)) to each data set be ensured?",
+      "content": "Publikacje zamieszczane w międzynarodowych czasopismach naukowych oraz dane zamieszczone w Moście Wiedzy Katalogu Danych Badawczych otrzymują indywidualny cyfrowy identyfikator obiektu (DOI), co umożliwia ich jednoznaczną identyfikację i trwałe odniesienie w bazach.\nPoczątek formularza",
+      "tagged_paragraphs": [
+        {
+          "text": "Publikacje zamieszczane w międzynarodowych czasopismach naukowych oraz dane zamieszczone w Moście Wiedzy Katalogu Danych Badawczych otrzymują indywidualny cyfrowy identyfikator obiektu (DOI), co umożliwia ich jednoznaczną identyfikację i trwałe odniesienie w bazach.",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Początek formularza",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "6.1": {
+      "section": "6. Data management responsibilities and resources",
+      "question": "Who (for example role, position, and institution) will be responsible for data management (i.e. the data steward)?",
+      "content": "Dół formularza\nKierownik działania badawczego.",
+      "tagged_paragraphs": [
+        {
+          "text": "Dół formularza",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Kierownik działania badawczego.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "6.2": {
+      "section": "6. Data management responsibilities and resources",
+      "question": "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)?",
+      "content": "Nie dotyczy.",
+      "tagged_paragraphs": [
+        {
+          "text": "Nie dotyczy.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    }
+  }
+}

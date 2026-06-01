@@ -11,7 +11,7 @@
       "name": "Gdańsk Tech - sentence",
       "text": {
         "en": "The proper abbreviation for our university is Gdańsk Tech.",
-        "pl": "prawidłowy skrót naszej uczej w języku angielskim to Gdańsk Tech."
+        "pl": "prawidłowy skrót naszej uczelni w języku angielskim to Gdańsk Tech."
       }
     },
     {
@@ -36,10 +36,10 @@
       }
     },
     {
-      "name": "Test Comment 2026",
+      "name": "Catalog, nie Catalogue",
       "text": {
-        "en": "This is a test comment in English",
-        "pl": "To jest testowy komentarz po polsku"
+        "en": "Catalog, not Catalogue",
+        "pl": "Catalog, nie Catalogue"
       }
     }
   ]
