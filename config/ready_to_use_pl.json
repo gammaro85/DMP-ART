@@ -1,10 +1,15 @@
 {
+  "1": [],
+  "2": [],
+  "3": [],
+  "4": [],
+  "5": [],
+  "6": [],
   "1.1": [
     "No existing data will be reused. All data will be newly collected specifically for this research.",
     "During the project, four main types of data generated can be distinguished: raw data from microarray experiments, primarily gene images obtained from scanning microplates; data from ontological analysis, which aims to find a common biological context for groups of genes; working data generated during laboratory work, e.g. digital lab notebooks, data from experiments verifying the accuracy of the obtained results; secondary data resulting from the interpretation and processing of raw and statistical data.",
     "The project will generate: survey responses from approximately 200 participants collected through online questionnaires, resulting in tabular data of approximately 50 MB; interview recordings: 20 semi-structured interviews (60-90 minutes each), approximately 10 GB of audio files; transcriptions and coded data from qualitative analysis.",
-    "The research will produce microscopic images of biological samples: approximately 500 images captured using confocal microscope at 100x and 400x magnification, stored as TIFF files, total size approximately 2 GB.",
-    "Measurement data from spectroscopic analysis: time-series data from approximately 100 samples, resulting in approximately 5 GB of data in CSV format."
+    "Only new data will be generated during project. These can be divided into three main types:\n- measurement data, results of laboratory experiments\n- auxiliary data, working files, laboratory logbooks\n- secondary data related to the analysis and interpretation of the obtained laboratory data"
   ],
   "1.2": [
     "The formats of the saved files can be divided into two types: formats specific to laboratory equipment software, such as .ndf (NimbleScan), .ixo (Light Cycler 96) or software for analysing results obtained during experiments, e.g. .cep (ContigExpress), .irf (iRegulation).",
@@ -38,23 +43,19 @@
   ],
   "4.1": [
     "No personal data will be collected during the project.",
-    "The study received approval from the Bioethics Committee at Gdansk University of Technology (approval number 25/2024 dated January 15, 2024). All participants provided written informed consent prior to participation.",
     "This research does not require ethics committee approval as determined by institutional regulations. The study involves anonymous online surveys without collection of identifiable personal data or sensitive information.",
     "Personal data processing complies with GDPR regulations. Legal basis: informed consent obtained from all participants. Personal identifiers (names, email addresses) will be separated from research data immediately upon collection and replaced with pseudonymized codes. Only aggregated or fully anonymized data will be published. Personal identifiable information will be stored separately on encrypted drives accessible only to principal investigator and destroyed 5 years after project completion."
   ],
   "4.2": [
     "The right to manage and use both the data and any derivatives based on them while respecting the contribution made by the PI and their team belongs to the Gdansk University of Technology by the intellectual property management regulations adopted by the Gdansk Tech Senate (Resolution No. 117/2021/XXV of 19 May 2021 https://link.pg.edu.pl/GdanskTech_intprop).",
     "In the case of analyses conducted outside the university, a commercial agreement will be signed with the contractor each time, under which the Gdansk Tech will keep exclusive rights to the research results.",
-    "Data management will comply with the Intellectual Property Regulations of Gdansk University of Technology (https://link.pg.edu.pl/reg.wasn.intel.PG)."
+    "Data management will comply with the Intellectual Property Regulations of Gdansk University of Technology (Resolution nr 204/2026/XXVI of February 25th 2026)."
   ],
   "5.1": [
     "The primary place for sharing research data will be the institutional repository MOST Wiedzy Open Research Data Catalog (Bridge of Data). Selected data will be divided into datasets so that each dataset will serve as the basis for one article. The datasets will be made available at the time of the article's publication. If the publication process exceeds the project's duration, the data will be deposited in the repository, metadata describing the data will be published, and access to the data itself will be embargoed until the article is published.",
-    "Data will be openly accessible immediately upon deposition with no embargo period. Anyone can freely download and use the data under CC BY 4.0 license terms.",
     "Data will be shared in accordance with the publication dates of the articles that are derived from this data. The data will be deposited in the MOST Wiedzy Open Research Data Catalog (Bridge of Data), a CoreTrustSeal certified repository provided by the Gdansk University of Technology, at the latest when articles based on these data are published.",
-    "Ultimately, all raw data will be made available under the CC0 license, while data representing the analysis and interpretation of laboratory data will be under the CC BY license. All metadata describing datasets in MOST Wiedzy Open Research Data Catalog (Bridge of Data) will always be available without any restrictions (CC0).",
-    "Data will be published under Creative Commons Attribution 4.0 International (CC BY 4.0) license, allowing reuse with attribution requirement.",
-    "An 18-month embargo is requested to enable completion of data analysis and submission of manuscripts for peer review. Data will be made publicly available immediately upon publication acceptance. Embargo end date: December 31, 2026.",
-    "Embargo requested until June 30, 2026 to protect intellectual property during patent application process and allow completion of planned publications. Following embargo, data will be fully open access."
+    "All metadata describing datasets in MOST Wiedzy Open Research Data Catalog (Bridge of Data) will always be available without any restrictions (CC0).",
+    "Data will be published under Creative Commons Attribution 4.0 International (CC BY 4.0) license, allowing reuse with attribution requirement."
   ],
   "5.2": [
     "The MOST Wiedzy Open Research Data Catalog (Bridge of Data) repository will also be the primary place for data long-term preservation. Data deposited there will be automatically categorised for long-term storage without an expiration date.",
