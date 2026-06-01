@@ -8,7 +8,6 @@
   "1.1": [
     "No existing data will be reused. All data will be newly collected specifically for this research.",
     "During the project, four main types of data generated can be distinguished: raw data from microarray experiments, primarily gene images obtained from scanning microplates; data from ontological analysis, which aims to find a common biological context for groups of genes; working data generated during laboratory work, e.g. digital lab notebooks, data from experiments verifying the accuracy of the obtained results; secondary data resulting from the interpretation and processing of raw and statistical data.",
-    "The project will generate: survey responses from approximately 200 participants collected through online questionnaires, resulting in tabular data of approximately 50 MB; interview recordings: 20 semi-structured interviews (60-90 minutes each), approximately 10 GB of audio files; transcriptions and coded data from qualitative analysis.",
     "Only new data will be generated during project. These can be divided into three main types:\n- measurement data, results of laboratory experiments\n- auxiliary data, working files, laboratory logbooks\n- secondary data related to the analysis and interpretation of the obtained laboratory data"
   ],
   "1.2": [
@@ -62,7 +61,8 @@
     "The main repository of data will be the MOST Wiedzy Open Research Data Catalog (Bridge of Data), which is CoreTrustSeal certified (as the only one in Poland). This certificate confirms the repository's trustworthiness and sustainability.",
     "MOST Wiedzy Open Research Data Catalog (Bridge of Data) ensures FAIR principles: Findable (comprehensive metadata, persistent DOI), Accessible (open web interface, clear licensing), Interoperable (DataCite standard, open formats), Reusable (detailed documentation, explicit license).",
     "The CoreTrustSeal certificate given to the repository has confirmed the quality of data preservation services. The repository will include data containing direct results of laboratory experiments and their analysis. For clarity and consistency of the datasets, working data representing laboratory progress records or results of experiments verifying laboratory procedures will not be included.",
-    "Moreover, all data not selected for sharing will be stored by the PI for at least 10 years after the project is finished, and access to them will be possible upon direct request with the PI's consent."
+    "Moreover, all data not selected for sharing will be stored by the PI for at least 10 years after the project is finished, and access to them will be possible upon direct request with the PI's consent.",
+    "Data selected for long-term preservation will include datasets supporting published results, computational workflows, source code, documentation, metadata, and other materials necessary to reproduce the research findings. Temporary files, intermediate outputs, and redundant copies that do not contribute to reproducibility will not be preserved."
   ],
   "5.3": [
     "To ensure the broadest possible access to data, data intended for deposition in the repository, both raw and analysed, will be saved in open file formats. However, this will only be done when it is inevitable that no information will be lost and that researchers in this field of science commonly use such a file format."
