@@ -11,7 +11,6 @@ import re
 from datetime import datetime
 from werkzeug.utils import secure_filename
 from utils.extractor_v2 import DMPExtractor, SkipTermsManager
-from utils.extractor_v3_separated import DMPExtractorSeparated
 from utils.ai_module import AIReviewAssistant
 # Comments are now managed through JSON files in config/ directory
 
@@ -527,15 +526,9 @@ def upload_file():
                             'status': 'processing'
                         })
 
-            # Choose extractor based on debug mode
-            if DEBUG_MODE:
-                # v3: Separated slicing & cleaning (with RAW data export)
-                extractor = DMPExtractorSeparated(save_raw_slices=True)
-                print(f"[DEBUG] Using v3 extractor (separated pipeline with RAW export)")
-            else:
-                # v2: Production (clean during slicing, optimized)
-                extractor = DMPExtractor()
-                print(f"[DEBUG] Using v2 extractor (production)")
+            # Use production extractor v2
+            extractor = DMPExtractor()
+            print(f"[DEBUG] Using v2 extractor (production)")
 
             result = extractor.process_file(
                 file_path,
