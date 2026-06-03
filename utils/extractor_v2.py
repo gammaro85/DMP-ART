@@ -341,8 +341,8 @@ class DocConverter:
 
         # Check if text is poorly formatted (missing spaces)
         if self._is_text_malformed(pages):
-            logger.warning("PyPDF2 extracted malformed text (missing spaces). Trying pdfplumber...")
             if HAS_PDFPLUMBER:
+                logger.warning("PyPDF2 extracted malformed text (missing spaces). Trying pdfplumber...")
                 try:
                     pages_pdfplumber = self._read_pdf_with_pdfplumber(path)
                     # Check if pdfplumber gave better results
@@ -352,6 +352,11 @@ class DocConverter:
                     logger.warning("pdfplumber also gave malformed text")
                 except Exception as e:
                     logger.warning(f"pdfplumber failed: {e}. Falling back to PyPDF2 output")
+            else:
+                logger.warning(
+                    "PyPDF2 extracted malformed text (missing spaces), but pdfplumber is not installed. "
+                    "Using PyPDF2 output."
+                )
 
         return pages
 

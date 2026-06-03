@@ -49,6 +49,7 @@ class DMPExtractor(_V2DMPExtractor):
         self.debug_mode = debug_mode
         self.section_mapping = dict(SECTION_TITLES)
         self.subsection_mapping = dict(SECTION_QUESTIONS)
+        self._compiled_skip_patterns = self._skip_mgr.compile()
 
     def _text_similarity(self, text_a, text_b):
         normalized_a = normalize(text_a or '')
@@ -136,8 +137,7 @@ class DMPExtractor(_V2DMPExtractor):
             return True
 
         cleaned = strip_formatting(stripped)
-        skip_patterns = self._skip_mgr.compile()
-        return any(pattern.search(cleaned) for pattern in skip_patterns)
+        return any(pattern.search(cleaned) for pattern in self._compiled_skip_patterns)
 
     def clean_markup(self, text):
         cleaned = (text or '').strip()

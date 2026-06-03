@@ -1506,7 +1506,14 @@ def update_extractor_debug():
     try:
         data = request.json or {}
         if 'debug_mode' in data:
-            DEBUG_MODE = bool(data['debug_mode'])
+            debug_mode = data['debug_mode']
+            if type(debug_mode) is not bool:
+                return jsonify({
+                    'success': False,
+                    'message': 'debug_mode must be a boolean'
+                }), 400
+
+            DEBUG_MODE = debug_mode
 
             # Persist to config/settings.json
             saved = {}
