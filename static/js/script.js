@@ -696,7 +696,7 @@ function handleFileSelection(file, elements) {
         uploadBtn.style.opacity = '1';
     }
 
-    showToast('File selected successfully');
+    // Silent - visual feedback (filename display) is sufficient
 }
 
 function setupUploadButton(elements) {
@@ -731,7 +731,7 @@ function setupClearButton(elements) {
             if (fileInfo) fileInfo.classList.add('hidden');
             if (fileName) fileName.textContent = '';
 
-            showToast('File cleared');
+            // Silent - visual feedback (empty field) is sufficient
         });
     }
 }
@@ -1056,8 +1056,8 @@ function initializeSessionManagement() {
 
         if (!hasUnsavedWork) {
             // Only restore if textareas are empty
+            // Silent restore - filled textareas are visual confirmation
             SessionManager.restoreFeedbackData(savedSession.feedbackDraft);
-            showToast('Previous session restored', 'info');
         }
     }
 
@@ -1223,7 +1223,7 @@ function setupFeedbackButtons(elements) {
             if (textarea && window.originalTemplates && window.originalTemplates[id]) {
                 textarea.value = window.originalTemplates[id];
                 updateCharacterCounter(id);
-                showToast('Feedback reset to original template');
+                // Silent - visual feedback (changed text) is sufficient
             }
         });
     });
@@ -1237,7 +1237,7 @@ function setupFeedbackButtons(elements) {
             if (textarea) {
                 textarea.value = '';
                 updateCharacterCounter(id);
-                showToast('Feedback cleared');
+                // Silent - visual feedback (empty field) is sufficient
             }
         });
     });
@@ -1315,36 +1315,30 @@ function insertCommentWithAnimation(id, comment) {
 }
 
 function compileFeedback() {
-    const feedbackElements = document.querySelectorAll('.feedback-text');
-    const sections = [];
+    // All DMP sections in order (based on dmp_structure.json)
+    const allSections = ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2', '4.1', '4.2', '5.1', '5.2', '5.3', '5.4', '6.1', '6.2'];
 
-    feedbackElements.forEach(textarea => {
+    // Collect feedback for all sections
+    const feedbackMap = {};
+    document.querySelectorAll('.feedback-text').forEach(textarea => {
         const sectionId = textarea.id.replace('feedback-', '');
-        const sectionTitle = getSectionTitle(sectionId);
-        const feedbackText = textarea.value.trim();
+        feedbackMap[sectionId] = textarea.value.trim();
+    });
+
+    // Generate compiled feedback with full structure
+    let compiled = '';
+
+    allSections.forEach(sectionId => {
+        const feedbackText = feedbackMap[sectionId];
 
         if (feedbackText) {
-            sections.push({
-                id: sectionId,
-                title: sectionTitle,
-                feedback: feedbackText
-            });
+            compiled += `${sectionId} - ${feedbackText}\n\n`;
+        } else {
+            compiled += `${sectionId} brak komentarza\n\n`;
         }
     });
 
-    // Generate compiled feedback
-    let compiled = `DMP Feedback Report\n`;
-    compiled += `Generated: ${new Date().toLocaleString()}\n`;
-    compiled += `Total sections with feedback: ${sections.length}\n\n`;
-    compiled += '=' * 50 + '\n\n';
-
-    sections.forEach((section, index) => {
-        compiled += `${index + 1}. ${section.title}\n`;
-        compiled += '-'.repeat(section.title.length + 3) + '\n';
-        compiled += `${section.feedback}\n\n`;
-    });
-
-    return compiled;
+    return compiled.trim();
 }
 
 function saveFeedback() {
@@ -1372,6 +1366,7 @@ function saveFeedback() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
+            cache_id: cacheId,
             filename: filename,
             feedback: compileFeedback(), // Save compiled feedback as text file
             feedbackData: feedbackData   // Also send raw data for potential future use
@@ -1714,13 +1709,28 @@ function debounce(func, wait) {
 }
 
 /**
- * Show modal dialog for notifications
+ * Show notification - modal for errors, toast for info/success/warning
  * @param {string} message - Message to display
  * @param {string} type - Type: 'success', 'error', 'warning', 'info'
  */
 function showToast(message, type = 'success') {
-    console.log(`Dialog (${type}):`, message);
+    console.log(`Notification (${type}):`, message);
 
+    // Critical errors show as modal dialog
+    if (type === 'error') {
+        showModalDialog(message, type);
+    } else {
+        // Success/Info/Warning show as corner toast
+        showCornerToast(message, type);
+    }
+}
+
+/**
+ * Show modal dialog for critical errors
+ * @param {string} message - Message to display
+ * @param {string} type - Type: 'error'
+ */
+function showModalDialog(message, type = 'error') {
     // Remove existing dialog if present
     const existingDialog = document.getElementById('notification-dialog');
     if (existingDialog) {
@@ -1745,21 +1755,9 @@ function showToast(message, type = 'success') {
         transition: opacity 0.2s ease;
     `;
 
-    // Icon mapping
-    const icons = {
-        success: '<i class="fas fa-check-circle"></i>',
-        error: '<i class="fas fa-times-circle"></i>',
-        warning: '<i class="fas fa-exclamation-triangle"></i>',
-        info: '<i class="fas fa-info-circle"></i>'
-    };
-
-    // Color mapping
-    const colors = {
-        success: 'var(--success-color)',
-        error: 'var(--error-color)',
-        warning: 'var(--warning-color)',
-        info: 'var(--primary-color)'
-    };
+    // Icon and color for error
+    const icon = '<i class="fas fa-times-circle"></i>';
+    const color = 'var(--error-color)';
 
     // Create dialog
     const dialog = document.createElement('div');
@@ -1778,18 +1776,15 @@ function showToast(message, type = 'success') {
         transition: transform 0.2s ease, opacity 0.2s ease;
     `;
 
-    const iconColor = colors[type] || colors.info;
-    const iconHtml = icons[type] || icons.info;
-
     dialog.innerHTML = `
-        <div style="font-size: 3rem; color: ${iconColor}; margin-bottom: 1rem;">
-            ${iconHtml}
+        <div style="font-size: 3rem; color: ${color}; margin-bottom: 1rem;">
+            ${icon}
         </div>
         <div style="font-size: 1.1rem; color: var(--text-primary); margin-bottom: 1.5rem; line-height: 1.5;">
             ${message}
         </div>
         <button class="notification-ok-btn" style="
-            background: ${iconColor};
+            background: ${color};
             color: white;
             border: none;
             border-radius: var(--border-radius-md);
@@ -1853,11 +1848,129 @@ function showToast(message, type = 'success') {
         }
     };
     document.addEventListener('keydown', escHandler);
+}
 
-    // Auto-close after 5 seconds for success/info
-    if (type === 'success' || type === 'info') {
-        setTimeout(closeDialog, 5000);
+/**
+ * Show corner toast notification (non-modal)
+ * @param {string} message - Message to display
+ * @param {string} type - Type: 'success', 'warning', 'info'
+ */
+function showCornerToast(message, type = 'success') {
+    // Icon mapping
+    const icons = {
+        success: '<i class="fas fa-check-circle"></i>',
+        warning: '<i class="fas fa-exclamation-triangle"></i>',
+        info: '<i class="fas fa-info-circle"></i>'
+    };
+
+    // Color mapping
+    const colors = {
+        success: 'var(--success-color)',
+        warning: 'var(--warning-color)',
+        info: 'var(--primary-color)'
+    };
+
+    // Create toast container if it doesn't exist
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        container.style.cssText = `
+            position: fixed;
+            top: 60px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 350px;
+        `;
+        document.body.appendChild(container);
     }
+
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `corner-toast toast-${type}`;
+
+    const iconHtml = icons[type] || icons.info;
+    const color = colors[type] || colors.info;
+
+    toast.style.cssText = `
+        background: var(--bg-card);
+        border-left: 4px solid ${color};
+        border-radius: var(--border-radius-md);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        transform: translateX(400px);
+        opacity: 0;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    `;
+
+    toast.innerHTML = `
+        <div style="font-size: 1.25rem; color: ${color}; flex-shrink: 0;">
+            ${iconHtml}
+        </div>
+        <div style="font-size: 0.9rem; color: var(--text-primary); line-height: 1.4; flex-grow: 1;">
+            ${message}
+        </div>
+        <button style="
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        " aria-label="Close">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+
+    container.appendChild(toast);
+
+    // Animate in
+    requestAnimationFrame(() => {
+        toast.style.transform = 'translateX(0)';
+        toast.style.opacity = '1';
+    });
+
+    // Close function
+    const closeToast = () => {
+        toast.style.transform = 'translateX(400px)';
+        toast.style.opacity = '0';
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.remove();
+            }
+            // Remove container if empty
+            if (container.children.length === 0) {
+                container.remove();
+            }
+        }, 300);
+    };
+
+    // Click to close
+    toast.addEventListener('click', closeToast);
+
+    // Close button
+    const closeBtn = toast.querySelector('button');
+    closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeToast();
+    });
+
+    // Auto-close after duration based on type
+    const duration = type === 'warning' ? 7000 : 4000;
+    setTimeout(closeToast, duration);
 }
 
 async function copyToClipboard(text) {
@@ -2053,7 +2166,7 @@ function restoreFromAutosave(cacheId) {
                     updateCharacterCounter(sectionId);
                 }
             });
-            showToast('Przywrócono autozapis');
+            // Silent restore - filled textareas are visual confirmation
             return true;
         }
     } catch (e) {
@@ -2450,4 +2563,245 @@ window.DMPHistory = {
     render: renderHistoryDropdown
 };
 
-console.log('DMP ART script.js loaded successfully (v0.9.0 with autosave, history, search, tag cloud)');
+// ===========================================
+// HISTORY MODAL - Session Archive Management
+// ===========================================
+
+/**
+ * HistoryModal - Manages archive and active session display
+ */
+const HistoryModal = {
+    modal: null,
+    closeBtn: null,
+    activeSessions: null,
+    archivedSessions: null,
+
+    init() {
+        this.modal = document.getElementById('history-modal');
+        this.closeBtn = document.querySelector('.history-modal-close');
+        this.activeSessions = document.getElementById('active-sessions-list');
+        this.archivedSessions = document.getElementById('archived-sessions-list');
+
+        if (!this.modal) return;
+
+        // Bind events
+        const historyBtn = document.querySelector('.history-btn');
+        if (historyBtn) {
+            historyBtn.addEventListener('click', () => this.open());
+        }
+
+        if (this.closeBtn) {
+            this.closeBtn.addEventListener('click', () => this.close());
+        }
+
+        // Close on backdrop click
+        this.modal.addEventListener('click', (e) => {
+            if (e.target === this.modal) {
+                this.close();
+            }
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.modal.classList.contains('active')) {
+                this.close();
+            }
+        });
+    },
+
+    open() {
+        if (!this.modal) return;
+        this.modal.classList.add('active');
+        this.loadSessions();
+    },
+
+    close() {
+        if (!this.modal) return;
+        this.modal.classList.remove('active');
+    },
+
+    async loadSessions() {
+        await Promise.all([
+            this.loadActiveSessions(),
+            this.loadArchivedSessions()
+        ]);
+    },
+
+    async loadActiveSessions() {
+        if (!this.activeSessions) return;
+
+        // Get sessions from SessionManager (localStorage)
+        const sessions = SessionManager.getAllSessions();
+
+        // Send session IDs to server to verify cache exists
+        const sessionIds = sessions.map(s => s.sessionId);
+
+        try {
+            const response = await fetch('/api/get-active-sessions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ session_ids: sessionIds })
+            });
+
+            const data = await response.json();
+
+            if (data.success && data.active_sessions.length > 0) {
+                this.renderActiveSessions(data.active_sessions);
+            } else {
+                this.activeSessions.innerHTML = '<div class="history-empty">No active sessions</div>';
+            }
+        } catch (error) {
+            console.error('Error loading active sessions:', error);
+            this.activeSessions.innerHTML = '<div class="history-empty">Error loading active sessions</div>';
+        }
+    },
+
+    async loadArchivedSessions() {
+        if (!this.archivedSessions) return;
+
+        try {
+            const response = await fetch('/api/get-archived-sessions');
+            const data = await response.json();
+
+            if (data.success && data.archives.length > 0) {
+                this.renderArchivedSessions(data.archives);
+            } else {
+                this.archivedSessions.innerHTML = '<div class="history-empty">No archived sessions</div>';
+            }
+        } catch (error) {
+            console.error('Error loading archived sessions:', error);
+            this.archivedSessions.innerHTML = '<div class="history-empty">Error loading archived sessions</div>';
+        }
+    },
+
+    renderActiveSessions(sessions) {
+        const html = sessions.map(session => {
+            const displayName = session.researcher_surname
+                ? `${session.researcher_surname}${session.researcher_firstname ? ' ' + session.researcher_firstname : ''}`
+                : session.filename;
+
+            const date = session.creation_date || 'Unknown date';
+
+            return `
+                <div class="session-item" data-session-id="${session.session_id}">
+                    <div class="session-info">
+                        <div class="session-title">${displayName}</div>
+                        <div class="session-meta">
+                            <span><i class="fas fa-calendar"></i> ${date}</span>
+                            <span><i class="fas fa-file"></i> ${session.filename}</span>
+                        </div>
+                    </div>
+                    <div class="session-actions">
+                        <button class="session-action-btn btn-view" onclick="HistoryModal.openSession('${session.session_id}')">
+                            <i class="fas fa-eye"></i> Open
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        this.activeSessions.innerHTML = `<div class="session-list">${html}</div>`;
+    },
+
+    renderArchivedSessions(archives) {
+        const html = archives.map(archive => {
+            const displayName = archive.researcher_surname
+                ? `${archive.researcher_surname}${archive.researcher_firstname ? ' ' + archive.researcher_firstname : ''}`
+                : archive.filename_original;
+
+            const archivedDate = new Date(archive.archived_date).toLocaleString();
+
+            return `
+                <div class="session-item" data-archive-id="${archive.archive_id}">
+                    <div class="session-info">
+                        <div class="session-title">${displayName}</div>
+                        <div class="session-meta">
+                            <span><i class="fas fa-archive"></i> Archived: ${archivedDate}</span>
+                            <span><i class="fas fa-file"></i> ${archive.filename_original || 'Unknown'}</span>
+                        </div>
+                    </div>
+                    <div class="session-actions">
+                        <button class="session-action-btn btn-view" onclick="HistoryModal.viewArchive('${archive.archive_id}')">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        <button class="session-action-btn btn-delete" onclick="HistoryModal.deleteArchive('${archive.archive_id}')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        this.archivedSessions.innerHTML = `<div class="session-list">${html}</div>`;
+    },
+
+    openSession(sessionId) {
+        // Redirect to review page with session ID
+        window.location.href = `/review?cache_id=${sessionId}`;
+    },
+
+    async viewArchive(archiveId) {
+        try {
+            const response = await fetch(`/api/restore-archived-session/${archiveId}`);
+            const data = await response.json();
+
+            if (data.success) {
+                // Store in sessionStorage for display
+                sessionStorage.setItem('archived-session-view', JSON.stringify(data));
+
+                // Redirect to a view-only mode or show modal with content
+                alert('Archive viewing feature - coming soon!\n\nFor now, the archive data is loaded. You can:\n1. Export it\n2. Create a new review session from it');
+                console.log('Archived session data:', data);
+            } else {
+                alert('Error loading archive: ' + data.message);
+            }
+        } catch (error) {
+            alert('Error loading archive: ' + error.message);
+        }
+    },
+
+    async deleteArchive(archiveId) {
+        if (!confirm('Are you sure you want to delete this archived session? This action cannot be undone.')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/delete-archived-session/${archiveId}`, {
+                method: 'DELETE'
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Remove from display
+                const item = document.querySelector(`[data-archive-id="${archiveId}"]`);
+                if (item) {
+                    item.remove();
+                }
+
+                // Check if list is now empty
+                if (this.archivedSessions.querySelectorAll('.session-item').length === 0) {
+                    this.archivedSessions.innerHTML = '<div class="history-empty">No archived sessions</div>';
+                }
+
+                if (typeof showToast === 'function') {
+                    showToast('Archive deleted successfully', 'success');
+                }
+            } else {
+                alert('Error deleting archive: ' + data.message);
+            }
+        } catch (error) {
+            alert('Error deleting archive: ' + error.message);
+        }
+    }
+};
+
+// Initialize History Modal when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    HistoryModal.init();
+});
+
+// Export HistoryModal API
+window.HistoryModal = HistoryModal;
+
+console.log('DMP ART script.js loaded successfully (v0.9.1 with archive system)');

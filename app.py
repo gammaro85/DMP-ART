@@ -4,6 +4,7 @@ import os
 import json
 import time
 import threading
+import shutil
 import zipfile
 import uuid
 import re
@@ -24,8 +25,16 @@ app.config['OUTPUT_FOLDER'] = 'outputs'
 app.config['CACHE_FOLDER'] = 'outputs/cache'
 app.config['DMP_FOLDER'] = 'outputs/dmp'
 app.config['REVIEWS_FOLDER'] = 'outputs/reviews'
+app.config['ARCHIVES_FOLDER'] = 'outputs/archives'
+app.config['SESSIONS_FOLDER'] = 'outputs/sessions'
+app.config['ACTIVE_SESSIONS_FOLDER'] = 'outputs/sessions/active'
+app.config['SESSION_ARCHIVE_FOLDER'] = 'outputs/sessions/archive'
+app.config['FEEDBACK_TEMPLATES_PATH'] = os.path.join('config', 'feedback_templates.json')
 app.config['ALLOWED_EXTENSIONS'] = {'pdf', 'docx'}
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB default; overridden by config/settings.json
+
+SECTION_IDS = ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2',
+               '4.1', '4.2', '5.1', '5.2', '5.3', '5.4', '6.1', '6.2']
 
 CATEGORY_SYSTEM_FILES = {
     'dmp_structure.json', 'quick_comments.json', 'category_comments.json',
@@ -55,6 +64,9 @@ os.makedirs(app.config['OUTPUT_FOLDER'], exist_ok=True)
 os.makedirs(app.config['CACHE_FOLDER'], exist_ok=True)
 os.makedirs(app.config['DMP_FOLDER'], exist_ok=True)
 os.makedirs(app.config['REVIEWS_FOLDER'], exist_ok=True)
+os.makedirs(app.config['ARCHIVES_FOLDER'], exist_ok=True)
+os.makedirs(app.config['ACTIVE_SESSIONS_FOLDER'], exist_ok=True)
+os.makedirs(app.config['SESSION_ARCHIVE_FOLDER'], exist_ok=True)
 
 # Initialize AI Module
 ai_assistant = AIReviewAssistant()
@@ -76,6 +88,197 @@ DEFAULT_FEEDBACK_TEMPLATES = {
     "6.1": "Data stewardship responsibilities are unclear. Please designate specific roles and responsibilities.",
     "6.2": "Resource allocation for data management seems insufficient. Consider budgeting for dedicated staff time."
 }
+
+
+def _load_json_file(file_path, default=None):
+    if not os.path.exists(file_path):
+        return {} if default is None else default
+
+    with open(file_path, 'r', encoding='utf-8') as file_handle:
+        return json.load(file_handle)
+
+
+def _write_json_file(file_path, data):
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+    with open(file_path, 'w', encoding='utf-8') as file_handle:
+        json.dump(data, file_handle, ensure_ascii=False, indent=2)
+
+
+def _get_feedback_templates_path():
+    return app.config.get('FEEDBACK_TEMPLATES_PATH', os.path.join('config', 'feedback_templates.json'))
+
+
+def _get_cache_path(cache_id):
+    return os.path.join(app.config['CACHE_FOLDER'], f"cache_{cache_id}.json")
+
+
+def _get_active_session_paths(cache_id):
+    session_dir = os.path.join(app.config['ACTIVE_SESSIONS_FOLDER'], cache_id)
+
+    return {
+        'session_dir': session_dir,
+        'dmp_path': os.path.join(session_dir, 'dmp_plan.json'),
+        'feedback_path': os.path.join(session_dir, 'feedback.json'),
+        'metadata_path': os.path.join(session_dir, 'metadata.json'),
+        'review_export_path': os.path.join(session_dir, 'review_export.json')
+    }
+
+
+def _find_session_source_upload(session_dir):
+    if not os.path.isdir(session_dir):
+        return None, None
+
+    for entry in os.listdir(session_dir):
+        if not entry.startswith('source_upload'):
+            continue
+
+        source_path = os.path.join(session_dir, entry)
+        if os.path.isfile(source_path):
+            return source_path, entry
+
+    return None, None
+
+
+def _store_session_source_upload(session_dir, source_file_path, original_filename=''):
+    if not source_file_path or not os.path.exists(source_file_path):
+        return None
+
+    _, previous_name = _find_session_source_upload(session_dir)
+    if previous_name:
+        previous_path = os.path.join(session_dir, previous_name)
+        if os.path.abspath(previous_path) != os.path.abspath(source_file_path):
+            os.remove(previous_path)
+
+    extension = os.path.splitext(original_filename or source_file_path)[1].lower()
+    stored_filename = f"source_upload{extension}" if extension else 'source_upload'
+    stored_path = os.path.join(session_dir, stored_filename)
+
+    if os.path.abspath(source_file_path) != os.path.abspath(stored_path):
+        shutil.copy2(source_file_path, stored_path)
+
+    return stored_filename
+
+
+def _load_cache_data(cache_id):
+    cache_path = _get_cache_path(cache_id)
+    if not os.path.exists(cache_path):
+        raise FileNotFoundError('Cache file not found')
+
+    return _load_json_file(cache_path), cache_path
+
+
+def _build_dmp_plan(cache_id, cache_data):
+    dmp_plan = {
+        'cache_id': cache_id,
+        'sections': {}
+    }
+
+    for section_id in SECTION_IDS:
+        if section_id in cache_data:
+            section_info = cache_data[section_id]
+            dmp_plan['sections'][section_id] = {
+                'section': section_info.get('section', ''),
+                'question': section_info.get('question', ''),
+                'content': '\n'.join(section_info.get('paragraphs', [])),
+                'tagged_paragraphs': section_info.get('tagged_paragraphs', [])
+            }
+
+    return dmp_plan
+
+
+def _build_session_metadata(cache_id, extracted_metadata, session_created_at, status='active'):
+    return {
+        'cache_id': cache_id,
+        'status': status,
+        'session_created_at': session_created_at,
+        'last_updated': datetime.now().isoformat(),
+        'researcher_surname': extracted_metadata.get('researcher_surname', ''),
+        'researcher_firstname': extracted_metadata.get('researcher_firstname', ''),
+        'competition_name': extracted_metadata.get('competition_name', ''),
+        'competition_edition': extracted_metadata.get('competition_edition', ''),
+        'creation_date': extracted_metadata.get('creation_date', ''),
+        'filename_original': extracted_metadata.get('filename_original', ''),
+        'source_cache_file': f"cache_{cache_id}.json",
+        'dmp_file': 'dmp_plan.json',
+        'feedback_file': 'feedback.json',
+        'review_export_file': 'review_export.json'
+    }
+
+
+def _ensure_active_session(cache_id, feedback_data=None, compiled_feedback=None, source_file_path=None, original_filename=''):
+    cache_data, cache_path = _load_cache_data(cache_id)
+    paths = _get_active_session_paths(cache_id)
+
+    os.makedirs(paths['session_dir'], exist_ok=True)
+
+    dmp_plan = _build_dmp_plan(cache_id, cache_data)
+    _write_json_file(paths['dmp_path'], dmp_plan)
+
+    existing_metadata = _load_json_file(paths['metadata_path'], {})
+    session_created_at = existing_metadata.get('session_created_at', datetime.now().isoformat())
+    extracted_metadata = cache_data.get('_metadata', {})
+    metadata_json = _build_session_metadata(cache_id, extracted_metadata, session_created_at)
+    metadata_json['session_folder'] = paths['session_dir']
+    metadata_json['source_cache_path'] = cache_path
+
+    existing_source_path, existing_source_file = _find_session_source_upload(paths['session_dir'])
+    if existing_source_path and existing_source_file:
+        metadata_json['source_upload_file'] = existing_source_file
+        metadata_json['source_upload_name'] = existing_metadata.get('source_upload_name') or existing_metadata.get('filename_original', '')
+
+    stored_source_file = _store_session_source_upload(paths['session_dir'], source_file_path, original_filename)
+    if stored_source_file:
+        metadata_json['source_upload_file'] = stored_source_file
+        metadata_json['source_upload_name'] = original_filename or os.path.basename(source_file_path)
+
+    _write_json_file(paths['metadata_path'], metadata_json)
+
+    feedback_json = _load_json_file(paths['feedback_path'], {
+        'cache_id': cache_id,
+        'sections': {},
+        'compiled_feedback': '',
+        'last_saved': None
+    })
+
+    if feedback_data is not None:
+        feedback_json['sections'] = feedback_data
+        feedback_json['last_saved'] = datetime.now().isoformat()
+
+    if compiled_feedback is not None:
+        feedback_json['compiled_feedback'] = compiled_feedback
+        feedback_json['last_saved'] = datetime.now().isoformat()
+
+    feedback_json['cache_id'] = cache_id
+    _write_json_file(paths['feedback_path'], feedback_json)
+
+    return {
+        'paths': paths,
+        'cache_data': cache_data,
+        'dmp_plan': dmp_plan,
+        'feedback': feedback_json,
+        'metadata': metadata_json
+    }
+
+
+def _iter_archive_roots():
+    roots = [app.config['SESSION_ARCHIVE_FOLDER'], app.config['ARCHIVES_FOLDER']]
+    seen = set()
+
+    for root in roots:
+        normalized = os.path.normpath(root)
+        if normalized in seen:
+            continue
+        seen.add(normalized)
+        yield root
+
+
+def _find_archive_path(archive_id):
+    for root in _iter_archive_roots():
+        archive_path = os.path.join(root, archive_id)
+        if os.path.exists(archive_path):
+            return archive_path
+    return None
 
 def load_dmp_templates():
     """
@@ -106,6 +309,12 @@ def load_dmp_templates():
                 'question': f"Section {section_id}",
                 'template': template
             }
+
+    template_overrides = _load_json_file(_get_feedback_templates_path(), {})
+    if isinstance(template_overrides, dict):
+        for section_id, template_text in template_overrides.items():
+            if section_id in templates and isinstance(template_text, str):
+                templates[section_id]['template'] = template_text
 
     return templates
 
@@ -165,6 +374,23 @@ def resolve_category_file(config_dir, category_base, lang='pl'):
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+
+def _resolve_generated_file_path(filename):
+    safe_filename = secure_filename(filename or '')
+    if not safe_filename:
+        return None
+
+    candidates = [
+        os.path.join(app.config['OUTPUT_FOLDER'], safe_filename),
+        os.path.join(app.config['DMP_FOLDER'], safe_filename),
+    ]
+
+    for candidate in candidates:
+        if os.path.exists(candidate):
+            return candidate
+
+    return None
 
 def validate_docx_file(file_path):
     """Enhanced DOCX file validation"""
@@ -391,16 +617,21 @@ def upload_file():
                 progress_callback=progress_callback
             )
 
-            # Clean up the uploaded file
-            try:
-                os.remove(file_path)
-            except Exception as e:
-                print(f"Warning: Could not remove uploaded file: {str(e)}")
-
             if result['success']:
                 # Mark progress as complete
                 cache_id = result.get('cache_id', '')
+                if cache_id:
+                    try:
+                        _ensure_active_session(cache_id, source_file_path=file_path, original_filename=filename)
+                    except Exception as e:
+                        print(f"Warning: Could not initialize active session history: {str(e)}")
                 redirect_url = url_for('review_dmp', filename=result['filename'], cache_id=cache_id)
+
+                # Clean up the uploaded file after preserving the original in the session bundle.
+                try:
+                    os.remove(file_path)
+                except Exception as e:
+                    print(f"Warning: Could not remove uploaded file: {str(e)}")
 
                 with progress_lock:
                     progress_state[session_id].update({
@@ -417,6 +648,11 @@ def upload_file():
                     'session_id': session_id
                 })
             else:
+                try:
+                    os.remove(file_path)
+                except Exception as e:
+                    print(f"Warning: Could not remove uploaded file: {str(e)}")
+
                 # Mark progress as error
                 with progress_lock:
                     progress_state[session_id].update({
@@ -475,8 +711,8 @@ def upload_file():
 @app.route('/download/<filename>')
 def download_file(filename):
     try:
-        file_path = os.path.join(app.config['OUTPUT_FOLDER'], filename)
-        if not os.path.exists(file_path):
+        file_path = _resolve_generated_file_path(filename)
+        if not file_path:
             return "File not found", 404
         
         return send_file(
@@ -486,25 +722,43 @@ def download_file(filename):
     except Exception as e:
         return f"Error downloading file: {str(e)}", 500
 
+@app.route('/download-original/<cache_id>')
+def download_original_file(cache_id):
+    try:
+        session_dir = os.path.join(app.config['ACTIVE_SESSIONS_FOLDER'], cache_id)
+        source_path, stored_name = _find_session_source_upload(session_dir)
+        if not source_path:
+            return "Original source file not found", 404
+
+        metadata = _load_json_file(os.path.join(session_dir, 'metadata.json'), {})
+        download_name = metadata.get('source_upload_name') or metadata.get('filename_original') or stored_name
+
+        return send_file(
+            source_path,
+            as_attachment=True,
+            download_name=download_name
+        )
+    except Exception as e:
+        return f"Error downloading original file: {str(e)}", 500
+
 @app.route('/review/<filename>')
 def review_dmp(filename):
     # File existence is no longer required — all content comes from the cache.
     # Keep the lookup only so the download link works if a DMP DOCX was created.
-    file_path = os.path.join(app.config['OUTPUT_FOLDER'], filename)
-    if not os.path.exists(file_path):
-        alt_path = os.path.join(app.config['DMP_FOLDER'], filename)
-        if os.path.exists(alt_path):
-            file_path = alt_path
-        # No file is fine — cache is the source of truth
+    file_path = _resolve_generated_file_path(filename)
+    # No file is fine — cache is the source of truth
     
     cache_id = request.args.get('cache_id', '')
     
     extracted_content = {}
     extraction_info = {}
     unconnected_text = []
+    has_original_source = False
     
     if cache_id:
         cache_path = os.path.join(app.config['CACHE_FOLDER'], f"cache_{cache_id}.json")
+        source_path, _ = _find_session_source_upload(os.path.join(app.config['ACTIVE_SESSIONS_FOLDER'], cache_id))
+        has_original_source = source_path is not None
         if os.path.exists(cache_path):
             try:
                 with open(cache_path, 'r', encoding='utf-8') as f:
@@ -529,22 +783,37 @@ def review_dmp(filename):
                            extracted_content=extracted_content,
                            extraction_info=extraction_info,
                            unconnected_text=unconnected_text,
-                           cache_id=cache_id)
+                           cache_id=cache_id,
+                           has_original_source=has_original_source)
 
 @app.route('/save_templates', methods=['POST'])
 def save_templates():
     try:
         data = request.json or {}
         global DMP_TEMPLATES
+
+        if not isinstance(data, dict):
+            return jsonify({
+                'success': False,
+                'message': 'Invalid template payload'
+            }), 400
         
         # Update the templates with the new data
+        updated_count = 0
         for key, value in data.items():
-            if key in DMP_TEMPLATES:
+            if key in DMP_TEMPLATES and isinstance(value, str):
                 DMP_TEMPLATES[key]['template'] = value
+                updated_count += 1
+
+        _write_json_file(
+            _get_feedback_templates_path(),
+            {section_id: template_data.get('template', '') for section_id, template_data in DMP_TEMPLATES.items()}
+        )
         
         return jsonify({
             'success': True,
-            'message': 'Templates saved successfully'
+            'message': 'Templates saved successfully',
+            'updated': updated_count
         })
     except Exception as e:
         return jsonify({
@@ -613,6 +882,8 @@ def save_feedback():
         
         filename = data.get('filename', '')
         feedback = data.get('feedback', '')
+        cache_id = data.get('cache_id', '')
+        feedback_data = data.get('feedbackData', {})
         
         if not filename or not feedback:
             return jsonify({
@@ -625,6 +896,13 @@ def save_feedback():
         
         with open(feedback_path, 'w', encoding='utf-8') as f:
             f.write(feedback)
+
+        if cache_id:
+            _ensure_active_session(
+                cache_id,
+                feedback_data=feedback_data,
+                compiled_feedback=feedback
+            )
         
         return jsonify({
             'success': True,
@@ -653,18 +931,15 @@ def export_json():
                 'message': 'Missing cache_id'
             })
 
-        # Load cache file
-        cache_filename = f"cache_{cache_id}.json"
-        cache_path = os.path.join(app.config['CACHE_FOLDER'], cache_filename)
-
-        if not os.path.exists(cache_path):
+        try:
+            session_bundle = _ensure_active_session(cache_id, feedback_data=feedback_data)
+        except FileNotFoundError:
             return jsonify({
                 'success': False,
                 'message': 'Cache file not found'
             })
 
-        with open(cache_path, 'r', encoding='utf-8') as f:
-            cache_data = json.load(f)
+        cache_data = session_bundle['cache_data']
 
         # Extract metadata
         metadata = cache_data.get('_metadata', {})
@@ -720,6 +995,8 @@ def export_json():
         with open(json_path, 'w', encoding='utf-8') as f:
             json.dump(export_data, f, ensure_ascii=False, indent=2)
 
+        _write_json_file(session_bundle['paths']['review_export_path'], export_data)
+
         return jsonify({
             'success': True,
             'filename': json_filename,
@@ -734,6 +1011,242 @@ def export_json():
         return jsonify({
             'success': False,
             'message': f'Error exporting JSON: {str(e)}'
+        })
+
+# ===========================================
+# ARCHIVE SYSTEM - Session Management
+# ===========================================
+
+@app.route('/api/archive-session', methods=['POST'])
+def archive_session():
+    """
+    Archive a review session with DMP plan and feedback.
+    Creates a folder with: dmp_plan.json, feedback.json, metadata.json
+    """
+    try:
+        data = request.json or {}
+        cache_id = data.get('cache_id', '')
+        feedback_data = data.get('feedbackData', {})       # Raw section data
+        compiled_feedback = data.get('feedback', '')       # Compiled text report
+
+        if not cache_id:
+            return jsonify({
+                'success': False,
+                'message': 'Missing cache_id'
+            })
+
+        try:
+            session_bundle = _ensure_active_session(
+                cache_id,
+                feedback_data=feedback_data,
+                compiled_feedback=compiled_feedback
+            )
+        except FileNotFoundError:
+            return jsonify({
+                'success': False,
+                'message': 'Cache file not found'
+            })
+
+        active_paths = session_bundle['paths']
+        metadata = session_bundle['metadata']
+
+        # Create archive folder with timestamp and cache_id
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        archive_id = f"{timestamp}_{cache_id[:8]}"
+        archive_folder = os.path.join(app.config['SESSION_ARCHIVE_FOLDER'], archive_id)
+        os.makedirs(archive_folder, exist_ok=True)
+
+        # Prepare metadata
+        metadata_json = dict(metadata)
+        metadata_json.update({
+            'archive_id': archive_id,
+            'timestamp': timestamp,
+            'archived_date': datetime.now().isoformat(),
+            'status': 'archived',
+            'archive_folder': archive_folder
+        })
+
+        shutil.copy2(active_paths['dmp_path'], os.path.join(archive_folder, 'dmp_plan.json'))
+        shutil.copy2(active_paths['feedback_path'], os.path.join(archive_folder, 'feedback.json'))
+
+        if os.path.exists(active_paths['review_export_path']):
+            shutil.copy2(active_paths['review_export_path'], os.path.join(archive_folder, 'review_export.json'))
+
+        source_upload_path, source_upload_name = _find_session_source_upload(active_paths['session_dir'])
+        if source_upload_path and source_upload_name:
+            shutil.copy2(source_upload_path, os.path.join(archive_folder, source_upload_name))
+
+        _write_json_file(os.path.join(archive_folder, 'metadata.json'), metadata_json)
+
+        preserved_metadata = dict(session_bundle['metadata'])
+        preserved_metadata['last_archived_at'] = metadata_json['archived_date']
+        preserved_metadata['last_archive_id'] = archive_id
+        preserved_metadata['preserved_after_archive'] = True
+        _write_json_file(active_paths['metadata_path'], preserved_metadata)
+
+        return jsonify({
+            'success': True,
+            'archive_id': archive_id,
+            'message': 'Session archived successfully'
+        })
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'success': False,
+            'message': f'Error archiving session: {str(e)}'
+        })
+
+@app.route('/api/get-archived-sessions', methods=['GET'])
+def get_archived_sessions():
+    """Get list of all archived sessions with metadata"""
+    try:
+        archives = []
+        seen_archive_ids = set()
+
+        for archives_folder in _iter_archive_roots():
+            if not os.path.exists(archives_folder):
+                continue
+
+            for archive_id in os.listdir(archives_folder):
+                archive_path = os.path.join(archives_folder, archive_id)
+
+                if not os.path.isdir(archive_path) or archive_id in seen_archive_ids:
+                    continue
+
+                metadata_path = os.path.join(archive_path, 'metadata.json')
+
+                if os.path.exists(metadata_path):
+                    metadata = _load_json_file(metadata_path, {})
+                    metadata.setdefault('archive_id', archive_id)
+                    metadata.setdefault('archive_folder', archive_path)
+                    archives.append(metadata)
+                    seen_archive_ids.add(archive_id)
+
+        # Sort by archived_date descending (newest first)
+        archives.sort(key=lambda x: x.get('archived_date', ''), reverse=True)
+
+        return jsonify({
+            'success': True,
+            'archives': archives
+        })
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error loading archived sessions: {str(e)}'
+        })
+
+@app.route('/api/get-active-sessions', methods=['POST'])
+def get_active_sessions():
+    """
+    Get list of cache files that have NOT been archived yet.
+    Receives session IDs from localStorage and checks which ones exist in cache.
+    """
+    try:
+        data = request.json or {}
+        session_ids = data.get('session_ids', [])
+
+        active_sessions = []
+        active_folder = app.config['ACTIVE_SESSIONS_FOLDER']
+
+        if session_ids:
+            candidate_ids = session_ids
+        else:
+            candidate_ids = [
+                entry for entry in os.listdir(active_folder)
+                if os.path.isdir(os.path.join(active_folder, entry))
+            ] if os.path.exists(active_folder) else []
+
+        for session_id in candidate_ids:
+            try:
+                session_bundle = _ensure_active_session(session_id)
+                metadata = session_bundle['metadata']
+            except FileNotFoundError:
+                continue
+
+            active_sessions.append({
+                'session_id': session_id,
+                'filename': metadata.get('filename_original', 'Unknown'),
+                'researcher_surname': metadata.get('researcher_surname', ''),
+                'researcher_firstname': metadata.get('researcher_firstname', ''),
+                'creation_date': metadata.get('creation_date', ''),
+                'last_updated': metadata.get('last_updated', '')
+            })
+
+        active_sessions.sort(key=lambda item: item.get('last_updated', ''), reverse=True)
+
+        return jsonify({
+            'success': True,
+            'active_sessions': active_sessions
+        })
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error loading active sessions: {str(e)}'
+        })
+
+@app.route('/api/delete-archived-session/<archive_id>', methods=['DELETE'])
+def delete_archived_session(archive_id):
+    """Delete an archived session folder"""
+    try:
+        archive_path = _find_archive_path(archive_id)
+
+        if not archive_path:
+            return jsonify({
+                'success': False,
+                'message': 'Archive not found'
+            })
+
+        # Delete all files in folder
+        shutil.rmtree(archive_path)
+
+        return jsonify({
+            'success': True,
+            'message': 'Archive deleted successfully'
+        })
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error deleting archive: {str(e)}'
+        })
+
+@app.route('/api/restore-archived-session/<archive_id>', methods=['GET'])
+def restore_archived_session(archive_id):
+    """Load archived session data for viewing/restoring"""
+    try:
+        archive_path = _find_archive_path(archive_id)
+
+        if not archive_path:
+            return jsonify({
+                'success': False,
+                'message': 'Archive not found'
+            })
+
+        # Load all three files
+        with open(os.path.join(archive_path, 'metadata.json'), 'r', encoding='utf-8') as f:
+            metadata = json.load(f)
+
+        with open(os.path.join(archive_path, 'dmp_plan.json'), 'r', encoding='utf-8') as f:
+            dmp_plan = json.load(f)
+
+        with open(os.path.join(archive_path, 'feedback.json'), 'r', encoding='utf-8') as f:
+            feedback = json.load(f)
+
+        return jsonify({
+            'success': True,
+            'metadata': metadata,
+            'dmp_plan': dmp_plan,
+            'feedback': feedback
+        })
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error restoring archive: {str(e)}'
         })
 
 @app.route('/save_category', methods=['POST'])
@@ -1625,6 +2138,54 @@ def clear_cache():
                     os.remove(os.path.join(cache_dir, f))
                     deleted += 1
         return jsonify({'success': True, 'deleted': deleted})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/settings/extractor-debug', methods=['GET'])
+def get_extractor_debug():
+    """Get current extractor debug mode status"""
+    return jsonify({
+        'success': True,
+        'debug_mode': DEBUG_MODE,
+        'extractor_version': 'v3-separated' if DEBUG_MODE else 'v2-production',
+        'description': (
+            'v3: Separated slicing & cleaning with RAW data export (for debugging)'
+            if DEBUG_MODE else
+            'v2: Production extractor (clean during slicing, optimized)'
+        )
+    })
+
+@app.route('/api/settings/extractor-debug', methods=['POST'])
+def update_extractor_debug():
+    """Toggle extractor debug mode (v2 vs v3)"""
+    global DEBUG_MODE
+    try:
+        data = request.json or {}
+        if 'debug_mode' in data:
+            DEBUG_MODE = bool(data['debug_mode'])
+
+            # Persist to config/settings.json
+            saved = {}
+            if os.path.exists(_GENERAL_SETTINGS_PATH):
+                try:
+                    with open(_GENERAL_SETTINGS_PATH, 'r', encoding='utf-8') as f:
+                        saved = json.load(f)
+                except Exception:
+                    saved = {}
+
+            saved['extractor_debug_mode'] = DEBUG_MODE
+
+            with open(_GENERAL_SETTINGS_PATH, 'w', encoding='utf-8') as f:
+                json.dump(saved, f, indent=2, ensure_ascii=False)
+
+            version = 'v3-separated' if DEBUG_MODE else 'v2-production'
+            return jsonify({
+                'success': True,
+                'message': f'Extractor switched to {version}',
+                'debug_mode': DEBUG_MODE
+            })
+
+        return jsonify({'success': False, 'message': 'Missing debug_mode parameter'}), 400
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
 

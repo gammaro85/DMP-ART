@@ -542,11 +542,16 @@
             padding: 0 2px;
             transition: background 0.3s;
         }
-        /* Floating cite button */
-        #cite-btn-float {
+        /* Floating cite toolbar */
+        #cite-toolbar-float {
             position: absolute;
             z-index: 9999;
             display: none;
+            flex-direction: row;
+            gap: 4px;
+        }
+        #cite-btn-float,
+        #search-cite-btn-float {
             padding: 6px 12px;
             background: var(--primary-color);
             color: white;
@@ -555,7 +560,12 @@
             font-size: 0.85rem;
             cursor: pointer;
             box-shadow: 0 2px 8px rgba(50, 112, 224, 0.15);
-            transition: opacity 0.2s;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+        #cite-btn-float:hover,
+        #search-cite-btn-float:hover {
+            background: var(--primary-hover);
         }
         
         /* Responsive layout for mobile screens only */
@@ -1052,6 +1062,9 @@
                 <button class="theme-toggle" aria-label="Toggle theme">
                     <i class="fas fa-moon"></i>
                 </button>
+                <button class="history-btn" aria-label="View session history" title="View archived and active sessions">
+                    <i class="fas fa-history"></i> History
+                </button>
                 <!-- Language Switcher (left side) -->
                 <div class="header-language-switcher">
                     <button id="header-lang-pl-btn" class="header-lang-btn active" data-lang="pl" title="Komentarze po polsku">PL</button>
@@ -1342,16 +1355,10 @@
                     </div>
                     <div class="panel-actions">
                         <button id="copy-compiled-btn" class="action-btn" title="Copy report to clipboard">
-                            <i class="fas fa-copy"></i> Copy Report
+                            <i class="fas fa-copy"></i> Copy
                         </button>
-                        <button id="download-feedback-btn" class="action-btn" title="Download as text file">
-                            <i class="fas fa-download"></i> Download TXT
-                        </button>
-                        <button id="generate-docx-btn" class="action-btn" title="Generate Word document">
-                            <i class="fas fa-file-word"></i> Generate DOCX
-                        </button>
-                        <button id="export-json-btn" class="action-btn" title="Export as JSON with metadata">
-                            <i class="fas fa-file-code"></i> Export JSON
+                        <button id="archive-session-btn" class="action-btn" title="Archive this review session">
+                            <i class="fas fa-archive"></i> Archive
                         </button>
                     </div>
                 </div>
@@ -1365,7 +1372,10 @@
         <span>DMP ART &copy; 2025 — <a href="https://github.com/gammaro85/DMP-ART" target="_blank" rel="noopener" class="footer-link">MIT License</a></span>
     </footer>
 
-    <button id="cite-btn-float">Cite</button>
+    <div id="cite-toolbar-float">
+        <button id="cite-btn-float">Cite</button>
+        <button id="search-cite-btn-float">Search &amp; Cite</button>
+    </div>
 
     <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
@@ -2358,7 +2368,9 @@
         }
 
         (function() {
+            let citeToolbar = document.getElementById('cite-toolbar-float');
             let citeBtn = document.getElementById('cite-btn-float');
+            let searchCiteBtn = document.getElementById('search-cite-btn-float');
             let currentSelection = null;
             let currentSectionId = null;
 
@@ -2373,39 +2385,46 @@
                 return null;
             }
 
-            // Show cite button on text selection in extracted-content
+            function appendCitation(textarea, selText) {
+                let citation = `„${selText}"`;
+                let value = textarea.value;
+                let sep = value && !value.endsWith('\n') ? '\n\n' : '';
+                textarea.value = value + sep + citation;
+                textarea.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+
+            // Show cite toolbar on text selection in extracted-content
             document.addEventListener('mouseup', function(e) {
-                setTimeout(() => { // Wait for selection to update
+                setTimeout(() => {
                     let sel = window.getSelection();
                     if (sel.rangeCount === 0 || sel.isCollapsed) {
-                        citeBtn.style.display = 'none';
+                        citeToolbar.style.display = 'none';
                         return;
                     }
                     let range = sel.getRangeAt(0);
                     let container = range.commonAncestorContainer;
                     let extractedDiv = container.nodeType === 1 ? container.closest('.extracted-content') : container.parentElement?.closest('.extracted-content');
                     if (extractedDiv) {
-                        // Only allow selection inside extracted-content
                         let rect = range.getBoundingClientRect();
-                        citeBtn.style.top = (window.scrollY + rect.bottom + 5) + 'px';
-                        citeBtn.style.left = (window.scrollX + rect.left) + 'px';
-                        citeBtn.style.display = 'block';
+                        citeToolbar.style.top = (window.scrollY + rect.bottom + 5) + 'px';
+                        citeToolbar.style.left = (window.scrollX + rect.left) + 'px';
+                        citeToolbar.style.display = 'flex';
                         currentSelection = sel;
                         currentSectionId = getSectionIdFromNode(extractedDiv);
                     } else {
-                        citeBtn.style.display = 'none';
+                        citeToolbar.style.display = 'none';
                     }
                 }, 10);
             });
 
-            // Hide cite button on click elsewhere
+            // Hide cite toolbar on click elsewhere
             document.addEventListener('mousedown', function(e) {
-                if (!citeBtn.contains(e.target)) {
-                    citeBtn.style.display = 'none';
+                if (!citeToolbar.contains(e.target)) {
+                    citeToolbar.style.display = 'none';
                 }
             });
 
-            // Handle cite button click
+            // Cite — adds citation only to the current section
             citeBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 if (!currentSelection || !currentSectionId) return;
@@ -2420,19 +2439,47 @@
                 range.deleteContents();
                 range.insertNode(span);
 
-                // Insert citation into feedback textarea with Polish quotation marks
                 let textarea = document.getElementById('feedback-' + currentSectionId);
-                if (textarea) {
-                    let citation = `„${selText}"`;
-                    let value = textarea.value;
-                    let sep = value && !value.endsWith('\n') ? '\n\n' : '';
-                    textarea.value = value + sep + citation;
-                    textarea.dispatchEvent(new Event('input', { bubbles: true }));
-                }
+                if (textarea) appendCitation(textarea, selText);
 
-                // Hide cite button and clear selection
-                citeBtn.style.display = 'none';
+                citeToolbar.style.display = 'none';
                 window.getSelection().removeAllRanges();
+            });
+
+            // Search & Cite — searches selected text across all sections and adds citations where found
+            searchCiteBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (!currentSelection) return;
+                let selText = currentSelection.toString().trim();
+                if (!selText) return;
+
+                let selTextLower = selText.toLowerCase();
+                let matchCount = 0;
+                let sections = document.querySelectorAll('.question-card[data-id]');
+
+                sections.forEach(function(card) {
+                    let sectionId = card.getAttribute('data-id');
+                    let extractedDiv = card.querySelector('.extracted-content');
+                    if (!extractedDiv) return;
+                    if (!extractedDiv.textContent.toLowerCase().includes(selTextLower)) return;
+
+                    let textarea = document.getElementById('feedback-' + sectionId);
+                    if (textarea) {
+                        appendCitation(textarea, selText);
+                        matchCount++;
+                    }
+                });
+
+                citeToolbar.style.display = 'none';
+                window.getSelection().removeAllRanges();
+
+                if (typeof showToast === 'function') {
+                    if (matchCount > 0) {
+                        showToast(`Cytat dodany do ${matchCount} sekcji`, 'success');
+                    } else {
+                        showToast('Tekst nie został znaleziony w żadnej sekcji', 'info');
+                    }
+                }
             });
         })();
 
@@ -2466,9 +2513,7 @@
             const compileBtn = document.getElementById('compile-feedback-btn');
             const closeBtn = document.getElementById('close-compiled-btn');
             const copyBtn = document.getElementById('copy-compiled-btn');
-            const downloadBtn = document.getElementById('download-feedback-btn');
-            const generateDocxBtn = document.getElementById('generate-docx-btn');
-            const exportJsonBtn = document.getElementById('export-json-btn');
+            const archiveBtn = document.getElementById('archive-session-btn');
             const feedbackTextarea = document.getElementById('compiled-feedback');
             
             let isOpen = false;
@@ -2524,35 +2569,20 @@
             function copyToClipboard() {
                 feedbackTextarea.select();
                 document.execCommand('copy');
-                
+
                 // Show temporary success message
                 const originalText = copyBtn.innerHTML;
                 copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
                 copyBtn.style.background = 'var(--success-color)';
-                
+
                 setTimeout(() => {
                     copyBtn.innerHTML = originalText;
                     copyBtn.style.background = '';
                 }, 2000);
             }
 
-            // Download as text file
-            function downloadReport() {
-                const content = feedbackTextarea.value;
-                const blob = new Blob([content], { type: 'text/plain' });
-                const url = window.URL.createObjectURL(blob);
-
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `DMP_Feedback_Report_${new Date().toISOString().split('T')[0]}.txt`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                window.URL.revokeObjectURL(url);
-            }
-
-            // Export as JSON with metadata
-            function exportJson() {
+            // Archive session - save DMP plan and feedback as structured JSON files
+            function archiveSession() {
                 // Get cache_id from URL
                 const urlParams = new URLSearchParams(window.location.search);
                 const cacheId = urlParams.get('cache_id');
@@ -2575,56 +2605,81 @@
                     }
                 });
 
-                // Show loading state
-                const originalText = exportJsonBtn.innerHTML;
-                exportJsonBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Exporting...';
-                exportJsonBtn.disabled = true;
+                // Check if there's any feedback to archive
+                if (Object.keys(feedbackData).length === 0) {
+                    if (!confirm('No feedback has been added yet. Archive anyway?')) {
+                        return;
+                    }
+                }
+
+                // Compile feedback text (use compileFeedback from script.js if available)
+                let compiledFeedback = '';
+                if (typeof compileFeedback === 'function') {
+                    compiledFeedback = compileFeedback();
+                } else {
+                    // Fallback: generate compiled feedback locally
+                    const allSections = ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2', '4.1', '4.2', '5.1', '5.2', '5.3', '5.4', '6.1', '6.2'];
+                    allSections.forEach(sectionId => {
+                        const text = feedbackData[sectionId];
+                        if (text && text.trim()) {
+                            compiledFeedback += `${sectionId} - ${text.trim()}\n\n`;
+                        } else {
+                            compiledFeedback += `${sectionId} brak komentarza\n\n`;
+                        }
+                    });
+                    compiledFeedback = compiledFeedback.trim();
+                }
+
+                // Get the archive button
+                const archiveBtn = document.getElementById('archive-session-btn');
+                const originalText = archiveBtn.innerHTML;
+                archiveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Archiving...';
+                archiveBtn.disabled = true;
 
                 // Send to server
-                fetch('/export_json', {
+                fetch('/api/archive-session', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         cache_id: cacheId,
-                        feedback: feedbackData
+                        feedback: compiledFeedback,    // Compiled text report
+                        feedbackData: feedbackData     // Raw section data
                     })
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Create download link for JSON file
-                        const jsonBlob = new Blob([JSON.stringify(data.data, null, 2)], { type: 'application/json' });
-                        const url = window.URL.createObjectURL(jsonBlob);
-
-                        const link = document.createElement('a');
-                        link.href = url;
-                        link.download = data.filename;
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        window.URL.revokeObjectURL(url);
-
                         // Success message
-                        exportJsonBtn.innerHTML = '<i class="fas fa-check"></i> Exported!';
-                        exportJsonBtn.style.background = 'var(--success-color)';
+                        archiveBtn.innerHTML = '<i class="fas fa-check"></i> Archived!';
+                        archiveBtn.style.background = 'var(--success-color)';
+
+                        // Remove from localStorage active sessions
+                        if (typeof SessionManager !== 'undefined') {
+                            SessionManager.deleteSession(cacheId);
+                        }
 
                         setTimeout(() => {
-                            exportJsonBtn.innerHTML = originalText;
-                            exportJsonBtn.style.background = '';
-                            exportJsonBtn.disabled = false;
+                            archiveBtn.innerHTML = originalText;
+                            archiveBtn.style.background = '';
+                            archiveBtn.disabled = false;
+
+                            // Show success notification
+                            if (typeof showToast === 'function') {
+                                showToast('Session archived successfully!', 'success');
+                            }
                         }, 2000);
                     } else {
-                        alert('Error exporting JSON: ' + data.message);
-                        exportJsonBtn.innerHTML = originalText;
-                        exportJsonBtn.disabled = false;
+                        alert('Error archiving session: ' + data.message);
+                        archiveBtn.innerHTML = originalText;
+                        archiveBtn.disabled = false;
                     }
                 })
                 .catch(error => {
-                    alert('Error exporting JSON: ' + error.message);
-                    exportJsonBtn.innerHTML = originalText;
-                    exportJsonBtn.disabled = false;
+                    alert('Error archiving session: ' + error.message);
+                    archiveBtn.innerHTML = originalText;
+                    archiveBtn.disabled = false;
                 });
             }
 
@@ -2644,19 +2699,9 @@
             if (copyBtn) {
                 copyBtn.addEventListener('click', copyToClipboard);
             }
-            
-            if (downloadBtn) {
-                downloadBtn.addEventListener('click', downloadReport);
-            }
-            
-            if (generateDocxBtn) {
-                generateDocxBtn.addEventListener('click', function() {
-                    alert('DOCX generation feature coming soon!');
-                });
-            }
 
-            if (exportJsonBtn) {
-                exportJsonBtn.addEventListener('click', exportJson);
+            if (archiveBtn) {
+                archiveBtn.addEventListener('click', archiveSession);
             }
 
             // Keyboard shortcuts
@@ -2669,5 +2714,28 @@
             // Panel is now a centered modal, no dragging needed
         })();
     </script>
+
+    <!-- History Modal -->
+    <div id="history-modal">
+        <div class="history-modal-content">
+            <div class="history-modal-header">
+                <h2><i class="fas fa-history"></i> Session History</h2>
+                <button class="history-modal-close" aria-label="Close">&times;</button>
+            </div>
+            <div class="history-modal-body">
+                <!-- Active Sessions -->
+                <div class="history-section">
+                    <h3><i class="fas fa-clock"></i> Active Sessions</h3>
+                    <div id="active-sessions-list"></div>
+                </div>
+
+                <!-- Archived Sessions -->
+                <div class="history-section">
+                    <h3><i class="fas fa-archive"></i> Archived Sessions</h3>
+                    <div id="archived-sessions-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
