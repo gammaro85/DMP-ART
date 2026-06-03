@@ -23,6 +23,12 @@ from docx import Document
 import PyPDF2
 
 try:
+    import pdfplumber
+    HAS_PDFPLUMBER = True
+except ImportError:
+    HAS_PDFPLUMBER = False
+
+try:
     from pdf2image import convert_from_path
     import pytesseract
     if os.name == 'nt':
@@ -324,6 +330,7 @@ class DocConverter:
         except Exception as exc:
             raise RuntimeError(f"PDF read error: {exc}") from exc
 
+        # Check if extracted text is too short (scanned PDF)
         if sum(len(t) for t in pages) < 100:
             if HAS_OCR:
                 return self._ocr(path)
@@ -331,6 +338,68 @@ class DocConverter:
                 "PDF appears to be a scanned image but OCR (pytesseract + pdf2image) "
                 "is not installed."
             )
+
+        # Check if text is poorly formatted (missing spaces)
+        if self._is_text_malformed(pages):
+            if HAS_PDFPLUMBER:
+                logger.warning("PyPDF2 extracted malformed text (missing spaces). Trying pdfplumber...")
+                try:
+                    pages_pdfplumber = self._read_pdf_with_pdfplumber(path)
+                    # Check if pdfplumber gave better results
+                    if not self._is_text_malformed(pages_pdfplumber):
+                        logger.info("pdfplumber extracted text successfully")
+                        return pages_pdfplumber
+                    logger.warning("pdfplumber also gave malformed text")
+                except Exception as e:
+                    logger.warning(f"pdfplumber failed: {e}. Falling back to PyPDF2 output")
+            else:
+                logger.warning(
+                    "PyPDF2 extracted malformed text (missing spaces), but pdfplumber is not installed. "
+                    "Using PyPDF2 output."
+                )
+
+        return pages
+
+    @staticmethod
+    def _is_text_malformed(pages: List[str]) -> bool:
+        """
+        Detect if extracted text has missing spaces between words.
+        Heuristic: look for abnormally long sequences of lowercase letters
+        (e.g., "depthinterviewsconductedbytheprincipalinvestigator" instead of proper spacing).
+        """
+        if not pages:
+            return False
+
+        # Sample first few pages
+        sample = ' '.join(pages[:min(5, len(pages))])
+        if len(sample) < 100:
+            return False
+
+        # Count very long lowercase sequences (>20 chars) which shouldn't exist in proper text
+        long_sequences = re.findall(r'[a-z]{20,}', sample)
+
+        # Also count camelCase-like patterns (lowercase followed by uppercase)
+        camel_case = re.findall(r'[a-z][A-Z]', sample)
+
+        # If we find several long sequences OR many camelCase patterns, it's likely malformed
+        has_long_sequences = len(long_sequences) >= 3
+        camel_ratio = len(camel_case) / max(len(sample) / 100, 1)
+        has_many_camel = camel_ratio > 1.5
+
+        if has_long_sequences or has_many_camel:
+            logger.debug(f"Text malformed: {len(long_sequences)} long sequences, {len(camel_case)} camelCase patterns")
+            return True
+
+        return False
+
+    @staticmethod
+    def _read_pdf_with_pdfplumber(path: str) -> List[str]:
+        """Extract text from PDF using pdfplumber (better text extraction for some PDFs)."""
+        pages: List[str] = []
+        with pdfplumber.open(path) as pdf:
+            for page in pdf.pages:
+                text = page.extract_text() or ''
+                pages.append(text)
         return pages
 
     @staticmethod
@@ -367,9 +436,16 @@ class AnchorMatcher:
 
     HIGH_THRESHOLD  = 0.55  # score at which we accept immediately (first match wins)
     LOW_THRESHOLD   = 0.35  # fallback minimum to accept any match
-    MIN_FIRST_BLOCK = 0.20  # block[i] alone must cover ≥20% of anchor tokens;
-                            # prevents content blocks from starting a wide window
-                            # that only contains the anchor text further down
+    MIN_FIRST_BLOCK = 0.60  # block[i] alone must cover ≥60% of anchor tokens;
+                            # prevents content blocks (like answers to other questions)
+                            # from being mistaken for anchors due to shared keywords
+                            # (e.g., 3.1 "stored/research" with 0.50 score matching 5.2 answer)
+                            # Real anchors typically score 0.80-1.00 in single block
+
+    # Fingerprint-specific thresholds (stricter than token overlap)
+    FINGERPRINT_HIGH_THRESHOLD = 0.70  # require 70% keyword coverage
+    FINGERPRINT_LOW_THRESHOLD  = 0.50  # minimum 50% keyword coverage
+    MIN_FINGERPRINT_MATCHES    = 3     # require at least 3 matched keywords
 
     def __init__(self, anchors_cfg: dict) -> None:
         self._anchors = anchors_cfg
@@ -486,6 +562,7 @@ class AnchorMatcher:
 
         # Strategy 2: fingerprint keyword coverage over a 6-block window.
         # Only runs when strategy 1 found nothing at all.
+        # Uses stricter thresholds to prevent false positives (e.g. 3.1 matching 5.2 content)
         if first_low_idx < 0 and fingerprint:
             fp_tokens = {w.lower() for w in fingerprint if len(w) >= 4}
             if fp_tokens:
@@ -495,10 +572,12 @@ class AnchorMatcher:
                         for j in range(i, min(i + 6, len(blocks)))
                     )
                     window_tokens = set(window.split())
-                    score = len(fp_tokens & window_tokens) / len(fp_tokens)
-                    if score >= self.HIGH_THRESHOLD:
+                    matched = fp_tokens & window_tokens
+                    score = len(matched) / len(fp_tokens)
+                    # Require both high coverage ratio AND minimum absolute number of matches
+                    if score >= self.FINGERPRINT_HIGH_THRESHOLD and len(matched) >= self.MIN_FINGERPRINT_MATCHES:
                         return i, 6, score  # Fingerprint uses 6-block window
-                    if score >= self.LOW_THRESHOLD and first_low_idx < 0:
+                    if score >= self.FINGERPRINT_LOW_THRESHOLD and len(matched) >= self.MIN_FINGERPRINT_MATCHES and first_low_idx < 0:
                         first_low_idx, first_low_win, first_low_score = i, 6, score
 
         if first_low_idx >= 0:
@@ -764,6 +843,23 @@ class DMPExtractor:
             # Extract content blocks (excludes ALL anchor blocks)
             content_blocks = blocks[content_start:content_end]
             paragraphs = self._cleaner.clean(content_blocks, skip_patterns)
+
+            # Debug logging for empty or very short sections
+            if len(paragraphs) == 0:
+                logger.warning(
+                    'Section %s: NO content extracted! '
+                    'Content blocks %d-%d (%d blocks total, after clean: 0 paragraphs)',
+                    sid, content_start, content_end - 1, len(content_blocks)
+                )
+                # Log first few raw blocks for debugging
+                for i, blk in enumerate(content_blocks[:5]):
+                    logger.debug('  Raw block %d: %s', i, blk.text[:100])
+            elif len(paragraphs) < 3 and sid not in ['6.1', '6.2']:  # 6.1/6.2 may be short
+                logger.info(
+                    'Section %s has only %d paragraph(s) - may need attention',
+                    sid, len(paragraphs)
+                )
+
             tagged = [{'text': p, 'tags': [], 'title': ''} for p in paragraphs]
             main = sid.split('.')[0]
             cache[sid] = {
