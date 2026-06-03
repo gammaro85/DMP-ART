@@ -10,6 +10,7 @@ import re
 from datetime import datetime
 from werkzeug.utils import secure_filename
 from utils.extractor_v2 import DMPExtractor, SkipTermsManager
+from utils.extractor_v3_separated import DMPExtractorSeparated
 from utils.ai_module import AIReviewAssistant
 # Comments are now managed through JSON files in config/ directory
 
@@ -36,12 +37,15 @@ CATEGORY_VARIANT_SUFFIXES = ('_pl_stare', '_en_stare', '_pl', '_en')
 
 # Load persisted general settings
 _GENERAL_SETTINGS_PATH = os.path.join('config', 'settings.json')
+DEBUG_MODE = False  # Default: use v2 (production)
 try:
     if os.path.exists(_GENERAL_SETTINGS_PATH):
         with open(_GENERAL_SETTINGS_PATH, 'r', encoding='utf-8') as _f:
             _saved = json.load(_f)
         if 'max_upload_mb' in _saved:
             app.config['MAX_CONTENT_LENGTH'] = int(_saved['max_upload_mb']) * 1024 * 1024
+        if 'extractor_debug_mode' in _saved:
+            DEBUG_MODE = bool(_saved['extractor_debug_mode'])
 except Exception:
     pass  # Fall back to default if file is corrupt
 
@@ -371,7 +375,16 @@ def upload_file():
                             'status': 'processing'
                         })
 
-            extractor = DMPExtractor()
+            # Choose extractor based on debug mode
+            if DEBUG_MODE:
+                # v3: Separated slicing & cleaning (with RAW data export)
+                extractor = DMPExtractorSeparated(save_raw_slices=True)
+                print(f"[DEBUG] Using v3 extractor (separated pipeline with RAW export)")
+            else:
+                # v2: Production (clean during slicing, optimized)
+                extractor = DMPExtractor()
+                print(f"[DEBUG] Using v2 extractor (production)")
+
             result = extractor.process_file(
                 file_path,
                 app.config['OUTPUT_FOLDER'],
@@ -1464,6 +1477,59 @@ def delete_skip_term():
         mgr = SkipTermsManager()
         terms = mgr.remove(term)
         return jsonify({'success': True, 'terms': terms})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+# ============================================================
+# Extractor Debug Mode API
+# ============================================================
+
+@app.route('/api/settings/extractor-debug', methods=['GET'])
+def get_extractor_debug():
+    """Get current extractor debug mode status"""
+    return jsonify({
+        'success': True,
+        'debug_mode': DEBUG_MODE,
+        'extractor_version': 'v3-separated' if DEBUG_MODE else 'v2-production',
+        'description': (
+            'v3: Separated slicing & cleaning with RAW data export (for debugging)'
+            if DEBUG_MODE else
+            'v2: Production extractor (clean during slicing, optimized)'
+        )
+    })
+
+@app.route('/api/settings/extractor-debug', methods=['POST'])
+def update_extractor_debug():
+    """Toggle extractor debug mode (v2 vs v3)"""
+    global DEBUG_MODE
+    try:
+        data = request.json or {}
+        if 'debug_mode' in data:
+            DEBUG_MODE = bool(data['debug_mode'])
+
+            # Persist to config/settings.json
+            saved = {}
+            if os.path.exists(_GENERAL_SETTINGS_PATH):
+                try:
+                    with open(_GENERAL_SETTINGS_PATH, 'r', encoding='utf-8') as f:
+                        saved = json.load(f)
+                except Exception:
+                    saved = {}
+
+            saved['extractor_debug_mode'] = DEBUG_MODE
+
+            with open(_GENERAL_SETTINGS_PATH, 'w', encoding='utf-8') as f:
+                json.dump(saved, f, indent=2, ensure_ascii=False)
+
+            version = 'v3-separated' if DEBUG_MODE else 'v2-production'
+            return jsonify({
+                'success': True,
+                'message': f'Extractor switched to {version}',
+                'debug_mode': DEBUG_MODE
+            })
+
+        return jsonify({'success': False, 'message': 'Missing debug_mode parameter'}), 400
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
 
