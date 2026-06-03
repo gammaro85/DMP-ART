@@ -1507,7 +1507,7 @@ def update_extractor_debug():
         data = request.json or {}
         if 'debug_mode' in data:
             debug_mode = data['debug_mode']
-            if type(debug_mode) is not bool:
+            if not isinstance(debug_mode, bool):
                 return jsonify({
                     'success': False,
                     'message': 'debug_mode must be a boolean'
