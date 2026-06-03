@@ -7,7 +7,11 @@ This test will check if the anchor for 5.2 is being found correctly.
 
 import sys
 import os
+import unittest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
+if __name__ != '__main__':
+    raise unittest.SkipTest('Manual diagnostic script')
 
 from utils.extractor_v2 import AnchorMatcher, TextBlock, normalize, token_overlap
 import json

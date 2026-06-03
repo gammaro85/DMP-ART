@@ -267,6 +267,8 @@ class TestExtractorIntegration(unittest.TestCase):
         cls.test_dir = os.path.join(os.path.dirname(__file__), 'pzd')
         cls.output_dir = os.path.join(os.path.dirname(__file__), 'test_outputs')
         os.makedirs(cls.output_dir, exist_ok=True)
+        if not os.path.isdir(cls.test_dir):
+            raise unittest.SkipTest("tests/pzd dataset not available")
 
     def test_docx_file_validation(self):
         """Test DOCX file validation"""

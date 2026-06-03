@@ -1,0 +1,218 @@
+{
+  "cache_id": "e65524a6-e104-4201-b22a-b61fed4c15d5",
+  "sections": {
+    "1.1": {
+      "section": "1. Data description and collection or re-use of existing data",
+      "question": "How will new data be collected or produced and/or how will existing data be re-used?",
+      "content": "New data will be generated from the experiments proposed in this project and will involve text (description of the methodology, process parameters), instrumental analyses, e.g., in spectrometry of a set of spectra and tabulated data or images from the SEM, and results of statistical analyses. Data will be produced in digital form by specialized instrument software (e.g., Theta Lite, Jeol, Amersham Biosciences, Zeiss, and others) that is used to control the scientific apparatus. Raw instrumental data will be collected and processed using appropriate software tools to produce user-friendly numerical data, possibly expressed in SI units. In the case of reuse, the data from analog sources will be converted to digital form and stored as a tabular database (.xlsx format).",
+      "tagged_paragraphs": [
+        {
+          "text": "New data will be generated from the experiments proposed in this project and will involve text (description of the methodology, process parameters), instrumental analyses, e.g., in spectrometry of a set of spectra and tabulated data or images from the SEM, and results of statistical analyses. Data will be produced in digital form by specialized instrument software (e.g., Theta Lite, Jeol, Amersham Biosciences, Zeiss, and others) that is used to control the scientific apparatus. Raw instrumental data will be collected and processed using appropriate software tools to produce user-friendly numerical data, possibly expressed in SI units. In the case of reuse, the data from analog sources will be converted to digital form and stored as a tabular database (.xlsx format).",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "1.2": {
+      "section": "1. Data description and collection or re-use of existing data",
+      "question": "What data (for example the types, formats, and volumes) will be collected or produced?",
+      "content": "Obtained data will be collected mainly, but not exclusively in form:\n- raw spectra, a specific format for databases or specific to instrumental programs (several dozen MB),\n- images specific to image files .tiff, .jpeg, .bmp etc (several GB in total).\n- manually entered numerical text records stored in the form of table databases in formats suitable for programs (a few MB).\nRaw instrumental data will be processed using appropriate software tools to obtain user-friendly numeric data.\nData will be imported manually or automatically from digital or analog sources for reuse. Analog sources (e.g. data in a notebook) will be converted to the .xlsx digital format. If possible, data files will be converted to open formats (e.g.: .odt, .ods).",
+      "tagged_paragraphs": [
+        {
+          "text": "Obtained data will be collected mainly, but not exclusively in form:",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "- raw spectra, a specific format for databases or specific to instrumental programs (several dozen MB),",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "- images specific to image files .tiff, .jpeg, .bmp etc (several GB in total).",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "- manually entered numerical text records stored in the form of table databases in formats suitable for programs (a few MB).",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Raw instrumental data will be processed using appropriate software tools to obtain user-friendly numeric data.",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Data will be imported manually or automatically from digital or analog sources for reuse. Analog sources (e.g. data in a notebook) will be converted to the .xlsx digital format. If possible, data files will be converted to open formats (e.g.: .odt, .ods).",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "2.1": {
+      "section": "2. Documentation and data quality",
+      "question": "What metadata and documentation (for example methodology or data collection and way of organising data) will accompany data?",
+      "content": "Raw instrumental data will be organized in a software-specific manner and stored in folders assigned to each task, designated only for the data obtained in this project. Metadata such as e.g. code, date, experiment details, data etc. will be processed manually and entered as ordered tabular databases together with metadata (date, type, grant number), if possible. If the data will be shared, a \"readme\" file will be made explaining the specifics of the data in such a way that they are readable and understandable.\nSelected data will be facilitated by MOST Wiedzy Open Research Data Catalog (common name Bridge of Data) provided by Gdańsk University of Technology . Metadata description will be stored in JSON-LD format Data intended for a repository will be accompanied by attributes required for dataset metadata description ): Title, Keywords, Subject, Description, Creator, Date, Type, Format, Source, Language, Relation, Contributor, Grant number or others if necessary. In that case, the introduced metadata will depend on metadata options proposed in a repository.",
+      "tagged_paragraphs": [
+        {
+          "text": "Raw instrumental data will be organized in a software-specific manner and stored in folders assigned to each task, designated only for the data obtained in this project. Metadata such as e.g. code, date, experiment details, data etc. will be processed manually and entered as ordered tabular databases together with metadata (date, type, grant number), if possible. If the data will be shared, a \"readme\" file will be made explaining the specifics of the data in such a way that they are readable and understandable.",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Selected data will be facilitated by MOST Wiedzy Open Research Data Catalog (common name Bridge of Data) provided by Gdańsk University of Technology . Metadata description will be stored in JSON-LD format Data intended for a repository will be accompanied by attributes required for dataset metadata description ): Title, Keywords, Subject, Description, Creator, Date, Type, Format, Source, Language, Relation, Contributor, Grant number or others if necessary. In that case, the introduced metadata will depend on metadata options proposed in a repository.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "2.2": {
+      "section": "2. Documentation and data quality",
+      "question": "What data quality control measures will be used?",
+      "content": "All tests provided for in the project will be performed with high quality in terms of scientific integrity on the basis of accepted procedures performed by qualified personnel, repeated at least 3 times for each group of samples and measurement technique, including internal controls, using reagents of appropriate purity and properly calibrated measuring equipment. If possible, manually entered data will be double checked or checked by another person to avoid mistakes. Data will be released, when meet validation criteria (usually: relative standard deviation of technical replicates less than 15%). The software tools included in the statistical software packages will be used to check data consistency and obtain relevant data.",
+      "tagged_paragraphs": [
+        {
+          "text": "All tests provided for in the project will be performed with high quality in terms of scientific integrity on the basis of accepted procedures performed by qualified personnel, repeated at least 3 times for each group of samples and measurement technique, including internal controls, using reagents of appropriate purity and properly calibrated measuring equipment. If possible, manually entered data will be double checked or checked by another person to avoid mistakes. Data will be released, when meet validation criteria (usually: relative standard deviation of technical replicates less than 15%). The software tools included in the statistical software packages will be used to check data consistency and obtain relevant data.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "3.1": {
+      "section": "3. Storage and backup during the research process",
+      "question": "How will data and metadata be stored and backed up during the research process?",
+      "content": "The received data will be collected and stored electronically on the mass storage devices in soft copies at storage devices of the equipment used for data collection (usually the personal computer of the project manager and a workstation if applicable). Backups will be regularly exported (once a month) to high-capacity external disks.",
+      "tagged_paragraphs": [
+        {
+          "text": "The received data will be collected and stored electronically on the mass storage devices in soft copies at storage devices of the equipment used for data collection (usually the personal computer of the project manager and a workstation if applicable). Backups will be regularly exported (once a month) to high-capacity external disks.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "3.2": {
+      "section": "3. Storage and backup during the research process",
+      "question": "How will data security and protection of sensitive data be taken care of during the research?",
+      "content": "Access to all devices used to generate and collect data will be controlled at the user level using the MS Windows domain protocol application. Passwords will be distributed using other communication channels than those used to transfer data.",
+      "tagged_paragraphs": [
+        {
+          "text": "Access to all devices used to generate and collect data will be controlled at the user level using the MS Windows domain protocol application. Passwords will be distributed using other communication channels than those used to transfer data.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "4.1": {
+      "section": "4. Legal requirements, codes of conduct",
+      "question": "If personal data are processed, how will compliance with legislation on personal data and on data security be ensured?",
+      "content": "Compliance with personal data protection and data security regulations will be ensured in accordance with institutional procedures of Gdańsk University of Technology. Personal data processing within the project will be limited only to the recruitment and administration of student scholarship holders participating in the project.\nOnly data necessary for the recruitment process will be collected and processed. Personal data will be stored on password-protected institutional computers and secured university servers with access limited to authorized project personnel. All recruitment procedures will be conducted in a transparent and non-discriminatory manner, based solely on scientific competence and qualifications.",
+      "tagged_paragraphs": [
+        {
+          "text": "Compliance with personal data protection and data security regulations will be ensured in accordance with institutional procedures of Gdańsk University of Technology. Personal data processing within the project will be limited only to the recruitment and administration of student scholarship holders participating in the project.",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Only data necessary for the recruitment process will be collected and processed. Personal data will be stored on password-protected institutional computers and secured university servers with access limited to authorized project personnel. All recruitment procedures will be conducted in a transparent and non-discriminatory manner, based solely on scientific competence and qualifications.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "4.2": {
+      "section": "4. Legal requirements, codes of conduct",
+      "question": "How will other legal issues, such as intellectual property rights and ownership, be managed? What legislation is applicable?",
+      "content": "Due to Polish law and the institutional regulations (Resolution of the Senate of the Gdańsk University of Technology No. 117/2021/XXV of 19 May 2021 https://link.pg.edu.pl/GdańskTech_intprop) right to managing data and all scientific output derived from belongs to its creators and Gdańsk Tech., in accordance with the grant-maker's recommendations, some of them (readable for recipients) will be disseminated in the open access model under the license, in accordance with the recommendations of NCN.",
+      "tagged_paragraphs": [
+        {
+          "text": "Due to Polish law and the institutional regulations (Resolution of the Senate of the Gdańsk University of Technology No. 117/2021/XXV of 19 May 2021 https://link.pg.edu.pl/GdańskTech_intprop) right to managing data and all scientific output derived from belongs to its creators and Gdańsk Tech., in accordance with the grant-maker's recommendations, some of them (readable for recipients) will be disseminated in the open access model under the license, in accordance with the recommendations of NCN.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "5.1": {
+      "section": "5. Data sharing and long-term preservation",
+      "question": "How and when will data be shared? Are there possible restrictions to data sharing or embargo reasons?",
+      "content": "The data will be made available in a timely manner, usually no later than by publication of the main findings in scientific journals. The part of data will be published in the Bridge of Data repository under the terms of the Creative Commons Public Domain license (CC0 license) or CC BY license. Metadata describing published in the repository will be always available without any restrictions (CC0). Data may also be published on the scientific journal’s website as supplementary materials for published articles. Raw data, where possible, will be made available in the repository.\nData will be shared in accordance with the publication dates of the articles that are derived from this data.",
+      "tagged_paragraphs": [
+        {
+          "text": "The data will be made available in a timely manner, usually no later than by publication of the main findings in scientific journals. The part of data will be published in the Bridge of Data repository under the terms of the Creative Commons Public Domain license (CC0 license) or CC BY license. Metadata describing published in the repository will be always available without any restrictions (CC0). Data may also be published on the scientific journal’s website as supplementary materials for published articles. Raw data, where possible, will be made available in the repository.",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Data will be shared in accordance with the publication dates of the articles that are derived from this data.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "5.2": {
+      "section": "5. Data sharing and long-term preservation",
+      "question": "How will data for preservation be selected, and where will data be preserved long-term (for example a data repository or archive)?",
+      "content": "The MOST Wiedzy repository will be the main data repository. The repository is CoreTrustSeal certified, which means that it has established good preservation and dissemination practices. Data deposited in the repository will be automatically categorized for long term storage, without expiration date.\nMoreover, all data not selected for sharing will be stored by PI for at least 10 years after the project is finished and access to them will be possible on direct request with the PI consent.",
+      "tagged_paragraphs": [
+        {
+          "text": "The MOST Wiedzy repository will be the main data repository. The repository is CoreTrustSeal certified, which means that it has established good preservation and dissemination practices. Data deposited in the repository will be automatically categorized for long term storage, without expiration date.",
+          "tags": [],
+          "title": ""
+        },
+        {
+          "text": "Moreover, all data not selected for sharing will be stored by PI for at least 10 years after the project is finished and access to them will be possible on direct request with the PI consent.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "5.3": {
+      "section": "5. Data sharing and long-term preservation",
+      "question": "What methods or software tools will be needed to access and use the data?",
+      "content": "Data will be exported to open formats readable by open-source software. Processed data will be accessible using standard office applications or open standards (e.g.: .odt, .ods, .pdf,). Depending on technical possibilities in the near future, if needed, appropriate actions towards format migration will be undertaken.",
+      "tagged_paragraphs": [
+        {
+          "text": "Data will be exported to open formats readable by open-source software. Processed data will be accessible using standard office applications or open standards (e.g.: .odt, .ods, .pdf,). Depending on technical possibilities in the near future, if needed, appropriate actions towards format migration will be undertaken.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "5.4": {
+      "section": "5. Data sharing and long-term preservation",
+      "question": "How will the application of a unique and persistent identifier (such as a Digital Object Identifier (DOI)) to each data set be ensured?",
+      "content": "Data will be deposited and shared only in repositories offering free unique and persistent identifier Digital Object Identifier (DOI), such as Bridge of Data.",
+      "tagged_paragraphs": [
+        {
+          "text": "Data will be deposited and shared only in repositories offering free unique and persistent identifier Digital Object Identifier (DOI), such as Bridge of Data.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "6.1": {
+      "section": "6. Data management responsibilities and resources",
+      "question": "Who (for example role, position, and institution) will be responsible for data management (i.e. the data steward)?",
+      "content": "Project manager will be responsible for overall data management, including preparation of final files and their upload into a chosen repository along with metadata. Open Science Competence Center (pg.edu.pl/openscience) - established by Gdańsk Tech will be responsible for DMP and quality of metadata in the repository.",
+      "tagged_paragraphs": [
+        {
+          "text": "Project manager will be responsible for overall data management, including preparation of final files and their upload into a chosen repository along with metadata. Open Science Competence Center (pg.edu.pl/openscience) - established by Gdańsk Tech will be responsible for DMP and quality of metadata in the repository.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    },
+    "6.2": {
+      "section": "6. Data management responsibilities and resources",
+      "question": "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)?",
+      "content": "The costs of deposition of data in specialized repositories may be incurred for the costs of the project when necessary. Mass-storage devices dedicated to project-related data backup will be purchased when necessary.",
+      "tagged_paragraphs": [
+        {
+          "text": "The costs of deposition of data in specialized repositories may be incurred for the costs of the project when necessary. Mass-storage devices dedicated to project-related data backup will be purchased when necessary.",
+          "tags": [],
+          "title": ""
+        }
+      ]
+    }
+  }
+}

@@ -4,6 +4,10 @@ Test OCR setup and configuration
 import sys
 import os
 import io
+import unittest
+
+if __name__ != '__main__':
+    raise unittest.SkipTest('Manual diagnostic script')
 
 # Fix Windows console encoding
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')

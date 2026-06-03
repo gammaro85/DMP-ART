@@ -1,0 +1,18 @@
+{
+  "cache_id": "e65524a6-e104-4201-b22a-b61fed4c15d5",
+  "status": "active",
+  "session_created_at": "2026-06-02T12:56:46.835669",
+  "last_updated": "2026-06-02T14:32:30.861779",
+  "researcher_surname": "",
+  "researcher_firstname": "",
+  "competition_name": "",
+  "competition_edition": "",
+  "creation_date": "",
+  "filename_original": "",
+  "source_cache_file": "cache_e65524a6-e104-4201-b22a-b61fed4c15d5.json",
+  "dmp_file": "dmp_plan.json",
+  "feedback_file": "feedback.json",
+  "review_export_file": "review_export.json",
+  "session_folder": "outputs/sessions/active\\e65524a6-e104-4201-b22a-b61fed4c15d5",
+  "source_cache_path": "outputs/cache\\cache_e65524a6-e104-4201-b22a-b61fed4c15d5.json"
+}

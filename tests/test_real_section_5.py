@@ -4,7 +4,11 @@ Test on a real DMP file to check if section 5.2 is actually being skipped.
 
 import sys
 import os
+import unittest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
+if __name__ != '__main__':
+    raise unittest.SkipTest('Manual diagnostic script')
 
 from utils.extractor_v2 import DMPExtractor
 import json
