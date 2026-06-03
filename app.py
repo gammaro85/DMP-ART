@@ -2141,54 +2141,6 @@ def clear_cache():
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
 
-@app.route('/api/settings/extractor-debug', methods=['GET'])
-def get_extractor_debug():
-    """Get current extractor debug mode status"""
-    return jsonify({
-        'success': True,
-        'debug_mode': DEBUG_MODE,
-        'extractor_version': 'v3-separated' if DEBUG_MODE else 'v2-production',
-        'description': (
-            'v3: Separated slicing & cleaning with RAW data export (for debugging)'
-            if DEBUG_MODE else
-            'v2: Production extractor (clean during slicing, optimized)'
-        )
-    })
-
-@app.route('/api/settings/extractor-debug', methods=['POST'])
-def update_extractor_debug():
-    """Toggle extractor debug mode (v2 vs v3)"""
-    global DEBUG_MODE
-    try:
-        data = request.json or {}
-        if 'debug_mode' in data:
-            DEBUG_MODE = bool(data['debug_mode'])
-
-            # Persist to config/settings.json
-            saved = {}
-            if os.path.exists(_GENERAL_SETTINGS_PATH):
-                try:
-                    with open(_GENERAL_SETTINGS_PATH, 'r', encoding='utf-8') as f:
-                        saved = json.load(f)
-                except Exception:
-                    saved = {}
-
-            saved['extractor_debug_mode'] = DEBUG_MODE
-
-            with open(_GENERAL_SETTINGS_PATH, 'w', encoding='utf-8') as f:
-                json.dump(saved, f, indent=2, ensure_ascii=False)
-
-            version = 'v3-separated' if DEBUG_MODE else 'v2-production'
-            return jsonify({
-                'success': True,
-                'message': f'Extractor switched to {version}',
-                'debug_mode': DEBUG_MODE
-            })
-
-        return jsonify({'success': False, 'message': 'Missing debug_mode parameter'}), 400
-    except Exception as e:
-        return jsonify({'success': False, 'message': str(e)}), 500
-
 # ============================================================
 # AI Module Routes
 # ============================================================
