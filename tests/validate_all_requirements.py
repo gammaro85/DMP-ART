@@ -9,6 +9,21 @@ import os
 import sys
 import json
 
+
+def find_category_config(category_base):
+    """Resolve language-specific category config with legacy fallback."""
+    candidates = [
+        f'config/{category_base}_pl.json',
+        f'config/{category_base}.json',
+        f'config/{category_base}_pl_stare.json',
+    ]
+
+    for path in candidates:
+        if os.path.exists(path):
+            return path
+
+    return None
+
 def validate_requirement_1():
     """Requirement 1: Extract DMP from proposals"""
     print("\n1️⃣  Extract DMP from proposals")
@@ -63,11 +78,11 @@ def validate_requirement_3():
     print("   ✅ config/quick_comments.json exists")
     
     # Check category files
-    categories = ['ready_to_use.json', 'for_newbies.json', 'missing_info.json']
+    categories = ['ready_to_use', 'for_newbies', 'missing_info']
     for cat in categories:
-        path = f'config/{cat}'
-        assert os.path.exists(path), f"❌ {cat} not found"
-    print(f"   ✅ Category files: {', '.join([c[:-5] for c in categories])}")
+        path = find_category_config(cat)
+        assert path, f"❌ {cat} category config not found"
+    print(f"   ✅ Category files: {', '.join(categories)}")
     
     # Check review template has text areas
     with open('templates/review.html', 'r') as f:
@@ -99,7 +114,10 @@ def validate_requirement_5():
     print("   " + "─" * 60)
     
     # Check category structure
-    with open('config/ready_to_use.json', 'r', encoding='utf-8') as f:
+    ready_config = find_category_config('ready_to_use')
+    assert ready_config, "❌ ready_to_use category config not found"
+
+    with open(ready_config, 'r', encoding='utf-8') as f:
         ready_data = json.load(f)
     
     # Check if sections have individual comment lists
@@ -107,7 +125,7 @@ def validate_requirement_5():
                 '5.1', '5.2', '5.3', '5.4', '6.1', '6.2']
     
     for section in sections:
-        assert section in ready_data, f"❌ Section {section} not in ready_to_use.json"
+        assert section in ready_data, f"❌ Section {section} not in {ready_config}"
     print("   ✅ Per-section comment customization available")
     print(f"   ✅ All 14 sections can have unique comments")
     print("   Status: ✅ IMPLEMENTED")

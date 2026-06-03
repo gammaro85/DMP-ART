@@ -124,13 +124,13 @@
         body[data-page="review"] .review-layout .right-sidebar {
             position: fixed !important;
             right: 0 !important;
-            top: 50px !important;
+            top: 40px !important;
             width: 25% !important;
             min-width: 25% !important;
             max-width: 25% !important;
-            height: calc(100vh - 50px) !important;
-            min-height: calc(100vh - 50px) !important;
-            max-height: calc(100vh - 50px) !important;
+            height: calc(100vh - 40px - 30px) !important;
+            min-height: calc(100vh - 40px - 30px) !important;
+            max-height: calc(100vh - 40px - 30px) !important;
             background-color: var(--bg-card) !important;
             border-left: 1px solid var(--border-light) !important;
             border-radius: 0 !important;
@@ -624,6 +624,7 @@
             flex-direction: column;
             min-height: 100vh;
             position: relative;
+            padding-top: 40px; /* Space for fixed header */
             /* CRITICAL: No transform, filter, or backdrop-filter - breaks fixed positioning */
             transform: none !important;
             filter: none !important;
@@ -963,6 +964,94 @@
         [data-theme="dark"] textarea::-webkit-scrollbar-thumb:hover {
             background: var(--primary-color);
         }
+
+        /* Unconnected text assignment controls */
+        .assignment-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .action-buttons-row {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .assignment-controls .assign-btn,
+        .assignment-controls .skip-btn {
+            flex: 1;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .assignment-controls .assign-btn {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .assignment-controls .assign-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .assignment-controls .skip-btn {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-medium);
+        }
+
+        .assignment-controls .skip-btn:hover {
+            background: var(--bg-secondary);
+        }
+
+        /* Skip term checkbox */
+        .skip-term-checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius-sm);
+            border: 1px solid var(--border-light);
+        }
+
+        .skip-term-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary-color);
+        }
+
+        .skip-term-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: color 0.2s ease;
+        }
+
+        .skip-term-label:hover {
+            color: var(--text-primary);
+        }
+
+        .skip-term-checkbox:disabled + .skip-term-label {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Dark mode */
+        [data-theme="dark"] .skip-term-checkbox-wrapper {
+            background: var(--navbar-bg);
+            border-color: var(--border-medium);
+        }
     </style>
 </head>
 <body data-page="review" data-cache-id="{{ cache_id }}" data-filename="{{ filename }}">
@@ -972,6 +1061,9 @@
             <div class="header-left-controls">
                 <button class="theme-toggle" aria-label="Toggle theme">
                     <i class="fas fa-moon"></i>
+                </button>
+                <button class="history-btn" aria-label="View session history" title="View archived and active sessions">
+                    <i class="fas fa-history"></i> History
                 </button>
                 <!-- Language Switcher (left side) -->
                 <div class="header-language-switcher">
@@ -1218,14 +1310,20 @@
                                         {% endif %}
                                         {% endfor %}
                                     </select>
-                                    <button class="assign-btn" data-index="{{ loop.index0 }}" data-text="{{ item.text }}">Assign</button>
-                                    <button class="skip-btn" data-index="{{ loop.index0 }}">Skip</button>
-                                    <button class="add-skip-term-btn"
-                                            data-index="{{ loop.index0 }}"
-                                            data-text="{{ item.text | e }}"
-                                            title="Dodaj ten tekst do listy terminów pomijanych przy ekstrakcji">
-                                        <i class="fas fa-ban"></i> Dodaj do skip list
-                                    </button>
+                                    <div class="action-buttons-row">
+                                        <button class="assign-btn" data-index="{{ loop.index0 }}" data-text="{{ item.text }}">Assign</button>
+                                        <button class="skip-btn" data-index="{{ loop.index0 }}">Skip</button>
+                                    </div>
+                                    <div class="skip-term-checkbox-wrapper">
+                                        <input type="checkbox"
+                                               id="skip-term-{{ loop.index0 }}"
+                                               class="skip-term-checkbox"
+                                               data-index="{{ loop.index0 }}"
+                                               data-text="{{ item.text | e }}">
+                                        <label for="skip-term-{{ loop.index0 }}" class="skip-term-label">
+                                            <i class="fas fa-ban"></i> Add to skip list (requires Skip or Assign action)
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                             {% endfor %}
@@ -1257,16 +1355,10 @@
                     </div>
                     <div class="panel-actions">
                         <button id="copy-compiled-btn" class="action-btn" title="Copy report to clipboard">
-                            <i class="fas fa-copy"></i> Copy Report
+                            <i class="fas fa-copy"></i> Copy
                         </button>
-                        <button id="download-feedback-btn" class="action-btn" title="Download as text file">
-                            <i class="fas fa-download"></i> Download TXT
-                        </button>
-                        <button id="generate-docx-btn" class="action-btn" title="Generate Word document">
-                            <i class="fas fa-file-word"></i> Generate DOCX
-                        </button>
-                        <button id="export-json-btn" class="action-btn" title="Export as JSON with metadata">
-                            <i class="fas fa-file-code"></i> Export JSON
+                        <button id="archive-session-btn" class="action-btn" title="Archive this review session">
+                            <i class="fas fa-archive"></i> Archive
                         </button>
                     </div>
                 </div>
@@ -1277,7 +1369,7 @@
     </div>
     
     <footer class="site-footer site-footer--relative">
-        <span>DMP ART &copy; 2025</span>
+        <span>DMP ART &copy; 2025 — <a href="https://github.com/gammaro85/DMP-ART" target="_blank" rel="noopener" class="footer-link">MIT License</a></span>
     </footer>
 
     <div id="cite-toolbar-float">
@@ -1717,15 +1809,18 @@
                         const category = this.getAttribute('data-category');
                         const section = this.getAttribute('data-section');
 
-                        // Toggle active state
+                        // Check if THIS button is already active BEFORE removing classes
+                        const wasActive = this.classList.contains('active');
+
+                        // Remove active state from ALL category buttons in this section
                         const sectionButtons = document.querySelectorAll(`[data-section="${section}"].category-btn-inline`);
                         sectionButtons.forEach(btn => btn.classList.remove('active'));
 
-                        if (this.classList.contains('active')) {
-                            // If clicking active button, hide dropdown
+                        if (wasActive) {
+                            // If clicking active button, hide dropdown (toggle off)
                             hideDropdown(section);
                         } else {
-                            // Show dropdown with category comments
+                            // Show dropdown with category comments and mark THIS button as active
                             this.classList.add('active');
                             showCategoryComments(category, section);
                         }
@@ -1846,7 +1941,7 @@
 
             // Individual assign buttons
             document.querySelectorAll('.assign-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', async function() {
                     const index = this.getAttribute('data-index');
                     const text = this.getAttribute('data-text');
                     const select = document.getElementById(`section-select-${index}`);
@@ -1857,46 +1952,62 @@
                         return;
                     }
 
+                    // Check if "add to skip list" checkbox is checked
+                    const checkbox = document.getElementById(`skip-term-${index}`);
+                    if (checkbox && checkbox.checked) {
+                        await addToSkipList(text, checkbox);
+                    }
+
                     assignTextToSection(index, text, selectedSection);
                 });
             });
 
             // Individual skip buttons
             document.querySelectorAll('.skip-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', async function() {
                     const index = this.getAttribute('data-index');
+
+                    // Check if "add to skip list" checkbox is checked
+                    const checkbox = document.getElementById(`skip-term-${index}`);
+                    if (checkbox && checkbox.checked) {
+                        const text = checkbox.getAttribute('data-text');
+                        await addToSkipList(text, checkbox);
+                    }
+
                     skipText(index);
                 });
             });
 
-            // "Dodaj do skip list" button
-            document.querySelectorAll('.add-skip-term-btn').forEach(btn => {
-                btn.addEventListener('click', async function() {
-                    const term = this.getAttribute('data-text');
-                    if (!term) return;
-                    try {
-                        const r = await fetch('/api/extraction/skip-terms', {
-                            method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({term: term})
-                        });
-                        const data = await r.json();
-                        if (data.success) {
-                            this.disabled = true;
-                            this.innerHTML = '<i class="fas fa-check"></i> Dodano';
-                            this.style.opacity = '0.6';
-                            if (typeof showToast === 'function')
-                                showToast('Dodano do listy terminów pomijanych', 'success');
-                        } else {
-                            if (typeof showToast === 'function')
-                                showToast(data.message || 'Błąd', 'error');
+            // Helper function to add term to skip list
+            async function addToSkipList(term, checkbox) {
+                if (!term) return;
+                try {
+                    const r = await fetch('/api/extraction/skip-terms', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({term: term})
+                    });
+                    const data = await r.json();
+                    if (data.success) {
+                        checkbox.disabled = true;
+                        checkbox.checked = true;
+                        const label = checkbox.nextElementSibling;
+                        if (label) {
+                            label.innerHTML = '<i class="fas fa-check"></i> Added to skip list';
+                            label.style.opacity = '0.6';
+                            label.style.color = 'var(--success-color)';
                         }
-                    } catch (e) {
                         if (typeof showToast === 'function')
-                            showToast('Błąd połączenia', 'error');
+                            showToast('Added to skip list', 'success');
+                    } else {
+                        if (typeof showToast === 'function')
+                            showToast(data.message || 'Error', 'error');
                     }
-                });
-            });
+                } catch (e) {
+                    if (typeof showToast === 'function')
+                        showToast('Connection error', 'error');
+                }
+            }
 
             // Assign all button
             if (assignAllBtn) {
@@ -2275,7 +2386,7 @@
             }
 
             function appendCitation(textarea, selText) {
-                let citation = `*${selText}*`;
+                let citation = `„${selText}"`;
                 let value = textarea.value;
                 let sep = value && !value.endsWith('\n') ? '\n\n' : '';
                 textarea.value = value + sep + citation;
@@ -2364,7 +2475,7 @@
 
                 if (typeof showToast === 'function') {
                     if (matchCount > 0) {
-                        showToast(`Cytat dodany do ${matchCount} sekcj${matchCount === 1 ? 'i' : (matchCount < 5 ? 'i' : 'i')}`, 'success');
+                        showToast(`Cytat dodany do ${matchCount} sekcji`, 'success');
                     } else {
                         showToast('Tekst nie został znaleziony w żadnej sekcji', 'info');
                     }
@@ -2402,9 +2513,7 @@
             const compileBtn = document.getElementById('compile-feedback-btn');
             const closeBtn = document.getElementById('close-compiled-btn');
             const copyBtn = document.getElementById('copy-compiled-btn');
-            const downloadBtn = document.getElementById('download-feedback-btn');
-            const generateDocxBtn = document.getElementById('generate-docx-btn');
-            const exportJsonBtn = document.getElementById('export-json-btn');
+            const archiveBtn = document.getElementById('archive-session-btn');
             const feedbackTextarea = document.getElementById('compiled-feedback');
             
             let isOpen = false;
@@ -2460,35 +2569,20 @@
             function copyToClipboard() {
                 feedbackTextarea.select();
                 document.execCommand('copy');
-                
+
                 // Show temporary success message
                 const originalText = copyBtn.innerHTML;
                 copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
                 copyBtn.style.background = 'var(--success-color)';
-                
+
                 setTimeout(() => {
                     copyBtn.innerHTML = originalText;
                     copyBtn.style.background = '';
                 }, 2000);
             }
 
-            // Download as text file
-            function downloadReport() {
-                const content = feedbackTextarea.value;
-                const blob = new Blob([content], { type: 'text/plain' });
-                const url = window.URL.createObjectURL(blob);
-
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `DMP_Feedback_Report_${new Date().toISOString().split('T')[0]}.txt`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                window.URL.revokeObjectURL(url);
-            }
-
-            // Export as JSON with metadata
-            function exportJson() {
+            // Archive session - save DMP plan and feedback as structured JSON files
+            function archiveSession() {
                 // Get cache_id from URL
                 const urlParams = new URLSearchParams(window.location.search);
                 const cacheId = urlParams.get('cache_id');
@@ -2511,56 +2605,81 @@
                     }
                 });
 
-                // Show loading state
-                const originalText = exportJsonBtn.innerHTML;
-                exportJsonBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Exporting...';
-                exportJsonBtn.disabled = true;
+                // Check if there's any feedback to archive
+                if (Object.keys(feedbackData).length === 0) {
+                    if (!confirm('No feedback has been added yet. Archive anyway?')) {
+                        return;
+                    }
+                }
+
+                // Compile feedback text (use compileFeedback from script.js if available)
+                let compiledFeedback = '';
+                if (typeof compileFeedback === 'function') {
+                    compiledFeedback = compileFeedback();
+                } else {
+                    // Fallback: generate compiled feedback locally
+                    const allSections = ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2', '4.1', '4.2', '5.1', '5.2', '5.3', '5.4', '6.1', '6.2'];
+                    allSections.forEach(sectionId => {
+                        const text = feedbackData[sectionId];
+                        if (text && text.trim()) {
+                            compiledFeedback += `${sectionId} - ${text.trim()}\n\n`;
+                        } else {
+                            compiledFeedback += `${sectionId} brak komentarza\n\n`;
+                        }
+                    });
+                    compiledFeedback = compiledFeedback.trim();
+                }
+
+                // Get the archive button
+                const archiveBtn = document.getElementById('archive-session-btn');
+                const originalText = archiveBtn.innerHTML;
+                archiveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Archiving...';
+                archiveBtn.disabled = true;
 
                 // Send to server
-                fetch('/export_json', {
+                fetch('/api/archive-session', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         cache_id: cacheId,
-                        feedback: feedbackData
+                        feedback: compiledFeedback,    // Compiled text report
+                        feedbackData: feedbackData     // Raw section data
                     })
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Create download link for JSON file
-                        const jsonBlob = new Blob([JSON.stringify(data.data, null, 2)], { type: 'application/json' });
-                        const url = window.URL.createObjectURL(jsonBlob);
-
-                        const link = document.createElement('a');
-                        link.href = url;
-                        link.download = data.filename;
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        window.URL.revokeObjectURL(url);
-
                         // Success message
-                        exportJsonBtn.innerHTML = '<i class="fas fa-check"></i> Exported!';
-                        exportJsonBtn.style.background = 'var(--success-color)';
+                        archiveBtn.innerHTML = '<i class="fas fa-check"></i> Archived!';
+                        archiveBtn.style.background = 'var(--success-color)';
+
+                        // Remove from localStorage active sessions
+                        if (typeof SessionManager !== 'undefined') {
+                            SessionManager.deleteSession(cacheId);
+                        }
 
                         setTimeout(() => {
-                            exportJsonBtn.innerHTML = originalText;
-                            exportJsonBtn.style.background = '';
-                            exportJsonBtn.disabled = false;
+                            archiveBtn.innerHTML = originalText;
+                            archiveBtn.style.background = '';
+                            archiveBtn.disabled = false;
+
+                            // Show success notification
+                            if (typeof showToast === 'function') {
+                                showToast('Session archived successfully!', 'success');
+                            }
                         }, 2000);
                     } else {
-                        alert('Error exporting JSON: ' + data.message);
-                        exportJsonBtn.innerHTML = originalText;
-                        exportJsonBtn.disabled = false;
+                        alert('Error archiving session: ' + data.message);
+                        archiveBtn.innerHTML = originalText;
+                        archiveBtn.disabled = false;
                     }
                 })
                 .catch(error => {
-                    alert('Error exporting JSON: ' + error.message);
-                    exportJsonBtn.innerHTML = originalText;
-                    exportJsonBtn.disabled = false;
+                    alert('Error archiving session: ' + error.message);
+                    archiveBtn.innerHTML = originalText;
+                    archiveBtn.disabled = false;
                 });
             }
 
@@ -2580,19 +2699,9 @@
             if (copyBtn) {
                 copyBtn.addEventListener('click', copyToClipboard);
             }
-            
-            if (downloadBtn) {
-                downloadBtn.addEventListener('click', downloadReport);
-            }
-            
-            if (generateDocxBtn) {
-                generateDocxBtn.addEventListener('click', function() {
-                    alert('DOCX generation feature coming soon!');
-                });
-            }
 
-            if (exportJsonBtn) {
-                exportJsonBtn.addEventListener('click', exportJson);
+            if (archiveBtn) {
+                archiveBtn.addEventListener('click', archiveSession);
             }
 
             // Keyboard shortcuts
@@ -2605,5 +2714,28 @@
             // Panel is now a centered modal, no dragging needed
         })();
     </script>
+
+    <!-- History Modal -->
+    <div id="history-modal">
+        <div class="history-modal-content">
+            <div class="history-modal-header">
+                <h2><i class="fas fa-history"></i> Session History</h2>
+                <button class="history-modal-close" aria-label="Close">&times;</button>
+            </div>
+            <div class="history-modal-body">
+                <!-- Active Sessions -->
+                <div class="history-section">
+                    <h3><i class="fas fa-clock"></i> Active Sessions</h3>
+                    <div id="active-sessions-list"></div>
+                </div>
+
+                <!-- Archived Sessions -->
+                <div class="history-section">
+                    <h3><i class="fas fa-archive"></i> Archived Sessions</h3>
+                    <div id="archived-sessions-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

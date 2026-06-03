@@ -1,6 +1,6 @@
 {
   "enabled": false,
-  "provider": "anthropic",
+  "provider": "openai",
   "api_keys": {
     "openai": "",
     "anthropic": ""
