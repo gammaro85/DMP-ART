@@ -1,0 +1,34 @@
+PLAN ZARZĄDZANIA DANYMI
+
+1. Opis danych oraz pozyskiwanie lub ponowne wykorzystanie istniejących danych
+
+1.1 Jakie dane będą zebrane lub wytworzone?
+
+W projekcie zostaną zebrane dane jakościowe z 60 pogłębionych wywiadów
+z prezesami sądów, wiceprezesami, dyrektorami sądów oraz inspektorami.
+Dane będą obejmowały transkrypcje wywiadów, notatki badawcze oraz
+dokumenty organizacyjne dotyczące funkcjonowania sądów.
+
+1.2 Jakie dane (np. rodzaj, format, ilość) będą zebrane lub wytworzone?
+
+Dane będą zapisane w formatach:
+- .mp3 / .wav (nagrania audio)
+- .docx / .pdf (transkrypcje)
+- .xlsx / .csv (dane statystyczne)
+
+Szacowana objętość danych: 20-30 GB.
+
+2. Dokumentacja i jakość danych
+
+2.1 Jakie metadane i dokumenty (np. metodologia lub sposób zbierania i porządkowania danych) będą towarzyszyć danym?
+
+Każdy wywiad będzie miał metadane:
+- data i miejsce wywiadu
+- kategoria respondenta
+- kod identyfikacyjny
+- status anonimizacji
+
+2.2 Jakie środki kontroli jakości danych będą stosowane?
+
+Transkrypcje będą weryfikowane przez dwóch niezależnych badaczy.
+Dane będą podlegały triangulacji: wywiady, dokumenty, statystyki.
