@@ -4,7 +4,11 @@ Debug why 3.1 anchor matches block 5 (which is actually 5.2 content).
 
 import sys
 import os
+import unittest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
+if __name__ != '__main__':
+    raise unittest.SkipTest('Manual diagnostic script')
 
 from utils.extractor_v2 import normalize, token_overlap
 import json
