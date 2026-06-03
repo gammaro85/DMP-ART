@@ -219,8 +219,8 @@ body {
   transition: .3s ease;
   position: relative;
   min-height: 100vh;
-  padding-top: 50px;
-  padding-bottom: 40px;
+  padding-top: 40px;
+  padding-bottom: 30px;
   padding-left: 0 !important;
   padding-right: 0 !important;
   margin: 0 !important;
@@ -527,7 +527,7 @@ body:not([data-page=index]) .logo {
   border: none;
   border-radius: var(--border-radius-md);
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: var(--font-weight-normal);
   display: flex;
   align-items: center;
@@ -563,9 +563,9 @@ body:not([data-page=index]) .logo {
   border-bottom: 1px solid var(--border-light);
   padding: 0 var(--spacing-5);
   z-index: 1000;
-  height: 50px;
-  min-height: 50px;
-  max-height: 50px;
+  height: 40px;
+  min-height: 40px;
+  max-height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -609,7 +609,7 @@ body:not([data-page=index]) .logo {
   cursor: pointer;
   border-radius: 16px;
   font-weight: var(--font-weight-medium);
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
@@ -686,7 +686,7 @@ body:not([data-page=index]) .logo {
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  font-size: 0.875rem;
+  font-size: 0.79rem;
 }
 .nav-item:hover {
   color: var(--text-primary);
@@ -1355,13 +1355,13 @@ body::before {
   margin: 0 !important;
   background: var(--footer-bg);
   border-top: 1px solid var(--border-light);
-  padding: 5px 16px;
+  padding: 6px 16px;
   text-align: center;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   color: var(--text-muted);
   z-index: 1000;
-  min-height: auto;
-  height: auto;
+  height: 30px;
+  min-height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1386,6 +1386,12 @@ body::before {
   color: inherit;
   text-decoration: underline;
   text-underline-offset: 2px;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.site-footer .footer-link:hover {
+  color: var(--primary-color);
+  opacity: 1;
 }
 
 /* Body padding for fixed footer pages to prevent content overlap - consolidated above */
@@ -1521,6 +1527,136 @@ textarea,
   margin-bottom: clamp(0.5rem, 2vw, 1rem);
 }
 
+/* ========================================
+   RECENT SESSIONS
+   ======================================== */
+.recent-sessions-container {
+  background: var(--bg-card);
+  border: 2px solid var(--border-medium);
+  border-radius: var(--border-radius-lg);
+  padding: 1.5rem;
+  margin: 1.5rem auto;
+  min-width: 500px;
+  max-width: 700px;
+  width: 55vw;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.recent-sessions-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.recent-sessions-title i {
+  color: var(--primary-color);
+}
+
+.recent-sessions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.session-item {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius-md);
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.session-item:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--primary-color);
+  transform: translateX(2px);
+}
+
+.session-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.session-filename {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.session-meta {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  display: flex;
+  gap: 1rem;
+}
+
+.session-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.session-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.session-btn.continue {
+  background: var(--primary-color);
+  color: white;
+}
+
+.session-btn.continue:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.session-btn.delete {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border-medium);
+}
+
+.session-btn.delete:hover {
+  background: var(--error-color);
+  color: white;
+  border-color: var(--error-color);
+}
+
+/* Dark mode */
+[data-theme="dark"] .recent-sessions-container {
+  background: var(--bg-card);
+  border-color: var(--border-medium);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .session-item {
+  background: var(--bg-tertiary);
+  border-color: var(--border-light);
+}
+
+[data-theme="dark"] .session-item:hover {
+  background: var(--navbar-bg);
+  border-color: var(--primary-color);
+}
+
 /* Upload area needs custom flex settings - excluded from above */
 .upload-area {
   flex: 0 0 auto; /* Fixed size, don't grow */
@@ -1537,6 +1673,7 @@ textarea,
   max-width: 100% !important;
   width: 100% !important;
   padding: 0 !important;
+  padding-top: 1rem !important; /* Extra space below header to prevent logo overlap */
   box-sizing: border-box !important;
   overflow: visible !important; /* Ensure border is fully visible */
 }
@@ -1643,19 +1780,20 @@ textarea,
 
 /* Increase spacing between objects inside the frame */
 .upload-text {
-  font-size: clamp(0.95rem, 1.6vw, 1.15rem);
-  font-weight: 400;
+  font-size: clamp(0.76rem, 1.28vw, 0.92rem);
+  font-weight: 500;
   margin: 0;
   text-align: center;
-  color: var(--text-muted);
-  opacity: 0.7;
+  color: var(--text-primary);
+  opacity: 1;
   line-height: var(--line-height-normal);
   max-width: 85%;
 }
 .upload-hint {
-  font-size: clamp(0.9375rem, 1.5vw, 1.125rem);
+  font-size: clamp(0.75rem, 1.2vw, 0.9rem);
   margin-bottom: 0;
-  color: var(--text-secondary);
+  color: var(--text-primary);
+  opacity: 0.85;
   text-align: center;
 }
 

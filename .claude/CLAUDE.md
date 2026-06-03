@@ -65,9 +65,13 @@ static/js/dark-mode.js              # Theme management (4KB)
 config/
 ├── dmp_structure.json              # 14 DMP section definitions
 ├── quick_comments.json             # Reusable comment templates
-├── for_newbies.json                # Category: Guidance for newcomers
-├── missing_info.json               # Category: Missing information
-├── ready_to_use.json               # Category: Ready to use feedback
+├── for_newbies_pl.json             # Category: Guidance for newcomers (Polish)
+├── for_newbies_en.json             # Category: Guidance for newcomers (English)
+├── missing_info_pl.json            # Category: Missing information (Polish)
+├── missing_info_en.json            # Category: Missing information (English)
+├── ready_to_use_pl.json            # Category: Ready to use feedback (Polish)
+├── ready_to_use_en.json            # Category: Ready to use feedback (English)
+├── *_pl_stare.json                 # Legacy archived Polish category variants (fallback only)
 ├── [custom].json                   # User can create unlimited categories
 └── ai/                             # AI module configuration (separate folder)
     ├── ai_config.json              # AI module settings
@@ -106,7 +110,11 @@ tests/                              # Test files
 
 uploads/                            # Temporary file storage (cleaned on processing)
 outputs/
-└── cache/                          # JSON cache files (cache_*.json)
+├── cache/                          # JSON cache files (cache_*.json)
+├── reviews/                        # Exported review TXT/JSON files
+└── sessions/
+  ├── active/                     # Active review sessions by cache_id
+  └── archive/                    # Archived review sessions by archive_id
 
 old/                                # Archived/unused files (not part of core app)
 ```
@@ -204,7 +212,9 @@ if result['success']:
 - Cache files: `outputs/cache/cache_{uuid}.json`
 - Structure: `{"1.1": {section, question, paragraphs, tagged_paragraphs}, ...}`
 - UUID ensures no collisions across concurrent uploads
-- Organized folder structure: DMP files in `outputs/dmp/`, reviews in `outputs/reviews/`
+- Active review history lives in `outputs/sessions/active/<cache_id>/`
+- Each active session stores `dmp_plan.json`, `feedback.json`, `metadata.json`, and optional `review_export.json`
+- Archived sessions live in `outputs/sessions/archive/<archive_id>/`
 
 ### Frontend JavaScript Patterns
 
@@ -1067,8 +1077,9 @@ suggestions = assistant.generate_section_suggestion(
   - `static/js/dark-mode.js` (4KB) - Theme management
 - File organization improved with dedicated folders:
   - `outputs/cache/` for cache files
-  - `outputs/dmp/` for extracted DMPs
   - `outputs/reviews/` for feedback files
+  - `outputs/sessions/active/` for active DMP/comment JSON history
+  - `outputs/sessions/archive/` for archived DMP/comment JSON history
 
 **Codebase Growth:**
 - `utils/extractor.py`: 1,236 → 2,101 lines (+70% more features)

@@ -1,0 +1,104 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - navigation [ref=e3]:
+      - button "Toggle theme" [ref=e5] [cursor=pointer]:
+        - generic [ref=e6]: 
+      - generic [ref=e7]:
+        - link "Home" [ref=e8] [cursor=pointer]:
+          - /url: /
+        - generic "Upload and process a document first to access review": Review
+        - link "Settings":
+          - /url: /settings
+        - link "Documentation" [ref=e9] [cursor=pointer]:
+          - /url: /documentation
+  - generic [ref=e10]:
+    - complementary [ref=e11]:
+      - generic [ref=e12]:
+        - heading " Settings" [level=2] [ref=e13]:
+          - generic [ref=e14]: 
+          - text: Settings
+        - paragraph [ref=e15]: Configure your DMP ART instance
+      - list [ref=e16]:
+        - listitem [ref=e17] [cursor=pointer]:
+          - generic [ref=e18]: 
+          - generic [ref=e19]: General
+        - listitem [ref=e20] [cursor=pointer]:
+          - generic [ref=e21]: 
+          - generic [ref=e22]: Comments
+        - listitem [ref=e23] [cursor=pointer]:
+          - generic [ref=e24]: 
+          - generic [ref=e25]: AI Assistant
+        - listitem [ref=e26] [cursor=pointer]:
+          - generic [ref=e27]: 
+          - generic [ref=e28]: Ekstrakcja
+    - main [ref=e29]:
+      - generic [ref=e30]:
+        - generic [ref=e31]:
+          - heading " General Settings" [level=1] [ref=e32]:
+            - generic [ref=e33]: 
+            - text: General Settings
+          - paragraph [ref=e34]: Application preferences and basic configuration
+        - generic [ref=e35]:
+          - heading " Application Info" [level=2] [ref=e36]:
+            - generic [ref=e37]: 
+            - text: Application Info
+          - generic [ref=e38]:
+            - generic [ref=e39]:
+              - generic [ref=e40]: Version
+              - generic [ref=e41]: 0.9.1
+            - generic [ref=e42]:
+              - generic [ref=e43]: Extraction Success Rate
+              - generic [ref=e44]: 94.1%
+            - generic [ref=e45]:
+              - generic [ref=e46]: DMP Sections
+              - generic [ref=e47]: 14 (Science Europe)
+            - generic [ref=e48]:
+              - generic [ref=e49]: Supported Formats
+              - generic [ref=e50]: PDF, DOCX
+        - generic [ref=e51]:
+          - heading " Interface Preferences" [level=2] [ref=e52]:
+            - generic [ref=e53]: 
+            - text: Interface Preferences
+          - generic [ref=e54]:
+            - generic [ref=e55]: Theme
+            - combobox [ref=e56]:
+              - option "Light" [selected]
+              - option "Dark"
+            - generic [ref=e57]: Choose the color scheme. Also available via the toggle in the header.
+          - generic [ref=e58]:
+            - generic [ref=e59]: Default Comment Language
+            - combobox [ref=e60]:
+              - option "Polski (PL)" [selected]
+              - option "English (EN)"
+            - generic [ref=e61]: Default language for comment categories in the review page and editor.
+        - generic [ref=e62]:
+          - heading " Upload Settings" [level=2] [ref=e63]:
+            - generic [ref=e64]: 
+            - text: Upload Settings
+          - generic [ref=e65]:
+            - generic [ref=e66]: Maximum File Size
+            - combobox [ref=e67]:
+              - option "8 MB"
+              - option "16 MB" [selected]
+              - option "32 MB"
+              - option "64 MB"
+            - generic [ref=e68]: Maximum allowed file size for uploaded PDF/DOCX documents.
+        - generic [ref=e69]:
+          - heading " Cache Management" [level=2] [ref=e70]:
+            - generic [ref=e71]: 
+            - text: Cache Management
+          - generic [ref=e72]:
+            - generic [ref=e73]: Cached Files
+            - paragraph [ref=e74]: 30 cached extraction results stored on disk.
+            - button " Refresh Count" [ref=e75] [cursor=pointer]:
+              - generic [ref=e76]: 
+              - text: Refresh Count
+            - button " Clear All Cache" [ref=e77] [cursor=pointer]:
+              - generic [ref=e78]: 
+              - text: Clear All Cache
+      - text:       +   +                 + 
+  - contentinfo [ref=e79]:
+    - generic [ref=e80]:
+      - text: DMP ART © 2025 —
+      - link "MIT License" [ref=e81] [cursor=pointer]:
+        - /url: https://github.com/gammaro85/DMP-ART
