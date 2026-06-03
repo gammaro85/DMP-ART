@@ -54,6 +54,23 @@ Build a web application to:
 
 ## Version History
 
+### v0.9.1 (2026-05-28) — Unified Session JSON History
+
+**Status:** Production-ready  
+**Focus:** Merge active review state and archive state into one JSON-based session tree for joint or separate analysis of DMP content and comments
+
+#### Changes
+- **Architecture:** added `outputs/sessions/active/<cache_id>/` as the server-side source of truth for active review history
+   - Stores `dmp_plan.json`, `feedback.json`, `metadata.json`, and `review_export.json`
+   - Keeps DMP content and comments analyzable separately while preserving a combined export snapshot
+- **Workflow fix:** upload success now materializes an active session folder immediately from `cache_{uuid}.json`
+- **Workflow fix:** `save_feedback` now persists raw per-section comments and compiled feedback text into the active session JSON, not only browser `localStorage`
+- **Workflow fix:** archiving now copies the active session bundle into `outputs/sessions/archive/<archive_id>/` while preserving the original active session JSON bundle in place
+- **Preservation fix:** active session metadata is annotated with archive metadata instead of deleting old data or the remaining file structure
+- **UI/history fix:** active session history can now be loaded from the server-side session tree even when local browser storage is empty
+- **Compatibility:** legacy archives in `outputs/archives/` remain readable for listing, restore, and delete operations
+- **Tests:** added `tests/test_session_history.py` to validate active-session materialization and archive moves in the new layout
+
 ### v0.9.1 (2026-05-26) — Extractor v2 Anchor-Based Algorithm Fixes
 
 **Status:** Production-ready  
