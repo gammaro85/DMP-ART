@@ -914,7 +914,8 @@ def archive_session():
     try:
         data = request.json or {}
         cache_id = data.get('cache_id', '')
-        feedback_data = data.get('feedback', {})
+        feedback_data = data.get('feedbackData', {})       # Raw section data
+        compiled_feedback = data.get('feedback', '')       # Compiled text report
 
         if not cache_id:
             return jsonify({
@@ -923,7 +924,11 @@ def archive_session():
             })
 
         try:
-            session_bundle = _ensure_active_session(cache_id, feedback_data=feedback_data)
+            session_bundle = _ensure_active_session(
+                cache_id,
+                feedback_data=feedback_data,
+                compiled_feedback=compiled_feedback
+            )
         except FileNotFoundError:
             return jsonify({
                 'success': False,
