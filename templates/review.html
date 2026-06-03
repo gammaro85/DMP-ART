@@ -542,11 +542,16 @@
             padding: 0 2px;
             transition: background 0.3s;
         }
-        /* Floating cite button */
-        #cite-btn-float {
+        /* Floating cite toolbar */
+        #cite-toolbar-float {
             position: absolute;
             z-index: 9999;
             display: none;
+            flex-direction: row;
+            gap: 4px;
+        }
+        #cite-btn-float,
+        #search-cite-btn-float {
             padding: 6px 12px;
             background: var(--primary-color);
             color: white;
@@ -555,7 +560,12 @@
             font-size: 0.85rem;
             cursor: pointer;
             box-shadow: 0 2px 8px rgba(50, 112, 224, 0.15);
-            transition: opacity 0.2s;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+        #cite-btn-float:hover,
+        #search-cite-btn-float:hover {
+            background: var(--primary-hover);
         }
         
         /* Responsive layout for mobile screens only */
@@ -1362,7 +1372,10 @@
         <span>DMP ART &copy; 2025 — <a href="https://github.com/gammaro85/DMP-ART" target="_blank" rel="noopener" class="footer-link">MIT License</a></span>
     </footer>
 
-    <button id="cite-btn-float">Cite</button>
+    <div id="cite-toolbar-float">
+        <button id="cite-btn-float">Cite</button>
+        <button id="search-cite-btn-float">Search &amp; Cite</button>
+    </div>
 
     <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
@@ -2355,7 +2368,9 @@
         }
 
         (function() {
+            let citeToolbar = document.getElementById('cite-toolbar-float');
             let citeBtn = document.getElementById('cite-btn-float');
+            let searchCiteBtn = document.getElementById('search-cite-btn-float');
             let currentSelection = null;
             let currentSectionId = null;
 
@@ -2370,39 +2385,46 @@
                 return null;
             }
 
-            // Show cite button on text selection in extracted-content
+            function appendCitation(textarea, selText) {
+                let citation = `„${selText}"`;
+                let value = textarea.value;
+                let sep = value && !value.endsWith('\n') ? '\n\n' : '';
+                textarea.value = value + sep + citation;
+                textarea.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+
+            // Show cite toolbar on text selection in extracted-content
             document.addEventListener('mouseup', function(e) {
-                setTimeout(() => { // Wait for selection to update
+                setTimeout(() => {
                     let sel = window.getSelection();
                     if (sel.rangeCount === 0 || sel.isCollapsed) {
-                        citeBtn.style.display = 'none';
+                        citeToolbar.style.display = 'none';
                         return;
                     }
                     let range = sel.getRangeAt(0);
                     let container = range.commonAncestorContainer;
                     let extractedDiv = container.nodeType === 1 ? container.closest('.extracted-content') : container.parentElement?.closest('.extracted-content');
                     if (extractedDiv) {
-                        // Only allow selection inside extracted-content
                         let rect = range.getBoundingClientRect();
-                        citeBtn.style.top = (window.scrollY + rect.bottom + 5) + 'px';
-                        citeBtn.style.left = (window.scrollX + rect.left) + 'px';
-                        citeBtn.style.display = 'block';
+                        citeToolbar.style.top = (window.scrollY + rect.bottom + 5) + 'px';
+                        citeToolbar.style.left = (window.scrollX + rect.left) + 'px';
+                        citeToolbar.style.display = 'flex';
                         currentSelection = sel;
                         currentSectionId = getSectionIdFromNode(extractedDiv);
                     } else {
-                        citeBtn.style.display = 'none';
+                        citeToolbar.style.display = 'none';
                     }
                 }, 10);
             });
 
-            // Hide cite button on click elsewhere
+            // Hide cite toolbar on click elsewhere
             document.addEventListener('mousedown', function(e) {
-                if (!citeBtn.contains(e.target)) {
-                    citeBtn.style.display = 'none';
+                if (!citeToolbar.contains(e.target)) {
+                    citeToolbar.style.display = 'none';
                 }
             });
 
-            // Handle cite button click
+            // Cite — adds citation only to the current section
             citeBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 if (!currentSelection || !currentSectionId) return;
@@ -2417,19 +2439,47 @@
                 range.deleteContents();
                 range.insertNode(span);
 
-                // Insert citation into feedback textarea with Polish quotation marks
                 let textarea = document.getElementById('feedback-' + currentSectionId);
-                if (textarea) {
-                    let citation = `„${selText}"`;
-                    let value = textarea.value;
-                    let sep = value && !value.endsWith('\n') ? '\n\n' : '';
-                    textarea.value = value + sep + citation;
-                    textarea.dispatchEvent(new Event('input', { bubbles: true }));
-                }
+                if (textarea) appendCitation(textarea, selText);
 
-                // Hide cite button and clear selection
-                citeBtn.style.display = 'none';
+                citeToolbar.style.display = 'none';
                 window.getSelection().removeAllRanges();
+            });
+
+            // Search & Cite — searches selected text across all sections and adds citations where found
+            searchCiteBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (!currentSelection) return;
+                let selText = currentSelection.toString().trim();
+                if (!selText) return;
+
+                let selTextLower = selText.toLowerCase();
+                let matchCount = 0;
+                let sections = document.querySelectorAll('.question-card[data-id]');
+
+                sections.forEach(function(card) {
+                    let sectionId = card.getAttribute('data-id');
+                    let extractedDiv = card.querySelector('.extracted-content');
+                    if (!extractedDiv) return;
+                    if (!extractedDiv.textContent.toLowerCase().includes(selTextLower)) return;
+
+                    let textarea = document.getElementById('feedback-' + sectionId);
+                    if (textarea) {
+                        appendCitation(textarea, selText);
+                        matchCount++;
+                    }
+                });
+
+                citeToolbar.style.display = 'none';
+                window.getSelection().removeAllRanges();
+
+                if (typeof showToast === 'function') {
+                    if (matchCount > 0) {
+                        showToast(`Cytat dodany do ${matchCount} sekcji`, 'success');
+                    } else {
+                        showToast('Tekst nie został znaleziony w żadnej sekcji', 'info');
+                    }
+                }
             });
         })();
 
