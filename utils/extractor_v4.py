@@ -106,7 +106,7 @@ _RE_FMT = re.compile(
     r'|\{(?:BOLD|UNDERLINED|ITALIC)\}',
     re.IGNORECASE,
 )
-_RE_SEC_NUM = re.compile(r'^\s*\d+\.\d+\s*')
+_RE_SEC_NUM = re.compile(r'^\s*\d+\.\d+\.?\s*')  # "1.1 " or "1.1. " (trailing dot optional)
 _RE_MAIN_NUM = re.compile(r'^\s*\d+\.\s*')
 _RE_WS = re.compile(r'\s+')
 
@@ -124,8 +124,9 @@ _STOP: Set[str] = {
 _BUILTIN_NOISE: List = [
     re.compile(r'^\s*PLAN\s+ZARZĄDZANIA\s+DANYMI\b', re.IGNORECASE),
     re.compile(r'^\s*DATA\s+MANAGEMENT\s+PLAN\b', re.IGNORECASE),
+    # Polish section titles — with OR without leading numeration
     re.compile(
-        r'^\s*\d+[\.\s]+(?:'
+        r'^\s*(?:\d+[\.\s]+)?(?:'
         r'Opis\s+danych.*'
         r'|Dokumentacja\s+i\s+jako[sś][cć].*'
         r'|Przechowywanie\s+i\s+tworzenie.*'
@@ -137,8 +138,9 @@ _BUILTIN_NOISE: List = [
         r')$',
         re.IGNORECASE,
     ),
+    # English section titles — with OR without leading numeration
     re.compile(
-        r'^\s*\d+[\.\s]+(?:'
+        r'^\s*(?:\d+[\.\s]+)?(?:'
         r'Data\s+description\s+and.*'
         r'|Documentation\s+and\s+data.*'
         r'|Storage\s+and\s+backup.*'
@@ -422,12 +424,14 @@ class ContentCleaner:
             if block.is_hf:
                 continue
             text = strip_formatting(block.text)
+            # Check noise BEFORE stripping numerations — patterns match "4. Legal requirements..."
+            # as well as "Legal requirements..." (numeration-optional patterns).
+            if any(p.search(text) for p in _BUILTIN_NOISE):
+                continue
             text = _RE_SEC_NUM.sub('', text)
             text = _RE_MAIN_NUM.sub('', text)
             text = _RE_WS.sub(' ', text).strip()
             if not text:
-                continue
-            if any(p.search(text) for p in _BUILTIN_NOISE):
                 continue
             if any(p.search(text) for p in skip_patterns):
                 continue
@@ -666,7 +670,7 @@ class LinearMatcher:
         cursor = 0
         for sid in SECTION_ORDER:
             names = subsection_variants.get(sid, [])
-            result = self._find_anchor(blocks, names, cursor)
+            result = self._find_anchor(blocks, names, cursor, sid=sid)
             subsection_matches[sid] = result
             if result is not None:
                 cursor = result[0] + result[1]
@@ -684,19 +688,27 @@ class LinearMatcher:
 
         return subsection_matches, section_starts
 
+    # Compiled pattern for numeration-based detection (e.g. "2.1.", "3.2 ", "5.4.")
+    _RE_NUMERATION = re.compile(r'^\s*(\d+)\.(\d+)[.\s]')
+
     def _find_anchor(
         self,
         blocks: List[TextBlock],
         names: List[str],
         search_from: int,
+        sid: Optional[str] = None,
     ) -> Optional[Tuple[int, int]]:
         """
         Find the first occurrence of any name variant at or after search_from.
         Returns (block_index, window_size) or None.
 
-        Single-block pre-filter: block[i] alone must score >= MIN_FIRST before
-        windows are tried. This prevents a content block followed later by the
-        actual heading from being accepted as an anchor start.
+        Strategy 0 (highest priority): numeration-based detection.
+          If the block starts with "X.Y." or "X.Y " matching the target sid,
+          accept it immediately (no score calculation needed).
+
+        Strategy 1: token overlap — single-block pre-filter (>= MIN_FIRST),
+          then window of 1-3 blocks. Returns first HIGH hit; records first LOW
+          as fallback.
         """
         if not names:
             return None
@@ -708,6 +720,13 @@ class LinearMatcher:
             blk = blocks[i]
             if blk.is_hf:
                 continue
+
+            # Strategy 0: numeration prefix matching (e.g. "2.1. Metadata...")
+            if sid is not None:
+                m = self._RE_NUMERATION.match(blk.text)
+                if m and f"{m.group(1)}.{m.group(2)}" == sid:
+                    logger.debug("LinearMatcher: %s numeration match at block %d", sid, i)
+                    return i, 1
 
             single = _score_block(blk.text, norm_names)
             if single < self.MIN_FIRST:
@@ -837,7 +856,12 @@ class DMPExtractor:
                 continue
 
             start_idx, win_size = match
-            content_start = start_idx + win_size
+            # Include the anchor block itself in content — important for documents
+            # where the subsection description and the answer are in the same block
+            # (e.g. "Data quality control measures used. The data will be collected...").
+            # For standard-format documents (question-only anchor block) this adds
+            # a redundant question-text paragraph, which is acceptable.
+            content_start = start_idx
 
             # Default end: last block
             content_end = len(blocks)
