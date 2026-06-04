@@ -10,7 +10,7 @@ import uuid
 import re
 from datetime import datetime
 from werkzeug.utils import secure_filename
-from utils.extractor_v2 import DMPExtractor, SkipTermsManager
+from utils.extractor_v4 import DMPExtractor, SkipTermsManager
 from utils.extractor_v3_separated import DMPExtractorSeparated
 from utils.ai_module import AIReviewAssistant
 # Comments are now managed through JSON files in config/ directory

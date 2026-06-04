@@ -1,0 +1,207 @@
+[
+  {
+    "id": "1",
+    "names": [
+      "Opis i gromadzenie danych lub ponowne wykorzystanie istniejących danych",
+      "Data description and collection or re-use of existing data",
+      "Opis danych oraz pozyskiwanie",
+      "Opis danych oraz pozyskiwanie lub ponowne wykorzystanie dostępnych danych"
+    ],
+    "subsections": [
+      {
+        "id": "1.1",
+        "names": [
+          "Jak będą gromadzone lub wytwarzane nowe dane i/lub jak będą ponownie wykorzystywane istniejące dane?",
+          "How will new data be collected or produced and/or how will existing data be re-used?",
+          "Sposób pozyskiwania i opracowywania nowych danych i/lub ponownego wykorzystania dostępnych danych",
+          "Sposób pozyskiwania i opracowania nowych danych i/lub wykorzystanie dostępnych danych",
+          "W jaki sposób nowe dane zostaną zebrane lub wytworzone i/lub jak będą ponownie użyte istniejące dane"
+        ]
+      },
+      {
+        "id": "1.2",
+        "names": [
+          "Jakie dane (np. typy, formaty i wolumeny) będą gromadzone lub wytwarzane?",
+          "What data (for example the types, formats, and volumes) will be collected or produced?",
+          "Pozyskiwane lub opracowywane dane (np. rodzaj, format, ilość)",
+          "Jakie dane (np. typy, formaty i ilości) zostaną zebrane lub wytworzone",
+          "Rodzaj, format i ilość danych"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "2",
+    "names": [
+      "Dokumentacja i jakość danych",
+      "Documentation and data quality"
+    ],
+    "subsections": [
+      {
+        "id": "2.1",
+        "names": [
+          "Jakie metadane i dokumentacja (np. metodologia lub sposób gromadzenia i organizowania danych) będą towarzyszyć danym?",
+          "What metadata and documentation (for example methodology or data collection and way of organising data) will accompany data?",
+          "Metadane i dokumenty (np. metodologia lub pozyskiwanie danych oraz sposób porządkowania danych) towarzyszące danym",
+          "Metadane i dokumenty towarzyszące danym",
+          "Jakie metadane i dokumentacja będą towarzyszyć danym"
+        ]
+      },
+      {
+        "id": "2.2",
+        "names": [
+          "Jakie środki kontroli jakości danych będą stosowane?",
+          "What data quality control measures will be used?",
+          "Stosowane środki kontroli jakości danych",
+          "Jakie środki kontroli jakości danych zostaną użyte",
+          "Środki kontroli jakości"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "3",
+    "names": [
+      "Przechowywanie i tworzenie kopii zapasowych w trakcie procesu badawczego",
+      "Storage and backup during the research process",
+      "Przechowywanie i tworzenie kopii zapasowych",
+      "Przechowywanie i tworzenie kopii zapasowych podczas badań"
+    ],
+    "subsections": [
+      {
+        "id": "3.1",
+        "names": [
+          "W jaki sposób dane i metadane będą przechowywane i zabezpieczane w trakcie procesu badawczego?",
+          "How will data and metadata be stored and backed up during the research process?",
+          "Przechowywanie i tworzenie kopii zapasowych danych i metadanych podczas badań",
+          "Jak dane i metadane będą przechowywane i archiwizowane w trakcie procesu badawczego",
+          "Przechowywanie i kopie zapasowe danych"
+        ]
+      },
+      {
+        "id": "3.2",
+        "names": [
+          "W jaki sposób zapewnione zostanie bezpieczeństwo danych i ochrona danych wrażliwych w trakcie badań?",
+          "How will data security and protection of sensitive data be taken care of during the research?",
+          "Sposób zapewnienia bezpieczeństwa danych oraz ochrony danych wrażliwych podczas badań",
+          "Jak zostanie zapewnione bezpieczeństwo danych i ochrona danych wrażliwych podczas badania",
+          "Bezpieczeństwo danych i ochrona danych wrażliwych"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "4",
+    "names": [
+      "Wymagania prawne i kodeksy postępowania",
+      "Legal requirements, codes of conduct",
+      "Wymogi prawne, kodeks postępowania"
+    ],
+    "subsections": [
+      {
+        "id": "4.1",
+        "names": [
+          "Jeśli przetwarzane są dane osobowe, w jaki sposób zostanie zapewniona zgodność z przepisami o ochronie danych osobowych i bezpieczeństwie danych?",
+          "If personal data are processed, how will compliance with legislation on personal data and on data security be ensured?",
+          "Sposób zapewnienia zgodności z przepisami dotyczącymi danych osobowych i bezpieczeństwa danych w przypadku przetwarzania danych osobowych",
+          "Sposób zapewnienia zgodności z przepisami dotyczącymi danych osobowych i bezpieczeństwa w przypadku przetwarzania danych osobowych",
+          "Zgodność z przepisami o danych osobowych"
+        ]
+      },
+      {
+        "id": "4.2",
+        "names": [
+          "W jaki sposób będą zarządzane inne kwestie prawne, takie jak prawa własności intelektualnej i własność danych? Jakie przepisy mają zastosowanie?",
+          "How will other legal issues, such as intellectual property rights and ownership, be managed? What legislation is applicable?",
+          "Sposób zarządzania innymi kwestiami prawnymi, np. prawami własności intelektualnej lub własnością. Obowiązujące przepisy",
+          "Sposób zarządzania innymi kwestiami prawnymi",
+          "Inne kwestie prawne – własność intelektualna i przepisy"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "5",
+    "names": [
+      "Udostępnianie i długoterminowe przechowywanie danych",
+      "Data sharing and long-term preservation",
+      "Udostępnianie i długotrwałe przechowywanie",
+      "Udostępnianie i długotrwałe przechowywanie danych"
+    ],
+    "subsections": [
+      {
+        "id": "5.1",
+        "names": [
+          "Jak i kiedy dane będą udostępniane? Czy istnieją możliwe ograniczenia w udostępnianiu danych lub powody nałożenia embarga?",
+          "How and when will data be shared? Are there possible restrictions to data sharing or embargo reasons?",
+          "Sposób i termin udostępnienia danych. Ewentualne ograniczenia w udostępnianiu danych lub przyczyny embarga",
+          "Sposób i termin udostępnienia danych",
+          "Sposób i termin udostępniania danych",
+          "Udostępnianie danych – termin i ograniczenia"
+        ]
+      },
+      {
+        "id": "5.2",
+        "names": [
+          "W jaki sposób dane przeznaczone do zachowania zostaną wybrane i gdzie będą długoterminowo przechowywane (np. w repozytorium lub archiwum)?",
+          "How will data for preservation be selected, and where will data be preserved long-term (for example a data repository or archive)?",
+          "Sposób wyboru danych przeznaczonych do przechowania oraz miejsce długotrwałego przechowywania danych (np. repozytorium lub archiwum danych)",
+          "Sposób wyboru danych do przechowywania",
+          "Wybór danych do przechowywania",
+          "Długotrwałe przechowywanie danych"
+        ]
+      },
+      {
+        "id": "5.3",
+        "names": [
+          "Jakie metody lub narzędzia programowe będą potrzebne do dostępu do danych i ich wykorzystania?",
+          "What methods or software tools will be needed to access and use the data?",
+          "Metody lub narzędzia programowe umożliwiające dostęp do danych i korzystanie z danych",
+          "Metody lub narzędzia programowe umożliwiające dostęp do danych",
+          "Narzędzia i metody dostępu do danych"
+        ]
+      },
+      {
+        "id": "5.4",
+        "names": [
+          "W jaki sposób zostanie zapewnione nadanie każdemu zestawowi danych unikalnego i trwałego identyfikatora (np. identyfikatora DOI)?",
+          "How will the application of a unique and persistent identifier (such as a Digital Object Identifier (DOI)) to each data set be ensured?",
+          "Sposób zapewniający stosowanie unikalnego i trwałego identyfikatora (np. cyfrowego identyfikatora obiektu (DOI)) dla każdego zestawu danych",
+          "Sposób zapewniający stosowanie unikalnego i trwałego identyfikatora",
+          "Unikalny i trwały identyfikator (DOI)"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "6",
+    "names": [
+      "Odpowiedzialność i zasoby w zakresie zarządzania danymi",
+      "Data management responsibilities and resources",
+      "Zadania związane z zarządzaniem danymi",
+      "Zadania związane z zarządzaniem danymi oraz zasoby"
+    ],
+    "subsections": [
+      {
+        "id": "6.1",
+        "names": [
+          "Kto (np. rola, stanowisko i instytucja) będzie odpowiedzialny za zarządzanie danymi (tj. będzie pełnił rolę data stewarda)?",
+          "Who (for example role, position, and institution) will be responsible for data management (i.e the data steward)?",
+          "Osoba (np. funkcja, stanowisko i instytucja) odpowiedzialna za zarządzanie danymi (np. data steward)",
+          "Osoba odpowiedzialna za zarządzanie danymi",
+          "Kto będzie odpowiedzialny za zarządzanie danymi"
+        ]
+      },
+      {
+        "id": "6.2",
+        "names": [
+          "Jakie zasoby (np. finansowe i czasowe) zostaną przeznaczone na zarządzanie danymi i zapewnienie, że dane będą zgodne z zasadami FAIR (Findable, Accessible, Interoperable, Re-usable)?",
+          "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)?",
+          "Środki (np. finansowe i czasowe) przeznaczone do zarządzania danymi i zapewnienia możliwości odnalezienia, dostępu, interoperacyjności i ponownego wykorzystania danych",
+          "Środki przeznaczone do zarządzania danymi",
+          "Zasoby przeznaczone na zarządzanie danymi"
+        ]
+      }
+    ]
+  }
+]
