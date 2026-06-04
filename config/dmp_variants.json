@@ -25,7 +25,9 @@
           "What data (for example the types, formats, and volumes) will be collected or produced?",
           "Pozyskiwane lub opracowywane dane (np. rodzaj, format, ilość)",
           "Jakie dane (np. typy, formaty i ilości) zostaną zebrane lub wytworzone",
-          "Rodzaj, format i ilość danych"
+          "Rodzaj, format i ilość danych",
+          "Data collected or processed (for example type, format, and quantity)",
+          "Types, formats, and volumes of data collected or produced"
         ]
       }
     ]
@@ -44,7 +46,9 @@
           "What metadata and documentation (for example methodology or data collection and way of organising data) will accompany data?",
           "Metadane i dokumenty (np. metodologia lub pozyskiwanie danych oraz sposób porządkowania danych) towarzyszące danym",
           "Metadane i dokumenty towarzyszące danym",
-          "Jakie metadane i dokumentacja będą towarzyszyć danym"
+          "Jakie metadane i dokumentacja będą towarzyszyć danym",
+          "Metadata and documentation accompanying the data",
+          "Metadata and documents accompanying the data"
         ]
       },
       {
@@ -137,7 +141,9 @@
           "Sposób i termin udostępnienia danych. Ewentualne ograniczenia w udostępnianiu danych lub przyczyny embarga",
           "Sposób i termin udostępnienia danych",
           "Sposób i termin udostępniania danych",
-          "Udostępnianie danych – termin i ograniczenia"
+          "Udostępnianie danych – termin i ograniczenia",
+          "Method and deadline for data disclosure and any restrictions or reasons for embargo",
+          "Data disclosure method deadline restrictions embargo"
         ]
       },
       {
@@ -199,7 +205,9 @@
           "What resources (for example financial and time) will be dedicated to data management and ensuring the data will be FAIR (Findable, Accessible, Interoperable, Re-usable)?",
           "Środki (np. finansowe i czasowe) przeznaczone do zarządzania danymi i zapewnienia możliwości odnalezienia, dostępu, interoperacyjności i ponownego wykorzystania danych",
           "Środki przeznaczone do zarządzania danymi",
-          "Zasoby przeznaczone na zarządzanie danymi"
+          "Zasoby przeznaczone na zarządzanie danymi",
+          "Resources (for example financial and time) allocated to managing data and ensuring discoverability",
+          "Financial and time resources allocated to data management"
         ]
       }
     ]
