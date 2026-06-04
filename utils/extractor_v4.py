@@ -651,8 +651,8 @@ class LinearMatcher:
     """
 
     HIGH = 0.55
-    LOW = 0.40
-    MIN_FIRST = 0.45  # single-block pre-filter before trying windows
+    LOW = 0.38
+    MIN_FIRST = 0.38  # single-block pre-filter before trying windows
 
     def find_all(
         self,
@@ -721,6 +721,10 @@ class LinearMatcher:
             if blk.is_hf:
                 continue
 
+            # Skip main section title blocks — they should not match as subsection anchors
+            if any(p.search(blk.text) for p in _BUILTIN_NOISE):
+                continue
+
             # Strategy 0: numeration prefix matching (e.g. "2.1. Metadata...")
             if sid is not None:
                 m = self._RE_NUMERATION.match(blk.text)
@@ -732,8 +736,20 @@ class LinearMatcher:
             if single < self.MIN_FIRST:
                 continue
 
-            best_score, best_win = 0.0, 1
-            for win in (1, 2, 3):
+            if single >= self.HIGH:
+                # High confidence on single block — accept immediately
+                return i, 1
+
+            if single >= self.LOW:
+                # Single block already qualifies — prefer win=1 to avoid
+                # accidentally consuming the next subsection's content block
+                if first_low is None:
+                    first_low = (i, 1)
+                continue
+
+            # win=1 is between MIN_FIRST and LOW — try extending the window
+            best_score, best_win = single, 1
+            for win in (2, 3):
                 if i + win > len(blocks):
                     break
                 window_text = ' '.join(blocks[j].text for j in range(i, i + win))
