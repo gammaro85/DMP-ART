@@ -2004,11 +2004,11 @@ def get_extractor_debug():
     return jsonify({
         'success': True,
         'debug_mode': DEBUG_MODE,
-        'extractor_version': 'v3-separated' if DEBUG_MODE else 'v2-production',
+        'extractor_version': 'v3-separated' if DEBUG_MODE else 'v4-production',
         'description': (
             'v3: Separated slicing & cleaning with RAW data export (for debugging)'
             if DEBUG_MODE else
-            'v2: Production extractor (clean during slicing, optimized)'
+            'v4: Linear matcher with independent DMP trimming'
         )
     })
 
