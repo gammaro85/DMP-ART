@@ -864,10 +864,14 @@ class DMPExtractor:
         skip_patterns: list,
     ) -> dict:
         cache: dict = {}
+        # When a subsection absorbs the rest of the document (because the
+        # immediately-next subsection is not found), all subsequent subsections
+        # must be empty — their anchors fall inside the absorbing section's range.
+        absorbed = False
 
         for rank, sid in enumerate(SECTION_ORDER):
             match = subsection_matches.get(sid)
-            if match is None:
+            if match is None or absorbed:
                 cache[sid] = self._empty_section(sid)
                 continue
 
@@ -882,12 +886,16 @@ class DMPExtractor:
             # Default end: last block
             content_end = len(blocks)
 
-            # Look for the next found subsection anchor
-            for next_sid in SECTION_ORDER[rank + 1:]:
+            # End = IMMEDIATELY NEXT subsection's start (not the next *found* one).
+            # If the immediately-next subsection is not found, this section absorbs
+            # the rest of the document and all subsequent sections become empty.
+            if rank + 1 < len(SECTION_ORDER):
+                next_sid = SECTION_ORDER[rank + 1]
                 next_match = subsection_matches.get(next_sid)
                 if next_match is not None:
-                    content_end = min(content_end, next_match[0])
-                    break
+                    content_end = next_match[0]
+                else:
+                    absorbed = True  # this section takes the rest; all after → empty
 
             # For subsections that are last in their main section, also
             # check if the next section's header appears before content_end.
