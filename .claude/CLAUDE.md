@@ -48,7 +48,7 @@ DMP-ART (Data Management Plan Assessment and Response Tool) is a web application
 
 ```
 app.py                              # Flask routes, upload handling, main logic (~1,550 lines)
-utils/extractor.py                  # Core DMP extraction engine (2,101 lines)
+utils/extractor_v4.py               # Core DMP extraction engine (v4, ~900 lines)
 utils/ai_module.py                  # AI review assistant orchestration (NEW)
 utils/ai_providers.py               # OpenAI/Anthropic API adapters (NEW)
 utils/knowledge_manager.py          # Knowledge base management (NEW)
@@ -99,7 +99,7 @@ static/
 └── images/                         # Logos and assets
 
 utils/
-├── extractor.py                    # DMPExtractor class
+├── extractor_v4.py                 # DMPExtractor class (v4 — active)
 ├── ai_module.py                    # AIReviewAssistant - main orchestration
 ├── ai_providers.py                 # OpenAI/Anthropic API adapters
 └── knowledge_manager.py            # Knowledge base management
@@ -351,57 +351,61 @@ Pages loading scripts:
 }
 ```
 
-**2. Update `utils/extractor.py`** - Add section mappings if bilingual
+**2. Update `utils/extractor_v4.py`** - Add section name variants to `config/dmp_variants.json`
 
 **3. Update `templates/review.html`** - Add section IDs to rendering logic
 
 ### Modifying Extraction Logic
 
-**Current extractor:** `utils/extractor_v2.py` (anchor-based, production since v0.9.x)  
-**Legacy extractor:** `utils/extractor.py` (pattern-based, archived)
+**Active extractor:** `utils/extractor_v4.py` (linear matcher, production since v0.9.2)
 
-#### Anchor-Based Extraction Pipeline (extractor_v2.py)
+#### Linear Extraction Pipeline (extractor_v4.py)
 
-**Architecture:**
-1. **DocConverter** - converts PDF/DOCX → flat list of TextBlock objects
-2. **AnchorMatcher** - finds 28 subsection questions (14 PL + 14 EN) using token overlap
-3. **ContentCleaner** - strips formatting markers, filters noise (headers, footers, section titles)
-4. **DMPExtractor** - slices content between anchors → JSON cache
+**Architecture — 4 independent phases:**
+1. **DocConverter** - PDF/DOCX → flat list of `TextBlock` objects (reused from v2)
+2. **DMPTrimmer** - cuts document to DMP section only (independent of phase 3)
+   - Start: first block matching any name variant of section 1 or subsection 1.1
+   - End: phrase "oświadczenia administracyjne" (fuzzy, diacritics-tolerant)
+3. **LinearMatcher** - forward-only assignment of blocks to 14 subsections by name variants
+4. **ContentCleaner** - strips formatting artefacts and user-defined skip terms
 
 **Key classes:**
 - `DMPExtractor` - main orchestrator, public API: `process_file(file_path, output_dir)`
 - `DocConverter` - handles PDF (with OCR fallback) and DOCX parsing
-- `AnchorMatcher` - locates subsection boundaries via anchor texts from `config/dmp_anchors.json`
+- `DMPTrimmer` - document trimming (step 2)
+- `LinearMatcher` - subsection boundary detection (step 3)
 - `ContentCleaner` - removes structural noise and user-defined skip terms
 - `SkipTermsManager` - CRUD for `config/extraction_skip_terms.json`
 
-**Anchor matching strategy:**
-- **Strategy 1:** Token overlap with sliding window (1-4 blocks)
-  - HIGH_THRESHOLD = 0.55 (accept immediately)
-  - LOW_THRESHOLD = 0.35 (fallback if no HIGH match)
-- **Strategy 2:** Fingerprint keyword coverage over 6-block window
-- **Forward-only search:** prevents duplicate anchors at document end from stealing boundaries
+**Matching strategy (LinearMatcher):**
+- **Strategy 0:** Numeration prefix — block starts with "X.Y." matching target id → immediate accept
+- **Strategy 1:** Token overlap, single-block pre-filter (MIN_FIRST=0.38), then window 1-3 blocks
+  - HIGH = 0.55 — accept immediately with win=1
+  - LOW = 0.38 — record as fallback (always with win=1 if single-block qualifies)
+  - Window > 1 only when single-block score is between MIN_FIRST and LOW
+- **Cursor:** forward-only; if subsection N not found → cursor stays, N+1 search continues from same position
+- **Absorbed rule:** if subsection N's immediately-next is not found → N takes rest of document; all subsequent sections forced empty
 
-**Critical extraction principles:**
-- Subsection questions (anchors) are **NOT** included in extracted content
-- Numerations (1.1, 2.1, etc.) are identifiers only, **NOT** content
-- Main section headers (1-6) are filtered as structural noise via `_BUILTIN_NOISE`
-- Extracted content = text between question N and question N+1
+**Boundary policy:**
+- `content_start = anchor_block_index` (anchor block included in content)
+- `content_end = start[next_subsection]` if found, else end of document
+- For last-in-section subsections (1.2, 2.2, 3.2, 4.2, 5.4): also capped by next main section header
 
 **Configuration files:**
-- `config/dmp_anchors.json` - 28 anchor texts (PL/EN) + fingerprint keywords per subsection
+- `config/dmp_variants.json` - name variants A–F for all 6 sections and 14 subsections (Polish + English)
 - `config/extraction_skip_terms.json` - user-editable regex patterns to exclude
 
 **Common modifications:**
-1. **Add new anchor variant:** Edit `config/dmp_anchors.json`, add text to `pl` or `en` arrays
-2. **Adjust matching sensitivity:** Modify `HIGH_THRESHOLD` / `LOW_THRESHOLD` in AnchorMatcher
-3. **Add noise filter:** Extend `_BUILTIN_NOISE` regex list (lines 105-130)
-4. **Custom skip terms:** Use SkipTermsManager.add() or edit `extraction_skip_terms.json`
+1. **Add name variant:** edit `config/dmp_variants.json`, add string to relevant `names` array
+2. **Adjust matching sensitivity:** modify `HIGH`, `LOW`, `MIN_FIRST` constants in `LinearMatcher`
+3. **Add noise filter:** extend `_BUILTIN_NOISE` regex list in `extractor_v4.py`
+4. **Custom skip terms:** use `SkipTermsManager.add()` or edit `extraction_skip_terms.json`
+5. **Add new extractor:** import it in `app.py`, add its key to `EXTRACTOR_NAME` / `available` list in `/api/settings/extractor`
 
 **Performance notes:**
-- Regex patterns in `_BUILTIN_NOISE` are compiled once at module load
-- Token overlap uses set intersection - O(n) per comparison
-- Window size (1-4) balances accuracy vs. performance
+- Regex patterns in `_BUILTIN_NOISE` compiled once at module load
+- Token overlap uses set intersection — O(n) per comparison
+- `_norm_for_match` strips diacritics before comparison (Polish/English fuzzy matching)
 
 ### Adding a New Route
 
@@ -441,6 +445,10 @@ def new_feature():
 - `GET /api/discover-categories` - Discover all available categories
 - `POST /api/create-category` - Create new category
 - `DELETE /api/delete-category/<category_id>` - Delete category
+
+**Extractor:**
+- `GET /api/settings/extractor` - Return active extractor name and available list
+- `POST /api/settings/extractor` - Switch active extractor (`{"extractor_name": "v4"}`)
 
 **Review/Feedback:**
 - `POST /save_feedback` - Save review feedback
@@ -808,7 +816,7 @@ git push -u origin <branch-name>
    ```
 
 3. **Review relevant code:**
-   - For extraction issues: `utils/extractor.py`
+   - For extraction issues: `utils/extractor_v4.py`
    - For UI changes: `templates/review.html` + `static/css/style.css`
    - For routes: `app.py`
 
@@ -1082,7 +1090,7 @@ suggestions = assistant.generate_section_suggestion(
   - `outputs/sessions/archive/` for archived DMP/comment JSON history
 
 **Codebase Growth:**
-- `utils/extractor.py`: 1,236 → 2,101 lines (+70% more features)
+- `utils/extractor_v4.py`: ~900 lines (replaced extractor v1/v2/v3, -1539 net lines)
 - `templates/review.html`: 1,789 → 2,341 lines (+31% enhanced UI)
 - `static/css/style.css`: 980 → 1,596 lines (+63% refined styling)
 
