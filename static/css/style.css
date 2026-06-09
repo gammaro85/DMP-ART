@@ -549,6 +549,32 @@ body:not([data-page=index]) .logo {
   transform: scale(.95);
   box-shadow: none;
 }
+
+.history-btn {
+  height: 36px;
+  background: transparent;
+  color: var(--text-secondary);
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0 0.65rem;
+  white-space: nowrap;
+  transition: .2s ease;
+  font-family: inherit;
+}
+.history-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+.history-btn:active {
+  transform: scale(.95);
+}
+
 .fixed-header {
   position: fixed;
   top: 0;
