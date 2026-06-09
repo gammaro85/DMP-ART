@@ -1024,6 +1024,7 @@ def archive_session():
         cache_id = data.get('cache_id', '')
         feedback_data = data.get('feedbackData', {})       # Raw section data
         compiled_feedback = data.get('feedback', '')       # Compiled text report
+        meta_override = data.get('meta', {})               # User-supplied metadata from form
 
         if not cache_id:
             return jsonify({
@@ -1047,20 +1048,32 @@ def archive_session():
         metadata = session_bundle['metadata']
 
         # Create archive folder with timestamp and cache_id
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        now = datetime.now()
+        timestamp = now.strftime('%Y%m%d_%H%M%S')
         archive_id = f"{timestamp}_{cache_id[:8]}"
         archive_folder = os.path.join(app.config['SESSION_ARCHIVE_FOLDER'], archive_id)
         os.makedirs(archive_folder, exist_ok=True)
 
-        # Prepare metadata
+        # Prepare metadata — user-supplied values override extracted (always empty) ones
         metadata_json = dict(metadata)
         metadata_json.update({
             'archive_id': archive_id,
             'timestamp': timestamp,
-            'archived_date': datetime.now().isoformat(),
+            'archived_date': now.isoformat(),
+            'creation_date': now.strftime('%d.%m.%Y %H:%M'),
             'status': 'archived',
             'archive_folder': archive_folder
         })
+        if meta_override.get('researcher_surname'):
+            metadata_json['researcher_surname'] = meta_override['researcher_surname']
+        if meta_override.get('researcher_firstname'):
+            metadata_json['researcher_firstname'] = meta_override['researcher_firstname']
+        if meta_override.get('competition_name'):
+            metadata_json['competition_name'] = meta_override['competition_name']
+        if meta_override.get('competition_edition'):
+            metadata_json['competition_edition'] = meta_override['competition_edition']
+        if meta_override.get('session_name'):
+            metadata_json['session_name'] = meta_override['session_name']
 
         shutil.copy2(active_paths['dmp_path'], os.path.join(archive_folder, 'dmp_plan.json'))
         shutil.copy2(active_paths['feedback_path'], os.path.join(archive_folder, 'feedback.json'))
