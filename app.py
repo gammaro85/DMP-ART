@@ -737,6 +737,15 @@ def download_original_file(cache_id):
     except Exception as e:
         return f"Error downloading original file: {str(e)}", 500
 
+@app.route('/review')
+def review_dmp_by_cache():
+    """Open review page using only cache_id (e.g. when restoring from session history)."""
+    cache_id = request.args.get('cache_id', '')
+    if not cache_id:
+        return redirect('/')
+    return redirect(url_for('review_dmp', filename='session', cache_id=cache_id))
+
+
 @app.route('/review/<filename>')
 def review_dmp(filename):
     # File existence is no longer required — all content comes from the cache.
