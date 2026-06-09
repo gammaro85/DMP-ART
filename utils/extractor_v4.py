@@ -1,12 +1,14 @@
 """
-utils/extractor_v2.py — DMP Extractor v2 (anchor-based)
+utils/extractor_v4.py — DMP Extractor v4
 
 Pipeline
 --------
 1. DocConverter   : document (PDF / DOCX) → flat List[TextBlock]
-2. AnchorMatcher  : find block indices for 28 anchor texts (14 PL + 14 EN)
-3. ContentCleaner : strip formatting markers and skip-term lines
-4. DMPExtractor   : orchestrate; produce JSON cache compatible with review.html
+2. DMPTrimmer     : trim to DMP section only (start = first section-1/1.1 name,
+                    end = "oświadczenia administracyjne")
+3. LinearMatcher  : find subsection boundaries by name variants (forward-only)
+4. ContentCleaner : strip formatting markers and skip-term lines
+5. DMPExtractor   : orchestrate; produce JSON cache compatible with review.html
 """
 
 import os
@@ -58,6 +60,16 @@ SECTION_ORDER: List[str] = [
     "6.1", "6.2",
 ]
 
+# Last subsection in each main section — their end boundary also accepts
+# the next main section's header (in addition to the next subsection anchor).
+LAST_IN_SECTION: Dict[str, str] = {
+    "1.2": "2",
+    "2.2": "3",
+    "3.2": "4",
+    "4.2": "5",
+    "5.4": "6",
+}
+
 SECTION_TITLES: Dict[str, str] = {
     "1": "1. Data description and collection or re-use of existing data",
     "2": "2. Documentation and data quality",
@@ -94,57 +106,73 @@ _RE_FMT = re.compile(
     r'|\{(?:BOLD|UNDERLINED|ITALIC)\}',
     re.IGNORECASE,
 )
-_RE_SEC_NUM = re.compile(r'^\s*\d+\.\d+\s*')   # "1.1 " prefix
-_RE_MAIN_NUM = re.compile(r'^\s*\d+\.\s*')      # "1. " prefix
+_RE_SEC_NUM = re.compile(r'^\s*\d+\.\d+\.?\s*')  # "1.1 " or "1.1. " (trailing dot optional)
+_RE_MAIN_NUM = re.compile(r'^\s*\d+\.\s*')
 _RE_WS = re.compile(r'\s+')
 
-# Common words excluded from token-overlap coverage calculation
 _STOP: Set[str] = {
+    # English
     'that', 'will', 'data', 'with', 'from', 'this', 'have', 'been', 'they',
     'what', 'when', 'where', 'which', 'such', 'used', 'example', 'also',
+    # Polish with diacritics
     'danych', 'oraz', 'jest', 'jako', 'przez', 'przy', 'które', 'jakie',
     'jak', 'będą', 'każdego',
+    # Polish without diacritics (after normalize_diacritics)
+    'ktore', 'beda', 'kazdego',
 }
 
-# Lines that are structural noise — always filtered, regardless of user skip terms.
-# Matches: DMP/PZD header, main section titles (Polish + English numbered 1-6)
-#
-# Fix history:
-# - 2026-05-26: Fixed regex for section 2 ("jako" → "jakość")
-# - 2026-05-26: Extended patterns with optional suffixes for better matching
-# - 2026-05-26: Added .* suffix to match any trailing text after main keywords
 _BUILTIN_NOISE: List = [
     re.compile(r'^\s*PLAN\s+ZARZĄDZANIA\s+DANYMI\b', re.IGNORECASE),
     re.compile(r'^\s*DATA\s+MANAGEMENT\s+PLAN\b', re.IGNORECASE),
-    # Polish section titles with flexible suffixes (matches anything after main keywords)
+    # Polish section titles — with OR without leading numeration
     re.compile(
-        r'^\s*\d+[\.\s]+(?:'
-        r'Opis\s+danych.*'                    # "oraz pozyskiwanie lub ponowne wykorzystanie..."
-        r'|Dokumentacja\s+i\s+jakość.*'       # "danych"
-        r'|Przechowywanie\s+i\s+tworzenie.*'  # "kopii zapasowych podczas badań"
-        r'|Wymogi\s+prawne.*'                 # ", kodeks postępowania"
-        r'|Udost[eę]pnianie\s+i\s+d[łl]ugotrwa[łl].*'  # "e przechowywanie danych"
-        r'|Zadania\s+zwi[aą]zane.*'           # "z zarządzaniem danymi oraz zasoby"
+        r'^\s*(?:\d+[\.\s]+)?(?:'
+        r'Opis\s+danych.*'
+        r'|Dokumentacja\s+i\s+jako[sś][cć].*'
+        r'|Przechowywanie\s+i\s+tworzenie.*'
+        r'|Wymogi\s+prawne.*'
+        r'|Wymagania\s+prawne.*'
+        r'|Udost[eę]pnianie\s+i\s+d[łl]ugotr.*'
+        r'|Zadania\s+zwi[aą]zane.*'
+        r'|Odpowiedzialno[sś][cć].*'
         r')$',
         re.IGNORECASE,
     ),
-    # English section titles with flexible suffixes
+    # English section titles — with OR without leading numeration
     re.compile(
-        r'^\s*\d+[\.\s]+(?:'
-        r'Data\s+description\s+and.*'         # "collection or re-use of existing data"
-        r'|Documentation\s+and\s+data.*'      # "quality"
-        r'|Storage\s+and\s+backup.*'          # "during the research process"
-        r'|Legal\s+requirements.*'            # ", codes of conduct"
-        r'|Data\s+sharing\s+and.*'            # "long-term preservation"
-        r'|Data\s+management\s+responsibilities.*'  # "and resources"
+        r'^\s*(?:\d+[\.\s]+)?(?:'
+        r'Data\s+description\s+and.*'
+        r'|Documentation\s+and\s+data.*'
+        r'|Storage\s+and\s+backup.*'
+        r'|Legal\s+requirements.*'
+        r'|Data\s+sharing\s+and.*'
+        r'|Data\s+management\s+responsibilities.*'
         r')$',
         re.IGNORECASE,
     ),
 ]
 
+# End-of-DMP pattern — triggers when a block matches "oświadczenia administracyjne"
+# in any spelling/diacritics variant.
+_RE_END_DMP = re.compile(
+    r'o[sś]wiadczeni[ae]\s+administracyjn',
+    re.IGNORECASE,
+)
+
+# Polish diacritic → ASCII map (for fuzzy matching)
+_DIACRITIC_MAP = str.maketrans({
+    'ą': 'a', 'ć': 'c', 'ę': 'e', 'ł': 'l', 'ń': 'n',
+    'ó': 'o', 'ś': 's', 'ź': 'z', 'ż': 'z',
+    'Ą': 'A', 'Ć': 'C', 'Ę': 'E', 'Ł': 'L', 'Ń': 'N',
+    'Ó': 'O', 'Ś': 'S', 'Ź': 'Z', 'Ż': 'Z',
+})
+
+
+def normalize_diacritics(text: str) -> str:
+    return text.translate(_DIACRITIC_MAP)
+
 
 def normalize(text: str) -> str:
-    """Lowercase, strip section numbers and formatting markers."""
     text = _RE_FMT.sub(' ', text)
     text = _RE_SEC_NUM.sub('', text)
     text = _RE_MAIN_NUM.sub('', text)
@@ -152,15 +180,11 @@ def normalize(text: str) -> str:
 
 
 def strip_formatting(text: str) -> str:
-    """Remove only formatting markers; keep original case and punctuation."""
     return _RE_WS.sub(' ', _RE_FMT.sub('', text)).strip()
 
 
 def token_overlap(query: str, candidate: str) -> float:
-    """
-    Fraction of query's content tokens (>= 4 chars, not in _STOP)
-    that appear anywhere in the candidate string.
-    """
+    """Fraction of query content tokens (≥4 chars, not in _STOP) found in candidate."""
     q_tokens = {w for w in query.split() if len(w) >= 4 and w not in _STOP}
     if not q_tokens:
         return 0.0
@@ -168,12 +192,24 @@ def token_overlap(query: str, candidate: str) -> float:
     return len(q_tokens & c_tokens) / len(q_tokens)
 
 
+def _norm_for_match(text: str) -> str:
+    """Normalize for anchor matching: lowercase, strip formatting/nums, strip diacritics."""
+    return normalize_diacritics(normalize(text))
+
+
+def _score_block(block_text: str, norm_names: List[str]) -> float:
+    """Return best token_overlap score between block_text and any of norm_names."""
+    if not norm_names:
+        return 0.0
+    c = _norm_for_match(block_text)
+    return max(token_overlap(n, c) for n in norm_names)
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Intermediate data model
 # ─────────────────────────────────────────────────────────────────────────────
 
 class TextBlock:
-    """One logical unit of text extracted from the source document."""
     __slots__ = ('text', 'is_bold', 'is_heading', 'source', 'page', 'is_hf')
 
     def __init__(
@@ -188,13 +224,13 @@ class TextBlock:
         self.text = text
         self.is_bold = is_bold
         self.is_heading = is_heading
-        self.source = source    # 'paragraph' | 'table' | 'heading'
-        self.page = page        # page number (PDF) or sequential position (DOCX)
-        self.is_hf = is_hf     # True → identified as header or footer line
+        self.source = source
+        self.page = page
+        self.is_hf = is_hf
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Document converter: file → List[TextBlock]
+# Document converter  (unchanged from v2)
 # ─────────────────────────────────────────────────────────────────────────────
 
 class DocConverter:
@@ -208,12 +244,8 @@ class DocConverter:
             return self._from_pdf(file_path)
         raise ValueError(f"Unsupported format: {ext}")
 
-    # ── DOCX ─────────────────────────────────────────────────────────────────
-
     def _from_docx(self, path: str) -> List[TextBlock]:
         doc = Document(path)
-
-        # Collect header / footer text so we can flag it later
         hf_set: Set[str] = set()
         for sec in doc.sections:
             for hf in (
@@ -233,17 +265,8 @@ class DocConverter:
         return self._traverse_body(doc, is_hf)
 
     def _traverse_body(self, doc: Document, is_hf) -> List[TextBlock]:
-        """
-        Walk the body element tree in document order.
-        Each top-level <w:p> becomes one TextBlock.
-        Each <w:tbl> row becomes one TextBlock (cells joined with ' | ').
-        """
         from docx.oxml.ns import qn
-
-        # Build lookup: lxml element → python-docx Paragraph
-        # doc.paragraphs contains only top-level body paragraphs (not table cells)
         para_map = {p._element: p for p in doc.paragraphs}
-
         blocks: List[TextBlock] = []
         pos = 0
 
@@ -271,16 +294,16 @@ class DocConverter:
                 pos += 1
 
             elif tag == 'tbl':
-                # Each table row → one block; duplicated merged-cell text is deduplicated
-                for row_el in child.findall('.//' + qn('w:tr')):
+                from docx.oxml.ns import qn as _qn
+                for row_el in child.findall('.//' + _qn('w:tr')):
                     seen: Set[str] = set()
                     parts: List[str] = []
-                    for cell in row_el.findall(qn('w:tc')):
+                    for cell in row_el.findall(_qn('w:tc')):
                         cell_words = []
-                        for p_el in cell.findall('.//' + qn('w:p')):
+                        for p_el in cell.findall('.//' + _qn('w:p')):
                             t = ''.join(
                                 r.text or ''
-                                for r in p_el.findall('.//' + qn('w:t'))
+                                for r in p_el.findall('.//' + _qn('w:t'))
                             ).strip()
                             if t:
                                 cell_words.append(t)
@@ -302,12 +325,9 @@ class DocConverter:
         runs = [r for r in para.runs if r.text.strip()]
         return bool(runs) and all(r.bold for r in runs)
 
-    # ── PDF ──────────────────────────────────────────────────────────────────
-
     def _from_pdf(self, path: str) -> List[TextBlock]:
         pages_text = self._read_pdf_pages(path)
         hf_set = self._detect_pdf_hf(pages_text)
-
         blocks: List[TextBlock] = []
         for page_num, page_text in enumerate(pages_text):
             for line in page_text.split('\n'):
@@ -330,7 +350,6 @@ class DocConverter:
         except Exception as exc:
             raise RuntimeError(f"PDF read error: {exc}") from exc
 
-        # Check if extracted text is too short (scanned PDF)
         if sum(len(t) for t in pages) < 100:
             if HAS_OCR:
                 return self._ocr(path)
@@ -339,72 +358,42 @@ class DocConverter:
                 "is not installed."
             )
 
-        # Check if text is poorly formatted (missing spaces)
         if self._is_text_malformed(pages):
             if HAS_PDFPLUMBER:
-                logger.warning("PyPDF2 extracted malformed text (missing spaces). Trying pdfplumber...")
+                logger.warning("PyPDF2 extracted malformed text. Trying pdfplumber...")
                 try:
-                    pages_pdfplumber = self._read_pdf_with_pdfplumber(path)
-                    # Check if pdfplumber gave better results
-                    if not self._is_text_malformed(pages_pdfplumber):
+                    pages_pl = self._read_pdf_with_pdfplumber(path)
+                    if not self._is_text_malformed(pages_pl):
                         logger.info("pdfplumber extracted text successfully")
-                        return pages_pdfplumber
+                        return pages_pl
                     logger.warning("pdfplumber also gave malformed text")
                 except Exception as e:
-                    logger.warning(f"pdfplumber failed: {e}. Falling back to PyPDF2 output")
-            else:
-                logger.warning(
-                    "PyPDF2 extracted malformed text (missing spaces), but pdfplumber is not installed. "
-                    "Using PyPDF2 output."
-                )
+                    logger.warning(f"pdfplumber failed: {e}")
 
         return pages
 
     @staticmethod
     def _is_text_malformed(pages: List[str]) -> bool:
-        """
-        Detect if extracted text has missing spaces between words.
-        Heuristic: look for abnormally long sequences of lowercase letters
-        (e.g., "depthinterviewsconductedbytheprincipalinvestigator" instead of proper spacing).
-        """
         if not pages:
             return False
-
-        # Sample first few pages
         sample = ' '.join(pages[:min(5, len(pages))])
         if len(sample) < 100:
             return False
-
-        # Count very long lowercase sequences (>20 chars) which shouldn't exist in proper text
         long_sequences = re.findall(r'[a-z]{20,}', sample)
-
-        # Also count camelCase-like patterns (lowercase followed by uppercase)
         camel_case = re.findall(r'[a-z][A-Z]', sample)
-
-        # If we find several long sequences OR many camelCase patterns, it's likely malformed
-        has_long_sequences = len(long_sequences) >= 3
         camel_ratio = len(camel_case) / max(len(sample) / 100, 1)
-        has_many_camel = camel_ratio > 1.5
-
-        if has_long_sequences or has_many_camel:
-            logger.debug(f"Text malformed: {len(long_sequences)} long sequences, {len(camel_case)} camelCase patterns")
-            return True
-
-        return False
+        return len(long_sequences) >= 3 or camel_ratio > 1.5
 
     @staticmethod
     def _read_pdf_with_pdfplumber(path: str) -> List[str]:
-        """Extract text from PDF using pdfplumber (better text extraction for some PDFs)."""
         pages: List[str] = []
         with pdfplumber.open(path) as pdf:
             for page in pdf.pages:
-                text = page.extract_text() or ''
-                pages.append(text)
+                pages.append(page.extract_text() or '')
         return pages
 
     @staticmethod
     def _detect_pdf_hf(pages: List[str]) -> Set[str]:
-        """Return normalized lines that appear on more than half the pages."""
         if len(pages) < 2:
             return set()
         counter: Counter = Counter()
@@ -425,195 +414,24 @@ class DocConverter:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Anchor matcher: find block indices for each DMP subsection
-# ─────────────────────────────────────────────────────────────────────────────
-
-class AnchorMatcher:
-    """
-    Searches for 28 anchor texts (14 PL + 14 EN) in a block list and returns
-    the block index at which each subsection begins.
-    """
-
-    HIGH_THRESHOLD  = 0.55  # score at which we accept immediately (first match wins)
-    LOW_THRESHOLD   = 0.35  # fallback minimum to accept any match
-    MIN_FIRST_BLOCK = 0.60  # block[i] alone must cover ≥60% of anchor tokens;
-                            # prevents content blocks (like answers to other questions)
-                            # from being mistaken for anchors due to shared keywords
-                            # (e.g., 3.1 "stored/research" with 0.50 score matching 5.2 answer)
-                            # Real anchors typically score 0.80-1.00 in single block
-
-    # Fingerprint-specific thresholds (stricter than token overlap)
-    FINGERPRINT_HIGH_THRESHOLD = 0.70  # require 70% keyword coverage
-    FINGERPRINT_LOW_THRESHOLD  = 0.50  # minimum 50% keyword coverage
-    MIN_FINGERPRINT_MATCHES    = 3     # require at least 3 matched keywords
-
-    def __init__(self, anchors_cfg: dict) -> None:
-        self._anchors = anchors_cfg
-
-    def find_boundaries(self, blocks: List[TextBlock]) -> Dict[str, Tuple[int, int]]:
-        """
-        Returns {section_id: (block_index, window_size)} in document order.
-        - block_index: first block where anchor/question begins
-        - window_size: number of blocks that contain the anchor text
-
-        Each section is searched only in the portion of the document AFTER the
-        previous section's anchor — forward-only search prevents a later duplicate
-        of anchor text (e.g. a re-printed template at the end of the file) from
-        stealing the boundary from the real occurrence.
-        """
-        result: Dict[str, Tuple[int, int]] = {}
-        search_from = 0
-        for sid in SECTION_ORDER:
-            cfg = self._anchors.get(sid)
-            if not cfg:
-                continue
-            texts = cfg.get('pl', []) + cfg.get('en', [])
-            fingerprint = cfg.get('fingerprint_pl', []) + cfg.get('fingerprint_en', [])
-            rel_idx, win_size, score = self._locate(blocks[search_from:], texts, fingerprint)
-            if rel_idx >= 0:
-                abs_idx = search_from + rel_idx
-                result[sid] = (abs_idx, win_size)
-                search_from = abs_idx + win_size  # Skip past entire matched window
-                logger.debug('Anchor %s → blocks %d-%d (window=%d, score %.2f)',
-                           sid, abs_idx, abs_idx + win_size - 1, win_size, score)
-            else:
-                logger.debug('Anchor %s → NOT FOUND', sid)
-        return result
-
-    def _locate(
-        self,
-        blocks: List[TextBlock],
-        anchor_texts: List[str],
-        fingerprint: List[str],
-    ) -> Tuple[int, int, float]:
-        """
-        Find the FIRST position (left-to-right) whose token_overlap with any anchor
-        reaches HIGH_THRESHOLD and return it immediately.  If no position reaches
-        HIGH, return the first position that reached LOW.  This prevents a later
-        high-scoring duplicate from stealing the boundary.
-
-        Two guards ensure the anchor STARTS at block[i] rather than somewhere
-        inside a wide window:
-          1. Skip blocks that are structural noise (main section titles).
-          2. Require block[i] alone to cover ≥ MIN_FIRST_BLOCK of anchor tokens.
-             This prevents a content block followed 3 blocks later by the real
-             question text from being accepted as an anchor start.
-
-        Returns: (start_idx, matched_window_size, score)
-        - start_idx: first block index where anchor begins
-        - matched_window_size: number of blocks that contain the anchor text
-        - score: match confidence score
-        """
-        norm_anchors = [normalize(a) for a in anchor_texts]
-        first_low_idx, first_low_win, first_low_score = -1, 1, 0.0
-
-        # Strategy 1: for each position i, try windows of 1/2/3/4 blocks.
-        # Return the moment we hit HIGH; record first LOW as fallback.
-        for i in range(len(blocks)):
-            blk = blocks[i]
-
-            # Skip header/footer lines
-            if blk.is_hf:
-                continue
-
-            # Skip main section title lines (e.g. "3. Przechowywanie i tworzenie…")
-            # These score highly against subsection anchors but are not the anchor.
-            if any(p.search(blk.text) for p in _BUILTIN_NOISE):
-                continue
-
-            # The anchor must START in this block — compute single-block score first.
-            # If block[i] has no anchor tokens, a window of 4 could still score high
-            # by pulling in the actual question block further down, which would
-            # consume the preceding content inside the "anchor window".
-            norm_blk = normalize(blk.text)
-            best_single = max(
-                (token_overlap(na, norm_blk) for na in norm_anchors),
-                default=0.0,
-            )
-            if best_single < self.MIN_FIRST_BLOCK:
-                continue
-
-            best_at_i = 0.0
-            best_win = 1
-            best_weight = 0.0  # score × anchor word-count — proxy for |matched tokens|
-            for win_size in (1, 2, 3, 4):
-                if i + win_size > len(blocks):
-                    break
-                window = ' '.join(
-                    normalize(blocks[j].text) for j in range(i, i + win_size)
-                )
-                for na in norm_anchors:
-                    s = token_overlap(na, window)
-                    # weight = matched-token count proxy.  When two windows share the
-                    # same ratio (e.g. a short 3-token anchor scores 1.0 on win=1
-                    # and a long 9-token anchor also scores 1.0 on win=2), prefer
-                    # the window that covers more anchor tokens absolutely.
-                    # If adding extra blocks brings no extra anchor tokens, the weight
-                    # stays the same and best_win is NOT increased (no bloat).
-                    weight = s * len(na.split())
-                    if s > best_at_i or (s == best_at_i and weight > best_weight):
-                        best_at_i = s
-                        best_win = win_size
-                        best_weight = weight
-            if best_at_i >= self.HIGH_THRESHOLD:
-                return i, best_win, best_at_i
-            if best_at_i >= self.LOW_THRESHOLD and first_low_idx < 0:
-                first_low_idx, first_low_win, first_low_score = i, best_win, best_at_i
-
-        # Strategy 2: fingerprint keyword coverage over a 6-block window.
-        # Only runs when strategy 1 found nothing at all.
-        # Uses stricter thresholds to prevent false positives (e.g. 3.1 matching 5.2 content)
-        if first_low_idx < 0 and fingerprint:
-            fp_tokens = {w.lower() for w in fingerprint if len(w) >= 4}
-            if fp_tokens:
-                for i in range(len(blocks)):
-                    window = ' '.join(
-                        normalize(blocks[j].text)
-                        for j in range(i, min(i + 6, len(blocks)))
-                    )
-                    window_tokens = set(window.split())
-                    matched = fp_tokens & window_tokens
-                    score = len(matched) / len(fp_tokens)
-                    # Require both high coverage ratio AND minimum absolute number of matches
-                    if score >= self.FINGERPRINT_HIGH_THRESHOLD and len(matched) >= self.MIN_FINGERPRINT_MATCHES:
-                        return i, 6, score  # Fingerprint uses 6-block window
-                    if score >= self.FINGERPRINT_LOW_THRESHOLD and len(matched) >= self.MIN_FINGERPRINT_MATCHES and first_low_idx < 0:
-                        first_low_idx, first_low_win, first_low_score = i, 6, score
-
-        if first_low_idx >= 0:
-            return first_low_idx, first_low_win, first_low_score
-        return -1, 1, 0.0
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Content cleaner
+# Content cleaner  (unchanged from v2)
 # ─────────────────────────────────────────────────────────────────────────────
 
 class ContentCleaner:
-    """Converts TextBlock objects to cleaned display-ready text lines."""
-
     def clean(self, blocks: List[TextBlock], skip_patterns: list) -> List[str]:
-        """
-        Return cleaned non-empty text lines from *blocks*, skipping:
-          - header / footer lines
-          - subsection numerations (1.1, 2.2) and main section numbers (1., 2.)
-          - structural noise (DMP title, main section titles)
-          - lines matching any pattern in skip_patterns
-          - lines that are empty after formatting removal
-        """
         result = []
         for block in blocks:
             if block.is_hf:
                 continue
             text = strip_formatting(block.text)
-            # Remove subsection numerations (1.1, 2.2) and main section numbers (1., 2.)
-            # These are identifiers only, NOT part of the content
-            text = _RE_SEC_NUM.sub('', text)   # Remove "1.1 ", "2.2 " prefix
-            text = _RE_MAIN_NUM.sub('', text)  # Remove "1. ", "2. " prefix
+            # Check noise BEFORE stripping numerations — patterns match "4. Legal requirements..."
+            # as well as "Legal requirements..." (numeration-optional patterns).
+            if any(p.search(text) for p in _BUILTIN_NOISE):
+                continue
+            text = _RE_SEC_NUM.sub('', text)
+            text = _RE_MAIN_NUM.sub('', text)
             text = _RE_WS.sub(' ', text).strip()
             if not text:
-                continue
-            if any(p.search(text) for p in _BUILTIN_NOISE):
                 continue
             if any(p.search(text) for p in skip_patterns):
                 continue
@@ -622,12 +440,10 @@ class ContentCleaner:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Skip-terms manager
+# Skip-terms manager  (unchanged from v2)
 # ─────────────────────────────────────────────────────────────────────────────
 
 class SkipTermsManager:
-    """CRUD for the user-editable skip-terms list (config/extraction_skip_terms.json)."""
-
     _DEFAULT_PATH = os.path.normpath(
         os.path.join(
             os.path.dirname(os.path.abspath(__file__)),
@@ -662,7 +478,6 @@ class SkipTermsManager:
         return terms
 
     def compile(self) -> list:
-        """Return a list of compiled regex objects for all skip terms."""
         patterns = []
         for term in self.load():
             try:
@@ -673,7 +488,7 @@ class SkipTermsManager:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Validation helpers  (also imported by app.py)
+# Validation helpers  (unchanged from v2)
 # ─────────────────────────────────────────────────────────────────────────────
 
 def validate_docx_file(path: str) -> Tuple[bool, str]:
@@ -703,31 +518,272 @@ def validate_pdf_file(path: str) -> Tuple[bool, str]:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Main extractor  (drop-in replacement for the old DMPExtractor)
+# Variants loader
+# ─────────────────────────────────────────────────────────────────────────────
+
+class VariantsLoader:
+    """Loads subsection and section name variants from config/dmp_variants.json."""
+
+    _DEFAULT_PATH = os.path.normpath(
+        os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            '..', 'config', 'dmp_variants.json',
+        )
+    )
+
+    def __init__(self, path: Optional[str] = None) -> None:
+        self.path = path or self._DEFAULT_PATH
+
+    def load(self) -> Tuple[Dict[str, List[str]], Dict[str, List[str]]]:
+        """
+        Returns:
+            subsection_variants: {"1.1": [names...], ...}
+            section_variants:    {"1": [names...], ...}
+        """
+        with open(self.path, encoding='utf-8') as f:
+            data = json.load(f)
+
+        subsection_variants: Dict[str, List[str]] = {}
+        section_variants: Dict[str, List[str]] = {}
+
+        for section in data:
+            sid = section['id']
+            section_variants[sid] = section.get('names', [])
+            for sub in section.get('subsections', []):
+                subsection_variants[sub['id']] = sub.get('names', [])
+
+        return subsection_variants, section_variants
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# DMP Trimmer  (step 2 — independent of step 3)
+# ─────────────────────────────────────────────────────────────────────────────
+
+class DMPTrimmer:
+    """
+    Trims document blocks to the DMP section.
+
+    Start: first block that matches any variant of section-1 names OR
+           subsection-1.1 names (by token overlap). No "Plan zarządzania
+           danymi" prefix is required — the match is on name content alone.
+
+    End:   first block matching "oświadczenia administracyjne" (any spelling /
+           diacritics variant). Everything from that block onward is removed.
+
+    Both detections are independent of each other and of LinearMatcher.
+    """
+
+    HIGH = 0.55  # single-block score to accept immediately
+    LOW = 0.45   # minimum score to accept with a 2-block window
+
+    def trim(
+        self,
+        blocks: List[TextBlock],
+        sec1_names: List[str],
+        sub11_names: List[str],
+    ) -> List[TextBlock]:
+        all_start_names = sec1_names + sub11_names
+        norm_start = [_norm_for_match(n) for n in all_start_names]
+
+        start_idx = self._find_start(blocks, norm_start)
+        end_idx = self._find_end(blocks)
+
+        if start_idx is None:
+            logger.warning("DMPTrimmer: DMP start not found — using full document")
+            start_idx = 0
+        else:
+            logger.info("DMPTrimmer: DMP starts at block %d", start_idx)
+
+        if end_idx is not None:
+            logger.info("DMPTrimmer: DMP ends at block %d (oświadczenia administracyjne)", end_idx)
+            return blocks[start_idx:end_idx]
+
+        return blocks[start_idx:]
+
+    def _find_start(
+        self, blocks: List[TextBlock], norm_names: List[str]
+    ) -> Optional[int]:
+        """Return index of first block that looks like a DMP section-1 or 1.1 heading."""
+        for i, blk in enumerate(blocks):
+            if blk.is_hf:
+                continue
+            # Try single block first
+            single = _score_block(blk.text, norm_names)
+            if single >= self.HIGH:
+                logger.debug("DMPTrimmer start: block %d score %.2f (single)", i, single)
+                return i
+            # Try 2-block window for cases where heading wraps
+            if single >= self.LOW and i + 1 < len(blocks):
+                window = blk.text + ' ' + blocks[i + 1].text
+                score2 = _score_block(window, norm_names)
+                if score2 >= self.HIGH:
+                    logger.debug("DMPTrimmer start: block %d score %.2f (2-block)", i, score2)
+                    return i
+        return None
+
+    @staticmethod
+    def _find_end(blocks: List[TextBlock]) -> Optional[int]:
+        """Return index of the block containing 'oświadczenia administracyjne'."""
+        for i, blk in enumerate(blocks):
+            if blk.is_hf:
+                continue
+            if _RE_END_DMP.search(blk.text):
+                return i
+        return None
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Linear matcher  (step 3 — independent of step 2)
+# ─────────────────────────────────────────────────────────────────────────────
+
+class LinearMatcher:
+    """
+    Finds subsection boundaries by matching name variants in document order.
+
+    Rules:
+    - Sections are searched in SECTION_ORDER (not by number, but by name).
+    - Search for section N starts where section N-1's anchor ended (cursor).
+    - If a section anchor is not found, its start is None (empty section),
+      and the cursor does not advance.
+    - Section headers (2, 3, …) are searched independently (full document scan)
+      and used as additional end-of-section boundaries for subsections that are
+      last in their main section (1.2, 2.2, 3.2, 4.2, 5.4).
+    """
+
+    HIGH = 0.55
+    LOW = 0.38
+    MIN_FIRST = 0.38  # single-block pre-filter before trying windows
+
+    def find_all(
+        self,
+        blocks: List[TextBlock],
+        subsection_variants: Dict[str, List[str]],
+        section_variants: Dict[str, List[str]],
+    ) -> Tuple[Dict[str, Optional[Tuple[int, int]]], Dict[str, Optional[int]]]:
+        """
+        Returns:
+            subsection_matches: {sid: (start_idx, win_size) or None}
+            section_starts:     {sec_id: start_idx or None}  (section headers only)
+        """
+        # Phase 1: find subsections in forward order
+        subsection_matches: Dict[str, Optional[Tuple[int, int]]] = {}
+        cursor = 0
+        for sid in SECTION_ORDER:
+            names = subsection_variants.get(sid, [])
+            result = self._find_anchor(blocks, names, cursor, sid=sid)
+            subsection_matches[sid] = result
+            if result is not None:
+                cursor = result[0] + result[1]
+                logger.info("LinearMatcher: %s → block %d (win %d)", sid, result[0], result[1])
+            else:
+                logger.info("LinearMatcher: %s → NOT FOUND (cursor stays at %d)", sid, cursor)
+
+        # Phase 2: find section headers (independent full-document scan)
+        section_starts: Dict[str, Optional[int]] = {}
+        for sec_id, names in section_variants.items():
+            result = self._find_anchor(blocks, names, 0)
+            section_starts[sec_id] = result[0] if result else None
+            if result:
+                logger.debug("LinearMatcher: section %s header → block %d", sec_id, result[0])
+
+        return subsection_matches, section_starts
+
+    # Compiled pattern for numeration-based detection (e.g. "2.1.", "3.2 ", "5.4.")
+    _RE_NUMERATION = re.compile(r'^\s*(\d+)\.(\d+)[.\s]')
+
+    def _find_anchor(
+        self,
+        blocks: List[TextBlock],
+        names: List[str],
+        search_from: int,
+        sid: Optional[str] = None,
+    ) -> Optional[Tuple[int, int]]:
+        """
+        Find the first occurrence of any name variant at or after search_from.
+        Returns (block_index, window_size) or None.
+
+        Strategy 0 (highest priority): numeration-based detection.
+          If the block starts with "X.Y." or "X.Y " matching the target sid,
+          accept it immediately (no score calculation needed).
+
+        Strategy 1: token overlap — single-block pre-filter (>= MIN_FIRST),
+          then window of 1-3 blocks. Returns first HIGH hit; records first LOW
+          as fallback.
+        """
+        if not names:
+            return None
+
+        norm_names = [_norm_for_match(n) for n in names]
+        first_low: Optional[Tuple[int, int]] = None
+
+        for i in range(search_from, len(blocks)):
+            blk = blocks[i]
+            if blk.is_hf:
+                continue
+
+            # Skip main section title blocks — they should not match as subsection anchors
+            if any(p.search(blk.text) for p in _BUILTIN_NOISE):
+                continue
+
+            # Strategy 0: numeration prefix matching (e.g. "2.1. Metadata...")
+            if sid is not None:
+                m = self._RE_NUMERATION.match(blk.text)
+                if m and f"{m.group(1)}.{m.group(2)}" == sid:
+                    logger.debug("LinearMatcher: %s numeration match at block %d", sid, i)
+                    return i, 1
+
+            single = _score_block(blk.text, norm_names)
+            if single < self.MIN_FIRST:
+                continue
+
+            if single >= self.HIGH:
+                # High confidence on single block — accept immediately
+                return i, 1
+
+            if single >= self.LOW:
+                # Single block already qualifies — prefer win=1 to avoid
+                # accidentally consuming the next subsection's content block
+                if first_low is None:
+                    first_low = (i, 1)
+                continue
+
+            # win=1 is between MIN_FIRST and LOW — try extending the window
+            best_score, best_win = single, 1
+            for win in (2, 3):
+                if i + win > len(blocks):
+                    break
+                window_text = ' '.join(blocks[j].text for j in range(i, i + win))
+                s = _score_block(window_text, norm_names)
+                if s > best_score:
+                    best_score, best_win = s, win
+
+            if best_score >= self.HIGH:
+                return i, best_win
+            if best_score >= self.LOW and first_low is None:
+                first_low = (i, best_win)
+
+        return first_low
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Main extractor
 # ─────────────────────────────────────────────────────────────────────────────
 
 class DMPExtractor:
     """
-    Anchor-based DMP section extractor.
+    DMP section extractor v4.
 
-    Public interface identical to the old extractor:
-        result = DMPExtractor().process_file(
-            file_path, output_dir, progress_callback=None
-        )
-
-    Returns:
-        {'success': True, 'filename': str, 'cache_id': str, 'message': str}
-        {'success': False, 'message': str}
+    Public interface identical to v2:
+        result = DMPExtractor().process_file(file_path, output_dir)
     """
 
     def __init__(self) -> None:
-        self._anchors_cfg = self._load_anchors()
         self._converter = DocConverter()
-        self._matcher = AnchorMatcher(self._anchors_cfg.get('sections', {}))
+        self._trimmer = DMPTrimmer()
+        self._matcher = LinearMatcher()
         self._cleaner = ContentCleaner()
         self._skip_mgr = SkipTermsManager()
-
-    # ── Public API ────────────────────────────────────────────────────────────
+        self._variants_loader = VariantsLoader()
 
     def process_file(
         self,
@@ -752,22 +808,29 @@ class DMPExtractor:
 
             cb('Converting document to text blocks…', 10)
             blocks = self._converter.convert(file_path)
-            logger.info(
-                'DocConverter produced %d blocks from %s', len(blocks), file_path
-            )
+            logger.info('DocConverter: %d blocks from %s', len(blocks), file_path)
 
-            cb('Locating section boundaries…', 30)
-            boundaries = self._matcher.find_boundaries(blocks)
-            logger.info(
-                'Found %d / %d section boundaries',
-                len(boundaries), len(SECTION_ORDER),
-            )
+            cb('Loading section name variants…', 20)
+            subsection_variants, section_variants = self._variants_loader.load()
 
-            cb('Extracting content between boundaries…', 60)
+            cb('Trimming to DMP section…', 30)
+            sec1_names = section_variants.get('1', [])
+            sub11_names = subsection_variants.get('1.1', [])
+            trimmed = self._trimmer.trim(blocks, sec1_names, sub11_names)
+            logger.info('DMPTrimmer: %d → %d blocks after trim', len(blocks), len(trimmed))
+
+            cb('Locating section boundaries…', 50)
+            subsection_matches, section_starts = self._matcher.find_all(
+                trimmed, subsection_variants, section_variants
+            )
+            found = sum(1 for v in subsection_matches.values() if v is not None)
+            logger.info('LinearMatcher: found %d / %d subsections', found, len(SECTION_ORDER))
+
+            cb('Extracting and cleaning content…', 70)
             skip_patterns = self._skip_mgr.compile()
-            cache = self._build_cache(blocks, boundaries, skip_patterns)
+            cache = self._build_cache(trimmed, subsection_matches, section_starts, skip_patterns)
 
-            cb('Saving cache…', 85)
+            cb('Saving cache…', 90)
             cache_id = str(uuid.uuid4())
             cache_dir = os.path.join(output_dir, 'cache')
             os.makedirs(cache_dir, exist_ok=True)
@@ -793,75 +856,60 @@ class DMPExtractor:
             logger.exception('process_file failed for %s', file_path)
             return {'success': False, 'message': str(exc)}
 
-    # ── Internal ──────────────────────────────────────────────────────────────
-
     def _build_cache(
         self,
         blocks: List[TextBlock],
-        boundaries: Dict[str, Tuple[int, int]],
+        subsection_matches: Dict[str, Optional[Tuple[int, int]]],
+        section_starts: Dict[str, Optional[int]],
         skip_patterns: list,
     ) -> dict:
-        """
-        Slice *blocks* into sections using *boundaries*, clean each slice,
-        and assemble the JSON cache structure expected by review.html.
-
-        boundaries format: {section_id: (start_idx, window_size)}
-        - start_idx: first block of the anchor/question
-        - window_size: number of blocks occupied by the anchor/question
-        """
         cache: dict = {}
+        # When a subsection absorbs the rest of the document (because the
+        # immediately-next subsection is not found), all subsequent subsections
+        # must be empty — their anchors fall inside the absorbing section's range.
+        absorbed = False
 
-        if not boundaries:
-            # Nothing found — put everything as unconnected text
-            lines = self._cleaner.clean(blocks, skip_patterns)
-            for sid in SECTION_ORDER:
+        for rank, sid in enumerate(SECTION_ORDER):
+            match = subsection_matches.get(sid)
+            if match is None or absorbed:
                 cache[sid] = self._empty_section(sid)
-            cache['_unconnected_text'] = [
-                {'text': t, 'type': 'no_section'} for t in lines
-            ]
-            return cache
+                continue
 
-        # Sort by start_idx (first element of tuple)
-        ordered = sorted(boundaries.items(), key=lambda x: x[1][0])
+            start_idx, win_size = match
+            # Include the anchor block itself in content — important for documents
+            # where the subsection description and the answer are in the same block
+            # (e.g. "Data quality control measures used. The data will be collected...").
+            # For standard-format documents (question-only anchor block) this adds
+            # a redundant question-text paragraph, which is acceptable.
+            content_start = start_idx
 
-        # Text before the first found anchor → unconnected
-        first_start_idx, _ = ordered[0][1]
-        pre_lines = self._cleaner.clean(blocks[:first_start_idx], skip_patterns)
+            # Default end: last block
+            content_end = len(blocks)
 
-        # Slice each found section
-        for rank, (sid, (start_idx, win_size)) in enumerate(ordered):
-            # Content begins AFTER the entire anchor window
-            content_start = start_idx + win_size
+            # End = IMMEDIATELY NEXT subsection's start (not the next *found* one).
+            # If the immediately-next subsection is not found, this section absorbs
+            # the rest of the document and all subsequent sections become empty.
+            if rank + 1 < len(SECTION_ORDER):
+                next_sid = SECTION_ORDER[rank + 1]
+                next_match = subsection_matches.get(next_sid)
+                if next_match is not None:
+                    content_end = next_match[0]
+                else:
+                    absorbed = True  # this section takes the rest; all after → empty
 
-            # Content ends at the start of next anchor (or end of document)
-            if rank + 1 < len(ordered):
-                next_start_idx, _ = ordered[rank + 1][1]
-                content_end = next_start_idx
-            else:
-                content_end = len(blocks)
+            # For subsections that are last in their main section, also
+            # check if the next section's header appears before content_end.
+            if sid in LAST_IN_SECTION:
+                next_sec = LAST_IN_SECTION[sid]
+                sec_start = section_starts.get(next_sec)
+                if sec_start is not None and sec_start > start_idx:
+                    content_end = min(content_end, sec_start)
 
-            # Extract content blocks (excludes ALL anchor blocks)
             content_blocks = blocks[content_start:content_end]
             paragraphs = self._cleaner.clean(content_blocks, skip_patterns)
-
-            # Debug logging for empty or very short sections
-            if len(paragraphs) == 0:
-                logger.warning(
-                    'Section %s: NO content extracted! '
-                    'Content blocks %d-%d (%d blocks total, after clean: 0 paragraphs)',
-                    sid, content_start, content_end - 1, len(content_blocks)
-                )
-                # Log first few raw blocks for debugging
-                for i, blk in enumerate(content_blocks[:5]):
-                    logger.debug('  Raw block %d: %s', i, blk.text[:100])
-            elif len(paragraphs) < 3 and sid not in ['6.1', '6.2']:  # 6.1/6.2 may be short
-                logger.info(
-                    'Section %s has only %d paragraph(s) - may need attention',
-                    sid, len(paragraphs)
-                )
-
             tagged = [{'text': p, 'tags': [], 'title': ''} for p in paragraphs]
             main = sid.split('.')[0]
+
             cache[sid] = {
                 'section': SECTION_TITLES[main],
                 'question': SECTION_QUESTIONS[sid],
@@ -870,15 +918,20 @@ class DMPExtractor:
             }
 
             logger.debug(
-                'Section %s: anchor blocks %d-%d, content blocks %d-%d (%d paragraphs)',
+                'Section %s: anchor %d-%d, content %d-%d (%d paragraphs)',
                 sid, start_idx, start_idx + win_size - 1,
-                content_start, content_end - 1, len(paragraphs)
+                content_start, content_end - 1, len(paragraphs),
             )
 
-        # Fill any sections that were not found
-        for sid in SECTION_ORDER:
-            if sid not in cache:
-                cache[sid] = self._empty_section(sid)
+        # Any text before the first found section anchor → unconnected
+        first_match = next(
+            (subsection_matches[sid] for sid in SECTION_ORDER
+             if subsection_matches.get(sid) is not None),
+            None,
+        )
+        pre_lines: List[str] = []
+        if first_match is not None and first_match[0] > 0:
+            pre_lines = self._cleaner.clean(blocks[:first_match[0]], skip_patterns)
 
         cache['_unconnected_text'] = [
             {'text': t, 'type': 'no_section'} for t in pre_lines
@@ -894,16 +947,6 @@ class DMPExtractor:
             'paragraphs': [],
             'tagged_paragraphs': [],
         }
-
-    def _load_anchors(self) -> dict:
-        path = os.path.normpath(
-            os.path.join(
-                os.path.dirname(os.path.abspath(__file__)),
-                '..', 'config', 'dmp_anchors.json',
-            )
-        )
-        with open(path, encoding='utf-8') as f:
-            return json.load(f)
 
     @staticmethod
     def _smart_filename(file_path: str) -> str:

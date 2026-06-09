@@ -71,48 +71,39 @@ Build a web application to:
 - **Compatibility:** legacy archives in `outputs/archives/` remain readable for listing, restore, and delete operations
 - **Tests:** added `tests/test_session_history.py` to validate active-session materialization and archive moves in the new layout
 
-### v0.9.1 (2026-05-26) — Extractor v2 Anchor-Based Algorithm Fixes
+### v0.9.2 (2026-06-07) — Extractor v4: Linear Matcher
 
 **Status:** Production-ready  
-**Focus:** Fix critical bugs in anchor-based DMP extraction algorithm (extractor_v2.py)
+**Focus:** Replace anchor-based extractor (v2) with clean 4-phase linear matcher (v4)
+
+#### Changes
+- **New:** `utils/extractor_v4.py` — complete rewrite of the extraction pipeline
+  - **Phase 1 (DocConverter):** PDF/DOCX → flat TextBlock list (reused from v2)
+  - **Phase 2 (DMPTrimmer):** trims document to DMP section; start = first section-1 or 1.1 name variant; end = "oświadczenia administracyjne" (fuzzy)
+  - **Phase 3 (LinearMatcher):** forward-only cursor; matches subsection name variants (not question texts); absorbed-rule prevents split content when a subsection is missing
+  - **Phase 4 (ContentCleaner):** strips formatting artefacts, noise patterns, user skip terms (unchanged from v2)
+- **New:** `config/dmp_variants.json` — A–F name variants for all 6 sections + 14 subsections (Polish + English description-style and question-style)
+- **Runtime switch:** application extraction now uses `utils/extractor_v4.py`; legacy `utils/extractor.py` and `utils/extractor_v3_separated.py` remain as compatibility wrappers for older diagnostics/tests
+- **Removed:** `utils/extractor_v2.py`
+- **app.py:** replaced `DEBUG_MODE` toggle with `EXTRACTOR_NAME = 'v4'`; new endpoint `GET/POST /api/settings/extractor` for future extractor switching
+- **config/settings.json:** `extractor_debug_mode` → `extractor_name`
+
+#### Key design decisions
+- Order based on found name positions in document, NOT on numbering — documents may have no section numbers
+- If immediately-next subsection not found → current absorbs rest of document; all subsequent forced empty
+- Last-in-section subsections (1.2, 2.2, 3.2, 4.2, 5.4): content_end capped by next main section header
+- content_start = anchor block index (anchor block included — handles embedded question+answer format)
+
+### v0.9.1 (2026-05-26) — Category Config and Miscellaneous Fixes
+
+**Status:** Production-ready  
+**Focus:** Fix category config discovery and minor extraction tweaks
 
 #### Changes
 - **Bug fix:** category config discovery/loading now normalizes language variants before building category IDs
    - **Root Cause:** after renaming category files to `*_pl.json` and archiving old Polish variants as `*_pl_stare.json`, backend discovery skipped only `_pl`/`_en` and treated `_pl_stare` as a separate base category
-   - **Fix:** added shared category resolution helpers in `app.py` so discovery, single-category loading, review loading, and AI comment aggregation prefer `*_pl.json`, then base `.json`, and only then legacy `*_pl_stare.json`
+   - **Fix:** added shared category resolution helpers in `app.py`
    - **Impact:** review/settings endpoints now load current Polish comment sets instead of archived `*_stare` files
-- **Bug fix:** `utils/extractor_v2.py:111` — regex for section 2 header filtering
-  - **Root Cause:** Pattern `Dokumentacja\s+i\s+jako` did not match "Dokumentacja i jakość danych" (typo: "jako" instead of "jakość")
-  - **Fix:** corrected to `Dokumentacja\s+i\s+jakość`
-  - **Impact:** Section 2 main header now properly filtered from extracted content
-- **Enhancement:** extended noise-filtering patterns with optional suffixes for better matching of main section headers (1-6)
-  - `Opis\s+danych(?:\s+oraz\s+pozyskiwanie)?` — matches both "Opis danych" and full title
-  - `Dokumentacja\s+i\s+jakość(?:\s+danych)?` — matches with optional "danych"
-  - `Zadania\s+zwi[aą]zane(?:\s+z\s+zarządzaniem)?` — matches with optional "z zarządzaniem"
-- **Enhancement:** increased AnchorMatcher window size from (1,2,3) to (1,2,3,4) blocks
-  - **Rationale:** Long subsection questions (e.g., 6.2: 140+ chars) may span multiple PDF lines
-  - **Impact:** improved anchor detection for multi-line questions
-- **Documentation:** added fix history comments to `_BUILTIN_NOISE` definition
-
-#### Extraction Algorithm Details
-
-**Anchor-based approach:**
-1. **DocConverter:** PDF/DOCX → flat list of TextBlock objects
-2. **AnchorMatcher:** searches for 28 anchor texts (14 PL + 14 EN subsection questions) using token overlap (thresholds: HIGH=0.55, LOW=0.35)
-3. **ContentCleaner:** strips formatting markers and filters noise (headers, footers, section titles)
-4. **DMPExtractor:** slices content between anchors → JSON cache for review.html
-
-**Key principles (verified):**
-- Subsection questions (anchors) are NOT included in extracted content
-- Numerations (1.1, 2.1, etc.) are identifiers only, not content
-- Main section headers (1-6) are filtered as structural noise
-- Extracted content = text between question N and question N+1
-
-**Testing notes:**
-- Validated against NCN OPUS-31 proposal (3940.pdf, PI: Jacek Ryl, Politechnika Gdańska)
-- Format: Polish section headers + Polish subsection questions + English content
-- Expected success: 13-14 of 14 subsections correctly extracted
-- Potential edge case: Section 6.1 if main header and question are merged in one text block
 
 ### v0.9.1 (2026-05-13) — Portable Runtime Packaging
 

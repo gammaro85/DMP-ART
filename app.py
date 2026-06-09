@@ -10,8 +10,7 @@ import uuid
 import re
 from datetime import datetime
 from werkzeug.utils import secure_filename
-from utils.extractor_v2 import DMPExtractor, SkipTermsManager
-from utils.extractor_v3_separated import DMPExtractorSeparated
+from utils.extractor_v4 import DMPExtractor, SkipTermsManager
 from utils.ai_module import AIReviewAssistant
 # Comments are now managed through JSON files in config/ directory
 
@@ -46,15 +45,17 @@ CATEGORY_VARIANT_SUFFIXES = ('_pl_stare', '_en_stare', '_pl', '_en')
 
 # Load persisted general settings
 _GENERAL_SETTINGS_PATH = os.path.join('config', 'settings.json')
-DEBUG_MODE = False  # Default: use v2 (production)
+# Extractor selection — currently only 'v4' is available.
+# To add a new extractor: import it above, add its key here, and handle it in the upload route.
+EXTRACTOR_NAME = 'v4'  # active extractor identifier
 try:
     if os.path.exists(_GENERAL_SETTINGS_PATH):
         with open(_GENERAL_SETTINGS_PATH, 'r', encoding='utf-8') as _f:
             _saved = json.load(_f)
         if 'max_upload_mb' in _saved:
             app.config['MAX_CONTENT_LENGTH'] = int(_saved['max_upload_mb']) * 1024 * 1024
-        if 'extractor_debug_mode' in _saved:
-            DEBUG_MODE = bool(_saved['extractor_debug_mode'])
+        if 'extractor_name' in _saved:
+            EXTRACTOR_NAME = _saved['extractor_name']
 except Exception:
     pass  # Fall back to default if file is corrupt
 
@@ -601,15 +602,8 @@ def upload_file():
                             'status': 'processing'
                         })
 
-            # Choose extractor based on debug mode
-            if DEBUG_MODE:
-                # v3: Separated slicing & cleaning (with RAW data export)
-                extractor = DMPExtractorSeparated(save_raw_slices=True)
-                print(f"[DEBUG] Using v3 extractor (separated pipeline with RAW export)")
-            else:
-                # v2: Production (clean during slicing, optimized)
-                extractor = DMPExtractor()
-                print(f"[DEBUG] Using v2 extractor (production)")
+            # Extractor selection — extend EXTRACTOR_NAME handling here when adding new extractors
+            extractor = DMPExtractor()
 
             result = extractor.process_file(
                 file_path,
@@ -1998,60 +1992,50 @@ def delete_skip_term():
 # Extractor Debug Mode API
 # ============================================================
 
-@app.route('/api/settings/extractor-debug', methods=['GET'])
-def get_extractor_debug():
-    """Get current extractor debug mode status"""
+@app.route('/api/settings/extractor', methods=['GET'])
+def get_extractor():
+    """Return currently active extractor identifier."""
     return jsonify({
         'success': True,
-        'debug_mode': DEBUG_MODE,
-        'extractor_version': 'v3-separated' if DEBUG_MODE else 'v2-production',
-        'description': (
-            'v3: Separated slicing & cleaning with RAW data export (for debugging)'
-            if DEBUG_MODE else
-            'v2: Production extractor (clean during slicing, optimized)'
-        )
+        'extractor_name': EXTRACTOR_NAME,
+        'available': ['v4'],
     })
 
-@app.route('/api/settings/extractor-debug', methods=['POST'])
-def update_extractor_debug():
-    """Toggle extractor debug mode (v2 vs v3)"""
-    global DEBUG_MODE
+@app.route('/api/settings/extractor', methods=['POST'])
+def update_extractor():
+    """Switch the active extractor. Extend 'available' list when adding new extractors."""
+    global EXTRACTOR_NAME
     try:
         data = request.json or {}
-        if 'debug_mode' in data:
-            debug_mode = data['debug_mode']
-            if not isinstance(debug_mode, bool):
-                return jsonify({
-                    'success': False,
-                    'message': 'debug_mode must be a boolean'
-                }), 400
+        name = data.get('extractor_name')
+        available = ['v4']
+        if name not in available:
+            return jsonify({'success': False, 'message': f'Unknown extractor. Available: {available}'}), 400
 
-            DEBUG_MODE = debug_mode
+        EXTRACTOR_NAME = name
 
-            # Persist to config/settings.json
-            saved = {}
-            if os.path.exists(_GENERAL_SETTINGS_PATH):
-                try:
-                    with open(_GENERAL_SETTINGS_PATH, 'r', encoding='utf-8') as f:
-                        saved = json.load(f)
-                except Exception:
-                    saved = {}
+        saved = {}
+        if os.path.exists(_GENERAL_SETTINGS_PATH):
+            try:
+                with open(_GENERAL_SETTINGS_PATH, 'r', encoding='utf-8') as f:
+                    saved = json.load(f)
+            except Exception:
+                saved = {}
+        saved['extractor_name'] = EXTRACTOR_NAME
+        with open(_GENERAL_SETTINGS_PATH, 'w', encoding='utf-8') as f:
+            json.dump(saved, f, indent=2, ensure_ascii=False)
 
-            saved['extractor_debug_mode'] = DEBUG_MODE
-
-            with open(_GENERAL_SETTINGS_PATH, 'w', encoding='utf-8') as f:
-                json.dump(saved, f, indent=2, ensure_ascii=False)
-
-            version = 'v3-separated' if DEBUG_MODE else 'v2-production'
-            return jsonify({
-                'success': True,
-                'message': f'Extractor switched to {version}',
-                'debug_mode': DEBUG_MODE
-            })
-
-        return jsonify({'success': False, 'message': 'Missing debug_mode parameter'}), 400
+        return jsonify({'success': True, 'message': f'Extractor set to {name}', 'extractor_name': name})
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
+
+# Keep old endpoint as alias for backwards compatibility with any existing UI references
+@app.route('/api/settings/extractor-debug', methods=['GET', 'POST'])
+def extractor_debug_alias():
+    """Deprecated alias — use /api/settings/extractor instead."""
+    if request.method == 'GET':
+        return get_extractor()
+    return jsonify({'success': False, 'message': 'Use /api/settings/extractor to switch extractors'}), 410
 
 
 # ============================================================
