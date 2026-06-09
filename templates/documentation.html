@@ -265,6 +265,9 @@
                 <button class="theme-toggle" aria-label="Toggle theme">
                     <i class="fas fa-moon"></i>
                 </button>
+                <button class="history-btn" aria-label="Historia sesji" title="Przeglądaj i otwieraj zapisane sesje">
+                    <i class="fas fa-history"></i> Historia
+                </button>
             </div>
             <div class="nav-links">
                 <a href="/" class="nav-item" data-page="index">Home</a>
@@ -581,7 +584,28 @@ CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]</div>
         </main>
     </div>
 
+    <!-- History Modal -->
+    <div id="history-modal">
+        <div class="history-modal-content">
+            <div class="history-modal-header">
+                <h2><i class="fas fa-history"></i> Historia sesji</h2>
+                <button class="history-modal-close" aria-label="Zamknij">&times;</button>
+            </div>
+            <div class="history-modal-body">
+                <div class="history-section">
+                    <h3><i class="fas fa-clock"></i> Aktywne sesje</h3>
+                    <div id="active-sessions-list"></div>
+                </div>
+                <div class="history-section">
+                    <h3><i class="fas fa-archive"></i> Zarchiwizowane sesje</h3>
+                    <div id="archived-sessions-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <script>
         // Smooth scrolling for TOC
         document.querySelectorAll('.toc a').forEach(link => {
