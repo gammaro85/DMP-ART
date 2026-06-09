@@ -188,12 +188,13 @@ def _build_dmp_plan(cache_id, cache_data):
     return dmp_plan
 
 
-def _build_session_metadata(cache_id, extracted_metadata, session_created_at, status='active'):
+def _build_session_metadata(cache_id, extracted_metadata, session_created_at, status='active', existing_session_name=''):
     return {
         'cache_id': cache_id,
         'status': status,
         'session_created_at': session_created_at,
         'last_updated': datetime.now().isoformat(),
+        'session_name': existing_session_name,
         'researcher_surname': extracted_metadata.get('researcher_surname', ''),
         'researcher_firstname': extracted_metadata.get('researcher_firstname', ''),
         'competition_name': extracted_metadata.get('competition_name', ''),
@@ -218,8 +219,9 @@ def _ensure_active_session(cache_id, feedback_data=None, compiled_feedback=None,
 
     existing_metadata = _load_json_file(paths['metadata_path'], {})
     session_created_at = existing_metadata.get('session_created_at', datetime.now().isoformat())
+    existing_session_name = existing_metadata.get('session_name', '')
     extracted_metadata = cache_data.get('_metadata', {})
-    metadata_json = _build_session_metadata(cache_id, extracted_metadata, session_created_at)
+    metadata_json = _build_session_metadata(cache_id, extracted_metadata, session_created_at, existing_session_name=existing_session_name)
     metadata_json['session_folder'] = paths['session_dir']
     metadata_json['source_cache_path'] = cache_path
 
@@ -1163,6 +1165,7 @@ def get_active_sessions():
             active_sessions.append({
                 'session_id': session_id,
                 'filename': metadata.get('filename_original', 'Unknown'),
+                'session_name': metadata.get('session_name', ''),
                 'researcher_surname': metadata.get('researcher_surname', ''),
                 'researcher_firstname': metadata.get('researcher_firstname', ''),
                 'creation_date': metadata.get('creation_date', ''),
@@ -1220,7 +1223,10 @@ def restore_archived_session(archive_id):
                 'message': 'Archive not found'
             })
 
-        # Load all three files
+        for required_file in ['metadata.json', 'dmp_plan.json', 'feedback.json']:
+            if not os.path.exists(os.path.join(archive_path, required_file)):
+                return jsonify({'success': False, 'message': f'Plik archiwum niekompletny: brak {required_file}'})
+
         with open(os.path.join(archive_path, 'metadata.json'), 'r', encoding='utf-8') as f:
             metadata = json.load(f)
 
@@ -1242,6 +1248,41 @@ def restore_archived_session(archive_id):
             'success': False,
             'message': f'Error restoring archive: {str(e)}'
         })
+
+@app.route('/api/rename-session', methods=['POST'])
+def rename_session():
+    """Rename a session (active or archived) by updating session_name in metadata.json"""
+    try:
+        data = request.json or {}
+        session_id = data.get('session_id', '')   # cache_id for active, archive_id for archived
+        session_type = data.get('session_type', 'archive')   # 'active' or 'archive'
+        session_name = data.get('session_name', '').strip()
+
+        if not session_id:
+            return jsonify({'success': False, 'message': 'Missing session_id'})
+
+        if session_type == 'active':
+            paths = _get_active_session_paths(session_id)
+            metadata_path = paths['metadata_path']
+        else:
+            archive_path = _find_archive_path(session_id)
+            if not archive_path:
+                return jsonify({'success': False, 'message': 'Archive not found'})
+            metadata_path = os.path.join(archive_path, 'metadata.json')
+
+        if not os.path.exists(metadata_path):
+            return jsonify({'success': False, 'message': 'Metadata not found'})
+
+        metadata = _load_json_file(metadata_path, {})
+        metadata['session_name'] = session_name
+        metadata['last_updated'] = datetime.now().isoformat()
+        _write_json_file(metadata_path, metadata)
+
+        return jsonify({'success': True, 'message': 'Session renamed successfully'})
+
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Error renaming session: {str(e)}'})
+
 
 @app.route('/save_category', methods=['POST'])
 def save_category():
