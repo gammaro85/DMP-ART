@@ -129,7 +129,7 @@ _BUILTIN_NOISE: List = [
         r'^\s*(?:\d+[\.\s]+)?(?:'
         r'Opis\s+danych.*'
         r'|Dokumentacja\s+i\s+jako[sś][cć].*'
-        r'|Przechowywanie\s+i\s+tworzenie.*'
+        r'|Przechowywanie\s+i\s+tworzenie(?!\s+kopii\s+zapasowych\s+danych).*'
         r'|Wymogi\s+prawne.*'
         r'|Wymagania\s+prawne.*'
         r'|Udost[eę]pnianie\s+i\s+d[łl]ugotr.*'
@@ -876,12 +876,18 @@ class DMPExtractor:
                 continue
 
             start_idx, win_size = match
-            # Include the anchor block itself in content — important for documents
-            # where the subsection description and the answer are in the same block
-            # (e.g. "Data quality control measures used. The data will be collected...").
-            # For standard-format documents (question-only anchor block) this adds
-            # a redundant question-text paragraph, which is acceptable.
-            content_start = start_idx
+            # Skip the anchor window (header/question text) — content starts
+            # immediately after the subsection heading block(s).
+            content_start = start_idx + win_size
+            # Also skip any "header continuation" blocks: short fragments that
+            # start with a lowercase letter and lack sentence-ending punctuation
+            # (e.g. "towarzyszące danym" overflowing from a split heading).
+            while content_start < len(blocks):
+                blk_text = blocks[content_start].text.strip()
+                if blk_text and blk_text[0].islower() and len(blk_text) < 80 and not blk_text[-1] in '.?!:':
+                    content_start += 1
+                else:
+                    break
 
             # Default end: last block
             content_end = len(blocks)
