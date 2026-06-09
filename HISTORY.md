@@ -83,7 +83,8 @@ Build a web application to:
   - **Phase 3 (LinearMatcher):** forward-only cursor; matches subsection name variants (not question texts); absorbed-rule prevents split content when a subsection is missing
   - **Phase 4 (ContentCleaner):** strips formatting artefacts, noise patterns, user skip terms (unchanged from v2)
 - **New:** `config/dmp_variants.json` — A–F name variants for all 6 sections + 14 subsections (Polish + English description-style and question-style)
-- **Removed:** `utils/extractor.py` (v1), `utils/extractor_v2.py`, `utils/extractor_v3_separated.py`
+- **Runtime switch:** application extraction now uses `utils/extractor_v4.py`; legacy `utils/extractor.py` and `utils/extractor_v3_separated.py` remain as compatibility wrappers for older diagnostics/tests
+- **Removed:** `utils/extractor_v2.py`
 - **app.py:** replaced `DEBUG_MODE` toggle with `EXTRACTOR_NAME = 'v4'`; new endpoint `GET/POST /api/settings/extractor` for future extractor switching
 - **config/settings.json:** `extractor_debug_mode` → `extractor_name`
 
