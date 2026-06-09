@@ -2567,9 +2567,6 @@ window.DMPHistory = {
 // HISTORY MODAL - Session Archive Management
 // ===========================================
 
-/**
- * HistoryModal - Manages archive and active session display
- */
 const HistoryModal = {
     modal: null,
     closeBtn: null,
@@ -2584,7 +2581,6 @@ const HistoryModal = {
 
         if (!this.modal) return;
 
-        // Bind events
         const historyBtn = document.querySelector('.history-btn');
         if (historyBtn) {
             historyBtn.addEventListener('click', () => this.open());
@@ -2594,19 +2590,15 @@ const HistoryModal = {
             this.closeBtn.addEventListener('click', () => this.close());
         }
 
-        // Close on backdrop click
         this.modal.addEventListener('click', (e) => {
-            if (e.target === this.modal) {
-                this.close();
-            }
+            if (e.target === this.modal) this.close();
         });
 
-        // Close on Escape key
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && this.modal.classList.contains('active')) {
-                this.close();
-            }
+            if (e.key === 'Escape' && this.modal.classList.contains('active')) this.close();
         });
+
+        ArchiveViewModal.init();
     },
 
     open() {
@@ -2621,122 +2613,175 @@ const HistoryModal = {
     },
 
     async loadSessions() {
-        await Promise.all([
-            this.loadActiveSessions(),
-            this.loadArchivedSessions()
-        ]);
+        await Promise.all([this.loadActiveSessions(), this.loadArchivedSessions()]);
     },
 
     async loadActiveSessions() {
         if (!this.activeSessions) return;
-
-        // Get sessions from SessionManager (localStorage)
         const sessions = SessionManager.getAllSessions();
-
-        // Send session IDs to server to verify cache exists
         const sessionIds = sessions.map(s => s.sessionId);
-
         try {
             const response = await fetch('/api/get-active-sessions', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ session_ids: sessionIds })
             });
-
             const data = await response.json();
-
             if (data.success && data.active_sessions.length > 0) {
                 this.renderActiveSessions(data.active_sessions);
             } else {
-                this.activeSessions.innerHTML = '<div class="history-empty">No active sessions</div>';
+                this.activeSessions.innerHTML = '<div class="history-empty">Brak aktywnych sesji</div>';
             }
         } catch (error) {
             console.error('Error loading active sessions:', error);
-            this.activeSessions.innerHTML = '<div class="history-empty">Error loading active sessions</div>';
+            this.activeSessions.innerHTML = '<div class="history-empty">Błąd ładowania sesji</div>';
         }
     },
 
     async loadArchivedSessions() {
         if (!this.archivedSessions) return;
-
         try {
             const response = await fetch('/api/get-archived-sessions');
             const data = await response.json();
-
             if (data.success && data.archives.length > 0) {
                 this.renderArchivedSessions(data.archives);
             } else {
-                this.archivedSessions.innerHTML = '<div class="history-empty">No archived sessions</div>';
+                this.archivedSessions.innerHTML = '<div class="history-empty">Brak zarchiwizowanych sesji</div>';
             }
         } catch (error) {
             console.error('Error loading archived sessions:', error);
-            this.archivedSessions.innerHTML = '<div class="history-empty">Error loading archived sessions</div>';
+            this.archivedSessions.innerHTML = '<div class="history-empty">Błąd ładowania archiwum</div>';
         }
+    },
+
+    _getDisplayName(session) {
+        if (session.session_name) return session.session_name;
+        if (session.researcher_surname) {
+            return session.researcher_surname + (session.researcher_firstname ? ' ' + session.researcher_firstname : '');
+        }
+        return session.filename || session.filename_original || 'Sesja bez nazwy';
     },
 
     renderActiveSessions(sessions) {
         const html = sessions.map(session => {
-            const displayName = session.researcher_surname
-                ? `${session.researcher_surname}${session.researcher_firstname ? ' ' + session.researcher_firstname : ''}`
-                : session.filename;
-
-            const date = session.creation_date || 'Unknown date';
-
+            const displayName = this._getDisplayName(session);
+            const date = session.creation_date || '';
+            const sessionIdEsc = session.session_id.replace(/'/g, "\\'");
+            const nameEsc = displayName.replace(/'/g, "\\'").replace(/"/g, '&quot;');
             return `
                 <div class="session-item" data-session-id="${session.session_id}">
                     <div class="session-info">
-                        <div class="session-title">${displayName}</div>
+                        <div class="session-title" id="stitle-active-${session.session_id}">${displayName}</div>
                         <div class="session-meta">
-                            <span><i class="fas fa-calendar"></i> ${date}</span>
-                            <span><i class="fas fa-file"></i> ${session.filename}</span>
+                            ${date ? `<span><i class="fas fa-calendar"></i> ${date}</span>` : ''}
+                            <span><i class="fas fa-file"></i> ${session.filename || ''}</span>
                         </div>
+                        <div id="srename-active-${session.session_id}" style="display:none"></div>
                     </div>
                     <div class="session-actions">
-                        <button class="session-action-btn btn-view" onclick="HistoryModal.openSession('${session.session_id}')">
-                            <i class="fas fa-eye"></i> Open
+                        <button class="session-action-btn btn-rename" onclick="HistoryModal.showRenameForm('${sessionIdEsc}', '${nameEsc}', 'active')">
+                            <i class="fas fa-pencil-alt"></i>
+                        </button>
+                        <button class="session-action-btn btn-view" onclick="HistoryModal.openSession('${sessionIdEsc}')">
+                            <i class="fas fa-eye"></i> Otwórz
                         </button>
                     </div>
-                </div>
-            `;
+                </div>`;
         }).join('');
-
         this.activeSessions.innerHTML = `<div class="session-list">${html}</div>`;
     },
 
     renderArchivedSessions(archives) {
         const html = archives.map(archive => {
-            const displayName = archive.researcher_surname
-                ? `${archive.researcher_surname}${archive.researcher_firstname ? ' ' + archive.researcher_firstname : ''}`
-                : archive.filename_original;
-
-            const archivedDate = new Date(archive.archived_date).toLocaleString();
-
+            const displayName = this._getDisplayName(archive);
+            const archivedDate = archive.archived_date ? new Date(archive.archived_date).toLocaleString('pl-PL') : '';
+            const archiveIdEsc = archive.archive_id.replace(/'/g, "\\'");
+            const nameEsc = displayName.replace(/'/g, "\\'").replace(/"/g, '&quot;');
             return `
                 <div class="session-item" data-archive-id="${archive.archive_id}">
                     <div class="session-info">
-                        <div class="session-title">${displayName}</div>
+                        <div class="session-title" id="stitle-archive-${archive.archive_id}">${displayName}</div>
                         <div class="session-meta">
-                            <span><i class="fas fa-archive"></i> Archived: ${archivedDate}</span>
-                            <span><i class="fas fa-file"></i> ${archive.filename_original || 'Unknown'}</span>
+                            ${archivedDate ? `<span><i class="fas fa-archive"></i> ${archivedDate}</span>` : ''}
+                            <span><i class="fas fa-file"></i> ${archive.filename_original || ''}</span>
                         </div>
+                        <div id="srename-archive-${archive.archive_id}" style="display:none"></div>
                     </div>
                     <div class="session-actions">
-                        <button class="session-action-btn btn-view" onclick="HistoryModal.viewArchive('${archive.archive_id}')">
-                            <i class="fas fa-eye"></i> View
+                        <button class="session-action-btn btn-rename" onclick="HistoryModal.showRenameForm('${archiveIdEsc}', '${nameEsc}', 'archive')">
+                            <i class="fas fa-pencil-alt"></i>
                         </button>
-                        <button class="session-action-btn btn-delete" onclick="HistoryModal.deleteArchive('${archive.archive_id}')">
-                            <i class="fas fa-trash"></i> Delete
+                        <button class="session-action-btn btn-view" onclick="HistoryModal.viewArchive('${archiveIdEsc}')">
+                            <i class="fas fa-eye"></i> Podgląd
+                        </button>
+                        <button class="session-action-btn btn-delete" onclick="HistoryModal.deleteArchive('${archiveIdEsc}')">
+                            <i class="fas fa-trash"></i>
                         </button>
                     </div>
-                </div>
-            `;
+                </div>`;
         }).join('');
-
         this.archivedSessions.innerHTML = `<div class="session-list">${html}</div>`;
     },
 
+    showRenameForm(sessionId, currentName, sessionType) {
+        const formContainerId = `srename-${sessionType}-${sessionId}`;
+        const titleId = `stitle-${sessionType}-${sessionId}`;
+        const container = document.getElementById(formContainerId);
+        const titleEl = document.getElementById(titleId);
+        if (!container) return;
+
+        const isVisible = container.style.display !== 'none';
+        if (isVisible) {
+            container.style.display = 'none';
+            return;
+        }
+
+        container.innerHTML = `
+            <div class="session-rename-form">
+                <input type="text" id="rename-input-${sessionId}" value="${currentName.replace(/"/g, '&quot;')}" placeholder="Nazwa sesji..." maxlength="120">
+                <button class="btn-confirm" onclick="HistoryModal.saveRename('${sessionId}', '${sessionType}')"><i class="fas fa-check"></i></button>
+                <button class="btn-cancel" onclick="document.getElementById('srename-${sessionType}-${sessionId}').style.display='none'"><i class="fas fa-times"></i></button>
+            </div>`;
+        container.style.display = 'block';
+
+        const input = document.getElementById(`rename-input-${sessionId}`);
+        if (input) {
+            input.focus();
+            input.select();
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') this.saveRename(sessionId, sessionType);
+                if (e.key === 'Escape') container.style.display = 'none';
+            });
+        }
+    },
+
+    async saveRename(sessionId, sessionType) {
+        const input = document.getElementById(`rename-input-${sessionId}`);
+        if (!input) return;
+        const newName = input.value.trim();
+
+        try {
+            const response = await fetch('/api/rename-session', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ session_id: sessionId, session_type: sessionType, session_name: newName })
+            });
+            const data = await response.json();
+            if (data.success) {
+                const titleEl = document.getElementById(`stitle-${sessionType}-${sessionId}`);
+                if (titleEl) titleEl.textContent = newName || sessionId;
+                const container = document.getElementById(`srename-${sessionType}-${sessionId}`);
+                if (container) container.style.display = 'none';
+                if (typeof showToast === 'function') showToast('Nazwa zapisana', 'success');
+            } else {
+                if (typeof showToast === 'function') showToast('Błąd: ' + data.message, 'error');
+            }
+        } catch (error) {
+            if (typeof showToast === 'function') showToast('Błąd połączenia', 'error');
+        }
+    },
+
     openSession(sessionId) {
-        // Redirect to review page with session ID
         window.location.href = `/review?cache_id=${sessionId}`;
     },
 
@@ -2744,55 +2789,163 @@ const HistoryModal = {
         try {
             const response = await fetch(`/api/restore-archived-session/${archiveId}`);
             const data = await response.json();
-
             if (data.success) {
-                // Store in sessionStorage for display
-                sessionStorage.setItem('archived-session-view', JSON.stringify(data));
-
-                // Redirect to a view-only mode or show modal with content
-                alert('Archive viewing feature - coming soon!\n\nFor now, the archive data is loaded. You can:\n1. Export it\n2. Create a new review session from it');
-                console.log('Archived session data:', data);
+                ArchiveViewModal.show(data);
             } else {
-                alert('Error loading archive: ' + data.message);
+                if (typeof showToast === 'function') showToast('Błąd: ' + data.message, 'error');
+                else alert('Błąd: ' + data.message);
             }
         } catch (error) {
-            alert('Error loading archive: ' + error.message);
+            if (typeof showToast === 'function') showToast('Błąd połączenia: ' + error.message, 'error');
         }
     },
 
     async deleteArchive(archiveId) {
-        if (!confirm('Are you sure you want to delete this archived session? This action cannot be undone.')) {
-            return;
-        }
-
+        if (!confirm('Czy na pewno chcesz usunąć to archiwum? Tej operacji nie można cofnąć.')) return;
         try {
-            const response = await fetch(`/api/delete-archived-session/${archiveId}`, {
-                method: 'DELETE'
-            });
-
+            const response = await fetch(`/api/delete-archived-session/${archiveId}`, { method: 'DELETE' });
             const data = await response.json();
-
             if (data.success) {
-                // Remove from display
                 const item = document.querySelector(`[data-archive-id="${archiveId}"]`);
-                if (item) {
-                    item.remove();
-                }
-
-                // Check if list is now empty
+                if (item) item.remove();
                 if (this.archivedSessions.querySelectorAll('.session-item').length === 0) {
-                    this.archivedSessions.innerHTML = '<div class="history-empty">No archived sessions</div>';
+                    this.archivedSessions.innerHTML = '<div class="history-empty">Brak zarchiwizowanych sesji</div>';
                 }
-
-                if (typeof showToast === 'function') {
-                    showToast('Archive deleted successfully', 'success');
-                }
+                if (typeof showToast === 'function') showToast('Archiwum usunięte', 'success');
             } else {
-                alert('Error deleting archive: ' + data.message);
+                if (typeof showToast === 'function') showToast('Błąd: ' + data.message, 'error');
             }
         } catch (error) {
-            alert('Error deleting archive: ' + error.message);
+            if (typeof showToast === 'function') showToast('Błąd połączenia', 'error');
         }
+    }
+};
+
+// ===========================================
+// ARCHIVE VIEW MODAL
+// ===========================================
+const SECTION_LABELS = {
+    '1.1': '1.1 Opis i zbiór danych',
+    '1.2': '1.2 Standardy i metadane',
+    '2.1': '2.1 Prawa własności i licencje',
+    '2.2': '2.2 Ograniczenia dostępu',
+    '3.1': '3.1 Przechowywanie i backup',
+    '3.2': '3.2 Bezpieczeństwo danych',
+    '4.1': '4.1 Wymagania prawne',
+    '4.2': '4.2 Ochrona danych osobowych',
+    '5.1': '5.1 Udostępnianie danych',
+    '5.2': '5.2 Długoterminowe przechowywanie',
+    '5.3': '5.3 Licencje na dane',
+    '5.4': '5.4 Wybór repozytorium',
+    '6.1': '6.1 Odpowiedzialności',
+    '6.2': '6.2 Zasoby i koszty'
+};
+
+const ArchiveViewModal = {
+    modal: null,
+
+    init() {
+        const existing = document.getElementById('archive-view-modal');
+        if (existing) { this.modal = existing; this._bindClose(); return; }
+
+        const el = document.createElement('div');
+        el.id = 'archive-view-modal';
+        el.innerHTML = `
+            <div class="archive-view-content">
+                <div class="archive-view-header">
+                    <div class="archive-view-title-group">
+                        <h2 id="avm-title"><i class="fas fa-archive"></i> Podgląd archiwum</h2>
+                        <div class="archive-view-meta" id="avm-meta"></div>
+                    </div>
+                    <button class="archive-view-close" id="avm-close">&times;</button>
+                </div>
+                <div class="archive-view-body" id="avm-body"></div>
+                <div class="archive-view-actions">
+                    <button class="session-action-btn btn-view" id="avm-copy-btn">
+                        <i class="fas fa-copy"></i> Kopiuj komentarze
+                    </button>
+                    <button class="session-action-btn btn-rename" id="avm-close-btn">
+                        <i class="fas fa-times"></i> Zamknij
+                    </button>
+                </div>
+            </div>`;
+        document.body.appendChild(el);
+        this.modal = el;
+        this._bindClose();
+    },
+
+    _bindClose() {
+        const closeBtn = document.getElementById('avm-close');
+        const closeBtnFooter = document.getElementById('avm-close-btn');
+        if (closeBtn) closeBtn.addEventListener('click', () => this.hide());
+        if (closeBtnFooter) closeBtnFooter.addEventListener('click', () => this.hide());
+        this.modal.addEventListener('click', (e) => { if (e.target === this.modal) this.hide(); });
+
+        const copyBtn = document.getElementById('avm-copy-btn');
+        if (copyBtn) copyBtn.addEventListener('click', () => this._copyFeedback());
+    },
+
+    show(data) {
+        const { metadata, feedback } = data;
+        const titleEl = document.getElementById('avm-title');
+        const metaEl = document.getElementById('avm-meta');
+        const bodyEl = document.getElementById('avm-body');
+        if (!titleEl || !metaEl || !bodyEl) return;
+
+        const displayName = metadata.session_name
+            || (metadata.researcher_surname ? `${metadata.researcher_surname} ${metadata.researcher_firstname || ''}`.trim() : '')
+            || metadata.filename_original
+            || 'Archiwum';
+
+        titleEl.innerHTML = `<i class="fas fa-archive"></i> ${displayName}`;
+
+        const archivedDate = metadata.archived_date ? new Date(metadata.archived_date).toLocaleString('pl-PL') : '';
+        metaEl.innerHTML = [
+            metadata.filename_original ? `<span><i class="fas fa-file"></i> ${metadata.filename_original}</span>` : '',
+            archivedDate ? `<span><i class="fas fa-calendar"></i> Zarchiwizowano: ${archivedDate}</span>` : '',
+            metadata.competition_name ? `<span><i class="fas fa-trophy"></i> ${metadata.competition_name}</span>` : ''
+        ].filter(Boolean).join('');
+
+        const sections = feedback.sections || {};
+        const allSectionIds = ['1.1','1.2','2.1','2.2','3.1','3.2','4.1','4.2','5.1','5.2','5.3','5.4','6.1','6.2'];
+
+        bodyEl.innerHTML = allSectionIds.map(id => {
+            const text = sections[id] || '';
+            const label = SECTION_LABELS[id] || id;
+            return `
+                <div class="archive-view-section">
+                    <div class="archive-view-section-header">
+                        <span>${label}</span>
+                        ${text ? '' : '<span style="font-weight:400;color:var(--text-muted);font-size:0.8rem">brak komentarza</span>'}
+                    </div>
+                    <div class="archive-view-section-body">
+                        ${text
+                            ? `<div class="feedback-text">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`
+                            : '<div class="no-feedback">—</div>'}
+                    </div>
+                </div>`;
+        }).join('');
+
+        this.modal.classList.add('active');
+        this._currentFeedback = feedback;
+    },
+
+    hide() {
+        if (this.modal) this.modal.classList.remove('active');
+    },
+
+    _copyFeedback() {
+        if (!this._currentFeedback) return;
+        const compiled = this._currentFeedback.compiled_feedback
+            || Object.entries(this._currentFeedback.sections || {})
+                .map(([id, text]) => `${SECTION_LABELS[id] || id}\n${text}`)
+                .join('\n\n');
+        if (!compiled) return;
+        navigator.clipboard.writeText(compiled).then(() => {
+            if (typeof showToast === 'function') showToast('Skopiowano do schowka', 'success');
+        }).catch(() => {
+            if (typeof showToast === 'function') showToast('Błąd kopiowania', 'error');
+        });
     }
 };
 
@@ -2801,7 +2954,7 @@ document.addEventListener('DOMContentLoaded', () => {
     HistoryModal.init();
 });
 
-// Export HistoryModal API
 window.HistoryModal = HistoryModal;
+window.ArchiveViewModal = ArchiveViewModal;
 
 console.log('DMP ART script.js loaded successfully (v0.9.1 with archive system)');
