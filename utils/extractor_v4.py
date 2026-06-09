@@ -129,7 +129,7 @@ _BUILTIN_NOISE: List = [
         r'^\s*(?:\d+[\.\s]+)?(?:'
         r'Opis\s+danych.*'
         r'|Dokumentacja\s+i\s+jako[sś][cć].*'
-        r'|Przechowywanie\s+i\s+tworzenie.*'
+        r'|Przechowywanie\s+i\s+tworzenie(?!\s+kopii\s+zapasowych\s+danych).*'
         r'|Wymogi\s+prawne.*'
         r'|Wymagania\s+prawne.*'
         r'|Udost[eę]pnianie\s+i\s+d[łl]ugotr.*'
