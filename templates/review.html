@@ -1377,8 +1377,69 @@
         <button id="search-cite-btn-float">Search &amp; Cite</button>
     </div>
 
+
+    <!-- Archive Metadata Form Modal -->
+    <div id="archive-meta-modal">
+        <div class="archive-meta-content">
+            <div class="archive-meta-header">
+                <h2><i class="fas fa-archive"></i> Zapisz sesję recenzji</h2>
+                <button class="archive-meta-close" aria-label="Zamknij">&times;</button>
+            </div>
+            <div class="archive-meta-body">
+                <div class="archive-meta-field">
+                    <label for="archive-researcher-surname">Nazwisko wnioskodawcy <span class="required-star">*</span></label>
+                    <input type="text" id="archive-researcher-surname" placeholder="np. Kowalski" maxlength="100" autocomplete="off">
+                    <span class="field-error" id="archive-surname-error">Pole wymagane</span>
+                </div>
+                <div class="archive-meta-field">
+                    <label for="archive-researcher-firstname">Imię wnioskodawcy</label>
+                    <input type="text" id="archive-researcher-firstname" placeholder="np. Jan" maxlength="100" autocomplete="off">
+                </div>
+                <div class="archive-meta-row">
+                    <div class="archive-meta-field">
+                        <label for="archive-competition-name">Konkurs</label>
+                        <input type="text" id="archive-competition-name" placeholder="np. OPUS, SONATA" maxlength="100" autocomplete="off">
+                    </div>
+                    <div class="archive-meta-field">
+                        <label for="archive-competition-edition">Edycja</label>
+                        <input type="text" id="archive-competition-edition" placeholder="np. 26" maxlength="20" autocomplete="off">
+                    </div>
+                </div>
+                <div class="archive-meta-field">
+                    <label for="archive-session-name">Nazwa sesji (opcjonalnie)</label>
+                    <input type="text" id="archive-session-name" placeholder="Własna nazwa do identyfikacji w historii" maxlength="120" autocomplete="off">
+                </div>
+            </div>
+            <div class="archive-meta-footer">
+                <button class="archive-meta-cancel">Anuluj</button>
+                <button class="archive-meta-confirm"><i class="fas fa-archive"></i> Archiwizuj</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Modal -->
+    <div id="history-modal">
+        <div class="history-modal-content">
+            <div class="history-modal-header">
+                <h2><i class="fas fa-history"></i> Historia sesji</h2>
+                <button class="history-modal-close" aria-label="Zamknij">&times;</button>
+            </div>
+            <div class="history-modal-body">
+                <div class="history-section">
+                    <h3><i class="fas fa-clock"></i> Aktywne sesje</h3>
+                    <div id="active-sessions-list"></div>
+                </div>
+                <div class="history-section">
+                    <h3><i class="fas fa-archive"></i> Zarchiwizowane sesje</h3>
+                    <div id="archived-sessions-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/history-modal.js') }}"></script>
     <script src="{{ url_for('static', filename='js/ai_assistant.js') }}"></script>
 
     <script>
@@ -2582,105 +2643,144 @@
             }
 
             // Archive session - save DMP plan and feedback as structured JSON files
-            function archiveSession() {
-                // Get cache_id from URL
+            // ── Archive metadata modal ────────────────────────────────────
+            const archiveMetaModal = document.getElementById('archive-meta-modal');
+            const archiveMetaClose = archiveMetaModal ? archiveMetaModal.querySelector('.archive-meta-close') : null;
+            const archiveMetaCancel = archiveMetaModal ? archiveMetaModal.querySelector('.archive-meta-cancel') : null;
+            const archiveMetaConfirm = archiveMetaModal ? archiveMetaModal.querySelector('.archive-meta-confirm') : null;
+
+            function openArchiveMetaModal() {
+                if (!archiveMetaModal) return;
+                // Clear previous values and errors
+                archiveMetaModal.querySelector('#archive-researcher-surname').value = '';
+                archiveMetaModal.querySelector('#archive-researcher-firstname').value = '';
+                archiveMetaModal.querySelector('#archive-competition-name').value = '';
+                archiveMetaModal.querySelector('#archive-competition-edition').value = '';
+                archiveMetaModal.querySelector('#archive-session-name').value = '';
+                archiveMetaModal.querySelector('#archive-researcher-surname').classList.remove('input-error');
+                archiveMetaModal.querySelector('#archive-surname-error').classList.remove('visible');
+                archiveMetaModal.classList.add('active');
+                setTimeout(() => archiveMetaModal.querySelector('#archive-researcher-surname').focus(), 80);
+            }
+
+            function closeArchiveMetaModal() {
+                if (archiveMetaModal) archiveMetaModal.classList.remove('active');
+            }
+
+            if (archiveMetaClose) archiveMetaClose.addEventListener('click', closeArchiveMetaModal);
+            if (archiveMetaCancel) archiveMetaCancel.addEventListener('click', closeArchiveMetaModal);
+            if (archiveMetaModal) {
+                archiveMetaModal.addEventListener('click', e => {
+                    if (e.target === archiveMetaModal) closeArchiveMetaModal();
+                });
+                archiveMetaModal.addEventListener('keydown', e => {
+                    if (e.key === 'Escape') closeArchiveMetaModal();
+                    if (e.key === 'Enter' && e.target.tagName === 'INPUT') doArchive();
+                });
+            }
+
+            if (archiveMetaConfirm) archiveMetaConfirm.addEventListener('click', doArchive);
+
+            function collectFeedback() {
+                const feedbackData = {};
+                document.querySelectorAll('.question-card').forEach(section => {
+                    const sectionId = section.getAttribute('data-id');
+                    const ta = section.querySelector(`#feedback-${sectionId}`);
+                    if (ta && ta.value.trim()) feedbackData[sectionId] = ta.value.trim();
+                });
+                return feedbackData;
+            }
+
+            function buildCompiledFeedback(feedbackData) {
+                if (typeof compileFeedback === 'function') return compileFeedback();
+                const allSections = ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2', '4.1', '4.2', '5.1', '5.2', '5.3', '5.4', '6.1', '6.2'];
+                return allSections.map(id => {
+                    const text = feedbackData[id];
+                    return text ? `${id}\n${text}` : `${id}\nbrak komentarza`;
+                }).join('\n\n');
+            }
+
+            function doArchive() {
+                const surnameInput = archiveMetaModal.querySelector('#archive-researcher-surname');
+                const surnameError = archiveMetaModal.querySelector('#archive-surname-error');
+                const surname = surnameInput.value.trim();
+
+                // Validate required field
+                if (!surname) {
+                    surnameInput.classList.add('input-error');
+                    surnameError.classList.add('visible');
+                    surnameInput.focus();
+                    return;
+                }
+                surnameInput.classList.remove('input-error');
+                surnameError.classList.remove('visible');
+
                 const urlParams = new URLSearchParams(window.location.search);
                 const cacheId = urlParams.get('cache_id');
-
                 if (!cacheId) {
-                    alert('Error: No cache ID found. Please reload the page.');
+                    if (typeof showToast === 'function') showToast('Błąd: brak cache_id. Przeładuj stronę.', 'error');
                     return;
                 }
 
-                // Collect all feedback from sections
-                const feedbackData = {};
-                const sections = document.querySelectorAll('.question-card');
+                const feedbackData = collectFeedback();
+                const compiledFeedback = buildCompiledFeedback(feedbackData);
 
-                sections.forEach(section => {
-                    const sectionId = section.getAttribute('data-id');
-                    const feedbackTextarea = section.querySelector(`#feedback-${sectionId}`);
+                const metaPayload = {
+                    researcher_surname: surname,
+                    researcher_firstname: archiveMetaModal.querySelector('#archive-researcher-firstname').value.trim(),
+                    competition_name: archiveMetaModal.querySelector('#archive-competition-name').value.trim(),
+                    competition_edition: archiveMetaModal.querySelector('#archive-competition-edition').value.trim(),
+                    session_name: archiveMetaModal.querySelector('#archive-session-name').value.trim()
+                };
 
-                    if (feedbackTextarea && feedbackTextarea.value.trim()) {
-                        feedbackData[sectionId] = feedbackTextarea.value.trim();
-                    }
-                });
+                closeArchiveMetaModal();
 
-                // Check if there's any feedback to archive
-                if (Object.keys(feedbackData).length === 0) {
-                    if (!confirm('No feedback has been added yet. Archive anyway?')) {
-                        return;
-                    }
-                }
-
-                // Compile feedback text (use compileFeedback from script.js if available)
-                let compiledFeedback = '';
-                if (typeof compileFeedback === 'function') {
-                    compiledFeedback = compileFeedback();
-                } else {
-                    // Fallback: generate compiled feedback locally
-                    const allSections = ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2', '4.1', '4.2', '5.1', '5.2', '5.3', '5.4', '6.1', '6.2'];
-                    allSections.forEach(sectionId => {
-                        const text = feedbackData[sectionId];
-                        if (text && text.trim()) {
-                            compiledFeedback += `${sectionId} - ${text.trim()}\n\n`;
-                        } else {
-                            compiledFeedback += `${sectionId} brak komentarza\n\n`;
-                        }
-                    });
-                    compiledFeedback = compiledFeedback.trim();
-                }
-
-                // Get the archive button
                 const archiveBtn = document.getElementById('archive-session-btn');
                 const originalText = archiveBtn.innerHTML;
-                archiveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Archiving...';
+                archiveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Archiwizuję...';
                 archiveBtn.disabled = true;
 
-                // Send to server
                 fetch('/api/archive-session', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         cache_id: cacheId,
-                        feedback: compiledFeedback,    // Compiled text report
-                        feedbackData: feedbackData     // Raw section data
+                        feedback: compiledFeedback,
+                        feedbackData: feedbackData,
+                        meta: metaPayload
                     })
                 })
-                .then(response => response.json())
+                .then(r => r.json())
                 .then(data => {
                     if (data.success) {
-                        // Success message
-                        archiveBtn.innerHTML = '<i class="fas fa-check"></i> Archived!';
+                        archiveBtn.innerHTML = '<i class="fas fa-check"></i> Zarchiwizowano!';
                         archiveBtn.style.background = 'var(--success-color)';
-
-                        // Remove from localStorage active sessions
-                        if (typeof SessionManager !== 'undefined') {
-                            SessionManager.deleteSession(cacheId);
-                        }
-
+                        if (typeof SessionManager !== 'undefined') SessionManager.deleteSession(cacheId);
                         setTimeout(() => {
                             archiveBtn.innerHTML = originalText;
                             archiveBtn.style.background = '';
                             archiveBtn.disabled = false;
-
-                            // Show success notification
-                            if (typeof showToast === 'function') {
-                                showToast('Session archived successfully!', 'success');
-                            }
+                            if (typeof showToast === 'function') showToast('Sesja zarchiwizowana pomyślnie!', 'success');
                         }, 2000);
                     } else {
-                        alert('Error archiving session: ' + data.message);
+                        if (typeof showToast === 'function') showToast('Błąd archiwizacji: ' + data.message, 'error');
                         archiveBtn.innerHTML = originalText;
                         archiveBtn.disabled = false;
                     }
                 })
                 .catch(error => {
-                    alert('Error archiving session: ' + error.message);
+                    if (typeof showToast === 'function') showToast('Błąd połączenia: ' + error.message, 'error');
                     archiveBtn.innerHTML = originalText;
                     archiveBtn.disabled = false;
                 });
+            }
+
+            function archiveSession() {
+                const feedbackData = collectFeedback();
+                if (Object.keys(feedbackData).length === 0) {
+                    if (!confirm('Nie dodano żadnych komentarzy. Archiwizować mimo to?')) return;
+                }
+                openArchiveMetaModal();
             }
 
             // Event listeners
@@ -2715,27 +2815,5 @@
         })();
     </script>
 
-    <!-- History Modal -->
-    <div id="history-modal">
-        <div class="history-modal-content">
-            <div class="history-modal-header">
-                <h2><i class="fas fa-history"></i> Session History</h2>
-                <button class="history-modal-close" aria-label="Close">&times;</button>
-            </div>
-            <div class="history-modal-body">
-                <!-- Active Sessions -->
-                <div class="history-section">
-                    <h3><i class="fas fa-clock"></i> Active Sessions</h3>
-                    <div id="active-sessions-list"></div>
-                </div>
-
-                <!-- Archived Sessions -->
-                <div class="history-section">
-                    <h3><i class="fas fa-archive"></i> Archived Sessions</h3>
-                    <div id="archived-sessions-list"></div>
-                </div>
-            </div>
-        </div>
-    </div>
 </body>
 </html>
