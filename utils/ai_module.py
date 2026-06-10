@@ -4,6 +4,7 @@ AI Review Assistant for DMP-ART
 Main module orchestrating AI-powered DMP review functionality
 """
 
+import copy
 import json
 import os
 from typing import Optional, Dict, List, Any
@@ -58,7 +59,7 @@ class AIReviewAssistant:
                     "max_tokens": 2000
                 },
                 "anthropic": {
-                    "model": "claude-sonnet-4-5-20250929",
+                    "model": "claude-sonnet-4-6",
                     "temperature": 0.3,
                     "max_tokens": 2000
                 }
@@ -78,10 +79,23 @@ class AIReviewAssistant:
         with open(self.config_path, 'w', encoding='utf-8') as f:
             json.dump(self.config, f, ensure_ascii=False, indent=2)
 
+    def _config_with_env(self) -> dict:
+        """Return config with OPENAI_API_KEY / ANTHROPIC_API_KEY env vars merged in."""
+        merged = copy.deepcopy(self.config)
+        merged.setdefault("api_keys", {})
+        for env_var, provider_key in (
+            ("OPENAI_API_KEY", "openai"),
+            ("ANTHROPIC_API_KEY", "anthropic"),
+        ):
+            value = os.environ.get(env_var, "")
+            if value:
+                merged["api_keys"][provider_key] = value
+        return merged
+
     def _init_provider(self):
         """Initialize the AI provider"""
         try:
-            self.provider = get_provider(self.config)
+            self.provider = get_provider(self._config_with_env())
         except Exception as e:
             print(f"Error initializing AI provider: {e}")
             self.provider = None
@@ -132,10 +146,11 @@ class AIReviewAssistant:
             Configuration dictionary
         """
         config_copy = self.config.copy()
-        if hide_keys and "api_keys" in config_copy:
+        if hide_keys:
+            effective = self._config_with_env()
             config_copy["api_keys"] = {
-                k: "***" if v else ""
-                for k, v in config_copy["api_keys"].items()
+                k: "***" if effective.get("api_keys", {}).get(k) else ""
+                for k in ("openai", "anthropic")
             }
         return config_copy
 
