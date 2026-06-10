@@ -2307,6 +2307,7 @@ def ai_suggest_feedback():
 
         # Load available comments from categories
         available_comments = load_all_category_comments()
+        id_lookup = build_comment_id_lookup(available_comments)
 
         if section_id:
             # Single section suggestion
@@ -2323,12 +2324,14 @@ def ai_suggest_feedback():
                 content=content_text,
                 available_comments=section_comments
             )
+            resolve_selected_comments(suggestions, id_lookup)
         else:
             # All sections suggestion
             suggestions = ai_assistant.generate_review_suggestions(
                 dmp_content=dmp_content,
                 available_comments=available_comments
             )
+            resolve_selected_comments(suggestions, id_lookup)
 
         return jsonify({'success': True, 'suggestions': suggestions})
 
@@ -2436,6 +2439,35 @@ def get_comments_for_section(section_id, all_comments):
                     })
 
     return section_comments
+
+def build_comment_id_lookup(all_comments):
+    """Build a flat {comment_id: text} dict from all category comments."""
+    lookup = {}
+    for category, sections in all_comments.items():
+        if not isinstance(sections, dict):
+            continue
+        for section_id, comment_list in sections.items():
+            if not isinstance(comment_list, list):
+                continue
+            for i, comment in enumerate(comment_list):
+                cid = f"{category}_{section_id}_{i:03d}"
+                lookup[cid] = comment if isinstance(comment, str) else str(comment)
+    return lookup
+
+def resolve_selected_comments(suggestions, id_lookup):
+    """Replace comment ID strings in suggestions with their full text."""
+    if isinstance(suggestions, dict):
+        if 'selected_comments' in suggestions:
+            suggestions['selected_comments'] = [
+                id_lookup.get(cid, cid) for cid in suggestions['selected_comments']
+            ]
+        # Handle per-section dict (all-sections mode)
+        for key, value in suggestions.items():
+            if isinstance(value, dict) and 'selected_comments' in value:
+                value['selected_comments'] = [
+                    id_lookup.get(cid, cid) for cid in value['selected_comments']
+                ]
+    return suggestions
 
 # ============================================================
 # End AI Module Routes
