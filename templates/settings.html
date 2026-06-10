@@ -2021,12 +2021,12 @@
             },
             model_settings: {
                 openai: {
-                    model: document.getElementById('openai-model').value,
+                    model: document.getElementById('openai-model').value || 'gpt-4o',
                     temperature: document.getElementById('temperature').value / 100,
                     max_tokens: 2000
                 },
                 anthropic: {
-                    model: document.getElementById('anthropic-model').value,
+                    model: document.getElementById('anthropic-model').value || 'claude-sonnet-4-6',
                     temperature: document.getElementById('temperature').value / 100,
                     max_tokens: 2000
                 }

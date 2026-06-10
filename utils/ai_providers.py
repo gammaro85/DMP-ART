@@ -435,14 +435,15 @@ def get_provider(config: dict) -> Optional[AIProvider]:
     if provider_name == "openai":
         return OpenAIProvider(
             api_key=api_key,
-            model=model_settings.get("model", "gpt-4"),
+            # `or` fallback: stored config may contain an empty-string model
+            model=model_settings.get("model") or "gpt-4o",
             temperature=model_settings.get("temperature", 0.3),
             max_tokens=model_settings.get("max_tokens", 2000)
         )
     elif provider_name == "anthropic":
         return AnthropicProvider(
             api_key=api_key,
-            model=model_settings.get("model", "claude-sonnet-4-5-20250929"),
+            model=model_settings.get("model") or "claude-sonnet-4-6",
             temperature=model_settings.get("temperature", 0.3),
             max_tokens=model_settings.get("max_tokens", 2000)
         )
