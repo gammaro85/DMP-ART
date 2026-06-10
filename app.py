@@ -9,7 +9,7 @@ import zipfile
 import uuid
 import re
 from datetime import datetime
-from werkzeug.utils import secure_filename
+from werkzeug.utils import secure_filename, safe_join
 from utils.extractor_v4 import DMPExtractor, SkipTermsManager
 from utils.ai_module import AIReviewAssistant
 # Comments are now managed through JSON files in config/ directory
@@ -34,6 +34,7 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB default; overridden
 
 SECTION_IDS = ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2',
                '4.1', '4.2', '5.1', '5.2', '5.3', '5.4', '6.1', '6.2']
+SESSION_ID_PATTERN = re.compile(r'^[A-Za-z0-9_-]+$')
 
 CATEGORY_SYSTEM_FILES = {
     'dmp_structure.json', 'quick_comments.json', 'category_comments.json',
@@ -111,11 +112,34 @@ def _get_feedback_templates_path():
 
 
 def _get_cache_path(cache_id):
-    return os.path.join(app.config['CACHE_FOLDER'], f"cache_{cache_id}.json")
+    safe_cache_id = _sanitize_session_identifier(cache_id)
+    cache_path = safe_join(app.config['CACHE_FOLDER'], f"cache_{safe_cache_id}.json")
+    if not cache_path:
+        raise ValueError('Invalid session identifier')
+    return cache_path
+
+
+def _sanitize_session_identifier(identifier):
+    normalized_identifier = str(identifier or '').strip()
+    if not SESSION_ID_PATTERN.fullmatch(normalized_identifier):
+        raise ValueError('Invalid session identifier')
+    return normalized_identifier
+
+
+def _safe_join_session_path(root, identifier):
+    safe_identifier = _sanitize_session_identifier(identifier)
+    root_path = os.path.abspath(root)
+    candidate_path = safe_join(root_path, safe_identifier)
+    if not candidate_path:
+        raise ValueError('Invalid session identifier')
+    candidate_path = os.path.abspath(candidate_path)
+    if os.path.commonpath([candidate_path, root_path]) != root_path:
+        raise ValueError('Invalid session identifier')
+    return candidate_path
 
 
 def _get_active_session_paths(cache_id):
-    session_dir = os.path.join(app.config['ACTIVE_SESSIONS_FOLDER'], cache_id)
+    session_dir = _safe_join_session_path(app.config['ACTIVE_SESSIONS_FOLDER'], cache_id)
 
     return {
         'session_dir': session_dir,
@@ -188,12 +212,13 @@ def _build_dmp_plan(cache_id, cache_data):
     return dmp_plan
 
 
-def _build_session_metadata(cache_id, extracted_metadata, session_created_at, status='active'):
+def _build_session_metadata(cache_id, extracted_metadata, session_created_at, status='active', existing_session_name=''):
     return {
         'cache_id': cache_id,
         'status': status,
         'session_created_at': session_created_at,
         'last_updated': datetime.now().isoformat(),
+        'session_name': existing_session_name,
         'researcher_surname': extracted_metadata.get('researcher_surname', ''),
         'researcher_firstname': extracted_metadata.get('researcher_firstname', ''),
         'competition_name': extracted_metadata.get('competition_name', ''),
@@ -218,8 +243,9 @@ def _ensure_active_session(cache_id, feedback_data=None, compiled_feedback=None,
 
     existing_metadata = _load_json_file(paths['metadata_path'], {})
     session_created_at = existing_metadata.get('session_created_at', datetime.now().isoformat())
+    existing_session_name = existing_metadata.get('session_name', '')
     extracted_metadata = cache_data.get('_metadata', {})
-    metadata_json = _build_session_metadata(cache_id, extracted_metadata, session_created_at)
+    metadata_json = _build_session_metadata(cache_id, extracted_metadata, session_created_at, existing_session_name=existing_session_name)
     metadata_json['session_folder'] = paths['session_dir']
     metadata_json['source_cache_path'] = cache_path
 
@@ -276,7 +302,7 @@ def _iter_archive_roots():
 
 def _find_archive_path(archive_id):
     for root in _iter_archive_roots():
-        archive_path = os.path.join(root, archive_id)
+        archive_path = _safe_join_session_path(root, archive_id)
         if os.path.exists(archive_path):
             return archive_path
     return None
@@ -735,6 +761,15 @@ def download_original_file(cache_id):
     except Exception as e:
         return f"Error downloading original file: {str(e)}", 500
 
+@app.route('/review')
+def review_dmp_by_cache():
+    """Open review page using only cache_id (e.g. when restoring from session history)."""
+    cache_id = request.args.get('cache_id', '')
+    if not cache_id:
+        return redirect('/')
+    return redirect(url_for('review_dmp', filename='session', cache_id=cache_id))
+
+
 @app.route('/review/<filename>')
 def review_dmp(filename):
     # File existence is no longer required — all content comes from the cache.
@@ -1022,6 +1057,7 @@ def archive_session():
         cache_id = data.get('cache_id', '')
         feedback_data = data.get('feedbackData', {})       # Raw section data
         compiled_feedback = data.get('feedback', '')       # Compiled text report
+        meta_override = data.get('meta', {})               # User-supplied metadata from form
 
         if not cache_id:
             return jsonify({
@@ -1045,20 +1081,32 @@ def archive_session():
         metadata = session_bundle['metadata']
 
         # Create archive folder with timestamp and cache_id
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        now = datetime.now()
+        timestamp = now.strftime('%Y%m%d_%H%M%S')
         archive_id = f"{timestamp}_{cache_id[:8]}"
         archive_folder = os.path.join(app.config['SESSION_ARCHIVE_FOLDER'], archive_id)
         os.makedirs(archive_folder, exist_ok=True)
 
-        # Prepare metadata
+        # Prepare metadata — user-supplied values override extracted (always empty) ones
         metadata_json = dict(metadata)
         metadata_json.update({
             'archive_id': archive_id,
             'timestamp': timestamp,
-            'archived_date': datetime.now().isoformat(),
+            'archived_date': now.isoformat(),
+            'creation_date': now.strftime('%d.%m.%Y %H:%M'),
             'status': 'archived',
             'archive_folder': archive_folder
         })
+        if meta_override.get('researcher_surname'):
+            metadata_json['researcher_surname'] = meta_override['researcher_surname']
+        if meta_override.get('researcher_firstname'):
+            metadata_json['researcher_firstname'] = meta_override['researcher_firstname']
+        if meta_override.get('competition_name'):
+            metadata_json['competition_name'] = meta_override['competition_name']
+        if meta_override.get('competition_edition'):
+            metadata_json['competition_edition'] = meta_override['competition_edition']
+        if meta_override.get('session_name'):
+            metadata_json['session_name'] = meta_override['session_name']
 
         shutil.copy2(active_paths['dmp_path'], os.path.join(archive_folder, 'dmp_plan.json'))
         shutil.copy2(active_paths['feedback_path'], os.path.join(archive_folder, 'feedback.json'))
@@ -1163,6 +1211,7 @@ def get_active_sessions():
             active_sessions.append({
                 'session_id': session_id,
                 'filename': metadata.get('filename_original', 'Unknown'),
+                'session_name': metadata.get('session_name', ''),
                 'researcher_surname': metadata.get('researcher_surname', ''),
                 'researcher_firstname': metadata.get('researcher_firstname', ''),
                 'creation_date': metadata.get('creation_date', ''),
@@ -1220,14 +1269,24 @@ def restore_archived_session(archive_id):
                 'message': 'Archive not found'
             })
 
-        # Load all three files
-        with open(os.path.join(archive_path, 'metadata.json'), 'r', encoding='utf-8') as f:
+        for required_file in ['metadata.json', 'dmp_plan.json', 'feedback.json']:
+            required_path = safe_join(archive_path, required_file)
+            if not required_path or not os.path.exists(required_path):
+                return jsonify({'success': False, 'message': 'Plik archiwum niekompletny'})
+
+        metadata_path = safe_join(archive_path, 'metadata.json')
+        dmp_path = safe_join(archive_path, 'dmp_plan.json')
+        feedback_path = safe_join(archive_path, 'feedback.json')
+        if not metadata_path or not dmp_path or not feedback_path:
+            raise ValueError('Invalid archive ID')
+
+        with open(metadata_path, 'r', encoding='utf-8') as f:
             metadata = json.load(f)
 
-        with open(os.path.join(archive_path, 'dmp_plan.json'), 'r', encoding='utf-8') as f:
+        with open(dmp_path, 'r', encoding='utf-8') as f:
             dmp_plan = json.load(f)
 
-        with open(os.path.join(archive_path, 'feedback.json'), 'r', encoding='utf-8') as f:
+        with open(feedback_path, 'r', encoding='utf-8') as f:
             feedback = json.load(f)
 
         return jsonify({
@@ -1237,11 +1296,57 @@ def restore_archived_session(archive_id):
             'feedback': feedback
         })
 
-    except Exception as e:
+    except ValueError:
         return jsonify({
             'success': False,
-            'message': f'Error restoring archive: {str(e)}'
+            'message': 'Invalid archive ID'
+        }), 400
+    except Exception:
+        app.logger.exception('Error restoring archive')
+        return jsonify({
+            'success': False,
+            'message': 'Error restoring archive'
         })
+
+@app.route('/api/rename-session', methods=['POST'])
+def rename_session():
+    """Rename a session (active or archived) by updating session_name in metadata.json"""
+    try:
+        data = request.json or {}
+        session_id = data.get('session_id', '')   # cache_id for active, archive_id for archived
+        session_type = data.get('session_type', 'archive')   # 'active' or 'archive'
+        session_name = data.get('session_name', '').strip()
+
+        if not session_id:
+            return jsonify({'success': False, 'message': 'Missing session_id'})
+
+        if session_type == 'active':
+            paths = _get_active_session_paths(session_id)
+            metadata_path = paths['metadata_path']
+        else:
+            archive_path = _find_archive_path(session_id)
+            if not archive_path:
+                return jsonify({'success': False, 'message': 'Archive not found'})
+            metadata_path = safe_join(archive_path, 'metadata.json')
+            if not metadata_path:
+                return jsonify({'success': False, 'message': 'Invalid session ID'}), 400
+
+        if not os.path.exists(metadata_path):
+            return jsonify({'success': False, 'message': 'Metadata not found'})
+
+        metadata = _load_json_file(metadata_path, {})
+        metadata['session_name'] = session_name
+        metadata['last_updated'] = datetime.now().isoformat()
+        _write_json_file(metadata_path, metadata)
+
+        return jsonify({'success': True, 'message': 'Session renamed successfully'})
+
+    except ValueError:
+        return jsonify({'success': False, 'message': 'Invalid session ID'}), 400
+    except Exception:
+        app.logger.exception('Error renaming session')
+        return jsonify({'success': False, 'message': 'Error renaming session'})
+
 
 @app.route('/save_category', methods=['POST'])
 def save_category():

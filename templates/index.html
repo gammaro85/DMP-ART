@@ -24,9 +24,14 @@
     <!-- Fixed Header Navigation -->
     <header class="fixed-header">
         <nav class="header-nav">
-            <button class="theme-toggle" aria-label="Toggle theme">
-                <i class="fas fa-moon"></i>
-            </button>
+            <div class="header-left-controls">
+                <button class="theme-toggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="history-btn" aria-label="Historia sesji" title="Przeglądaj i otwieraj zapisane sesje">
+                    <i class="fas fa-history"></i> Historia
+                </button>
+            </div>
             <div class="nav-links">
                 <a href="/" class="nav-item" data-page="index">Home</a>
                 <span class="nav-item disabled" data-page="review"
@@ -95,9 +100,30 @@
         <span>DMP ART &copy; 2025 — <a href="https://github.com/gammaro85/DMP-ART" target="_blank" rel="noopener" class="footer-link">MIT License</a></span>
     </footer>
 
+    <!-- History Modal -->
+    <div id="history-modal">
+        <div class="history-modal-content">
+            <div class="history-modal-header">
+                <h2><i class="fas fa-history"></i> Historia sesji</h2>
+                <button class="history-modal-close" aria-label="Zamknij">&times;</button>
+            </div>
+            <div class="history-modal-body">
+                <div class="history-section">
+                    <h3><i class="fas fa-clock"></i> Aktywne sesje</h3>
+                    <div id="active-sessions-list"></div>
+                </div>
+                <div class="history-section">
+                    <h3><i class="fas fa-archive"></i> Zarchiwizowane sesje</h3>
+                    <div id="archived-sessions-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Load dark mode script before other scripts -->
     <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/history-modal.js') }}"></script>
     {% block scripts %}{% endblock %}
 </body>
 
