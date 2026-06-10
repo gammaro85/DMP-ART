@@ -92,6 +92,20 @@
             </div>
         </div>
 
+        <!-- Real-time processing progress (fed by SSE /progress/<session_id>) -->
+        <div id="progress-container" class="progress-container hidden">
+            <div class="progress-header">
+                <span id="progress-message" class="progress-message">Preparing...</span>
+                <span id="progress-percentage" class="progress-percentage">0%</span>
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar">
+                    <div id="progress-fill" class="progress-fill"></div>
+                </div>
+            </div>
+            <div id="progress-status" class="progress-status"></div>
+        </div>
+
         <!-- Flexible spacer after content -->
         <div class="flex-spacer"></div>
     </div>

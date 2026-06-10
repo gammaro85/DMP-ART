@@ -85,8 +85,7 @@ templates/                          # Jinja2 HTML templates
 ├── index.html                      # Upload page
 ├── review.html                     # Review interface (main UI)
 ├── settings.html                   # Unified settings page (comments, AI, general)
-├── documentation.html              # User documentation
-└── test_categories.html            # Category testing interface
+└── documentation.html              # User documentation
 
 static/
 ├── css/
@@ -304,9 +303,12 @@ Always use `element.classList.add('hidden')` / `element.classList.remove('hidden
 ```
 
 Pages loading scripts:
-- `index.html`, `review.html`: `dark-mode.js` + `script.js`
+- `index.html`, `review.html`: `dark-mode.js` + `script.js` + `history-modal.js`
 - `review.html` also loads: `ai_assistant.js`
-- `settings.html`, `documentation.html`, `test_categories.html`: `dark-mode.js` only
+- `settings.html`, `documentation.html`: `dark-mode.js` + `history-modal.js`
+
+Theme handling lives exclusively in `dark-mode.js` (`window.DarkMode`). Do not
+re-implement toggle/shortcut logic in `script.js` or inline template scripts.
 
 ---
 
@@ -429,17 +431,14 @@ def new_feature():
 - `GET /review/<filename>` - Review interface for extracted DMP
 - `GET /download/<filename>` - Download processed files
 - `GET /documentation` - User documentation page
-- `GET /template_editor` - Template configuration interface
-- `GET /test_categories_page` - Category testing interface
+- `GET /template_editor` - Redirect alias → `/settings#comments`
 
 **Template Management:**
 - `POST /save_templates` - Save DMP question templates
 - `POST /save_dmp_structure` - Update DMP structure configuration
 - `POST /save_quick_comments` - Save quick comment templates
 - `POST /save_category` - Save category configurations
-- `POST /save_category_comments` - Save comments for specific category
 - `GET /load_categories` - Retrieve available categories
-- `GET /load_category_comments` - Get comments for specific category
 
 **Category API:**
 - `GET /api/discover-categories` - Discover all available categories
@@ -490,14 +489,10 @@ python app.py
 ### Automated Testing
 
 **Current test split:**
-- Active automated checks: `tests/validate_all_requirements.py`, `tests/test_feedback_folder.py`, `tests/test_integration_workflow.py`, `tests/test_placeholder_functionality.py`, `tests/test_extractor_optimization.py`
+- Active automated checks: `tests/validate_all_requirements.py`, `tests/test_feedback_folder.py`, `tests/test_integration_workflow.py`, `tests/test_session_history.py`
 - Manual or environment-dependent diagnostics: `tests/test_real_files.py`, `tests/test_pzd_extraction.py`, OCR/setup checks
 - Archived debug probes: `old/debug_tests_dec2025/`
-
-**Run performance benchmarks:**
-```bash
-python tests/test_extractor_optimization.py
-```
+- Removed in 2026-06 audit: all tests targeting the pre-v4 extractor API (`test_extractor_optimization.py`, `test_placeholder_functionality.py`, `test_v2_vs_v3_comparison.py`, `test_fix_validation.py`, `test_3_1_vs_block_5.py`, `test_section_5_2_debug.py`, `test_real_section_5.py`) — they imported the deleted `utils.extractor_v2` or used removed methods (`should_skip_text`, `_text_similarity`, `debug_mode=`)
 
 **Run validation checks:**
 ```bash
@@ -1016,6 +1011,27 @@ suggestions = assistant.generate_section_suggestion(
 ---
 
 ## Recent Changes (Since Last Update)
+
+### 2026-06-10 Update (v0.9.1) — Full Pipeline Audit & Cleanup
+
+**Critical Bug Fixes:**
+- ✅ Scanned PDFs were rejected before OCR could run — `validate_pdf_file()` in `app.py` required extractable text on page 1, but scanned PDFs have none; the extractor's OCR fallback was unreachable. Validation no longer rejects textless PDFs; `extractor_v4` decides (OCR or actionable error)
+- ✅ Upload progress bar markup was missing entirely — `index.html` had no `#progress-container`/`#progress-fill`/etc., so `updateProgressBar()` returned early and the SSE progress backend was invisible to users. Markup restored (CSS already existed in `style.css`)
+- ✅ Triple dark-mode implementation — `dark-mode.js`, `script.js` and an inline block in `review.html` each registered Ctrl+Shift+D, so the shortcut toggled the theme 2-3× (net no-op); `script.js` also clobbered `window.DarkMode`. Single implementation now lives in `dark-mode.js` only
+
+**UX:**
+- ✅ "Download TXT" button added to the compiled feedback panel (`review.html`) — stewards previously could only copy-paste the final report from a modal
+- ✅ Settings module label "Ekstrakcja" → "Extraction" for consistency with other English module names
+
+**Dead Code Removed:**
+- ✅ Routes never called by any frontend or test: `/test_categories_page`, `/test_categories`, `/config/<filename>`, `/load_category_comments`, `/save_category_comments`, legacy `/create_category`, legacy `/delete_category`, deprecated `/api/settings/extractor-debug`
+- ✅ `templates/test_categories.html` — dev-only debug page, never linked from the UI
+- ✅ 7 broken test files importing the deleted `utils.extractor_v2` or using removed pre-v4 APIs (see Testing Guidelines)
+- ✅ `utils/extractor_v3_separated.py` shim — its only consumer was a deleted test
+- ✅ Unused public methods: `KnowledgeManager.add_good_practice/increment_usage/export_knowledge/import_knowledge`, `AIReviewAssistant.add_knowledge_entry`
+- ✅ Dead JS: `clearAutosave()`, unused `window.*` exports (`toggleTheme`, `DarkMode` override, `Autosave`, `DMPHistory`, `getHistory`, `trackCommentUsage`, `getCommentStats`), dead element handling in `uploadFile()`
+- ✅ Repo junk: `poppler.zip` (15 MB, zero references), applied `design-system-refresh.patch`, `BUILD_REPORT.md`, `build_log.txt`, empty `full_debug.txt`, 3 debug screenshots, `export_pst.ps1`, unreferenced logo PNGs
+- ✅ Fixed `sys.path` bug in tests (inserted `tests/` instead of repo root)
 
 ### 2026-04-10 Update (v0.9.1) — Codebase Audit & Dead Code Removal
 
