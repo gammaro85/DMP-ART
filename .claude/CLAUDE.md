@@ -1015,8 +1015,9 @@ suggestions = assistant.generate_section_suggestion(
 ### 2026-06-10 Update (v0.9.1) — Full Pipeline Audit & Cleanup
 
 **Critical Bug Fixes:**
+- ✅ Extractor (verified on a real OPUS-31 English proposal): `_RE_END_DMP` now also matches "administrative declarations" (English proposals previously leaked 4+ pages of post-DMP declarations into 6.2); OSF print page headers ("OSF, OPUS-31 Page N ID: …") added to `_BUILTIN_NOISE`; header-continuation skipper now also drops short leading blocks ending with `?` (wrapped question tails like "accompany data?" always end with `?` and were always kept by the old `not in '.?!:'` condition)
 - ✅ Scanned PDFs were rejected before OCR could run — `validate_pdf_file()` in `app.py` required extractable text on page 1, but scanned PDFs have none; the extractor's OCR fallback was unreachable. Validation no longer rejects textless PDFs; `extractor_v4` decides (OCR or actionable error)
-- ✅ Upload progress bar markup was missing entirely — `index.html` had no `#progress-container`/`#progress-fill`/etc., so `updateProgressBar()` returned early and the SSE progress backend was invisible to users. Markup restored (CSS already existed in `style.css`)
+- ✅ Progress bar removed entirely (owner decision: no progress bars anywhere) — `index.html` never had the `#progress-container` markup, so the bar had never been visible; instead of restoring it, the dead UI code was deleted: `updateProgressBar()`/`hideProgressBar()` in `script.js` and the whole progress CSS component in `style.css` (~170 lines). The SSE stream (`/progress/<session_id>`) stays — it drives the post-upload redirect and error toasts
 - ✅ Triple dark-mode implementation — `dark-mode.js`, `script.js` and an inline block in `review.html` each registered Ctrl+Shift+D, so the shortcut toggled the theme 2-3× (net no-op); `script.js` also clobbered `window.DarkMode`. Single implementation now lives in `dark-mode.js` only
 
 **UX:**

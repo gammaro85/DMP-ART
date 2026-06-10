@@ -654,20 +654,21 @@ function updateButtonStates(elements, state) {
 }
 
 /**
- * Connect to Server-Sent Events endpoint for real-time progress updates
+ * Connect to Server-Sent Events endpoint for processing status updates.
+ * The stream drives the post-upload redirect and error reporting
+ * (no visual progress bar — by design).
  * @param {string} sessionId - Unique session ID for this upload
- * @param {Function} onProgress - Callback for progress updates
  * @param {Function} onComplete - Callback when complete
  * @param {Function} onError - Callback for errors
  * @returns {EventSource} The event source connection
  */
-function connectProgressStream(sessionId, onProgress, onComplete, onError) {
+function connectProgressStream(sessionId, onComplete, onError) {
     const eventSource = new EventSource(`/progress/${sessionId}`);
 
     eventSource.onmessage = function(event) {
         try {
             const data = JSON.parse(event.data);
-            console.log('Progress update:', data);
+            console.log('Processing update:', data);
 
             if (data.status === 'complete') {
                 onComplete(data);
@@ -675,8 +676,6 @@ function connectProgressStream(sessionId, onProgress, onComplete, onError) {
             } else if (data.status === 'error') {
                 onError(data);
                 eventSource.close();
-            } else {
-                onProgress(data);
             }
         } catch (error) {
             console.error('Error parsing progress data:', error);
@@ -686,93 +685,10 @@ function connectProgressStream(sessionId, onProgress, onComplete, onError) {
     eventSource.onerror = function(error) {
         console.error('SSE connection error:', error);
         eventSource.close();
-        onError({ message: 'Connection lost', progress: 0, status: 'error' });
+        onError({ message: 'Connection lost', status: 'error' });
     };
 
     return eventSource;
-}
-
-/**
- * Update progress bar UI with real-time data
- * @param {Object} data - Progress data from SSE
- */
-function updateProgressBar(data) {
-    const progressContainer = document.getElementById('progress-container');
-    const progressFill = document.getElementById('progress-fill');
-    const progressMessage = document.getElementById('progress-message');
-    const progressPercentage = document.getElementById('progress-percentage');
-    const progressStatus = document.getElementById('progress-status');
-
-    if (!progressContainer) return;
-
-    // Show progress container
-    progressContainer.classList.remove('hidden');
-
-    // Update progress bar width
-    if (progressFill) {
-        progressFill.style.width = `${data.progress}%`;
-
-        // Update color class based on progress
-        progressFill.className = 'progress-fill';
-        if (data.status === 'complete') {
-            progressFill.classList.add('complete');
-        } else if (data.progress < 30) {
-            progressFill.classList.add('low', 'processing');
-        } else if (data.progress < 70) {
-            progressFill.classList.add('medium', 'processing');
-        } else {
-            progressFill.classList.add('high', 'processing');
-        }
-    }
-
-    // Update message
-    if (progressMessage) {
-        progressMessage.textContent = data.message || 'Processing...';
-    }
-
-    // Update percentage
-    if (progressPercentage) {
-        progressPercentage.textContent = `${data.progress}%`;
-    }
-
-    // Update status
-    if (progressStatus) {
-        let statusText = '';
-        switch (data.status) {
-            case 'connected':
-                statusText = 'Connected to server...';
-                break;
-            case 'processing':
-                statusText = 'Processing your DMP file...';
-                break;
-            case 'complete':
-                statusText = 'Processing complete! Redirecting...';
-                break;
-            case 'error':
-                statusText = 'An error occurred during processing';
-                break;
-            default:
-                statusText = 'Working...';
-        }
-        progressStatus.textContent = statusText;
-    }
-}
-
-/**
- * Hide progress bar and reset
- */
-function hideProgressBar() {
-    const progressContainer = document.getElementById('progress-container');
-    if (progressContainer) {
-        progressContainer.classList.add('hidden');
-    }
-
-    // Reset progress bar
-    const progressFill = document.getElementById('progress-fill');
-    if (progressFill) {
-        progressFill.style.width = '0%';
-        progressFill.className = 'progress-fill';
-    }
 }
 
 function uploadFile(file) {
@@ -780,6 +696,8 @@ function uploadFile(file) {
 
     const formData = new FormData();
     formData.append('file', file);
+
+    showToast('Processing file…', 'info');
 
     // Start upload
     fetch('/upload', {
@@ -794,37 +712,24 @@ function uploadFile(file) {
             const sessionId = data.session_id;
 
             if (!sessionId) {
-                hideProgressBar();
                 showToast(data.message || 'Upload failed', 'error');
                 return;
             }
 
-            // Connect to SSE for real-time progress
+            // SSE stream signals completion (redirect) or failure
             connectProgressStream(
                 sessionId,
-                // On progress update
-                (progressData) => {
-                    updateProgressBar(progressData);
-                },
                 // On complete
                 (completeData) => {
-                    updateProgressBar(completeData);
-
-                    // Show success message
                     showToast('File processed successfully!');
-
-                    // Redirect after delay
-                    setTimeout(() => {
-                        if (completeData.redirect) {
-                            window.location.href = completeData.redirect;
-                        } else if (data.redirect) {
-                            window.location.href = data.redirect;
-                        }
-                    }, 1500);
+                    if (completeData.redirect) {
+                        window.location.href = completeData.redirect;
+                    } else if (data.redirect) {
+                        window.location.href = data.redirect;
+                    }
                 },
                 // On error
                 (errorData) => {
-                    hideProgressBar();
                     showToast(errorData.message || 'Processing failed', 'error');
                 }
             );
@@ -832,7 +737,6 @@ function uploadFile(file) {
         })
         .catch(error => {
             console.error('Upload error:', error);
-            hideProgressBar();
             showToast('Network error occurred', 'error');
         });
 }
