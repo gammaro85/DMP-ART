@@ -34,6 +34,7 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB default; overridden
 
 SECTION_IDS = ['1.1', '1.2', '2.1', '2.2', '3.1', '3.2',
                '4.1', '4.2', '5.1', '5.2', '5.3', '5.4', '6.1', '6.2']
+SESSION_ID_PATTERN = re.compile(r'^[A-Za-z0-9_-]+$')
 
 CATEGORY_SYSTEM_FILES = {
     'dmp_structure.json', 'quick_comments.json', 'category_comments.json',
@@ -111,11 +112,28 @@ def _get_feedback_templates_path():
 
 
 def _get_cache_path(cache_id):
-    return os.path.join(app.config['CACHE_FOLDER'], f"cache_{cache_id}.json")
+    safe_cache_id = _sanitize_session_identifier(cache_id)
+    return os.path.join(app.config['CACHE_FOLDER'], f"cache_{safe_cache_id}.json")
+
+
+def _sanitize_session_identifier(identifier):
+    normalized_identifier = str(identifier or '').strip()
+    if not SESSION_ID_PATTERN.fullmatch(normalized_identifier):
+        raise ValueError('Invalid session identifier')
+    return normalized_identifier
+
+
+def _safe_join_session_path(root, identifier):
+    safe_identifier = _sanitize_session_identifier(identifier)
+    root_path = os.path.abspath(root)
+    candidate_path = os.path.abspath(os.path.join(root_path, safe_identifier))
+    if os.path.commonpath([candidate_path, root_path]) != root_path:
+        raise ValueError('Invalid session identifier')
+    return candidate_path
 
 
 def _get_active_session_paths(cache_id):
-    session_dir = os.path.join(app.config['ACTIVE_SESSIONS_FOLDER'], cache_id)
+    session_dir = _safe_join_session_path(app.config['ACTIVE_SESSIONS_FOLDER'], cache_id)
 
     return {
         'session_dir': session_dir,
@@ -278,7 +296,7 @@ def _iter_archive_roots():
 
 def _find_archive_path(archive_id):
     for root in _iter_archive_roots():
-        archive_path = os.path.join(root, archive_id)
+        archive_path = _safe_join_session_path(root, archive_id)
         if os.path.exists(archive_path):
             return archive_path
     return None
@@ -1247,7 +1265,7 @@ def restore_archived_session(archive_id):
 
         for required_file in ['metadata.json', 'dmp_plan.json', 'feedback.json']:
             if not os.path.exists(os.path.join(archive_path, required_file)):
-                return jsonify({'success': False, 'message': f'Plik archiwum niekompletny: brak {required_file}'})
+                return jsonify({'success': False, 'message': 'Plik archiwum niekompletny'})
 
         with open(os.path.join(archive_path, 'metadata.json'), 'r', encoding='utf-8') as f:
             metadata = json.load(f)
@@ -1265,10 +1283,16 @@ def restore_archived_session(archive_id):
             'feedback': feedback
         })
 
-    except Exception as e:
+    except ValueError:
         return jsonify({
             'success': False,
-            'message': f'Error restoring archive: {str(e)}'
+            'message': 'Invalid archive ID'
+        }), 400
+    except Exception:
+        app.logger.exception('Error restoring archive')
+        return jsonify({
+            'success': False,
+            'message': 'Error restoring archive'
         })
 
 @app.route('/api/rename-session', methods=['POST'])
@@ -1302,8 +1326,11 @@ def rename_session():
 
         return jsonify({'success': True, 'message': 'Session renamed successfully'})
 
-    except Exception as e:
-        return jsonify({'success': False, 'message': f'Error renaming session: {str(e)}'})
+    except ValueError:
+        return jsonify({'success': False, 'message': 'Invalid session ID'}), 400
+    except Exception:
+        app.logger.exception('Error renaming session')
+        return jsonify({'success': False, 'message': 'Error renaming session'})
 
 
 @app.route('/save_category', methods=['POST'])
