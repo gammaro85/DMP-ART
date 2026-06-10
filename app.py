@@ -499,14 +499,10 @@ def validate_pdf_file(file_path):
                 if page_count == 0:
                     return False, "PDF contains no pages"
                 
-                # Try to extract text from first page
-                try:
-                    first_page_text = reader.pages[0].extract_text()
-                    if not first_page_text.strip():
-                        return False, "PDF appears to contain no readable text"
-                except Exception:
-                    return False, "Cannot extract text from PDF"
-                    
+                # Note: do NOT reject PDFs without an extractable text layer here.
+                # Scanned PDFs legitimately have no text on page 1 — the extractor
+                # detects that case and falls back to OCR (extractor_v4.DocConverter).
+
         except Exception as e:
             return False, f"PDF processing error: {str(e)}"
         
@@ -523,11 +519,6 @@ def index():
 def documentation():
     """Documentation page with features and technical information"""
     return render_template('documentation.html')
-
-@app.route('/test_categories_page')
-def test_categories_page():
-    """Test page for debugging category loading"""
-    return render_template('test_categories.html')
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -1441,58 +1432,6 @@ def load_categories():
             'message': f'Error loading categories: {str(e)}'
         })
 
-@app.route('/load_category_comments', methods=['GET'])
-def load_category_comments():
-    """Load category-specific comments for feedback sections"""
-    try:
-        category_comments_path = os.path.join('config', 'category_comments.json')
-        
-        if not os.path.exists(category_comments_path):
-            return jsonify({
-                'success': True,
-                'category_comments': {}
-            })
-        
-        with open(category_comments_path, 'r', encoding='utf-8') as f:
-            category_comments = json.load(f)
-            if category_comments is None:
-                category_comments = {}
-        
-        return jsonify({
-            'success': True,
-            'category_comments': category_comments
-        })
-        
-    except Exception as e:
-        return jsonify({
-            'success': False,
-            'message': f'Error loading category comments: {str(e)}'
-        })
-
-@app.route('/save_category_comments', methods=['POST'])
-def save_category_comments():
-    """Save category-specific comments for feedback sections"""
-    try:
-        data = request.json or {}
-        category_comments = data.get('category_comments', {})
-        
-        category_comments_path = os.path.join('config', 'category_comments.json')
-        os.makedirs(os.path.dirname(category_comments_path), exist_ok=True)
-        
-        with open(category_comments_path, 'w', encoding='utf-8') as f:
-            json.dump(category_comments, f, indent=2, ensure_ascii=False)
-        
-        return jsonify({
-            'success': True,
-            'message': 'Category comments saved successfully'
-        })
-        
-    except Exception as e:
-        return jsonify({
-            'success': False,
-            'message': f'Error saving category comments: {str(e)}'
-        })
-
 @app.route('/api/discover-categories', methods=['GET'])
 def discover_categories():
     """
@@ -1796,176 +1735,6 @@ def list_categories():
             'message': f'Error listing categories: {str(e)}'
         })
 
-@app.route('/create_category', methods=['POST'])
-def create_category_legacy():
-    """Create a new category file (legacy endpoint)"""
-    try:
-        data = request.json or {}
-        name = data.get('name', '').strip()
-        
-        if not name:
-            return jsonify({
-                'success': False,
-                'message': 'Category name is required'
-            })
-        
-        file_name = name.lower().replace(' ', '_')
-        category_path = os.path.join('config', f'{file_name}.json')
-        
-        if os.path.exists(category_path):
-            return jsonify({
-                'success': False,
-                'message': 'Category with this name already exists'
-            })
-        
-        category_data = {}
-        
-        with open(category_path, 'w', encoding='utf-8') as f:
-            json.dump(category_data, f, indent=2, ensure_ascii=False)
-        
-        return jsonify({
-            'success': True,
-            'message': f'Category "{name}" created successfully',
-            'file': file_name
-        })
-        
-    except Exception as e:
-        return jsonify({
-            'success': False,
-            'message': f'Error creating category: {str(e)}'
-        })
-
-@app.route('/delete_category', methods=['POST'])
-def delete_category_legacy():
-    """Delete a category file (legacy endpoint)"""
-    try:
-        data = request.json or {}
-        file = data.get('file', '').strip()
-        
-        if not file:
-            return jsonify({
-                'success': False,
-                'message': 'File name is required'
-            })
-        
-        category_path = os.path.join('config', f'{file}.json')
-        
-        if not os.path.exists(category_path):
-            return jsonify({
-                'success': False,
-                'message': 'Category file does not exist'
-            })
-        
-        os.remove(category_path)
-        
-        return jsonify({
-            'success': True,
-            'message': f'Category "{file}" deleted successfully'
-        })
-        
-    except Exception as e:
-        return jsonify({
-            'success': False,
-            'message': f'Error deleting category: {str(e)}'
-        })
-
-@app.route('/config/<filename>')
-def serve_config(filename):
-    """Serve config files"""
-    try:
-        config_path = os.path.join('config', filename)
-        if not os.path.exists(config_path):
-            return jsonify({'error': 'File not found'}), 404
-        
-        with open(config_path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            if data is None:
-                data = {}
-            return data
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/test_categories')
-def test_categories():
-    """Test endpoint to debug category loading"""
-    try:
-        config_dir = 'config'
-        result = {
-            'config_dir_exists': os.path.exists(config_dir),
-            'files_in_config': [],
-            'categories_found': [],
-            'load_categories_result': None,
-            'load_categories_errors': []
-        }
-        
-        # List all files in config directory
-        if os.path.exists(config_dir):
-            all_files = os.listdir(config_dir)
-            result['files_in_config'] = all_files
-            
-            # Process each JSON file
-            for filename in all_files:
-                if filename.endswith('.json'):
-                    file_path = os.path.join(config_dir, filename)
-                    file_info = {
-                        'filename': filename,
-                        'file_base': filename[:-5],
-                        'excluded': filename in ['dmp_structure.json', 'quick_comments.json'],
-                        'file_exists': os.path.exists(file_path),
-                        'file_size': os.path.getsize(file_path) if os.path.exists(file_path) else 0,
-                        'json_valid': False,
-                        'json_error': None,
-                        'contains_category_data': False,
-                        'category_keys': []
-                    }
-                    
-                    # Try to load and validate JSON
-                    try:
-                        with open(file_path, 'r', encoding='utf-8') as f:
-                            data = json.load(f)
-                            file_info['json_valid'] = True
-                            file_info['category_keys'] = list(data.keys())
-                            
-                            # Check if it contains category data (dict with DMP sections)
-                            for key, value in data.items():
-                                if not key.startswith('_') and isinstance(value, dict):
-                                    file_info['contains_category_data'] = True
-                                    break
-                                    
-                    except Exception as e:
-                        file_info['json_error'] = str(e)
-                    
-                    result['categories_found'].append(file_info)
-        
-        # Test the actual list_categories logic
-        try:
-            categories = []
-            if os.path.exists(config_dir):
-                for filename in os.listdir(config_dir):
-                    if filename.endswith('.json') and filename not in ['dmp_structure.json', 'quick_comments.json']:
-                        file_base = filename[:-5]
-                        category_name = file_base.replace('_', ' ').title()
-                        categories.append({
-                            'file': file_base,
-                            'name': category_name
-                        })
-            
-            result['load_categories_result'] = {
-                'success': True,
-                'categories': categories,
-                'count': len(categories)
-            }
-        except Exception as e:
-            result['load_categories_errors'].append(str(e))
-        
-        return jsonify(result)
-        
-    except Exception as e:
-        return jsonify({
-            'error': str(e),
-            'status': 'failed'
-        })
-
 @app.route('/progress/<session_id>')
 def progress_stream(session_id):
     """
@@ -2134,15 +1903,6 @@ def update_extractor():
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
 
-# Keep old endpoint as alias for backwards compatibility with any existing UI references
-@app.route('/api/settings/extractor-debug', methods=['GET', 'POST'])
-def extractor_debug_alias():
-    """Deprecated alias — use /api/settings/extractor instead."""
-    if request.method == 'GET':
-        return get_extractor()
-    return jsonify({'success': False, 'message': 'Use /api/settings/extractor to switch extractors'}), 410
-
-
 # ============================================================
 # Unified Settings Page
 # ============================================================
@@ -2152,7 +1912,7 @@ SETTINGS_MODULES = [
     {'id': 'general', 'name': 'General', 'icon': 'sliders-h', 'badge': None},
     {'id': 'comments', 'name': 'Comments', 'icon': 'comments', 'badge': None},
     {'id': 'ai', 'name': 'AI Assistant', 'icon': 'robot', 'badge': None},
-    {'id': 'extraction', 'name': 'Ekstrakcja', 'icon': 'filter', 'badge': None},
+    {'id': 'extraction', 'name': 'Extraction', 'icon': 'filter', 'badge': None},
 ]
 
 @app.route('/settings')

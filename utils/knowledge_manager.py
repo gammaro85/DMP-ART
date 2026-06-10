@@ -176,58 +176,6 @@ class KnowledgeManager:
 
         return issue_id
 
-    def add_good_practice(self, section_id: str, pattern: str,
-                         keywords: List[str], feedback: str) -> bool:
-        """
-        Add a new good practice pattern
-
-        Args:
-            section_id: Section identifier
-            pattern: Description of the good practice
-            keywords: List of keywords to detect this pattern
-            feedback: Positive feedback to give
-
-        Returns:
-            Success status
-        """
-        if section_id not in self.knowledge["sections"]:
-            self.knowledge["sections"][section_id] = {
-                "section_name": f"Section {section_id}",
-                "common_issues": [],
-                "good_practices": []
-            }
-
-        new_practice = {
-            "pattern": pattern,
-            "keywords": keywords,
-            "feedback": feedback,
-            "created_at": datetime.now().isoformat()
-        }
-
-        self.knowledge["sections"][section_id]["good_practices"].append(new_practice)
-        self._save_knowledge()
-
-        return True
-
-    def increment_usage(self, issue_id: str) -> bool:
-        """
-        Increment usage counter for an issue pattern
-
-        Args:
-            issue_id: ID of the issue to increment
-
-        Returns:
-            Success status
-        """
-        for section_id, section_data in self.knowledge["sections"].items():
-            for issue in section_data.get("common_issues", []):
-                if issue["id"] == issue_id:
-                    issue["usage_count"] = issue.get("usage_count", 0) + 1
-                    issue["last_used"] = datetime.now().isoformat()
-                    self._save_knowledge()
-                    return True
-        return False
-
     def learn_from_feedback(self, section_id: str, dmp_content: str,
                            feedback_text: str, selected_comments: List[str]):
         """
@@ -435,58 +383,6 @@ class KnowledgeManager:
         all_issues.sort(key=lambda x: x.get("usage_count", 0), reverse=True)
 
         return all_issues[:limit]
-
-    def export_knowledge(self, filepath: str) -> bool:
-        """
-        Export knowledge base to a file
-
-        Args:
-            filepath: Path to export file
-
-        Returns:
-            Success status
-        """
-        try:
-            with open(filepath, 'w', encoding='utf-8') as f:
-                json.dump(self.knowledge, f, ensure_ascii=False, indent=2)
-            return True
-        except IOError:
-            return False
-
-    def import_knowledge(self, filepath: str, merge: bool = True) -> bool:
-        """
-        Import knowledge base from a file
-
-        Args:
-            filepath: Path to import file
-            merge: If True, merge with existing; if False, replace
-
-        Returns:
-            Success status
-        """
-        try:
-            with open(filepath, 'r', encoding='utf-8') as f:
-                imported = json.load(f)
-
-            if merge:
-                # Merge sections
-                for section_id, section_data in imported.get("sections", {}).items():
-                    if section_id not in self.knowledge["sections"]:
-                        self.knowledge["sections"][section_id] = section_data
-                    else:
-                        # Merge issues
-                        existing_ids = {i["id"] for i in self.knowledge["sections"][section_id].get("common_issues", [])}
-                        for issue in section_data.get("common_issues", []):
-                            if issue["id"] not in existing_ids:
-                                self.knowledge["sections"][section_id]["common_issues"].append(issue)
-            else:
-                self.knowledge = imported
-
-            self._save_knowledge()
-            return True
-
-        except (IOError, json.JSONDecodeError):
-            return False
 
     def get_knowledge_base_size(self) -> dict:
         """
