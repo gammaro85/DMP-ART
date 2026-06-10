@@ -747,6 +747,29 @@ body:not([data-page=index]) .logo {
   background: transparent;
 }
 
+.nav-item.ai-active-badge {
+  color: #8b5cf6;
+  border: 1px solid #8b5cf6;
+  padding: 4px 10px;
+  border-radius: var(--border-radius-md);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.nav-item.ai-active-badge:hover {
+  background: #8b5cf6;
+  color: #fff;
+}
+[data-theme=dark] .nav-item.ai-active-badge {
+  color: #a78bfa;
+  border-color: #a78bfa;
+}
+[data-theme=dark] .nav-item.ai-active-badge:hover {
+  background: #7c3aed;
+  color: #fff;
+  border-color: #7c3aed;
+}
+
 /* Language selector in navbar */
 .lang-selector {
   display: flex;

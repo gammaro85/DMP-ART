@@ -22,12 +22,21 @@ class AIAssistant {
             if (this.enabled) {
                 this.addAIButtons();
                 this.addAIStyles();
+                this._showActiveBadge();
             }
             this.initialized = true;
             console.log('AI Assistant initialized, enabled:', this.enabled);
         } catch (e) {
             console.error('AI Assistant initialization error:', e);
         }
+    }
+
+    /**
+     * Show the AI-active badge in the nav
+     */
+    _showActiveBadge() {
+        const badge = document.getElementById('ai-active-badge');
+        if (badge) badge.classList.remove('hidden');
     }
 
     /**
@@ -473,10 +482,11 @@ class AIAssistant {
     renderSelectedComments(sectionId, comments) {
         if (!comments || comments.length === 0) return '';
 
-        const items = comments.map(c => {
+        const items = comments.map((c, idx) => {
             const escapedComment = this.escapeHtml(c);
+            const itemId = `ai-sel-${sectionId}-${idx}`;
             return `
-                <li onclick="aiAssistant.insertCommentToSection('${sectionId}', '${escapedComment}')">
+                <li id="${itemId}" onclick="aiAssistant.insertAndMark('${sectionId}', '${escapedComment}', '${itemId}')">
                     <span>${escapedComment}</span>
                     <button class="insert-btn">+ Wstaw</button>
                 </li>
@@ -497,10 +507,11 @@ class AIAssistant {
     renderAISuggestions(sectionId, suggestions) {
         if (!suggestions || suggestions.length === 0) return '';
 
-        const items = suggestions.map(s => {
+        const items = suggestions.map((s, idx) => {
             const escapedSuggestion = this.escapeHtml(s);
+            const itemId = `ai-sug-${sectionId}-${idx}`;
             return `
-                <li onclick="aiAssistant.insertCommentToSection('${sectionId}', '${escapedSuggestion}')">
+                <li id="${itemId}" onclick="aiAssistant.insertAndMark('${sectionId}', '${escapedSuggestion}', '${itemId}')">
                     <span>${escapedSuggestion}</span>
                     <button class="insert-btn">+ Wstaw</button>
                 </li>
@@ -513,6 +524,20 @@ class AIAssistant {
                 <ul>${items}</ul>
             </div>
         `;
+    }
+
+    /**
+     * Insert comment and mark the list item as inserted
+     */
+    insertAndMark(sectionId, text, itemId) {
+        this.insertCommentToSection(sectionId, text);
+        const item = document.getElementById(itemId);
+        if (item) {
+            item.style.opacity = '0.6';
+            item.style.pointerEvents = 'none';
+            const btn = item.querySelector('.insert-btn');
+            if (btn) btn.textContent = '✓';
+        }
     }
 
     /**
