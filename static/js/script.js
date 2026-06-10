@@ -1129,6 +1129,7 @@ function saveFeedback() {
         .then(data => {
             if (data.success) {
                 showToast('Progress saved! You can safely navigate to Settings or other pages.', 'success');
+                triggerAILearning(feedbackData);
             } else {
                 showToast('Error saving feedback: ' + (data.message || 'Unknown error'), 'error');
             }
@@ -1137,6 +1138,17 @@ function saveFeedback() {
             console.error('Error saving feedback:', error);
             showToast('Error saving feedback', 'error');
         });
+}
+
+function triggerAILearning(feedbackData) {
+    if (!window.aiAssistant || !window.aiAssistant.enabled) return;
+    Object.entries(feedbackData).forEach(([sectionId, feedbackText]) => {
+        if (!feedbackText || !feedbackText.trim()) return;
+        const card = document.querySelector(`[data-id="${sectionId}"]`);
+        const contentEl = card ? card.querySelector('.extracted-content') : null;
+        const dmpContent = contentEl ? contentEl.textContent.trim() : '';
+        window.aiAssistant.learnFromFeedback(sectionId, dmpContent, feedbackText, []);
+    });
 }
 
 // ===========================================

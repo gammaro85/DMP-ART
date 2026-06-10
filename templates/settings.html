@@ -1106,7 +1106,7 @@
                             <select id="anthropic-model">
                                 <option value="">Loading models...</option>
                             </select>
-                            <div class="s-hint">Claude Sonnet 4.5 offers the best balance of intelligence and speed</div>
+                            <div class="s-hint">Claude Sonnet 4.6 offers the best balance of intelligence and speed</div>
                         </div>
                     </div>
                 </div>
@@ -1951,6 +1951,25 @@
 
     async function aiToggle() {
         const enabled = document.getElementById('ai-enabled').checked;
+        if (enabled && !localStorage.getItem('dmp-art-ai-consent')) {
+            document.getElementById('ai-consent-modal').classList.remove('hidden');
+            return;
+        }
+        await aiApplyToggle(enabled);
+    }
+
+    function aiConsentAccept() {
+        localStorage.setItem('dmp-art-ai-consent', '1');
+        document.getElementById('ai-consent-modal').classList.add('hidden');
+        aiApplyToggle(true);
+    }
+
+    function aiConsentDecline() {
+        document.getElementById('ai-consent-modal').classList.add('hidden');
+        document.getElementById('ai-enabled').checked = false;
+    }
+
+    async function aiApplyToggle(enabled) {
         try {
             const r = await fetch('/api/ai/toggle', {
                 method: 'POST',
@@ -2100,11 +2119,11 @@
             { id: 'gpt-4', name: 'GPT-4' },
             { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo (legacy)' }
         ] : [
-            { id: 'claude-sonnet-4-5-20250929', name: 'Claude Sonnet 4.5 (Recommended)' },
+            { id: 'claude-sonnet-4-6', name: 'Claude Sonnet 4.6 (Recommended)' },
             { id: 'claude-haiku-4-5-20251001', name: 'Claude Haiku 4.5' },
-            { id: 'claude-opus-4-5-20251101', name: 'Claude Opus 4.5' },
-            { id: 'claude-3-5-haiku-20241022', name: 'Claude 3.5 Haiku (Legacy)' },
-            { id: 'claude-sonnet-4-20250514', name: 'Claude Sonnet 4 (Legacy)' }
+            { id: 'claude-opus-4-8', name: 'Claude Opus 4.8' },
+            { id: 'claude-sonnet-4-5-20250929', name: 'Claude Sonnet 4.5 (Legacy)' },
+            { id: 'claude-3-5-haiku-20241022', name: 'Claude 3.5 Haiku (Legacy)' }
         ];
         models.forEach(m => {
             const opt = document.createElement('option');
@@ -2228,6 +2247,65 @@
         }
     });
     </script>
+
+    <!-- AI Privacy Consent Modal -->
+    <div id="ai-consent-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="ai-consent-title">
+        <div class="modal-box">
+            <h2 id="ai-consent-title"><i class="fas fa-shield-alt"></i> Ważna informacja — prywatność danych</h2>
+            <p>Po włączeniu modułu AI <strong>treść recenzowanych DMP</strong> (fragmenty wniosków grantowych NCN) będzie wysyłana do zewnętrznego API:</p>
+            <ul>
+                <li><strong>OpenAI</strong> — dane przetwarzane na serwerach OpenAI (USA)</li>
+                <li><strong>Anthropic</strong> — dane przetwarzane na serwerach Anthropic (USA)</li>
+            </ul>
+            <p>Upewnij się, że masz zgodę na przekazywanie tych danych do zewnętrznych dostawców zgodnie z polityką bezpieczeństwa Twojej instytucji.</p>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="aiConsentDecline()">Anuluj</button>
+                <button class="btn btn-primary" onclick="aiConsentAccept()">Rozumiem, włącz AI</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .modal-box {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 2rem;
+            max-width: 520px;
+            width: 90%;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+        }
+        .modal-box h2 {
+            font-size: 1.15rem;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+        .modal-box p {
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+            margin-bottom: 0.75rem;
+        }
+        .modal-box ul {
+            margin: 0 0 0.75rem 1.25rem;
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+        }
+        .modal-box ul li { margin-bottom: 0.3rem; }
+        .modal-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            margin-top: 1.25rem;
+        }
+    </style>
 
     <footer class="site-footer site-footer--relative">
         <span>DMP ART &copy; 2025 — <a href="https://github.com/gammaro85/DMP-ART" target="_blank" rel="noopener" class="footer-link">MIT License</a></span>

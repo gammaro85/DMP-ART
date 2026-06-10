@@ -283,7 +283,7 @@ class OpenAIProvider(AIProvider):
 class AnthropicProvider(AIProvider):
     """Adapter for Anthropic Claude API"""
 
-    def __init__(self, api_key: str, model: str = "claude-sonnet-4-5-20250929",
+    def __init__(self, api_key: str, model: str = "claude-sonnet-4-6",
                  temperature: float = 0.3, max_tokens: int = 2000):
         self.api_key = api_key
         self.model = model
@@ -373,48 +373,39 @@ class AnthropicProvider(AIProvider):
 
     def list_models(self) -> dict:
         """List available Anthropic Claude models (static list)"""
-        # Anthropic API doesn't have a models.list() endpoint
-        # We maintain a static list of available models based on official docs
-        # Source: https://platform.claude.com/docs/en/about-claude/models
         models = [
-            # Claude 4.5 - Latest models (December 2025)
+            # Current generation
             {
-                "id": "claude-sonnet-4-5-20250929",
-                "name": "Claude Sonnet 4.5 (wrzesień 2025 - REKOMENDOWANY)",
+                "id": "claude-sonnet-4-6",
+                "name": "Claude Sonnet 4.6 (REKOMENDOWANY)",
                 "recommended": True,
-                "description": "Najnowszy model - najlepsza równowaga inteligencji, szybkości i ceny"
+                "description": "Najnowszy Sonnet — najlepsza równowaga jakości i ceny"
             },
             {
                 "id": "claude-haiku-4-5-20251001",
-                "name": "Claude Haiku 4.5 (październik 2025)",
+                "name": "Claude Haiku 4.5",
                 "recommended": False,
-                "description": "Najszybszy model z wysoką inteligencją"
+                "description": "Najszybszy i najtańszy — dobry do prostych recenzji"
             },
             {
-                "id": "claude-opus-4-5-20251101",
-                "name": "Claude Opus 4.5 (listopad 2025)",
+                "id": "claude-opus-4-8",
+                "name": "Claude Opus 4.8",
                 "recommended": False,
-                "description": "Premium - maksymalna inteligencja"
+                "description": "Premium — maksymalna jakość analizy"
             },
-            # Legacy models - still available
+            # Legacy
+            {
+                "id": "claude-sonnet-4-5-20250929",
+                "name": "Claude Sonnet 4.5 (Legacy)",
+                "recommended": False,
+                "description": "Poprzednia generacja Sonnet"
+            },
             {
                 "id": "claude-3-5-haiku-20241022",
-                "name": "Claude 3.5 Haiku (październik 2024 - Legacy)",
+                "name": "Claude 3.5 Haiku (Legacy)",
                 "recommended": False,
                 "description": "Starszy szybki model"
             },
-            {
-                "id": "claude-sonnet-4-20250514",
-                "name": "Claude Sonnet 4 (maj 2025 - Legacy)",
-                "recommended": False,
-                "description": "Poprzednia wersja Sonnet"
-            },
-            {
-                "id": "claude-3-haiku-20240307",
-                "name": "Claude 3 Haiku (marzec 2024 - Legacy)",
-                "recommended": False,
-                "description": "Stary tani model"
-            }
         ]
 
         return {
