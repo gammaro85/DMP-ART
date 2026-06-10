@@ -252,8 +252,16 @@ class AIAssistant {
      * Add AI buttons to the UI
      */
     addAIButtons() {
-        // Add main AI button in header
-        const headerActions = document.querySelector('.header-action-buttons-nav');
+        // Add main AI button in header; create the container if the page lacks it
+        let headerActions = document.querySelector('.header-action-buttons-nav');
+        if (!headerActions) {
+            const leftControls = document.querySelector('.header-left-controls');
+            if (leftControls) {
+                headerActions = document.createElement('div');
+                headerActions.className = 'header-action-buttons-nav';
+                leftControls.appendChild(headerActions);
+            }
+        }
         if (headerActions && !document.querySelector('.ai-suggest-btn')) {
             const aiBtn = document.createElement('button');
             aiBtn.className = 'action-btn ai-suggest-btn';
@@ -262,12 +270,12 @@ class AIAssistant {
             headerActions.appendChild(aiBtn);
         }
 
-        // Add AI button to each section
+        // Add AI button to each section (next to Copy/Reset buttons)
         document.querySelectorAll('.question-card[data-id]').forEach(card => {
             const sectionId = card.getAttribute('data-id');
             if (!sectionId || sectionId.startsWith('_')) return;
 
-            const feedbackActions = card.querySelector('.feedback-actions');
+            const feedbackActions = card.querySelector('.feedback-actions') || card.querySelector('.action-row .left-actions');
             if (feedbackActions && !feedbackActions.querySelector('.ai-section-btn')) {
                 const sectionAiBtn = document.createElement('button');
                 sectionAiBtn.className = 'btn ai-section-btn';
