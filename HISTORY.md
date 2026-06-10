@@ -54,6 +54,24 @@ Build a web application to:
 
 ## Version History
 
+### v0.9.1 (2026-06-10) — Pipeline Audit, Dead Code Removal & UX Fixes
+
+**Status:** Production-ready
+**Focus:** Full audit of upload→review→export pipeline from the data steward's perspective; removal of dead code, duplicate functionality and repo junk
+
+#### Changes
+- Bug: **Scanned PDFs rejected before OCR** — `validate_pdf_file()` required extractable text on page 1, making the OCR fallback unreachable — **Fix:** validation no longer rejects textless PDFs; the extractor handles OCR or returns an actionable message (`app.py:502`)
+- Bug: **English proposals leaked post-DMP content into 6.2** — DMPTrimmer's end marker was Polish-only ("oświadczenia administracyjne"), so English OPUS proposals kept 4+ pages of declarations/GDPR clauses — **Fix:** `_RE_END_DMP` also matches "administrative declarations" (`utils/extractor_v4.py:157`)
+- Bug: **OSF page headers in extracted content** ("OSF, OPUS-31 Page 45 ID: 675502, …") — **Fix:** new `_BUILTIN_NOISE` pattern (`utils/extractor_v4.py:153`)
+- Bug: **Wrapped question tails leaked into content** ("accompany data?", "FAIR (…)?") — the header-continuation skipper required fragments NOT to end with `.?!:`, but DMP question tails always end with `?` — **Fix:** leading short blocks ending with `?` are now skipped too (`utils/extractor_v4.py:885`)
+- **Progress bar removed entirely** (owner decision) — the bar had never been visible (`index.html` lacked its markup), so the dead UI code was deleted instead of restored: `updateProgressBar()`/`hideProgressBar()` in `script.js`, ~170 lines of progress CSS in `style.css`. The SSE stream still drives the post-upload redirect and error toasts; the user gets toast notifications instead
+- Bug: **Ctrl+Shift+D theme shortcut no-op** — three parallel dark-mode implementations registered the same shortcut (toggle×2-3 = no visible change) and `script.js` clobbered `window.DarkMode` — **Fix:** consolidated into `dark-mode.js` only (`static/js/script.js`, `templates/review.html`)
+- **review.html:** "Download TXT" button in the compiled feedback panel — final report is now downloadable instead of copy-paste-only
+- **app.py:** removed 8 dead routes (`/test_categories_page`, `/test_categories`, `/config/<filename>`, `/load_category_comments`, `/save_category_comments`, legacy `/create_category` + `/delete_category`, `/api/settings/extractor-debug`); settings module label "Ekstrakcja" → "Extraction"
+- **tests:** removed 7 broken test files importing deleted `utils.extractor_v2` / pre-v4 APIs; fixed `sys.path` insertion bug (`tests/` instead of repo root)
+- **utils:** removed `extractor_v3_separated.py` shim and unused knowledge-base methods (`add_good_practice`, `increment_usage`, `export_knowledge`, `import_knowledge`, `add_knowledge_entry`)
+- **repo:** removed 15 MB `poppler.zip` (zero references), applied patch file, build artifacts, debug screenshots, `export_pst.ps1`, unreferenced logos, `templates/test_categories.html`
+
 ### v0.9.1 (2026-05-28) — Unified Session JSON History
 
 **Status:** Production-ready  
