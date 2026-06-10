@@ -9,6 +9,7 @@ class AIAssistant {
         this.suggestions = {};
         this.currentSection = null;
         this.initialized = false;
+        this._cache = {};  // key: `${cacheId}:${sectionId}` → suggestion object
     }
 
     /**
@@ -290,47 +291,68 @@ class AIAssistant {
     }
 
     /**
-     * Generate suggestions for all sections
+     * Generate suggestions for all sections sequentially with progress feedback
      */
     async generateAllSuggestions() {
         const cacheId = this.getCacheId();
         if (!cacheId) {
-            if (typeof showToast === 'function') {
-                showToast('Brak cache_id - wgraj najpierw plik DMP', 'error');
-            }
+            if (typeof showToast === 'function') showToast('Brak cache_id - wgraj najpierw plik DMP', 'error');
             return;
         }
 
-        if (typeof showToast === 'function') {
-            showToast('Generuję sugestie AI dla wszystkich sekcji...', 'info');
+        const sectionIds = [];
+        document.querySelectorAll('.question-card[data-id]').forEach(card => {
+            const sid = card.getAttribute('data-id');
+            if (sid && !sid.startsWith('_')) sectionIds.push(sid);
+        });
+        if (!sectionIds.length) return;
+
+        const btn = document.querySelector('.ai-suggest-btn');
+        if (btn) btn.disabled = true;
+
+        let progressEl = document.getElementById('ai-progress-all');
+        if (!progressEl) {
+            progressEl = document.createElement('div');
+            progressEl.id = 'ai-progress-all';
+            progressEl.className = 'ai-all-progress';
+            progressEl.style.cssText = 'font-size:0.8rem;color:var(--text-secondary);padding:4px 8px;margin-top:4px;';
+            if (btn) btn.parentElement.insertBefore(progressEl, btn.nextSibling);
         }
 
-        try {
-            const response = await fetch('/api/ai/suggest', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ cache_id: cacheId })
-            });
+        const total = sectionIds.length;
+        let done = 0;
 
-            const data = await response.json();
+        for (const sectionId of sectionIds) {
+            progressEl.textContent = `AI: ${done}/${total} sekcji...`;
 
-            if (data.success) {
-                this.suggestions = data.suggestions;
-                this.displayAllSuggestions();
-                if (typeof showToast === 'function') {
-                    showToast('Sugestie AI gotowe!', 'success');
-                }
-            } else {
-                if (typeof showToast === 'function') {
-                    showToast(data.message || 'Błąd generowania sugestii', 'error');
-                }
+            const cacheKey = `${cacheId}:${sectionId}`;
+            if (this._cache[cacheKey]) {
+                this.displaySectionSuggestion(sectionId, this._cache[cacheKey]);
+                done++;
+                continue;
             }
-        } catch (e) {
-            console.error('AI suggestion error:', e);
-            if (typeof showToast === 'function') {
-                showToast('Błąd połączenia z AI', 'error');
+
+            try {
+                const response = await fetch('/api/ai/suggest', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cache_id: cacheId, section_id: sectionId })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    this._cache[cacheKey] = data.suggestions;
+                    this.displaySectionSuggestion(sectionId, data.suggestions);
+                }
+            } catch (e) {
+                console.error(`AI error for section ${sectionId}:`, e);
             }
+            done++;
         }
+
+        progressEl.textContent = `AI: ${done}/${total} gotowe ✓`;
+        setTimeout(() => { if (progressEl) progressEl.textContent = ''; }, 4000);
+        if (btn) btn.disabled = false;
+        if (typeof showToast === 'function') showToast('Sugestie AI gotowe!', 'success');
     }
 
     /**
@@ -346,6 +368,12 @@ class AIAssistant {
         }
 
         this.currentSection = sectionId;
+
+        const cacheKey = `${cacheId}:${sectionId}`;
+        if (this._cache[cacheKey]) {
+            this.displaySectionSuggestion(sectionId, this._cache[cacheKey]);
+            return;
+        }
 
         // Show loading indicator
         this.showLoadingPanel(sectionId);
@@ -363,6 +391,7 @@ class AIAssistant {
             const data = await response.json();
 
             if (data.success) {
+                this._cache[cacheKey] = data.suggestions;
                 this.displaySectionSuggestion(sectionId, data.suggestions);
             } else {
                 this.removeLoadingPanel(sectionId);
