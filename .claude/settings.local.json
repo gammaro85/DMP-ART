@@ -39,11 +39,7 @@
       "Bash(del:*)",
       "Bash(timeout:*)",
       "PowerShell(cd \"c:\\\\VSCode\\\\DMP-ART\\\\DMP-ART\"; Get-Item \"DMP-ART-Standalone.zip\" | Select-Object Name, @{N='Size \\(MB\\)';E={[math]::Round\\($_.Length/1MB, 2\\)}}, LastWriteTime)",
-      "PowerShell(cd \"c:\\\\VSCode\\\\DMP-ART\\\\DMP-ART\"; Get-ChildItem \"dist\\\\DMP-ART\" -File | Select-Object Name, @{N='Size \\(KB\\)';E={[math]::Round\\($_.Length/1KB, 0\\)}})",
-      "Bash(cp \"/root/.claude/uploads/c00192d0-265a-59e2-bba3-2b6d48659043/1f5af04d-wydruk1780864838745_20260607.pdf\" /tmp/test_dmp.pdf)",
-      "Read(//tmp/**)",
-      "Bash(rm -f outputs/cache/cache_*.json outputs/reviews/feedback_DMP_wydruk* outputs/reviews/Review_e9c4ba18*)",
-      "Bash(rm -rf outputs/sessions/active/* uploads/*.pdf uploads/*.docx)"
+      "PowerShell(cd \"c:\\\\VSCode\\\\DMP-ART\\\\DMP-ART\"; Get-ChildItem \"dist\\\\DMP-ART\" -File | Select-Object Name, @{N='Size \\(KB\\)';E={[math]::Round\\($_.Length/1KB, 0\\)}})"
     ],
     "deny": []
   },
