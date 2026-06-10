@@ -59,7 +59,7 @@ class AIReviewAssistant:
                     "max_tokens": 2000
                 },
                 "anthropic": {
-                    "model": "claude-sonnet-4-5-20250929",
+                    "model": "claude-sonnet-4-6",
                     "temperature": 0.3,
                     "max_tokens": 2000
                 }
