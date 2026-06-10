@@ -399,30 +399,6 @@ class AIReviewAssistant:
         """
         return self.knowledge_manager.delete_entry(section_id, issue_id)
 
-    def add_knowledge_entry(self, section_id: str, pattern: str,
-                           keywords: List[str], suggested_comments: List[str],
-                           ai_template: str = "") -> str:
-        """
-        Add a new knowledge base entry
-
-        Args:
-            section_id: Section identifier
-            pattern: Issue pattern description
-            keywords: Keywords to detect the pattern
-            suggested_comments: Suggested comment IDs
-            ai_template: AI suggestion template
-
-        Returns:
-            ID of the created entry
-        """
-        return self.knowledge_manager.add_issue_pattern(
-            section_id=section_id,
-            pattern=pattern,
-            keywords=keywords,
-            suggested_comments=suggested_comments,
-            ai_suggestion_template=ai_template
-        )
-
     def get_statistics(self) -> dict:
         """
         Get usage statistics

@@ -150,12 +150,15 @@ _BUILTIN_NOISE: List = [
         r')$',
         re.IGNORECASE,
     ),
+    # OSF print page headers, e.g. "OSF, OPUS-31 Page 45 ID: 675502, 2026-06-07 22:40:36"
+    re.compile(r'^\s*OSF\b.*\b(?:Page\s+\d+|ID:\s*\d{4,})', re.IGNORECASE),
 ]
 
 # End-of-DMP pattern — triggers when a block matches "oświadczenia administracyjne"
+# (Polish proposals) or "administrative declarations" (English proposals),
 # in any spelling/diacritics variant.
 _RE_END_DMP = re.compile(
-    r'o[sś]wiadczeni[ae]\s+administracyjn',
+    r'o[sś]wiadczeni[ae]\s+administracyjn|administrative\s+declarations?',
     re.IGNORECASE,
 )
 
@@ -879,12 +882,19 @@ class DMPExtractor:
             # Skip the anchor window (header/question text) — content starts
             # immediately after the subsection heading block(s).
             content_start = start_idx + win_size
-            # Also skip any "header continuation" blocks: short fragments that
-            # start with a lowercase letter and lack sentence-ending punctuation
-            # (e.g. "towarzyszące danym" overflowing from a split heading).
+            # Also skip any "header continuation" blocks:
+            # - short fragments starting lowercase without sentence-ending
+            #   punctuation (e.g. "towarzyszące danym" from a split heading), and
+            # - short fragments ending with '?' — all 14 DMP questions end with
+            #   '?', so a wrapped question's tail does too (e.g. "accompany data?",
+            #   "FAIR (Findable, Accessible, Interoperable, Re-usable)?").
             while content_start < len(blocks):
                 blk_text = blocks[content_start].text.strip()
-                if blk_text and blk_text[0].islower() and len(blk_text) < 80 and not blk_text[-1] in '.?!:':
+                if not blk_text:
+                    break
+                is_lower_fragment = blk_text[0].islower() and len(blk_text) < 80 and blk_text[-1] not in '.?!:'
+                is_question_tail = blk_text.endswith('?') and len(blk_text) < 120
+                if is_lower_fragment or is_question_tail:
                     content_start += 1
                 else:
                     break

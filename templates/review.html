@@ -1357,6 +1357,9 @@
                         <button id="copy-compiled-btn" class="action-btn" title="Copy report to clipboard">
                             <i class="fas fa-copy"></i> Copy
                         </button>
+                        <button id="download-compiled-btn" class="action-btn" title="Download report as a text file">
+                            <i class="fas fa-download"></i> Download TXT
+                        </button>
                         <button id="archive-session-btn" class="action-btn" title="Archive this review session">
                             <i class="fas fa-archive"></i> Archive
                         </button>
@@ -2544,29 +2547,6 @@
             });
         })();
 
-        // Theme toggle icon switch
-        document.addEventListener('DOMContentLoaded', function() {
-            function updateThemeIcon() {
-                const btn = document.querySelector('.theme-toggle i');
-                if (!btn) return;
-                if (document.documentElement.getAttribute('data-theme') === 'dark') {
-                    btn.className = 'fas fa-sun';
-                } else {
-                    btn.className = 'fas fa-moon';
-                }
-            }
-            updateThemeIcon();
-            window.toggleTheme = function() {
-                const current = document.documentElement.getAttribute('data-theme');
-                const next = current === 'dark' ? 'light' : 'dark';
-                document.documentElement.setAttribute('data-theme', next);
-                localStorage.setItem('dmp-art-theme', next);
-                updateThemeIcon();
-            };
-            // Also update icon on theme change
-            window.addEventListener('storage', updateThemeIcon);
-        });
-
         // Sliding Panel Functionality
         (function() {
             const panel = document.getElementById('compiled-feedback-container');
@@ -2640,6 +2620,23 @@
                     copyBtn.innerHTML = originalText;
                     copyBtn.style.background = '';
                 }, 2000);
+            }
+
+            // Download report as a TXT file
+            function downloadCompiledReport() {
+                if (!feedbackTextarea.value.trim()) {
+                    showToast('Brak raportu do pobrania — najpierw skompiluj feedback', 'warning');
+                    return;
+                }
+                const date = new Date().toISOString().slice(0, 10);
+                const blob = new Blob([feedbackTextarea.value], { type: 'text/plain;charset=utf-8' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `DMP_review_${date}.txt`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(link.href);
             }
 
             // Archive session - save DMP plan and feedback as structured JSON files
@@ -2798,6 +2795,11 @@
             
             if (copyBtn) {
                 copyBtn.addEventListener('click', copyToClipboard);
+            }
+
+            const downloadBtn = document.getElementById('download-compiled-btn');
+            if (downloadBtn) {
+                downloadBtn.addEventListener('click', downloadCompiledReport);
             }
 
             if (archiveBtn) {

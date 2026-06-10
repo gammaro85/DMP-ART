@@ -251,8 +251,7 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log('DMP ART: Initializing application...');
 
     try {
-        // Initialize core functionality
-        initializeDarkMode();
+        // Initialize core functionality (theme handling lives in dark-mode.js)
         initializeNavigation();
         initializeUploadPage();
         initializeReviewPage();
@@ -263,121 +262,6 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error('DMP ART: Error during initialization:', error);
     }
 });
-
-// ===========================================
-// DARK MODE FUNCTIONALITY
-// ===========================================
-
-function initializeDarkMode() {
-    console.log('Initializing dark mode...');
-
-    try {
-        // Load saved theme preference or detect system preference
-        const savedTheme = localStorage.getItem('dmp-art-theme');
-        const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const initialTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
-
-        // Set initial theme
-        setTheme(initialTheme);
-        updateToggleButton(initialTheme);
-
-        // Add keyboard shortcut
-        addDarkModeKeyboardShortcut();
-
-        // Listen for system theme changes
-        listenForSystemThemeChanges();
-
-        console.log('Dark mode initialized with theme:', initialTheme);
-    } catch (error) {
-        console.error('Error initializing dark mode:', error);
-    }
-}
-
-function toggleTheme() {
-    try {
-        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-
-        setTheme(newTheme);
-        updateToggleButton(newTheme);
-        localStorage.setItem('dmp-art-theme', newTheme);
-
-        console.log('Theme toggled to:', newTheme);
-    } catch (error) {
-        console.error('Error toggling theme:', error);
-    }
-}
-
-function setTheme(theme) {
-    try {
-        document.documentElement.setAttribute('data-theme', theme);
-
-        // Update meta theme color
-        const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-        if (metaThemeColor) {
-            metaThemeColor.setAttribute('content', theme === 'dark' ?
-                '#121212' : '#ffffff');
-        }
-    } catch (error) {
-        console.error('Error setting theme:', error);
-    }
-}
-
-function updateToggleButton(theme) {
-    try {
-        const themeText = document.getElementById('theme-text');
-        const themeIcon = document.querySelector('.theme-toggle i');
-
-        if (themeText) {
-            if (theme === 'dark') {
-                themeText.textContent = 'Light Mode';
-            } else {
-                themeText.textContent = 'Dark Mode';
-            }
-        }
-
-        if (themeIcon) {
-            // Sun for dark mode (to switch to light), moon for light mode (to switch to dark)
-            themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-        }
-    } catch (error) {
-        console.error('Error updating toggle button:', error);
-    }
-}
-
-function addDarkModeKeyboardShortcut() {
-    try {
-        document.addEventListener('keydown', function (e) {
-            // Ctrl/Cmd + Shift + D to toggle dark mode
-            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'D') {
-                e.preventDefault();
-                toggleTheme();
-            }
-        });
-    } catch (error) {
-        console.error('Error adding keyboard shortcut:', error);
-    }
-}
-
-function listenForSystemThemeChanges() {
-    try {
-        if (window.matchMedia) {
-            const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-
-            mediaQuery.addEventListener('change', function (e) {
-                // Only auto-switch if user hasn't manually set a preference
-                if (!localStorage.getItem('dmp-art-theme')) {
-                    const newTheme = e.matches ? 'dark' : 'light';
-                    setTheme(newTheme);
-                    updateToggleButton(newTheme);
-                    console.log('System theme changed to:', newTheme);
-                }
-            });
-        }
-    } catch (error) {
-        console.error('Error setting up system theme listener:', error);
-    }
-}
 
 // ===========================================
 // NAVIGATION FUNCTIONALITY
@@ -707,7 +591,7 @@ function setupUploadButton(elements) {
             e.stopPropagation(); // Prevent triggering the drop area click
             if (elements.selectedFile && !uploadBtn.disabled) {
                 updateButtonStates(elements, 'analyzing');
-                uploadFile(elements.selectedFile, elements);
+                uploadFile(elements.selectedFile);
             } else if (!elements.selectedFile) {
                 showToast('Please select a file first', 'error');
             }
@@ -770,20 +654,21 @@ function updateButtonStates(elements, state) {
 }
 
 /**
- * Connect to Server-Sent Events endpoint for real-time progress updates
+ * Connect to Server-Sent Events endpoint for processing status updates.
+ * The stream drives the post-upload redirect and error reporting
+ * (no visual progress bar — by design).
  * @param {string} sessionId - Unique session ID for this upload
- * @param {Function} onProgress - Callback for progress updates
  * @param {Function} onComplete - Callback when complete
  * @param {Function} onError - Callback for errors
  * @returns {EventSource} The event source connection
  */
-function connectProgressStream(sessionId, onProgress, onComplete, onError) {
+function connectProgressStream(sessionId, onComplete, onError) {
     const eventSource = new EventSource(`/progress/${sessionId}`);
 
     eventSource.onmessage = function(event) {
         try {
             const data = JSON.parse(event.data);
-            console.log('Progress update:', data);
+            console.log('Processing update:', data);
 
             if (data.status === 'complete') {
                 onComplete(data);
@@ -791,8 +676,6 @@ function connectProgressStream(sessionId, onProgress, onComplete, onError) {
             } else if (data.status === 'error') {
                 onError(data);
                 eventSource.close();
-            } else {
-                onProgress(data);
             }
         } catch (error) {
             console.error('Error parsing progress data:', error);
@@ -802,110 +685,19 @@ function connectProgressStream(sessionId, onProgress, onComplete, onError) {
     eventSource.onerror = function(error) {
         console.error('SSE connection error:', error);
         eventSource.close();
-        onError({ message: 'Connection lost', progress: 0, status: 'error' });
+        onError({ message: 'Connection lost', status: 'error' });
     };
 
     return eventSource;
 }
 
-/**
- * Update progress bar UI with real-time data
- * @param {Object} data - Progress data from SSE
- */
-function updateProgressBar(data) {
-    const progressContainer = document.getElementById('progress-container');
-    const progressFill = document.getElementById('progress-fill');
-    const progressMessage = document.getElementById('progress-message');
-    const progressPercentage = document.getElementById('progress-percentage');
-    const progressStatus = document.getElementById('progress-status');
-
-    if (!progressContainer) return;
-
-    // Show progress container
-    progressContainer.classList.remove('hidden');
-
-    // Update progress bar width
-    if (progressFill) {
-        progressFill.style.width = `${data.progress}%`;
-
-        // Update color class based on progress
-        progressFill.className = 'progress-fill';
-        if (data.status === 'complete') {
-            progressFill.classList.add('complete');
-        } else if (data.progress < 30) {
-            progressFill.classList.add('low', 'processing');
-        } else if (data.progress < 70) {
-            progressFill.classList.add('medium', 'processing');
-        } else {
-            progressFill.classList.add('high', 'processing');
-        }
-    }
-
-    // Update message
-    if (progressMessage) {
-        progressMessage.textContent = data.message || 'Processing...';
-    }
-
-    // Update percentage
-    if (progressPercentage) {
-        progressPercentage.textContent = `${data.progress}%`;
-    }
-
-    // Update status
-    if (progressStatus) {
-        let statusText = '';
-        switch (data.status) {
-            case 'connected':
-                statusText = 'Connected to server...';
-                break;
-            case 'processing':
-                statusText = 'Processing your DMP file...';
-                break;
-            case 'complete':
-                statusText = 'Processing complete! Redirecting...';
-                break;
-            case 'error':
-                statusText = 'An error occurred during processing';
-                break;
-            default:
-                statusText = 'Working...';
-        }
-        progressStatus.textContent = statusText;
-    }
-}
-
-/**
- * Hide progress bar and reset
- */
-function hideProgressBar() {
-    const progressContainer = document.getElementById('progress-container');
-    if (progressContainer) {
-        progressContainer.classList.add('hidden');
-    }
-
-    // Reset progress bar
-    const progressFill = document.getElementById('progress-fill');
-    if (progressFill) {
-        progressFill.style.width = '0%';
-        progressFill.className = 'progress-fill';
-    }
-}
-
-function uploadFile(file, elements) {
-    const { loading, result, successMessage, errorMessage, errorText } = elements;
-
+function uploadFile(file) {
     console.log('Starting file upload:', file.name);
 
     const formData = new FormData();
     formData.append('file', file);
 
-    // Hide previous results
-    if (result) result.style.display = 'none';
-    if (successMessage) successMessage.style.display = 'none';
-    if (errorMessage) errorMessage.style.display = 'none';
-
-    // Hide old loading, show progress bar instead
-    if (loading) loading.style.display = 'none';
+    showToast('Processing file…', 'info');
 
     // Start upload
     fetch('/upload', {
@@ -920,52 +712,24 @@ function uploadFile(file, elements) {
             const sessionId = data.session_id;
 
             if (!sessionId) {
-                // No session ID, handle as before (error case)
-                hideProgressBar();
-
-                if (errorMessage) {
-                    errorMessage.style.display = 'block';
-                }
-                if (errorText) {
-                    errorText.textContent = data.message || 'Unknown error occurred';
-                }
                 showToast(data.message || 'Upload failed', 'error');
                 return;
             }
 
-            // Connect to SSE for real-time progress
-            let eventSource = connectProgressStream(
+            // SSE stream signals completion (redirect) or failure
+            connectProgressStream(
                 sessionId,
-                // On progress update
-                (progressData) => {
-                    updateProgressBar(progressData);
-                },
                 // On complete
                 (completeData) => {
-                    updateProgressBar(completeData);
-
-                    // Show success message
                     showToast('File processed successfully!');
-
-                    // Redirect after delay
-                    setTimeout(() => {
-                        if (completeData.redirect) {
-                            window.location.href = completeData.redirect;
-                        } else if (data.redirect) {
-                            window.location.href = data.redirect;
-                        }
-                    }, 1500);
+                    if (completeData.redirect) {
+                        window.location.href = completeData.redirect;
+                    } else if (data.redirect) {
+                        window.location.href = data.redirect;
+                    }
                 },
                 // On error
                 (errorData) => {
-                    hideProgressBar();
-
-                    if (errorMessage) {
-                        errorMessage.style.display = 'block';
-                    }
-                    if (errorText) {
-                        errorText.textContent = errorData.message || 'Processing error occurred';
-                    }
                     showToast(errorData.message || 'Processing failed', 'error');
                 }
             );
@@ -973,17 +737,6 @@ function uploadFile(file, elements) {
         })
         .catch(error => {
             console.error('Upload error:', error);
-
-            hideProgressBar();
-
-            // Show error
-            if (errorMessage) {
-                errorMessage.style.display = 'block';
-            }
-            if (errorText) {
-                errorText.textContent = 'Network error occurred';
-            }
-
             showToast('Network error occurred', 'error');
         });
 }
@@ -2210,16 +1963,6 @@ function updateAutosaveIndicator(status) {
     }
 }
 
-/**
- * Clear autosave for current document
- */
-function clearAutosave() {
-    const cacheId = getCacheId();
-    if (cacheId) {
-        localStorage.removeItem(AUTOSAVE_KEY_PREFIX + cacheId);
-    }
-}
-
 // ===========================================
 // DMP HISTORY FUNCTIONALITY
 // ===========================================
@@ -2524,43 +2267,11 @@ document.addEventListener('DOMContentLoaded', function () {
 // GLOBAL EXPORTS
 // ===========================================
 
-// Export functions for use in other scripts or HTML onclick handlers
-window.toggleTheme = toggleTheme;
+// Export functions used by inline scripts and other JS files
+// (theme API lives in dark-mode.js as window.DarkMode)
 window.scrollToSection = scrollToSection;
 window.insertCommentWithAnimation = insertCommentWithAnimation;
 window.showToast = showToast;
 window.copyToClipboard = copyToClipboard;
-window.trackCommentUsage = trackCommentUsage;
-window.getCommentStats = getCommentStats;
-window.getHistory = getHistory;
-window.clearAutosave = clearAutosave;
-
-// Export dark mode API
-window.DarkMode = {
-    toggle: toggleTheme,
-    setTheme: setTheme,
-    getCurrentTheme: () => document.documentElement.getAttribute('data-theme') || 'light',
-    forceTheme: (theme) => {
-        if (theme === 'dark' || theme === 'light') {
-            setTheme(theme);
-            updateToggleButton(theme);
-            localStorage.setItem('dmp-art-theme', theme);
-        }
-    }
-};
-
-// Export Autosave API
-window.Autosave = {
-    save: () => saveToAutosave(getCacheId()),
-    clear: clearAutosave,
-    getCacheId: getCacheId
-};
-
-// Export History API
-window.DMPHistory = {
-    get: getHistory,
-    add: addToHistory,
-    render: renderHistoryDropdown
-};
 
 console.log('DMP ART script.js loaded (v0.9.1)');
