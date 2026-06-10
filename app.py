@@ -9,7 +9,7 @@ import zipfile
 import uuid
 import re
 from datetime import datetime
-from werkzeug.utils import secure_filename
+from werkzeug.utils import secure_filename, safe_join
 from utils.extractor_v4 import DMPExtractor, SkipTermsManager
 from utils.ai_module import AIReviewAssistant
 # Comments are now managed through JSON files in config/ directory
@@ -113,7 +113,10 @@ def _get_feedback_templates_path():
 
 def _get_cache_path(cache_id):
     safe_cache_id = _sanitize_session_identifier(cache_id)
-    return os.path.join(app.config['CACHE_FOLDER'], f"cache_{safe_cache_id}.json")
+    cache_path = safe_join(app.config['CACHE_FOLDER'], f"cache_{safe_cache_id}.json")
+    if not cache_path:
+        raise ValueError('Invalid session identifier')
+    return cache_path
 
 
 def _sanitize_session_identifier(identifier):
@@ -126,7 +129,10 @@ def _sanitize_session_identifier(identifier):
 def _safe_join_session_path(root, identifier):
     safe_identifier = _sanitize_session_identifier(identifier)
     root_path = os.path.abspath(root)
-    candidate_path = os.path.abspath(os.path.join(root_path, safe_identifier))
+    candidate_path = safe_join(root_path, safe_identifier)
+    if not candidate_path:
+        raise ValueError('Invalid session identifier')
+    candidate_path = os.path.abspath(candidate_path)
     if os.path.commonpath([candidate_path, root_path]) != root_path:
         raise ValueError('Invalid session identifier')
     return candidate_path
@@ -1264,16 +1270,23 @@ def restore_archived_session(archive_id):
             })
 
         for required_file in ['metadata.json', 'dmp_plan.json', 'feedback.json']:
-            if not os.path.exists(os.path.join(archive_path, required_file)):
+            required_path = safe_join(archive_path, required_file)
+            if not required_path or not os.path.exists(required_path):
                 return jsonify({'success': False, 'message': 'Plik archiwum niekompletny'})
 
-        with open(os.path.join(archive_path, 'metadata.json'), 'r', encoding='utf-8') as f:
+        metadata_path = safe_join(archive_path, 'metadata.json')
+        dmp_path = safe_join(archive_path, 'dmp_plan.json')
+        feedback_path = safe_join(archive_path, 'feedback.json')
+        if not metadata_path or not dmp_path or not feedback_path:
+            raise ValueError('Invalid archive ID')
+
+        with open(metadata_path, 'r', encoding='utf-8') as f:
             metadata = json.load(f)
 
-        with open(os.path.join(archive_path, 'dmp_plan.json'), 'r', encoding='utf-8') as f:
+        with open(dmp_path, 'r', encoding='utf-8') as f:
             dmp_plan = json.load(f)
 
-        with open(os.path.join(archive_path, 'feedback.json'), 'r', encoding='utf-8') as f:
+        with open(feedback_path, 'r', encoding='utf-8') as f:
             feedback = json.load(f)
 
         return jsonify({
@@ -1314,7 +1327,9 @@ def rename_session():
             archive_path = _find_archive_path(session_id)
             if not archive_path:
                 return jsonify({'success': False, 'message': 'Archive not found'})
-            metadata_path = os.path.join(archive_path, 'metadata.json')
+            metadata_path = safe_join(archive_path, 'metadata.json')
+            if not metadata_path:
+                return jsonify({'success': False, 'message': 'Invalid session ID'}), 400
 
         if not os.path.exists(metadata_path):
             return jsonify({'success': False, 'message': 'Metadata not found'})
