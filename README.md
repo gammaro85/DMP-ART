@@ -15,10 +15,7 @@
 
 DMP-ART is a web application for Polish research administrators (data stewards) to review Data Management Plans in NCN grant proposals. It automates extraction and provides template-based feedback, reducing review time from **2 hours to 30 minutes** (75% reduction).
 
-**Core Function:** Extract DMP section from grant proposal (PDF/DOCX) → Split into 14 Science Europe sections → Enable fast review with pre-configured comments
 
-**Target Users:** Data stewards at Polish research institutions
-**Success Metric:** 94.1% extraction accuracy on real NCN proposals (tested on 17 files)
 
 ---
 
