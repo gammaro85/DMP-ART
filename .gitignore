@@ -76,3 +76,5 @@ config/ai/ai_config.json
 
 # Archived/unused files
 old/
+uploads/
+outputs/
