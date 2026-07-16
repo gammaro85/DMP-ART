@@ -78,3 +78,4 @@ config/ai/ai_config.json
 old/
 uploads/
 outputs/
+tests/fixtures/
