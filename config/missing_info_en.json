@@ -1,7 +1,10 @@
 {
   "GENERAL": [
-    "The entire plan must be written in English. An English version is required.",
-    "The plan must contain answers to all 6 questions with subsections (1.1, 1.2, 2.1, 2.2, 3.1, 3.2, 4.1, 4.2, 5.1, 5.2, 6.1, 6.2). The auxiliary questions are only hints, they do not replace the main structure. Instead of answering \"What data... ? no\", write a full sentence: \"No existing datasets will be reused. All data will be newly collected.\""
+    "The Data Management Plan (DMP) is a mandatory component of NCN grant proposals. It must be written in English and follow the Science Europe template structure with 6 main sections and 14 subsections (1.1-1.2, 2.1-2.2, 3.1-3.2, 4.1-4.2, 5.1-5.2, 6.1-6.2).",
+    "NCN requires full compliance with Open Science principles. The DMP must demonstrate how research data will be made FAIR (Findable, Accessible, Interoperable, Reusable) and specify plans for open access to data in certified repositories.",
+    "Each of the 14 subsections must contain a substantive answer. The auxiliary questions in the template are guidance only and do not replace the main questions. Avoid one-word answers like \"no\" - instead write complete sentences: \"No existing datasets will be reused. All data will be newly collected for this project.\"",
+    "The DMP should be realistic and aligned with the project timeline and budget specified in the NCN proposal. Clearly indicate resources allocated for data management (personnel time, repository costs, software licenses) and identify responsible persons by role and position.",
+    "For projects involving personal data or requiring ethics approval: ensure consistency between the DMP and the ethics section of the NCN application form. Reference specific approval numbers and compliance with Polish GDPR regulations (RODO) where applicable."
   ],
   "1.1": [
     "Data description is too general. Specify type and approximate size: \"tabular data from surveys (CSV, approximately 50 MB), microscopic images (TIFF, approximately 2 GB), measurement results (TXT, approximately 5 GB)\" instead of \"research data\".",
@@ -23,10 +26,22 @@
     "Specifically list: laboratory disks (whose?), network servers (which?), cloud (which?), external disks (where stored?). Do not recommend DropBox (data may be deleted without notice, servers outside EU).",
     "How often will backups be created? Specify frequency for each medium (e.g. automatic daily to cloud, manual weekly to external disk)."
   ],
+  "3.2": [
+    "Information on access control is missing. State who has access to the data during the project (PI, team members, external collaborators) and how that access is restricted.",
+    "If the project produces no personal or sensitive data, say so explicitly: \"No personal or sensitive data will be collected in this project.\" Omitting the topic is not an answer.",
+    "For transfers outside the EU, add that data will be transferred only to the extent necessary to carry out the project, and state the legal basis (e.g. an NDA).",
+    "Technical safeguards are missing. Indicate encryption, account-level access control, or access restricted to the university network."
+  ],
   "4.1": [
     "Research with humans: indicate the ethics committee approval status (approval number, date) or justify why the study does not require approval (in accordance with institutional regulations).",
     "If personal data is collected: add the legal basis (consent, contract, task carried out in the public interest), how participants are informed, data retention period, anonymization/pseudonymization procedure, data subject rights (access, rectification, deletion).",
     "Can everything be anonymized? Consider adding that anonymization will be applied where possible; if not possible, data will not be published or will be made available in a limited scope."
+  ],
+  "4.2": [
+    "A reference to institutional regulations is missing. Cite PG Senate Resolution no. 204/2026/XXVI of 25 February 2026 on intellectual property management.",
+    "The licence for released data is not specified. CC BY 4.0 is the default - any departure from it must be justified.",
+    "Where an external partner is involved, state who owns the data and how rights to the results are settled.",
+    "If a foreign institution's policy is cited, provide a link to the document, as with the PG regulations."
   ],
   "5.1": [
     "Embargo requires specific justification for why data cannot be shared immediately (analysis in progress, publication preparation, patent process, obligations to partners) and a specific embargo end date (\"31.12.2026\", not \"after project completion\").",
@@ -37,6 +52,16 @@
   "5.2": [
     "It is worth adding information about the certificate: MOST Wiedzy Open Research Data Catalog (Bridge of Data) has the CoreTrustSeal certificate - the only certified research data repository in Poland, confirming compliance with international standards for trustworthy digital repositories.",
     "State in which repository the data will be stored. It does not have to be MOST Wiedzy - if there are other repositories better suited thematically, just ensure that data is shared in accordance with FAIR principles."
+  ],
+  "5.3": [
+    "Information on the software needed to read the data is missing. If the data are in open formats, state explicitly that no dedicated tools are required.",
+    "For proprietary formats, give the name and version of the software and an exchange format for users without a licence.",
+    "If the project produces analysis scripts, state that they will be released together with the data (e.g. in a code repository)."
+  ],
+  "5.4": [
+    "Information on the persistent identifier is missing. State that a DOI is assigned automatically on deposit in the MOST Wiedzy Open Research Data Catalog (Bridge of Data) repository, via DataCite.",
+    "The repository name must be identical throughout the plan - check consistency with sections 2.1, 5.1 and 5.2.",
+    "Add that the dataset DOI will be cited in the publications arising from the project."
   ],
   "6.1": [
     "Specify data management costs. If repository deposit is free: state this clearly. The cost is primarily working time (estimate the number of working days for preparation, documentation, quality control)."

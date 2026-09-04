@@ -54,6 +54,22 @@ Build a web application to:
 
 ## Version History
 
+### v0.9.2 (2026-09-04) — Comment Config Cleanup & Coverage Fix
+
+**Status:** Production-ready
+**Focus:** Repair gaps and stale content in the category comment files stewards actually use; remove config files the resolver can never reach
+
+#### Changes
+- Bug: **Four DMP subsections had no "missing info" prompts** — `missing_info_pl.json` held empty arrays for 3.2, 4.2, 5.3 and 5.4, and `missing_info_en.json` lacked those keys entirely, so reviewers got zero suggestions for a quarter of the plan — **Fix:** all four filled in both languages from current review practice (`config/missing_info_pl.json`, `config/missing_info_en.json`)
+- Bug: **Stale institutional reference** — 4.2 cited "Resolution No. 117/2021/XXV of 19 May 2021", superseded by Senate Resolution 204/2026/XXVI of 25 February 2026 — **Fix:** reference updated (`config/ready_to_use_pl.json`)
+- **missing_info_pl.json:** removed six dead top-level keys (`"1"`–`"6"`, all empty arrays left over from an older single-digit section scheme); added the `GENERAL` block that only the EN variant had; keys reordered 1.1→6.2 to match `SECTION_IDS`
+- **config:** deleted five files unreachable through `resolve_category_file()` — `ready_to_use.json`, `ready_to_use_pl_stare.json`, `missing_info.json`, `missing_info_pl_stare.json`, `for_newbies_pl_stare.json`. The resolver tries `<base>_<lang>.json` → `<base>.json` → `<base>_<lang>_stare.json`, and every base now ships both `_pl` and `_en`, so the fallback tiers were never consulted. `dmp_variants.json` keeps its unsuffixed name and is untouched (it has no language variants and is served through the second tier)
+- **Verified:** `/api/discover-categories` and `/list_categories` respond correctly, resolver returns the `_pl`/`_en` files for all three categories, `tests/validate_all_requirements.py` passes
+
+#### Known inconsistencies (not changed, need an owner decision)
+- `ready_to_use_pl.json` contains only English text (all 51 entries) — the `_pl` suffix marks UI language, not the language of the pasteable feedback. Deliberate for English NCN proposals, but the filename misleads
+- `for_newbies_*.json` cover 8 of 14 subsections, consistently in both languages — appears intentional (the subsections newcomers fumble), left as is
+
 ### v0.9.1 (2026-06-10) — Pipeline Audit, Dead Code Removal & UX Fixes
 
 **Status:** Production-ready
