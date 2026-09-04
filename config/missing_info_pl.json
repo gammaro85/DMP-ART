@@ -1,10 +1,11 @@
 {
-  "1": [],
-  "2": [],
-  "3": [],
-  "4": [],
-  "5": [],
-  "6": [],
+  "GENERAL": [
+    "Plan zarządzania danymi jest obowiązkowym elementem wniosku NCN. Musi odpowiadać strukturze szablonu Science Europe: 6 sekcji głównych i 14 podpunktów (1.1-1.2, 2.1-2.2, 3.1-3.2, 4.1-4.2, 5.1-5.4, 6.1-6.2).",
+    "Każdy z 14 podpunktów musi zawierać odpowiedź merytoryczną. Pytania pomocnicze w szablonie są tylko podpowiedzią i nie zastępują pytania głównego. Zamiast odpowiedzi jednym słowem napisz pełne zdanie: \"W projekcie nie będą ponownie wykorzystywane istniejące zbiory danych. Wszystkie dane zostaną zebrane od nowa\".",
+    "Treści muszą stać w swoim punkcie: prawa własności intelektualnej należą do 4.2 (nie 4.1), długotrwałe przechowywanie i okres retencji do 5.2 (nie 5.1), a DOI i zasady FAIR do sekcji 5 (nie do 2.2, gdzie ma być realna kontrola jakości).",
+    "Repozytorium musi być wskazane z nazwy i tak samo nazwane we wszystkich punktach planu. Ogólne \"otwarte repozytorium danych\" to za mało.",
+    "Plan ma być realistyczny i zgodny z harmonogramem oraz kosztorysem wniosku. Wskaż zasoby przeznaczone na zarządzanie danymi i osobę odpowiedzialną z nazwy roli lub stanowiska."
+  ],
   "1.1": [
     "Opis danych zbyt ogólny. Należy doprecyzować rodzaj danych i szacunkową wielkość: \"tabular data from surveys (CSV, approximately 50 MB), microscopic images (TIFF, approximately 2 GB), measurement results (TXT, approximately 5 GB)\" zamiast \"dane badawcze\".",
     "Brak metodologii zbierania danych. Należy dodać jak powstaną dane, jakimi narzędziami, w jakich warunkach, jaką metodą."
@@ -26,13 +27,23 @@
     "Należy konkretnie wymienić: dyski laboratoryjne (czyje?), serwery sieciowe (jakie?), chmura (jaka?), dyski zewnętrzne (gdzie przechowywane?). Nie należy podawać DropBox (dane mogą zostać usunięte bez pytania, serwery poza UE).",
     "Jak często będą tworzone kopie zapasowe? Należy określić częstotliwość dla każdego nośnika (np. automatyczne codziennie do chmury, ręczne tygodniowo na dysk zewnętrzny)."
   ],
-  "3.2": [],
+  "3.2": [
+    "Brak informacji o kontroli dostępu. Napisz, kto ma dostęp do danych w trakcie projektu (kierownik, wykonawcy, osoby z zewnątrz) i w jaki sposób dostęp jest ograniczany.",
+    "Jeśli w projekcie nie powstają dane osobowe ani wrażliwe, napisz to wprost: \"W projekcie nie będą gromadzone żadne dane osobowe ani wrażliwe\". Samo pominięcie tematu nie jest odpowiedzią.",
+    "Przy przekazywaniu danych poza UE dodaj, że dane będą przesyłane wyłącznie w zakresie niezbędnym do realizacji projektu, oraz wskaż podstawę (np. umowa NDA).",
+    "Brak informacji o zabezpieczeniach technicznych. Wskaż szyfrowanie, kontrolę kont albo dostęp wyłącznie z sieci uczelnianej."
+  ],
   "4.1": [
     "Badania z ludźmi: należy wskazać status zgody komisji etyki (numer zgody, data) lub uzasadnić dlaczego badanie nie wymaga zgody (zgodnie z regulaminem instytucjonalnym).",
     "Jeśli dane osobowe zbierane: należy dodać podstawę prawną (zgoda, umowa, zadanie realizowane w interesie publicznym), sposób informowania uczestników, okres przechowywania danych, procedurę anonimizacji/pseudonimizacji, prawa uczestników (dostęp, sprostowanie, usunięcie).",
     "Czy wszystko da się zanonimizować? Może należy dodać, że jeśli to możliwe to będzie anonimizacja, jeśli nie da się to dane nie będą publikowane lub będą udostępnione w ograniczonym zakresie."
   ],
-  "4.2": [],
+  "4.2": [
+    "Brak powołania na regulacje uczelniane. Wskaż Uchwałę Senatu PG nr 204/2026/XXVI z 25 lutego 2026 r. dotyczącą zarządzania własnością intelektualną.",
+    "Brak wskazania licencji, na której dane zostaną udostępnione. Domyślnie CC BY 4.0 — odstępstwo trzeba uzasadnić.",
+    "Przy współpracy z partnerem zewnętrznym określ, kto jest właścicielem danych i jak rozstrzygane są prawa do wyników.",
+    "Jeśli powołujesz się na politykę instytucji zagranicznej, podaj link do dokumentu — tak samo jak przy regulacjach PG."
+  ],
   "5.1": [
     "Embargo wymaga konkretnego uzasadnienia dlaczego dane nie mogą być udostępnione od razu (analiza w toku, przygotowanie publikacji, proces patentowy, zobowiązania wobec partnerów) oraz konkretnej daty końca embargo (\"31.12.2026\", nie \"po zakończeniu projektu\").",
     "Częściowe udostępnienie wymaga określenia: co zostanie udostępnione publicznie, co nie i dlaczego, jak udostępnione dane pozwalają na weryfikację opublikowanych wyników.",
@@ -43,8 +54,16 @@
     "Warto dodać informację o certyfikacie: MOST Wiedzy Open Research Data Catalog (Bridge of Data) ma certyfikat CoreTrustSeal - jedyne certyfikowane repozytorium danych badawczych w Polsce, co potwierdza zgodność z międzynarodowymi standardami dla wiarygodnych repozytoriów cyfrowych.",
     "Tutaj należy napisać w jakim repozytorium będą przechowywane dane. Nie musi być MOST Wiedzy, jeśli istnieją inne repozytoria lepiej dopasowane tematycznie, należy tylko pamiętać że dane muszą być udostępniane zgodnie z zasadami FAIR."
   ],
-  "5.3": [],
-  "5.4": [],
+  "5.3": [
+    "Brak informacji o oprogramowaniu potrzebnym do odczytu danych. Jeśli dane są w formatach otwartych, napisz wprost, że nie są potrzebne żadne dedykowane narzędzia.",
+    "Przy formatach własnościowych podaj nazwę i wersję programu oraz format wymiany dla osób bez licencji.",
+    "Jeśli w projekcie powstają skrypty analityczne, napisz, że zostaną udostępnione razem z danymi (np. w repozytorium kodu)."
+  ],
+  "5.4": [
+    "Brak informacji o trwałym identyfikatorze. Napisz, że DOI jest nadawany automatycznie przy deponowaniu w repozytorium MOST Wiedzy Open Research Data Catalog (Bridge of Data), za pośrednictwem DataCite.",
+    "Nazwa repozytorium musi być identyczna we wszystkich punktach planu — sprawdź spójność z pkt 2.1, 5.1 i 5.2.",
+    "Dodaj, że DOI zbioru danych zostanie zacytowany w publikacjach powstałych w projekcie."
+  ],
   "6.1": [
     "Należy doprecyzować koszty zarządzania danymi. Jeśli deponowanie w repozytorium darmowe: napisać to wyraźnie. Koszt to przede wszystkim czas pracy (należy oszacować liczbę dni roboczych na przygotowanie, dokumentację, kontrolę jakości)."
   ],
